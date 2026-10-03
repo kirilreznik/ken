@@ -8,6 +8,9 @@ import { Field } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 import type { Palette } from "@/lib/types";
 import { applyPalette } from "@/lib/data";
+import { CalendarSync } from "@/components/settings/CalendarSync";
+import { Notifications } from "@/components/settings/Notifications";
+import { AiSettings } from "@/components/settings/AiSettings";
 
 const PALETTES: Array<{ id: Palette; name: string; sub: string; colors: string[] }> = [
   { id: "neutral", name: "מרווה", sub: "ניטרלי", colors: ["#2F5D4F", "#E3ECE6", "#E7C6A4"] },
@@ -79,6 +82,12 @@ export default function Settings() {
           </div>
         ) : <button className="btn btn-secondary self-start" onClick={invite}><Icon name="plus" />יצירת קוד הזמנה</button>)}
       </section>
+
+      <Notifications />
+
+      <CalendarSync />
+
+      <AiSettings />
 
       <button className="btn btn-danger self-start" onClick={signOut}><Icon name="logout" />התנתקות</button>
     </div>

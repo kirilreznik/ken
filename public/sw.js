@@ -24,6 +24,7 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith("/api/")) return;
 
   // Page navigations + RSC payloads: network first, cached copy when offline.
   if (req.mode === "navigate" || url.searchParams.has("_rsc") || req.headers.get("RSC")) {
@@ -41,4 +42,28 @@ self.addEventListener("fetch", (e) => {
   if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/pwa-icon") || /\.(?:woff2?|png|svg|ico|webmanifest)$/.test(url.pathname)) {
     e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((res) => put(req, res))));
   }
+});
+
+// ───────────── Push notifications ─────────────
+self.addEventListener("push", (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch { d = { body: e.data && e.data.text() }; }
+  e.waitUntil(self.registration.showNotification(d.title || "קן", {
+    body: d.body || "",
+    tag: d.tag,
+    data: { url: d.url || "/" },
+    dir: "rtl",
+    lang: "he",
+    icon: "/pwa-icon/192",
+    badge: "/pwa-icon/96",
+  }));
+});
+
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || "/", self.location.origin).href;
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+    for (const c of list) if (c.url.startsWith(self.location.origin) && "focus" in c) { c.navigate(url); return c.focus(); }
+    return self.clients.openWindow(url);
+  }));
 });

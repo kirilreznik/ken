@@ -5,6 +5,8 @@ import { useMemo, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { Avatar, KindTile, PregnancyBar, PriorityTag, ProgressRing, StatusBadge } from "@/components/ui";
 import { useQuick } from "@/components/QuickActions";
+import { SuggestionsCard } from "@/components/Suggestions";
+import { WeekSummaryCard } from "@/components/WeekSummaryCard";
 import { useSession } from "@/lib/session";
 import { displayStatus, nowSort, nextAppointment, openQuestionsFor, sortTasks, useAppointments, useDocuments, usePregnancy, useQuestions, useSave, useTasks } from "@/lib/data";
 import { developmentFor, sizeFor, weekLabelOf } from "@/lib/pregnancy";
@@ -143,6 +145,9 @@ export default function Home() {
           )}
         </section>
       </div>
+
+      <WeekSummaryCard />
+      <SuggestionsCard />
 
       <div className="flex flex-wrap gap-6">
         {/* This week */}

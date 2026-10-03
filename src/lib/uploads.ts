@@ -1,5 +1,6 @@
 "use client";
 
+import { canRead, readDocument } from "./ai";
 import { useSyncExternalStore } from "react";
 import { createStore, get, set, del, keys } from "idb-keyval";
 import type { QueryClient } from "@tanstack/react-query";
@@ -156,6 +157,8 @@ export async function processUploads(qc: QueryClient) {
         if (error && error.code !== "23505") throw error;
         await drop(it.id);
         qc.invalidateQueries({ queryKey: ["documents", it.spaceId] });
+        // Opt-in AI reading: the server ignores this when the space hasn't enabled it.
+        if (canRead(it.type)) readDocument(it.id).then(() => qc.invalidateQueries({ queryKey: ["documents", it.spaceId] }), () => {});
       } catch (e) {
         const offline = typeof navigator !== "undefined" && !navigator.onLine;
         if (!offline) report(e, "upload", { type: it.type, size: it.size });

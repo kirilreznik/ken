@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Icon } from "@/components/Icon";
 import { EmptyState, Sheet, WeekBadge } from "@/components/ui";
 import { useQuick } from "@/components/QuickActions";
+import { AiReading } from "@/components/AiReading";
 import { useAppointments, useDocuments, useSave, useSignedUrl } from "@/lib/data";
 import { useSession } from "@/lib/session";
 import { supabase, DOCS_BUCKET } from "@/lib/supabase";
@@ -176,6 +177,7 @@ export default function Documents() {
               <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-surface-2"><Icon name="cal" className="text-primary" /><span className="flex-1"><b className="block">{appt.title}</b><span className="text-[13px] text-ink-3">תור מקושר</span></span>
                 <button className="btn btn-ghost" onClick={() => { setSel(null); quick({ kind: "appointment", initial: appt }); }}>פתיחה</button></div>
             )}
+            <AiReading doc={current} />
             {current.note && <div className="rounded-2xl p-3.5 border border-[#f1e0cf] bg-[#fff8f1]"><div className="lbl" style={{ color: "#8A4526" }}>הערה שלנו</div><p className="mt-1">{current.note}</p></div>}
             <div className="flex flex-col gap-2"><span className="lbl">תגיות</span>
               <div className="flex gap-1.5 flex-wrap items-center">
