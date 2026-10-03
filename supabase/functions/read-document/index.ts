@@ -87,10 +87,10 @@ Deno.serve(async (req) => {
     headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 2000,
+      max_tokens: 6000,
       system: SYSTEM,
       tools: [TOOL],
-      tool_choice: { type: "tool", name: "save_reading" },
+      tool_choice: { type: "auto" },
       messages: [{ role: "user", content: [
         { type: isPdf ? "document" : "image", source },
         { type: "text", text: `The couple titled this upload "${doc.title}". Read it and call save_reading.` },

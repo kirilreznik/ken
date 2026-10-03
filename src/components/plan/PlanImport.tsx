@@ -110,6 +110,17 @@ export function PlanImport({ welcome = false, onDone, onSkip }: { welcome?: bool
     }
   };
 
+  const retry = async () => {
+    if (!row) return;
+    if (!online) return setErr("צריך חיבור לאינטרנט");
+    setErr("");
+    await supabase.from("plan_imports").update({ status: "pending", error: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq("id", row.id);
+    setChosen(row.id);
+    await qc.invalidateQueries({ queryKey: ["plan_imports", row.id] });
+    supabase.functions.invoke("analyze-plan", { body: { import_id: row.id } })
+      .finally(() => qc.invalidateQueries({ queryKey: ["plan_imports", row.id] }));
+  };
+
   const useStandard = async () => {
     setErr(""); setBusy("מכינים את התוכנית…");
     const { data, error } = await supabase.from("plan_imports").insert({ space_id: space.id, source: "standard", status: "ready", result: standardPlan(), created_by: user.id }).select("id").single();
@@ -145,7 +156,10 @@ export function PlanImport({ welcome = false, onDone, onSkip }: { welcome?: bool
           <Icon name="alert" />
           <div className="flex-1"><b className="block">לא הצלחנו לקרוא את התוכנית</b>
             <span className="text-sm">{ERRORS[stale ? "timeout" : row?.error ?? ""] ?? "אפשר לנסות שוב, לצלם מחדש באור טוב, או להתחיל מהתוכנית המקובלת."}</span></div>
-          <button className="text-sm font-bold underline" onClick={() => setChosen("none")}>סגירה</button>
+          <div className="flex flex-col gap-2 items-end">
+            {row?.source === "document" && !!row.document_ids?.length && <button className="text-sm font-bold underline" onClick={retry}>ניסיון חוזר</button>}
+            <button className="text-sm font-bold underline" onClick={() => setChosen("none")}>סגירה</button>
+          </div>
         </div>
       )}
 

@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 6000, system: SYSTEM, tools: [TOOL], tool_choice: { type: "tool", name: "save_plan" }, messages: [{ role: "user", content }] }),
+    body: JSON.stringify({ model: MODEL, max_tokens: 12000, system: SYSTEM, tools: [TOOL], tool_choice: { type: "auto" }, messages: [{ role: "user", content }] }),
   });
   if (!res.ok) {
     console.error("[analyze-plan] anthropic", res.status, (await res.text()).slice(0, 500));
@@ -112,7 +112,10 @@ Deno.serve(async (req) => {
   }
   const out = await res.json();
   const use = (out.content ?? []).find((c: { type: string }) => c.type === "tool_use");
-  if (!use?.input?.items) return fail("no_result", 502);
+  if (!use?.input?.items) {
+    console.error("[analyze-plan] no tool_use", out.stop_reason, JSON.stringify(out.content ?? []).slice(0, 500));
+    return fail("no_result", 502);
+  }
 
   const known = new Set((appts ?? []).map((a) => a.id));
   const result = { ...use.input, items: use.input.items.map((it: { match_id?: string | null }) => ({ ...it, match_id: it.match_id && known.has(it.match_id) ? it.match_id : null })), model: MODEL, at: new Date().toISOString() };
