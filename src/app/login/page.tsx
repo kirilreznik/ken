@@ -37,6 +37,10 @@ export default function Login() {
       }
       const t = error.message.includes("Invalid login") ? "המייל או הסיסמה לא נכונים" : error.message.includes("at least") ? "הסיסמה צריכה להיות באורך 6 תווים לפחות" : error.message;
       setMsg({ kind: "err", text: t });
+    } else if (mode === "up" && data.user && data.user.identities?.length === 0) {
+      // Supabase returns a fake success for an existing email (no mail is sent).
+      setMode("in");
+      setMsg({ kind: "ok", text: "כבר יש חשבון עם המייל הזה — פשוט התחברו עם הסיסמה." });
     } else if (mode === "up" && !data.session) {
       setNeedsConfirm(true);
       setMsg({ kind: "ok", text: "שלחנו לכם מייל לאימות. אחרי האישור אפשר להתחבר." });
