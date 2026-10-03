@@ -40,7 +40,7 @@ export default function Documents() {
   const online = useOnline();
   const { data: docs, isLoading } = useDocuments();
   const { data: appts } = useAppointments();
-  const uploads = useUploads();
+  const uploads = useUploads().filter((u) => !u.media);
   const save = useSave("documents");
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<DocCategory | "all">("all");

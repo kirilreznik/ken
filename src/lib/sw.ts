@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { report } from "./report";
 
 /** Registers /sw.js in production and exposes "update available". */
 export function useServiceWorker() {
@@ -22,7 +23,7 @@ export function useServiceWorker() {
       });
       const t = setInterval(() => reg.update().catch(() => {}), 30 * 60_000);
       return () => clearInterval(t);
-    }).catch(() => {});
+    }).catch((e) => report(e, "sw"));
     return () => navigator.serviceWorker.removeEventListener("controllerchange", onCtrl);
   }, []);
 

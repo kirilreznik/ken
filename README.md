@@ -36,5 +36,4 @@ Install on phones: iPhone Safari → Share → "הוספה למסך הבית"; A
 
 ## Roadmap
 
-Done (MVP): Home, Timeline, Tests & appointments, Documents, Tasks, Questions + visit mode, Settings/sharing, PWA/offline.
-Next: Baby prep, Calendar, Birth planning, Journal (placeholders exist at /prep, /calendar, /birth, /journal).
+See `docs/ROADMAP.md`. Migrations live in `supabase/migrations/` (apply in order).

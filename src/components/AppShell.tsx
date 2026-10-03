@@ -14,7 +14,7 @@ import { useUploads } from "@/lib/uploads";
 import { useQuick } from "./QuickActions";
 import { fmtNum } from "@/lib/format";
 
-const BARE = ["/login", "/onboarding", "/visit", "/offline"];
+const BARE = ["/login", "/onboarding", "/visit", "/offline", "/birth/print", "/journal/book"];
 
 const PRIMARY: Array<{ href: string; label: string; icon: IconName }> = [
   { href: "/", label: "בית", icon: "home" },
@@ -25,10 +25,10 @@ const PRIMARY: Array<{ href: string; label: string; icon: IconName }> = [
   { href: "/prep", label: "הכנות לתינוק", icon: "baby" },
 ];
 const SECONDARY: Array<{ href: string; label: string; icon: IconName; soon?: boolean }> = [
-  { href: "/calendar", label: "יומן", icon: "cal", soon: true },
+  { href: "/calendar", label: "יומן", icon: "cal" },
   { href: "/questions", label: "שאלות לרופא", icon: "ask" },
-  { href: "/birth", label: "הכנה ללידה", icon: "bag", soon: true },
-  { href: "/journal", label: "יומן הריון אישי", icon: "book", soon: true },
+  { href: "/birth", label: "הכנה ללידה", icon: "bag" },
+  { href: "/journal", label: "יומן הריון אישי", icon: "book" },
   { href: "/settings", label: "הגדרות", icon: "set" },
 ];
 const TABS: Array<{ href: string; label: string; icon: IconName }> = [

@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { supabase } from "./supabase";
 import { useSession } from "./session";
 import { weekInfo } from "./pregnancy";
-import type { Appointment, DisplayStatus, DocumentRow, Question, RowOf, TableName, Task } from "./types";
+import type { Appointment, BirthPlan, DisplayStatus, DocumentRow, Question, RowOf, SuggestionState, TableName, Task } from "./types";
 import type { SaveVars } from "./queryClient";
 
 export function useRows<T extends TableName>(table: T) {
@@ -57,9 +57,87 @@ export function useSave<T extends TableName>(table: T) {
       return full.id;
     },
     update: (id: string, patch: Partial<RowOf<T>>) => m.mutate({ table, mode: "update", row: { ...(patch as object), id } }),
-    remove: (id: string) => m.mutate({ table, mode: "delete", row: { id } }),
+    remove: (id: string) => m.mutate({ table, mode: "delete", row: { id: id } }),
     isPending: m.isPending,
   };
+}
+
+export const usePrepItems = () => useRows("prep_items");
+export const useContacts = () => useRows("contacts");
+export const useJournal = () => useRows("journal_entries");
+
+/** Single-row birth plan per space (null until first saved). */
+export function useBirthPlan() {
+  const { space } = useSession();
+  const qc = useQueryClient();
+  const key = ["birth_plans", space?.id];
+  const q = useQuery({
+    queryKey: key,
+    enabled: !!space,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("birth_plans").select("*").eq("space_id", space!.id).maybeSingle();
+      if (error) throw error;
+      return (data as BirthPlan | null) ?? null;
+    },
+  });
+  const m = useMutation<void, Error, SaveVars, { prev?: BirthPlan | null }>({
+    mutationKey: ["save"],
+    onMutate: async (vars) => {
+      await qc.cancelQueries({ queryKey: key });
+      const prev = qc.getQueryData<BirthPlan | null>(key);
+      qc.setQueryData(key, { ...(prev ?? {}), ...vars.row } as unknown as BirthPlan);
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => qc.setQueryData(key, ctx?.prev ?? null),
+    onSettled: () => qc.invalidateQueries({ queryKey: key }),
+  });
+  const save = (patch: Partial<BirthPlan>) =>
+    m.mutate({ table: "birth_plans", mode: "upsert", onConflict: "space_id", row: { ...(q.data ?? {}), ...patch, space_id: space!.id, updated_at: new Date().toISOString() } as Record<string, unknown> });
+  return { plan: q.data ?? null, isLoading: q.isLoading, save };
+}
+
+/** Smart-checklist decisions (added / dismissed) per suggestion key. */
+export function useSuggestionStates() {
+  const { space } = useSession();
+  const qc = useQueryClient();
+  const key = ["suggestion_states", space?.id];
+  const q = useQuery({
+    queryKey: key,
+    enabled: !!space,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("suggestion_states").select("*").eq("space_id", space!.id);
+      if (error) throw error;
+      return data as SuggestionState[];
+    },
+  });
+  const m = useMutation<void, Error, SaveVars>({
+    mutationKey: ["save"],
+    onMutate: (vars) => {
+      qc.setQueryData<SuggestionState[]>(key, (old = []) => [...old.filter((s) => s.key !== vars.row.key), vars.row as unknown as SuggestionState]);
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: key }),
+  });
+  const set = (k: string, status: "added" | "dismissed") =>
+    m.mutate({ table: "suggestion_states", mode: "upsert", onConflict: "space_id,key", row: { space_id: space!.id, key: k, status, updated_at: new Date().toISOString() } });
+  return { states: q.data ?? [], set };
+}
+
+/** Batch signed URLs for media photos (prep images, journal photos). Not persisted offline. */
+export function useMediaUrls(paths: string[], enabled = true) {
+  const list = [...new Set(paths.filter(Boolean))].sort();
+  return useQuery({
+    queryKey: ["signed", "media", list.join("|")],
+    enabled: enabled && list.length > 0,
+    staleTime: 50 * 60_000,
+    gcTime: 55 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.storage.from("media").createSignedUrls(list, 3600);
+      if (error) throw error;
+      const map: Record<string, string> = {};
+      for (const r of data ?? []) if (r.path && r.signedUrl) map[r.path] = r.signedUrl;
+      return map;
+    },
+  });
 }
 
 /** Number of local changes not yet confirmed by the server. */

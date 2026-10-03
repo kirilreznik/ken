@@ -5,6 +5,10 @@ export interface Space {
   name: string;
   due_date: string; // YYYY-MM-DD
   palette: Palette;
+  prep_budget?: number | null;
+  calendar_token?: string | null;
+  calendar_show_titles?: boolean;
+  ai_reading_enabled?: boolean;
   created_by: string;
   created_at: string;
 }
@@ -54,6 +58,9 @@ export interface DocumentRow {
   mime_type: string | null;
   size_bytes: number | null;
   appointment_id: string | null;
+  pinned_for_birth?: boolean;
+  ai_status?: "pending" | "done" | "failed" | "dismissed" | null;
+  ai_suggestion?: Record<string, unknown> | null;
   created_by?: string | null;
   created_at?: string;
 }
@@ -76,6 +83,8 @@ export interface Task {
   done: boolean;
   done_at: string | null;
   done_by: string | null;
+  due_week?: number | null;
+  source_key?: string | null;
   created_by?: string | null;
   created_at?: string;
 }
@@ -94,8 +103,86 @@ export interface Question {
   created_at?: string;
 }
 
-export type TableName = "appointments" | "documents" | "tasks" | "questions";
+export type PrepCategory = "stroller" | "car_seat" | "sleep" | "clothes" | "bath" | "feeding" | "nursery" | "birth_bag" | "misc";
+export type PrepStatus = "need" | "reviewing" | "chosen" | "bought" | "not_needed";
+
+export interface PrepItem {
+  id: string;
+  space_id: string;
+  title: string;
+  category: PrepCategory;
+  status: PrepStatus;
+  price: number | null;
+  url: string | null;
+  notes: string | null;
+  recommended_by: string | null;
+  image_path: string | null;
+  compare_group: string | null;
+  quantity: number;
+  sort: number;
+  created_by?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BirthPlan {
+  space_id: string;
+  hospital_name: string | null;
+  hospital_ward: string | null;
+  hospital_phone: string | null;
+  hospital_address: string | null;
+  tour_at: string | null;
+  registration_done: boolean;
+  caregiver_name: string | null;
+  caregiver_phone: string | null;
+  doula_status: string | null;
+  route_notes: string | null;
+  parking: string | null;
+  travel_minutes_free: number | null;
+  travel_minutes_peak: number | null;
+  preferences: string[];
+  preferences_note: string | null;
+  updated_at?: string;
+}
+
+export interface Contact {
+  id: string;
+  space_id: string;
+  name: string;
+  role: string | null;
+  phone: string | null;
+  sort: number;
+}
+
+export type JournalKind = "note" | "milestone" | "ultrasound" | "photo";
+export interface JournalEntry {
+  id: string;
+  space_id: string;
+  author: string;
+  entry_date: string;
+  kind: JournalKind;
+  title: string | null;
+  body: string | null;
+  photos: string[];
+  visibility: "shared" | "private";
+  hidden: boolean;
+  include_in_book: boolean;
+  appointment_id: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SuggestionState {
+  space_id: string;
+  key: string;
+  status: "added" | "dismissed";
+}
+
+export type TableName = "appointments" | "documents" | "tasks" | "questions" | "prep_items" | "contacts" | "journal_entries";
 export type RowOf<T extends TableName> = T extends "appointments" ? Appointment
   : T extends "documents" ? DocumentRow
   : T extends "tasks" ? Task
+  : T extends "prep_items" ? PrepItem
+  : T extends "contacts" ? Contact
+  : T extends "journal_entries" ? JournalEntry
   : Question;

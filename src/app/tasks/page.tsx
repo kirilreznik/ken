@@ -13,8 +13,30 @@ import type { Task, TaskCategory } from "@/lib/types";
 
 type View = "date" | "trimester";
 
+function TaskRow({ t, onToggle, onOpen }: { t: Task; onToggle: (t: Task) => void; onOpen: (t: Task) => void }) {
+  const { members, nameOf } = useSession();
+  const now = new Date();
+    const overdue = t.due_date && !t.done && daysBetween(now, parseDay(t.due_date)) < 0;
+    return (
+      <div className="flex items-center gap-3.5 px-4 md:px-5 py-3.5 min-h-16 border-b border-line-2 last:border-0">
+        <input type="checkbox" className="cb" checked={t.done} onChange={() => onToggle(t)} aria-label={t.done ? `ביטול סימון: ${t.title}` : `סימון כבוצע: ${t.title}`} />
+        <button className="flex-1 min-w-0 text-start" onClick={() => onOpen(t)}>
+          <div className={`font-bold ${t.done ? "line-through text-[#8a8177]" : ""}`}>{t.title}</div>
+          <div className="flex gap-2 items-center text-[13px] text-ink-3 mt-0.5 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 font-bold"><i className="w-[7px] h-[7px] rounded-full" style={{ background: TASK_CATEGORY_COLOR[t.category] }} />{TASK_CATEGORY_LABEL[t.category]}</span>
+            {t.due_date && !t.done && <><span>·</span><span style={overdue || t.priority === "urgent" ? { color: "var(--st-att)", fontWeight: 700 } : undefined}>{overdue ? `עבר מועד · ${fmtShort(t.due_date)}` : relDays(t.due_date) === "היום" ? "היום" : `עד ${fmtShort(t.due_date)}`}</span></>}
+            {t.done && t.done_at && <><span>·</span><span>בוצע {relDays(t.done_at)}{t.done_by ? ` ע״י ${nameOf(t.done_by)}` : ""}</span></>}
+            {t.notes && !t.done && <><span>·</span><Icon name="pen" size={13} /></>}
+          </div>
+        </button>
+        {!t.done && t.priority !== "normal" && t.priority !== "low" && <PriorityTag p={t.priority} />}
+        {t.assignee ? <Avatar name={nameOf(t.assignee)} tone={members.findIndex((m) => m.user_id === t.assignee)} /> : <span className="text-xs font-bold text-ink-3">שנינו</span>}
+      </div>
+    );
+  }
+
 export default function Tasks() {
-  const { user, members, nameOf, space } = useSession();
+  const { user, space } = useSession();
   const wk = usePregnancy();
   const quick = useQuick();
   const save = useSave("tasks");
@@ -47,26 +69,6 @@ export default function Tasks() {
   const toggle = (t: Task) => save.update(t.id, t.done ? { done: false, done_at: null, done_by: null } : { done: true, done_at: new Date().toISOString(), done_by: user!.id });
   const myOpen = (tasks ?? []).filter((t) => !t.done && t.assignee === user?.id).length;
 
-  const Row = ({ t }: { t: Task }) => {
-    const overdue = t.due_date && !t.done && daysBetween(now, parseDay(t.due_date)) < 0;
-    return (
-      <div className="flex items-center gap-3.5 px-4 md:px-5 py-3.5 min-h-16 border-b border-line-2 last:border-0">
-        <input type="checkbox" className="cb" checked={t.done} onChange={() => toggle(t)} aria-label={t.done ? `ביטול סימון: ${t.title}` : `סימון כבוצע: ${t.title}`} />
-        <button className="flex-1 min-w-0 text-start" onClick={() => quick({ kind: "task", initial: t })}>
-          <div className={`font-bold ${t.done ? "line-through text-[#8a8177]" : ""}`}>{t.title}</div>
-          <div className="flex gap-2 items-center text-[13px] text-ink-3 mt-0.5 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 font-bold"><i className="w-[7px] h-[7px] rounded-full" style={{ background: TASK_CATEGORY_COLOR[t.category] }} />{TASK_CATEGORY_LABEL[t.category]}</span>
-            {t.due_date && !t.done && <><span>·</span><span style={overdue || t.priority === "urgent" ? { color: "var(--st-att)", fontWeight: 700 } : undefined}>{overdue ? `עבר מועד · ${fmtShort(t.due_date)}` : relDays(t.due_date) === "היום" ? "היום" : `עד ${fmtShort(t.due_date)}`}</span></>}
-            {t.done && t.done_at && <><span>·</span><span>בוצע {relDays(t.done_at)}{t.done_by ? ` ע״י ${nameOf(t.done_by)}` : ""}</span></>}
-            {t.notes && !t.done && <><span>·</span><Icon name="pen" size={13} /></>}
-          </div>
-        </button>
-        {!t.done && t.priority !== "normal" && t.priority !== "low" && <PriorityTag p={t.priority} />}
-        {t.assignee ? <Avatar name={nameOf(t.assignee)} tone={members.findIndex((m) => m.user_id === t.assignee)} /> : <span className="text-xs font-bold text-ink-3">שנינו</span>}
-      </div>
-    );
-  };
-
   return (
     <div className="flex flex-col gap-5">
       <header className="flex items-end gap-3 flex-wrap">
@@ -89,7 +91,7 @@ export default function Tasks() {
           {groups.filter((g) => g.items.length).map((g) => (
             <section key={g.key} className="flex flex-col gap-2.5">
               <div className="flex items-baseline gap-2.5 px-1"><h2 className="text-lg font-extrabold">{g.title}</h2><span className="text-sm text-ink-3 font-semibold">{g.sub || `${g.items.length}`}</span></div>
-              <div className="card overflow-hidden">{g.items.map((t) => <Row key={t.id} t={t} />)}</div>
+              <div className="card overflow-hidden">{g.items.map((t) => <TaskRow key={t.id} t={t} onToggle={toggle} onOpen={(x) => quick({ kind: "task", initial: x })} />)}</div>
             </section>
           ))}
           {open.length === 0 && <p className="text-ink-3 px-1">אין משימות פתוחות בסינון הזה.</p>}
@@ -99,7 +101,7 @@ export default function Tasks() {
                 <Icon name="check" style={{ color: "var(--primary)" }} />הושלם<span className="text-ink-3 font-semibold">{done.length} משימות</span>
                 <Icon name="chevD" className="ms-auto" style={showDone ? { transform: "rotate(180deg)" } : undefined} />
               </button>
-              {showDone && <div className="card overflow-hidden">{done.map((t) => <Row key={t.id} t={t} />)}</div>}
+              {showDone && <div className="card overflow-hidden">{done.map((t) => <TaskRow key={t.id} t={t} onToggle={toggle} onOpen={(x) => quick({ kind: "task", initial: x })} />)}</div>}
             </section>
           )}
         </>

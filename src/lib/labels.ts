@@ -1,4 +1,4 @@
-import type { AppointmentKind, DisplayStatus, DocCategory, Priority, TaskCategory } from "./types";
+import type { AppointmentKind, DisplayStatus, DocCategory, JournalKind, PrepCategory, PrepStatus, Priority, TaskCategory } from "./types";
 
 export const KIND_LABEL: Record<AppointmentKind, string> = {
   doctor: "תור לרופא",
@@ -51,5 +51,41 @@ export const TASK_CATEGORY_COLOR: Record<TaskCategory, string> = {
 };
 
 export const PRIORITY_LABEL: Record<Priority, string> = { urgent: "דחוף", high: "גבוהה", normal: "רגילה", low: "נמוכה" };
+
+export const PREP_CATEGORY_LABEL: Record<PrepCategory, string> = {
+  stroller: "עגלה",
+  car_seat: "כיסא בטיחות",
+  sleep: "שינה",
+  clothes: "בגדים",
+  bath: "אמבטיה",
+  feeding: "האכלה",
+  nursery: "חדר תינוק",
+  birth_bag: "תיק לידה",
+  misc: "שונות",
+};
+
+export const PREP_STATUS_LABEL: Record<PrepStatus, string> = {
+  need: "צריך",
+  reviewing: "בבדיקה",
+  chosen: "נבחר",
+  bought: "נקנה",
+  not_needed: "לא צריך",
+};
+export const PREP_STATUS_ORDER: PrepStatus[] = ["need", "reviewing", "chosen", "bought", "not_needed"];
+/** Ready = chosen or bought (not_needed items are excluded from the total). */
+export const isPrepReady = (s: PrepStatus) => s === "chosen" || s === "bought";
+
+export const JOURNAL_KIND_LABEL: Record<JournalKind, string> = {
+  note: "רשומה",
+  milestone: "אבן דרך",
+  ultrasound: "אולטרסאונד",
+  photo: "תמונה",
+};
+
+export const BIRTH_PREFERENCE_SUGGESTIONS = [
+  "פתוחה לאפידורל", "מעדיפה בלי אפידורל", "מגע עור לעור מיד", "חיתוך חבל טבור מושהה",
+  "בן/בת הזוג חותכים את חבל הטבור", "תאורה עמומה", "מוזיקה שלנו בחדר", "תנועה חופשית בצירים",
+  "הנקה בשעה הראשונה", "לינה משותפת",
+];
 
 export const QUESTION_CATEGORIES = ["תוצאות", "אורח חיים", "תרופות ותוספים", "בדיקות", "הכנה ללידה", "תזונה", "אחר"];

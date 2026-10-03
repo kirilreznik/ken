@@ -15,3 +15,4 @@ export const supabase = createClient(url ?? "http://localhost:54321", anon ?? "p
 });
 
 export const DOCS_BUCKET = "documents";
+export const MEDIA_BUCKET = "media";

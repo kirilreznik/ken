@@ -8,6 +8,7 @@ import { SessionProvider, useSession } from "@/lib/session";
 import { supabase } from "@/lib/supabase";
 import { processUploads } from "@/lib/uploads";
 import { QuickProvider } from "./QuickActions";
+import { installGlobalReporters } from "@/lib/report";
 
 function Realtime() {
   const { space } = useSession();
@@ -16,7 +17,7 @@ function Realtime() {
     if (!space) return;
     const sid = space.id;
     const ch = supabase.channel(`space-${sid}`);
-    for (const table of ["appointments", "documents", "tasks", "questions"] as const) {
+    for (const table of ["appointments", "documents", "tasks", "questions", "prep_items", "contacts", "journal_entries", "birth_plans", "suggestion_states"] as const) {
       ch.on("postgres_changes", { event: "*", schema: "public", table, filter: `space_id=eq.${sid}` }, () =>
         qc.invalidateQueries({ queryKey: [table, sid] }),
       );
@@ -39,6 +40,7 @@ function Realtime() {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [qc] = useState(makeQueryClient);
+  useEffect(() => installGlobalReporters(), []);
   useEffect(() => {
     try {
       const p = localStorage.getItem("kan-palette");
