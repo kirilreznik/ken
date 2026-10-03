@@ -124,6 +124,9 @@ export interface PrepItem {
   recommended_by: string | null;
   image_path: string | null;
   compare_group: string | null;
+  brand?: string | null;
+  model?: string | null;
+  source?: "manual" | "share" | "default" | null;
   quantity: number;
   sort: number;
   created_by?: string | null;
@@ -184,11 +187,13 @@ export interface SuggestionState {
   status: "added" | "dismissed";
 }
 
-export type TableName = "appointments" | "documents" | "tasks" | "questions" | "prep_items" | "contacts" | "journal_entries";
+export type TableName = "appointments" | "documents" | "tasks" | "questions" | "prep_items" | "contacts" | "journal_entries" | "prep_offers" | "prep_inbox";
 export type RowOf<T extends TableName> = T extends "appointments" ? Appointment
   : T extends "documents" ? DocumentRow
   : T extends "tasks" ? Task
   : T extends "prep_items" ? PrepItem
+  : T extends "prep_offers" ? PrepOffer
+  : T extends "prep_inbox" ? PrepInbox
   : T extends "contacts" ? Contact
   : T extends "journal_entries" ? JournalEntry
   : Question;
@@ -226,4 +231,41 @@ export interface PlanResult {
   clinic?: string | null;
   general_notes?: string | null;
   items: PlanResultItem[];
+}
+
+/** A place to buy a prep item (store / variant / price) — for price comparison. */
+export interface PrepOffer {
+  id: string;
+  space_id: string;
+  item_id: string;
+  store: string | null;
+  url: string | null;
+  price: number | null;
+  currency: string;
+  variant: string | null;
+  note: string | null;
+  image_url: string | null;
+  source: "manual" | "share";
+  created_by?: string | null;
+  created_at?: string;
+}
+
+/** Something shared into Ken (link / screenshot), triaged by AI into the prep list. */
+export interface PrepInbox {
+  id: string;
+  space_id: string;
+  created_by: string | null;
+  url: string | null;
+  text: string | null;
+  image_path: string | null;
+  via: "app" | "android" | "shortcut";
+  status: "pending" | "done" | "failed" | "undone";
+  action: "new" | "offer" | "fill" | null;
+  item_id: string | null;
+  offer_id: string | null;
+  result: { title?: string; message?: string; store?: string; price?: number; category?: PrepCategory; prev?: Partial<PrepItem> | null } | null;
+  error: string | null;
+  dismissed: boolean;
+  created_at: string;
+  updated_at?: string;
 }

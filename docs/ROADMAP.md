@@ -48,3 +48,14 @@ Settings → סנכרון ליומן → create link → "Apple" (webcal) or "Go
   (resumable — closing the app during analysis is fine). Suggestions use `book_by_week` for "לקבוע תור" nudges.
 - Needs `ANTHROPIC_API_KEY` for document analysis; without it the standard plan still works.
 - TODO: rebuild + redeploy `notify` (`npm run build:functions`) so weekly-summary suggestion counts use book_by_week too.
+
+## M10 · Shopping: share → AI triage → list / price comparison ✅
+- Share a link, text or screenshot into Ken:
+  - iPhone: a Shortcut in the share sheet (Settings → שיתוף מוצרים לקן: personal token + steps) → `triage-product` Edge Function.
+  - Android: installed PWA is a share target (`/share-target` → service worker → `/share`).
+  - Anywhere: הכנות לתינוק → "הוספה מקישור" (`/share`, paste / screenshot).
+- `triage-product` reads the page (OG / JSON-LD price, image) + Claude decides:
+  same product (any colour/version) → extra store in `prep_offers`; empty placeholder (e.g. "עגלה") → filled; otherwise new item
+  (grouped with a similar product for comparison). Item price = cheapest ₪ offer. Auto-applied, with undo in the "נכנסו מהשיתוף" strip.
+- Item sheet shows "איפה לקנות": stores cheapest first, add/remove manually.
+- Tables: `prep_offers`, `prep_inbox`, `capture_tokens`; `prep_items.brand/model/source`.

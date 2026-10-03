@@ -17,7 +17,7 @@ function Realtime() {
     if (!space) return;
     const sid = space.id;
     const ch = supabase.channel(`space-${sid}`);
-    for (const table of ["appointments", "documents", "tasks", "questions", "prep_items", "contacts", "journal_entries", "birth_plans", "suggestion_states"] as const) {
+    for (const table of ["appointments", "documents", "tasks", "questions", "prep_items", "contacts", "journal_entries", "birth_plans", "suggestion_states", "prep_offers", "prep_inbox"] as const) {
       ch.on("postgres_changes", { event: "*", schema: "public", table, filter: `space_id=eq.${sid}` }, () =>
         qc.invalidateQueries({ queryKey: [table, sid] }),
       );
@@ -52,7 +52,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       client={qc}
       persistOptions={{
         persister, maxAge: 1000 * 60 * 60 * 24 * 7, buster: "kan-v1",
-        dehydrateOptions: { shouldDehydrateQuery: (q) => q.state.status === "success" && q.queryKey[0] !== "signed" },
+        dehydrateOptions: { shouldDehydrateQuery: (q) => q.state.status === "success" && q.queryKey[0] !== "signed" && q.meta?.persist !== false },
       }}
       onSuccess={() => qc.resumePausedMutations().then(() => qc.invalidateQueries())}
     >

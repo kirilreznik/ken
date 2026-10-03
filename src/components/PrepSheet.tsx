@@ -9,6 +9,7 @@ import { useSession } from "@/lib/session";
 import { enqueueMedia } from "@/lib/uploads";
 import { PREP_CATEGORY_LABEL, PREP_STATUS_LABEL, PREP_STATUS_ORDER } from "@/lib/labels";
 import type { PrepCategory, PrepItem, PrepStatus } from "@/lib/types";
+import { Offers } from "./prep/Offers";
 
 export function PrepSheet({ open, onClose, initial }: { open: boolean; onClose: () => void; initial?: Partial<PrepItem> | null }) {
   return (
@@ -58,7 +59,8 @@ function PrepForm({ onClose, initial }: { onClose: () => void; initial?: Partial
         <Field label="מחיר (₪)"><input className="input" inputMode="decimal" dir="ltr" style={{ textAlign: "right" }} value={f.price} onChange={set("price")} /></Field>
         <Field label="כמות"><input className="input" type="number" min={1} value={f.quantity} onChange={set("quantity")} /></Field>
       </div>
-      <Field label="קישור למוצר"><input className="input" type="url" dir="ltr" style={{ textAlign: "right" }} value={f.url} onChange={set("url")} placeholder="https://" /></Field>
+      {editing && <Offers itemId={initial!.id!} />}
+      <Field label={editing ? "קישור ראשי" : "קישור למוצר"}><input className="input" type="url" dir="ltr" style={{ textAlign: "right" }} value={f.url} onChange={set("url")} placeholder="https://" /></Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label="מי המליץ"><input className="input" value={f.recommended_by} onChange={set("recommended_by")} /></Field>
         <Field label="קבוצת השוואה" hint="אותו שם = מושווים זה לצד זה"><input className="input" value={f.compare_group} onChange={set("compare_group")} placeholder="למשל: עגלה" /></Field>

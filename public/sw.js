@@ -1,7 +1,7 @@
 /* קן · service worker — app shell + static assets cache. Data is cached by the app (IndexedDB). */
 const V = new URL(self.location).searchParams.get("v") || "dev";
 const CACHE = "kan-" + V;
-const ROUTES = ["/", "/timeline", "/tests", "/documents", "/tasks", "/questions", "/calendar", "/prep", "/birth", "/journal", "/plan", "/more", "/offline"];
+const ROUTES = ["/", "/share", "/timeline", "/tests", "/documents", "/tasks", "/questions", "/calendar", "/prep", "/birth", "/journal", "/plan", "/more", "/offline"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => Promise.all(ROUTES.map((r) => c.add(r).catch(() => null)))));
@@ -19,8 +19,22 @@ self.addEventListener("message", (e) => { if (e.data === "SKIP_WAITING") self.sk
 
 const put = (req, res) => { if (res && res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); } return res; };
 
+// Android share target: stash what was shared, then open /share to process it.
+const SHARE_CACHE = "kan-share";
+async function stashShare(req) {
+  const fd = await req.formData();
+  const c = await caches.open(SHARE_CACHE);
+  const meta = { title: fd.get("title") || "", text: fd.get("text") || "", url: fd.get("url") || "", at: Date.now() };
+  await c.put("/__share/meta", new Response(JSON.stringify(meta), { headers: { "Content-Type": "application/json" } }));
+  const f = fd.get("file");
+  if (f && typeof f !== "string" && f.size) await c.put("/__share/file", new Response(f, { headers: { "Content-Type": f.type || "image/jpeg" } }));
+  else await c.delete("/__share/file");
+  return Response.redirect("/share?from=android", 303);
+}
+
 self.addEventListener("fetch", (e) => {
   const req = e.request;
+  if (req.method === "POST" && new URL(req.url).pathname === "/share-target") { e.respondWith(stashShare(req)); return; }
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;

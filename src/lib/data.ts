@@ -63,6 +63,8 @@ export function useSave<T extends TableName>(table: T) {
 }
 
 export const usePrepItems = () => useRows("prep_items");
+export const usePrepOffers = () => useRows("prep_offers");
+export const usePrepInbox = () => useRows("prep_inbox");
 export const useContacts = () => useRows("contacts");
 export const useJournal = () => useRows("journal_entries");
 
