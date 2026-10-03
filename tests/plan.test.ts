@@ -50,10 +50,17 @@ describe("plan import", () => {
     expect(visit.action).toBe("create");
   });
 
-  it("defaults book-by to 3 weeks ahead for ultrasound, never in the past", () => {
-    expect(defaultBookBy("ultrasound", 20, 10)).toBe(17);
-    expect(defaultBookBy("blood", 24, 10)).toBe(23);
-    expect(defaultBookBy("ultrasound", 14, 13)).toBe(13);
+  it("defaults book-by to `lead` weeks before the window, never in the past", () => {
+    expect(defaultBookBy(20, 10)).toBe(17);
+    expect(defaultBookBy(24, 10, 5)).toBe(19);
+    expect(defaultBookBy(14, 13)).toBe(13);
+  });
+
+  it("stores book-by only when the plan or the user set it", () => {
+    const rows = buildRows(result, { dueDate: due, week: 12, appointments: [] });
+    const ch = planChanges(rows, { week: 12, appointments: [], source: "plan", planDocumentId: null, userId: "u", spaceId: "s", startsAt: (d) => d });
+    expect(ch.inserts.find((i) => i.title === "סקירת מערכות מוקדמת")?.book_by_week).toBe(10);
+    expect(ch.inserts.find((i) => i.title?.startsWith("העמסת"))?.book_by_week).toBeNull();
   });
 
   it("produces inserts and non-destructive updates", () => {

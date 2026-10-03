@@ -10,6 +10,7 @@ import { useSession } from "@/lib/session";
 import { weekLabelOf } from "@/lib/pregnancy";
 import { fmtDay, fmtShort, fmtTime, relDays } from "@/lib/format";
 import { KIND_LABEL, STATUS_FLOW, STATUS_LABEL } from "@/lib/labels";
+import { bookByOf } from "@/lib/plan";
 import type { Appointment, AppointmentKind, DisplayStatus } from "@/lib/types";
 
 type Tab = "upcoming" | "need" | "pending" | "completed";
@@ -19,6 +20,7 @@ const tabOf = (s: DisplayStatus): Tab | null =>
 
 export default function Tests() {
   const { space } = useSession();
+  const lead = space?.booking_lead_weeks ?? 3;
   const wk = usePregnancy();
   const quick = useQuick();
   const save = useSave("appointments");
@@ -101,7 +103,7 @@ export default function Tests() {
                   <div className="flex items-center gap-2">
                     <Icon name="cal" size={18} className="text-ink-3" />
                     {a.starts_at ? <><b>{fmtDay(a.starts_at)} · {fmtTime(a.starts_at)}</b><span className="text-ink-3">· {relDays(a.starts_at)}</span></>
-                      : <span>חלון: שבועות {a.window_start_week}–{a.window_end_week}{st === "attention" && <b style={{ color: "var(--st-att)" }}> · החלון נסגר בקרוב</b>}</span>}
+                      : <span>חלון: שבועות {a.window_start_week}–{a.window_end_week}{st !== "attention" && bookByOf(a, lead) != null && <> · לקבוע עד שבוע {bookByOf(a, lead)}</>}{st === "attention" && <b style={{ color: "var(--st-att)" }}> · החלון נסגר בקרוב</b>}</span>}
                     <span className="ms-auto">{a.starts_at ? <WeekBadge label={weekLabelOf(space.due_date, a.starts_at)} /> : null}</span>
                   </div>
                   {a.provider && <div className="flex items-center gap-2"><Icon name="users" size={18} className="text-ink-3" />{a.provider}</div>}
@@ -135,7 +137,7 @@ export default function Tests() {
             {future.map(({ a }) => (
               <div key={a.id} className="flex items-center gap-3 px-5 py-3">
                 <span className="flex-1 font-semibold text-ink-2">{a.title}</span>
-                <span className="text-sm text-ink-3">שבועות {a.window_start_week}–{a.window_end_week} · נזכיר בשבוע {a.window_start_week}</span>
+                <span className="text-sm text-ink-3">שבועות {a.window_start_week}–{a.window_end_week} · לקבוע עד שבוע {bookByOf(a, lead)}</span>
               </div>
             ))}
           </div>

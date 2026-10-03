@@ -14,6 +14,8 @@ import { useUploads } from "@/lib/uploads";
 import { useQuick } from "./QuickActions";
 import { fmtNum } from "@/lib/format";
 
+/** Screens with their own sticky action bar on mobile. */
+const NO_FAB = ["/plan"];
 const BARE = ["/login", "/onboarding", "/welcome", "/visit", "/offline", "/birth/print", "/journal/book"];
 
 const PRIMARY: Array<{ href: string; label: string; icon: IconName }> = [
@@ -222,7 +224,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <main className="flex-1 w-full max-w-[1240px] mx-auto px-4 md:px-10 pt-safe md:pt-8 pb-[140px] md:pb-14">{children}</main>
           </div>
           <BottomNav />
-          <QuickFab />
+          {!NO_FAB.includes(path) && <QuickFab />}
         </div>
       )}
     </Guard>

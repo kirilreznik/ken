@@ -211,7 +211,7 @@ function ReviewStep({ imp, result, appointments, week, welcome, onBack, onDone }
 }) {
   const { space, user, refresh } = useSession();
   const qc = useQueryClient();
-  const [rows, setRows] = useState<PlanRow[]>(() => buildRows(result, { dueDate: space!.due_date, week, appointments }));
+  const [rows, setRows] = useState<PlanRow[]>(() => buildRows(result, { dueDate: space!.due_date, week, appointments, lead: space!.booking_lead_weeks }));
   const [newDue, setNewDue] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -265,7 +265,7 @@ function ReviewStep({ imp, result, appointments, week, welcome, onBack, onDone }
             <span className="text-[13px] text-ink-3">אצלנו: {fmtDayYear(space!.due_date)}. לעדכן לפי התוכנית?</span></span>
         </label>
       )}
-      <PlanReview rows={rows} week={week} onChange={setRows} />
+      <PlanReview rows={rows} week={week} dueDate={space!.due_date} lead={space!.booking_lead_weeks ?? 3} onChange={setRows} />
       <div className="sticky bottom-[calc(76px+env(safe-area-inset-bottom))] md:bottom-4 z-10 card p-3 flex items-center gap-3 shadow-lg">
         <span className="flex-1 text-sm font-bold text-ink-2">{nCreate ? `${nCreate} חדשים` : ""}{nCreate && nUpdate ? " · " : ""}{nUpdate ? `${nUpdate} יעודכנו` : ""}{!nCreate && !nUpdate ? "לא נבחר כלום" : ""}</span>
         <button className="btn btn-primary" disabled={busy || (!nCreate && !nUpdate)} onClick={apply}>{busy ? "שומרים…" : welcome ? "יצירת התוכנית" : "עדכון התורים"}</button>

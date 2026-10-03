@@ -12,6 +12,7 @@ import { CalendarSync } from "@/components/settings/CalendarSync";
 import { Notifications } from "@/components/settings/Notifications";
 import { AiSettings } from "@/components/settings/AiSettings";
 import { InviteCard } from "@/components/InviteCard";
+import { BookingLead } from "@/components/settings/BookingLead";
 
 const PALETTES: Array<{ id: Palette; name: string; sub: string; colors: string[] }> = [
   { id: "neutral", name: "מרווה", sub: "ניטרלי", colors: ["#2F5D4F", "#E3ECE6", "#E7C6A4"] },
@@ -87,6 +88,8 @@ export default function Settings() {
         </div>
         {members.length < 2 && <InviteCard />}
       </section>
+
+      <BookingLead />
 
       <Notifications />
 

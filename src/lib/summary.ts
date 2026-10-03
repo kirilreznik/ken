@@ -32,6 +32,7 @@ export function weekSummary(opts: {
   tasks?: Task[];
   prep?: PrepItem[];
   states?: SuggestionState[];
+  lead?: number;
 }): WeekSummary {
   const { from, to } = summaryRange(opts.today);
   const dayOf = opts.dayOf ?? ((iso: string) => toDay(new Date(iso)));
@@ -39,7 +40,7 @@ export function weekSummary(opts: {
   const appts = opts.appointments ?? [];
   const open = (opts.tasks ?? []).filter((t) => !t.done);
   const inRange = (d: string) => d >= from && d <= to;
-  const sugg = buildSuggestions({ week, appointments: appts, tasks: opts.tasks, prep: opts.prep, states: opts.states });
+  const sugg = buildSuggestions({ week, appointments: appts, tasks: opts.tasks, prep: opts.prep, states: opts.states, lead: opts.lead });
   return {
     week, from, to,
     appointments: appts.filter((a) => a.status === "scheduled" && a.starts_at && inRange(dayOf(a.starts_at)))

@@ -12,6 +12,8 @@ export interface PlanRow {
   start: number | null;
   end: number | null;
   bookBy: number | null;
+  /** True when the plan or the user set "book by"; otherwise it follows the space's lead time. */
+  bookByExplicit: boolean;
   date: string | null;   // YYYY-MM-DD, already scheduled
   time: string | null;   // HH:MM
   location: string | null;
@@ -21,11 +23,17 @@ export interface PlanRow {
   action: RowAction;
 }
 
-/** How many weeks ahead to book when the plan doesn't say (ultrasounds fill up early). */
-export function defaultBookBy(kind: AppointmentKind, start: number | null, week: number) {
+export const DEFAULT_LEAD = 3;
+
+/** "Book by" week when the plan doesn't say: `lead` weeks before the window opens, never in the past. */
+export function defaultBookBy(start: number | null, week: number, lead = DEFAULT_LEAD) {
   if (start == null) return null;
-  const lead = kind === "ultrasound" ? 3 : 1;
   return Math.max(week, start - lead);
+}
+
+/** Effective "book by" week for a stored appointment. */
+export function bookByOf(a: { book_by_week?: number | null; window_start_week: number | null }, lead = DEFAULT_LEAD) {
+  return a.book_by_week ?? (a.window_start_week != null ? a.window_start_week - lead : null);
 }
 
 /** The Israeli standard schedule (used when there's no plan document). */
@@ -63,7 +71,7 @@ export function findMatch(it: { title: string; kind: AppointmentKind; start: num
 const isDay = (s?: string | null) => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
 
 /** Turn an analysis result into review rows, matched against what's already in the app. */
-export function buildRows(result: PlanResult, opts: { dueDate: string; week: number; appointments: Appointment[] }): PlanRow[] {
+export function buildRows(result: PlanResult, opts: { dueDate: string; week: number; appointments: Appointment[]; lead?: number }): PlanRow[] {
   const used = new Set<string>();
   const byId = new Map(opts.appointments.map((a) => [a.id, a]));
   const items = [...result.items].sort((a, b) => (startOf(a, opts.dueDate) ?? 99) - (startOf(b, opts.dueDate) ?? 99));
@@ -84,7 +92,8 @@ export function buildRows(result: PlanResult, opts: { dueDate: string; week: num
       title: it.title.trim(),
       kind,
       start, end,
-      bookBy: it.book_by_week ?? defaultBookBy(kind, start, opts.week),
+      bookBy: it.book_by_week ?? defaultBookBy(start, opts.week, opts.lead),
+      bookByExplicit: it.book_by_week != null,
       date, time: it.time && /^\d{1,2}:\d{2}$/.test(it.time) ? it.time.padStart(5, "0") : null,
       location: it.location ?? null,
       notes: it.notes ?? null,
@@ -115,7 +124,8 @@ export function planChanges(rows: PlanRow[], opts: { week: number; appointments:
       const a = byId.get(r.matchId);
       if (!a) continue;
       const patch: Partial<Appointment> = {
-        window_start_week: r.start, window_end_week: r.end, book_by_week: r.bookBy,
+        window_start_week: r.start, window_end_week: r.end,
+        ...(r.bookByExplicit ? { book_by_week: r.bookBy } : {}),
         plan_document_id: opts.planDocumentId ?? a.plan_document_id ?? null,
         ...(a.location ? {} : r.location ? { location: r.location } : {}),
         ...(a.medical_notes ? {} : r.notes ? { medical_notes: r.notes } : {}),
@@ -127,7 +137,7 @@ export function planChanges(rows: PlanRow[], opts: { week: number; appointments:
     const status: AppointmentStatus = r.action === "past" ? "completed" : r.date ? "scheduled" : r.start != null && opts.week >= r.start ? "need" : "future";
     out.inserts.push({
       space_id: opts.spaceId, title: r.title, kind: r.kind, status,
-      window_start_week: r.start, window_end_week: r.end, book_by_week: r.bookBy,
+      window_start_week: r.start, window_end_week: r.end, book_by_week: r.bookByExplicit ? r.bookBy : null,
       starts_at: r.date ? opts.startsAt(r.date, r.time) : null,
       location: r.location, medical_notes: r.notes, provider: null, personal_note: null, result_summary: null,
       source: opts.source, plan_document_id: opts.planDocumentId, created_by: opts.userId,

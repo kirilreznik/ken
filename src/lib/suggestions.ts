@@ -33,7 +33,7 @@ export const RULES: Rule[] = [
   ...BIRTH_TASKS.map((t) => ({ key: t.key, from: t.week - 2, to: t.week, title: t.title, why: "מהרשימה של הכנה ללידה", category: "birth" as const })),
 ];
 
-/** How many weeks before a test window opens we nudge to book it. */
+/** How many weeks before the "book by" week the nudge appears. */
 const BOOK_LEAD = 2;
 
 export function buildSuggestions(opts: {
@@ -42,8 +42,11 @@ export function buildSuggestions(opts: {
   tasks?: Task[];
   prep?: PrepItem[];
   states?: SuggestionState[];
+  /** Weeks before a window opens to book (space setting). */
+  lead?: number;
 }): Suggestion[] {
   const { week } = opts;
+  const lead = opts.lead ?? 3;
   const decided = new Set((opts.states ?? []).map((s) => s.key));
   const taken = new Set((opts.tasks ?? []).map((t) => t.source_key).filter(Boolean));
   const linked = new Set((opts.tasks ?? []).filter((t) => !t.done).map((t) => t.appointment_id).filter(Boolean));
@@ -58,17 +61,17 @@ export function buildSuggestions(opts: {
     if (a.status !== "future" && a.status !== "need") continue;
     if (a.window_start_week == null) continue;
     const end = a.window_end_week ?? a.window_start_week + 1;
-    const bookBy = a.book_by_week ?? null;
-    const opens = bookBy != null ? bookBy - BOOK_LEAD : a.window_start_week - BOOK_LEAD;
+    const bookBy = a.book_by_week ?? a.window_start_week - lead;
+    const opens = bookBy - BOOK_LEAD;
     if (week < opens || week > end) continue;
     if (linked.has(a.id)) continue;
     out.push({
       key: `sugg:book:${a.id}`,
       title: `לקבוע תור: ${a.title}`,
-      why: bookBy != null ? `לקבוע עד שבוע ${bookBy} · החלון: שבועות ${a.window_start_week}–${end}` : `החלון לבדיקה: שבועות ${a.window_start_week}–${end}`,
+      why: `לקבוע עד שבוע ${bookBy} · החלון: שבועות ${a.window_start_week}–${end}`,
       category: "medical",
-      dueWeek: Math.max(week, bookBy ?? a.window_start_week - 1),
-      priority: week >= end - 1 ? "urgent" : week >= (bookBy ?? a.window_start_week) ? "high" : "normal",
+      dueWeek: Math.max(week, bookBy),
+      priority: week >= end - 1 ? "urgent" : week >= bookBy ? "high" : "normal",
       appointmentId: a.id,
     });
   }

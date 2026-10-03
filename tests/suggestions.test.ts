@@ -21,11 +21,18 @@ describe("smart checklist", () => {
     expect(list.map((s) => s.key)).not.toContain("sugg:class");
     expect(list.map((s) => s.key)).not.toContain("sugg:prep-list");
   });
-  it("nudges to book a test before its window opens", () => {
-    expect(buildSuggestions({ week: 21, appointments: [appt({})] }).some((s) => s.key === "sugg:book:a1")).toBe(false);
-    const s = buildSuggestions({ week: 22, appointments: [appt({})] }).find((x) => x.key === "sugg:book:a1");
+  it("nudges to book a test `lead` weeks before its window opens", () => {
+    // window starts 24, lead 3 → book by 21, nudge from 19
+    expect(buildSuggestions({ week: 18, appointments: [appt({})] }).some((s) => s.key === "sugg:book:a1")).toBe(false);
+    const s = buildSuggestions({ week: 19, appointments: [appt({})] }).find((x) => x.key === "sugg:book:a1");
     expect(s?.priority).toBe("normal");
+    expect(s?.dueWeek).toBe(21);
+    expect(buildSuggestions({ week: 21, appointments: [appt({})] }).find((x) => x.key === "sugg:book:a1")?.priority).toBe("high");
     expect(buildSuggestions({ week: 27, appointments: [appt({})] }).find((x) => x.key === "sugg:book:a1")?.priority).toBe("urgent");
+  });
+  it("respects the space lead time and an explicit book-by week", () => {
+    expect(buildSuggestions({ week: 17, lead: 5, appointments: [appt({})] }).find((x) => x.key === "sugg:book:a1")?.dueWeek).toBe(19);
+    expect(buildSuggestions({ week: 21, appointments: [appt({ book_by_week: 23 })] }).find((x) => x.key === "sugg:book:a1")?.dueWeek).toBe(23);
   });
   it("skips booked tests and tests with an open linked task", () => {
     expect(buildSuggestions({ week: 25, appointments: [appt({ status: "scheduled" })] }).some((s) => s.key.startsWith("sugg:book"))).toBe(false);

@@ -19,8 +19,8 @@ export function SuggestionsCard({ limit = 3 }: { limit?: number }) {
   const [all, setAll] = useState(false);
 
   const list = useMemo(
-    () => (wk ? buildSuggestions({ week: wk.week, appointments: appts, tasks, prep, states }) : []),
-    [wk, appts, tasks, prep, states],
+    () => (wk ? buildSuggestions({ week: wk.week, appointments: appts, tasks, prep, states, lead: space?.booking_lead_weeks }) : []),
+    [wk, appts, tasks, prep, states, space?.booking_lead_weeks],
   );
   if (!wk || !space || !user || list.length === 0) return null;
   const shown = all ? list : list.slice(0, limit);

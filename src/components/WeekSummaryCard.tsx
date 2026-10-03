@@ -29,7 +29,7 @@ export function WeekSummaryCard({ force = false }: { force?: boolean }) {
   const dow = new Date().getDay();
 
   const s = useMemo(
-    () => (space ? weekSummary({ dueDate: space.due_date, today, appointments: appts, tasks, prep, states }) : null),
+    () => (space ? weekSummary({ dueDate: space.due_date, today, appointments: appts, tasks, prep, states, lead: space.booking_lead_weeks }) : null),
     [space, today, appts, tasks, prep, states],
   );
   if (!s || (!force && dow !== 6 && dow !== 0 && dow !== 1)) return null;

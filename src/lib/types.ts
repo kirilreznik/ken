@@ -9,6 +9,7 @@ export interface Space {
   calendar_token?: string | null;
   calendar_show_titles?: boolean;
   ai_reading_enabled?: boolean;
+  booking_lead_weeks?: number;
   created_by: string;
   created_at: string;
 }
