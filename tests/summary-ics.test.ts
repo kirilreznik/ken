@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { summaryRange, weekSummary, summaryLine } from "@/lib/summary";
+import { summaryRange, weekSummary, summaryLine, weekRangeLabel } from "@/lib/summary";
 import { buildIcs, fold } from "@/lib/ics";
 import type { Appointment, Task } from "@/lib/types";
 
@@ -18,6 +18,8 @@ describe("weekly summary", () => {
     expect(s.tasks).toHaveLength(1);
     expect(s.overdue).toHaveLength(1);
     expect(summaryLine(s)).toContain("תור אחד");
+    expect([s.week, s.weekTo]).toEqual([16, 17]); // Sun 4.10 = 16+5, Sat 10.10 = 17+4
+    expect(weekRangeLabel(s)).toBe("שבוע 16–17");
   });
 });
 

@@ -6,7 +6,7 @@ import { Icon } from "@/components/Icon";
 import { useSession } from "@/lib/session";
 import { useAppointments, usePrepItems, useSuggestionStates, useTasks } from "@/lib/data";
 import { toDay } from "@/lib/pregnancy";
-import { weekSummary } from "@/lib/summary";
+import { weekRangeLabel, weekSummary } from "@/lib/summary";
 import { fmtShort, fmtTime, fmtWeekdayShort } from "@/lib/format";
 
 function Stat({ n, label, warn }: { n: number; label: string; warn?: boolean }) {
@@ -39,7 +39,7 @@ export function WeekSummaryCard({ force = false }: { force?: boolean }) {
       <div className="flex items-center gap-3">
         <span className="w-10 h-10 rounded-xl flex items-center justify-center flex-none bg-white text-primary"><Icon name="cal" /></span>
         <div className="flex-1">
-          <h2 className="text-lg font-extrabold">השבוע הקרוב · שבוע {s.week}</h2>
+          <h2 className="text-lg font-extrabold">השבוע הקרוב · {weekRangeLabel(s)}</h2>
           <p className="text-[13px] text-ink-3">{fmtShort(s.from)}–{fmtShort(s.to)}</p>
         </div>
         <Link href="/calendar" className="text-sm font-bold text-primary">ביומן</Link>
