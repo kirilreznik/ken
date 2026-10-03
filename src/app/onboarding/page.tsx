@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useSession } from "@/lib/session";
-import { addDays, parseDay, STANDARD_TESTS, toDay, weekInfo } from "@/lib/pregnancy";
+import { addDays, parseDay, toDay, weekInfo } from "@/lib/pregnancy";
+import type { MemberRole } from "@/lib/types";
 import { fmtDayYear } from "@/lib/format";
 import { Field } from "@/components/ui";
 import { KanMark } from "@/components/KanMark";
@@ -14,7 +15,7 @@ export default function Onboarding() {
   const [name, setName] = useState("");
   const [dateKind, setDateKind] = useState<"due" | "lmp">("due");
   const [date, setDate] = useState("");
-  const [seed, setSeed] = useState(true);
+  const [role, setRole] = useState<MemberRole | null>(null);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -22,28 +23,29 @@ export default function Onboarding() {
   const due = date ? (dateKind === "due" ? date : toDay(addDays(parseDay(date), 280))) : "";
   const wk = due ? weekInfo(due) : null;
 
+  const setMyRole = async (sid: string) => {
+    if (role) await supabase.from("space_members").update({ role }).eq("space_id", sid).eq("user_id", user!.id);
+  };
+
   const create = async () => {
     if (!name.trim()) return setErr("איך לקרוא לך?");
+    if (!role) return setErr("מי את/ה בהריון הזה?");
     if (!due) return setErr("צריך תאריך כדי לחשב את השבוע");
     setBusy(true); setErr("");
     const { data: sid, error } = await supabase.rpc("create_space", { p_name: "ההריון שלנו", p_due_date: due, p_display_name: name.trim() });
     if (error || !sid) { setBusy(false); return setErr(error?.message ?? "משהו השתבש"); }
-    if (seed && wk) {
-      const rows = STANDARD_TESTS.filter((t) => t.to > wk.week).map((t) => ({
-        space_id: sid as string, title: t.title, kind: t.kind, status: t.from <= wk.week ? "need" : "future",
-        window_start_week: t.from, window_end_week: t.to, created_by: user!.id,
-      }));
-      if (rows.length) await supabase.from("appointments").insert(rows);
-    }
+    await setMyRole(sid as string);
+    try { sessionStorage.setItem("ken-welcome", "1"); } catch {}
     refresh();
   };
 
   const join = async () => {
     if (!name.trim()) return setErr("איך לקרוא לך?");
     setBusy(true); setErr("");
-    const { error } = await supabase.rpc("join_space", { p_code: code, p_display_name: name.trim() });
+    const { data: sid, error } = await supabase.rpc("join_space", { p_code: code, p_display_name: name.trim() });
+    if (error) { setBusy(false); return setErr(error.message.includes("invalid_code") ? "הקוד לא תקין או שפג תוקפו" : error.message); }
+    await setMyRole(sid as string);
     setBusy(false);
-    if (error) return setErr(error.message.includes("invalid_code") ? "הקוד לא תקין או שפג תוקפו" : error.message);
     refresh();
   };
 
@@ -58,6 +60,19 @@ export default function Onboarding() {
         </div>
         <div className="card p-6 flex flex-col gap-4">
           <Field label="השם שלך" hint="כך יופיע אצל בן/בת הזוג"><input className="input" value={name} onChange={(e) => setName(e.target.value)} autoFocus /></Field>
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-bold text-ink-2">מי את/ה בהריון הזה?</span>
+            <div className="grid grid-cols-2 gap-2">
+              {([["pregnant", "אני בהריון", "התוכנית והתזכורות לפי הגוף שלי"], ["partner", "בן/בת הזוג", "אני מנהל/ת יחד, או בשבילנו"]] as const).map(([v, t, sub]) => (
+                <button key={v} type="button" aria-pressed={role === v} onClick={() => setRole(v)}
+                  className="rounded-2xl p-3 text-start border transition-shadow"
+                  style={{ borderColor: role === v ? "var(--primary)" : "var(--line)", boxShadow: role === v ? "0 0 0 2px var(--primary)" : undefined }}>
+                  <b className="block">{t}</b><span className="text-[12px] text-ink-3">{sub}</span>
+                </button>
+              ))}
+            </div>
+            <span className="text-[12px] text-ink-3">שניכם עורכים הכל באופן שווה — זה רק כדי שהניסוחים יתאימו.</span>
+          </div>
           {mode === "new" ? (
             <>
               <div className="seg">
@@ -65,15 +80,11 @@ export default function Onboarding() {
                 <button aria-pressed={dateKind === "lmp"} onClick={() => setDateKind("lmp")}>וסת אחרונה</button>
               </div>
               <Field label={dateKind === "due" ? "תאריך לידה משוער" : "היום הראשון של הווסת האחרונה"}
-                hint={wk ? `היום: שבוע ${wk.label} · משוער ל־${fmtDayYear(due)}` : undefined}>
+                hint={wk ? `היום: שבוע ${wk.label} · משוער ל־${fmtDayYear(due)}` : "אם אין עדיין תאריך — לפי הווסת האחרונה. אפשר לתקן אחר כך, גם לפי התוכנית מהרופא/ה."}>
                 <input className="input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
               </Field>
-              <label className="flex items-start gap-3 min-h-11">
-                <input type="checkbox" className="cb mt-0.5" checked={seed} onChange={(e) => setSeed(e.target.checked)} />
-                <span><b className="block">להוסיף את הבדיקות המקובלות בהריון</b><span className="text-sm text-ink-3">שקיפות, סקירות, תבחין משולש, העמסת סוכר ועוד — עם חלונות הזמן שלהן</span></span>
-              </label>
               {err && <p className="text-sm font-semibold" style={{ color: "var(--st-att)" }}>{err}</p>}
-              <button className="btn btn-primary h-12" disabled={busy} onClick={create}>{busy ? "יוצרים…" : "יצירת המרחב שלנו"}</button>
+              <button className="btn btn-primary h-12" disabled={busy} onClick={create}>{busy ? "יוצרים…" : "המשך — תוכנית המעקב"}</button>
             </>
           ) : (
             <>

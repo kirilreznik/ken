@@ -91,7 +91,7 @@ export async function enqueueMedia(spaceId: string, userId: string, file: File, 
   return item.id;
 }
 
-async function shrinkImage(file: File, max = 2000): Promise<Blob> {
+export async function shrinkImage(file: File, max = 2000): Promise<Blob> {
   if (!file.type.startsWith("image/") || typeof createImageBitmap === "undefined") return file;
   try {
     const bmp = await createImageBitmap(file);

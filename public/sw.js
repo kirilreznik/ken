@@ -1,7 +1,7 @@
 /* קן · service worker — app shell + static assets cache. Data is cached by the app (IndexedDB). */
 const V = new URL(self.location).searchParams.get("v") || "dev";
 const CACHE = "kan-" + V;
-const ROUTES = ["/", "/timeline", "/tests", "/documents", "/tasks", "/questions", "/calendar", "/prep", "/birth", "/journal", "/more", "/offline"];
+const ROUTES = ["/", "/timeline", "/tests", "/documents", "/tasks", "/questions", "/calendar", "/prep", "/birth", "/journal", "/plan", "/more", "/offline"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => Promise.all(ROUTES.map((r) => c.add(r).catch(() => null)))));

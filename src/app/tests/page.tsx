@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
 import { EmptyState, KindTile, StatusBadge, WeekBadge } from "@/components/ui";
@@ -48,6 +49,7 @@ export default function Tests() {
     <div className="flex flex-col gap-6">
       <header className="flex items-end gap-3 flex-wrap">
         <div className="flex-1 min-w-[220px]"><h1 className="font-serif text-[34px] md:text-[40px] leading-tight">בדיקות ותורים</h1><p className="text-ink-3 mt-1">מה נקבע, מה עוד צריך לקבוע, ומה מחכה לתוצאה</p></div>
+        <Link href="/plan" className="btn btn-secondary"><Icon name="list" />ייבוא תוכנית מעקב</Link>
         <button className="btn btn-secondary hidden md:inline-flex" onClick={() => quick({ kind: "upload" })}><Icon name="up" />העלאת תוצאה</button>
         <button className="btn btn-primary" onClick={() => quick({ kind: "appointment" })}><Icon name="plus" />הוספת תור</button>
       </header>

@@ -58,15 +58,17 @@ export function buildSuggestions(opts: {
     if (a.status !== "future" && a.status !== "need") continue;
     if (a.window_start_week == null) continue;
     const end = a.window_end_week ?? a.window_start_week + 1;
-    if (week < a.window_start_week - BOOK_LEAD || week > end) continue;
+    const bookBy = a.book_by_week ?? null;
+    const opens = bookBy != null ? bookBy - BOOK_LEAD : a.window_start_week - BOOK_LEAD;
+    if (week < opens || week > end) continue;
     if (linked.has(a.id)) continue;
     out.push({
       key: `sugg:book:${a.id}`,
       title: `לקבוע תור: ${a.title}`,
-      why: `החלון לבדיקה: שבועות ${a.window_start_week}–${end}`,
+      why: bookBy != null ? `לקבוע עד שבוע ${bookBy} · החלון: שבועות ${a.window_start_week}–${end}` : `החלון לבדיקה: שבועות ${a.window_start_week}–${end}`,
       category: "medical",
-      dueWeek: Math.max(week, a.window_start_week - 1),
-      priority: week >= end - 1 ? "urgent" : week >= a.window_start_week ? "high" : "normal",
+      dueWeek: Math.max(week, bookBy ?? a.window_start_week - 1),
+      priority: week >= end - 1 ? "urgent" : week >= (bookBy ?? a.window_start_week) ? "high" : "normal",
       appointmentId: a.id,
     });
   }

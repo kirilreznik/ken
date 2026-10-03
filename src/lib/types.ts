@@ -13,10 +13,12 @@ export interface Space {
   created_at: string;
 }
 
+export type MemberRole = "pregnant" | "partner";
 export interface Member {
   space_id: string;
   user_id: string;
   display_name: string;
+  role?: MemberRole | null;
 }
 
 export type AppointmentKind = "doctor" | "ultrasound" | "blood" | "genetic" | "medical" | "other";
@@ -38,12 +40,15 @@ export interface Appointment {
   medical_notes: string | null;
   personal_note: string | null;
   result_summary: string | null;
+  book_by_week?: number | null;
+  source?: "plan" | "standard" | "manual" | null;
+  plan_document_id?: string | null;
   created_by?: string | null;
   created_at?: string;
   updated_at?: string;
 }
 
-export type DocCategory = "blood" | "ultrasound" | "scan" | "genetic" | "referral" | "summary" | "receipt" | "other";
+export type DocCategory = "blood" | "ultrasound" | "scan" | "genetic" | "referral" | "summary" | "receipt" | "plan" | "other";
 
 export interface DocumentRow {
   id: string;
@@ -186,3 +191,38 @@ export type RowOf<T extends TableName> = T extends "appointments" ? Appointment
   : T extends "contacts" ? Contact
   : T extends "journal_entries" ? JournalEntry
   : Question;
+
+/** One row of the plan_imports table (AI or standard plan, reviewed before applying). */
+export interface PlanImport {
+  id: string;
+  space_id: string;
+  document_ids: string[];
+  source: "document" | "standard";
+  status: "pending" | "ready" | "applied" | "failed";
+  result: PlanResult | null;
+  error: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+export interface PlanResultItem {
+  title: string;
+  kind: AppointmentKind;
+  window_start_week?: number | null;
+  window_end_week?: number | null;
+  window_start_date?: string | null;
+  window_end_date?: string | null;
+  book_by_week?: number | null;
+  date?: string | null;
+  time?: string | null;
+  location?: string | null;
+  notes?: string | null;
+  optional?: boolean;
+  match_id?: string | null;
+}
+export interface PlanResult {
+  due_date?: string | null;
+  clinic?: string | null;
+  general_notes?: string | null;
+  items: PlanResultItem[];
+}

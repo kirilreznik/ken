@@ -3,7 +3,7 @@
  * Privacy: never sends user-entered text. Messages are truncated and scrubbed of
  * quoted values, emails, long numbers and query strings; paths have IDs replaced.
  */
-export type ErrorArea = "render" | "window" | "promise" | "query" | "sync" | "upload" | "sw" | "auth" | "push" | "other";
+export type ErrorArea = "render" | "window" | "promise" | "query" | "sync" | "upload" | "sw" | "auth" | "push" | "other" | "plan";
 
 let sent = 0;
 const seen = new Set<string>();

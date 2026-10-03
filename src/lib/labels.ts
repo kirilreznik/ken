@@ -30,6 +30,7 @@ export const DOC_CATEGORY_LABEL: Record<DocCategory, string> = {
   referral: "הפניות",
   summary: "סיכומי רופא",
   receipt: "קבלות / החזרים",
+  plan: "תוכנית מעקב",
   other: "אחר",
 };
 

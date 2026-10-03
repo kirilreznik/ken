@@ -14,7 +14,7 @@ import { useUploads } from "@/lib/uploads";
 import { useQuick } from "./QuickActions";
 import { fmtNum } from "@/lib/format";
 
-const BARE = ["/login", "/onboarding", "/visit", "/offline", "/birth/print", "/journal/book"];
+const BARE = ["/login", "/onboarding", "/welcome", "/visit", "/offline", "/birth/print", "/journal/book"];
 
 const PRIMARY: Array<{ href: string; label: string; icon: IconName }> = [
   { href: "/", label: "בית", icon: "home" },
@@ -48,7 +48,11 @@ function Guard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (status === "signedOut" && path !== "/login") router.replace("/login");
     else if (status === "noSpace" && path !== "/onboarding") router.replace("/onboarding");
-    else if (status === "ready" && (path === "/login" || path === "/onboarding")) router.replace("/");
+    else if (status === "ready" && (path === "/login" || path === "/onboarding")) {
+      let welcome = false;
+      try { welcome = sessionStorage.getItem("ken-welcome") === "1"; sessionStorage.removeItem("ken-welcome"); } catch {}
+      router.replace(welcome && path === "/onboarding" ? "/welcome" : "/");
+    }
   }, [status, path, router]);
 
   if (status === "unconfigured") {

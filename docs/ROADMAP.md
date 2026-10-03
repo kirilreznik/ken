@@ -37,3 +37,14 @@ Enable Analytics + Speed Insights once in Vercel → project → Analytics / Spe
 ## Calendar feed
 Settings → סנכרון ליומן → create link → "Apple" (webcal) or "Google". Anyone with the link can see the schedule;
 "קישור חדש" rotates it, "ביטול הסנכרון" removes it.
+
+## M9 · Onboarding + follow-up plan import ✅
+- Onboarding: name + role (pregnant / partner — wording only, both are equal editors) + due date or LMP → `/welcome`:
+  1) follow-up plan (photo/PDF → `analyze-plan` Edge Function, or the standard Israeli plan) → review & edit → appointments;
+  2) invite partner (share code). Either partner can be the one who sets things up.
+- Mid-pregnancy: Tests → "ייבוא תוכנית מעקב" (or More → תוכנית המעקב). Smart matching updates existing tests
+  (window, book-by week, notes) instead of duplicating; finished tests are left alone; past windows are listed unselected.
+- New: `appointments.book_by_week / source / plan_document_id`, `space_members.role`, document category `plan`, table `plan_imports`
+  (resumable — closing the app during analysis is fine). Suggestions use `book_by_week` for "לקבוע תור" nudges.
+- Needs `ANTHROPIC_API_KEY` for document analysis; without it the standard plan still works.
+- TODO: rebuild + redeploy `notify` (`npm run build:functions`) so weekly-summary suggestion counts use book_by_week too.

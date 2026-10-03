@@ -8,6 +8,7 @@ const TILES: Array<{ href: string; label: string; icon: IconName; color: string 
   { href: "/documents", label: "מסמכים", icon: "doc", color: "var(--ink-2)" },
   { href: "/prep", label: "הכנות לתינוק", icon: "baby", color: "var(--second)" },
   { href: "/calendar", label: "יומן", icon: "cal", color: "var(--st-sched)" },
+  { href: "/plan", label: "תוכנית המעקב", icon: "list", color: "var(--primary)" },
   { href: "/questions", label: "שאלות לרופא", icon: "ask", color: "var(--second)" },
   { href: "/birth", label: "הכנה ללידה", icon: "bag", color: "var(--primary)" },
   { href: "/journal", label: "יומן הריון", icon: "book", color: "var(--second)" },

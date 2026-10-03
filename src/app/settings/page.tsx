@@ -11,6 +11,7 @@ import { applyPalette } from "@/lib/data";
 import { CalendarSync } from "@/components/settings/CalendarSync";
 import { Notifications } from "@/components/settings/Notifications";
 import { AiSettings } from "@/components/settings/AiSettings";
+import { InviteCard } from "@/components/InviteCard";
 
 const PALETTES: Array<{ id: Palette; name: string; sub: string; colors: string[] }> = [
   { id: "neutral", name: "מרווה", sub: "ניטרלי", colors: ["#2F5D4F", "#E3ECE6", "#E7C6A4"] },
@@ -23,7 +24,6 @@ export default function Settings() {
   const qc = useQueryClient();
   const [name, setName] = useState(me?.display_name ?? "");
   const [due, setDue] = useState(space?.due_date ?? "");
-  const [code, setCode] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
   if (!space || !user) return null;
 
@@ -39,10 +39,9 @@ export default function Settings() {
     refresh(); setMsg("נשמר");
     setTimeout(() => setMsg(""), 2000);
   };
-  const invite = async () => {
-    const c = Array.from(crypto.getRandomValues(new Uint8Array(6))).map((b) => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[b % 32]).join("");
-    const { error } = await supabase.from("space_invites").insert({ code: c, space_id: space.id, created_by: user.id });
-    if (!error) setCode(c);
+  const setRole = async (r: "pregnant" | "partner") => {
+    await supabase.from("space_members").update({ role: r }).eq("space_id", space.id).eq("user_id", user.id);
+    refresh();
   };
 
   return (
@@ -73,14 +72,20 @@ export default function Settings() {
 
       <section className="card p-6 flex flex-col gap-4">
         <h2 className="text-lg font-extrabold">שיתוף עם בן/בת הזוג</h2>
-        <div className="flex flex-col gap-2">{members.map((m) => <div key={m.user_id} className="flex items-center gap-2"><Icon name="users" size={18} className="text-ink-3" />{m.display_name}{m.user_id === user.id && <span className="text-ink-3 text-sm">(את/ה)</span>}</div>)}</div>
-        {members.length < 2 && (code ? (
-          <div className="rounded-2xl bg-primary-50 p-4 flex flex-col gap-2">
-            <span className="text-sm font-bold text-ink-3">קוד הזמנה · בתוקף 7 ימים</span>
-            <span dir="ltr" className="text-3xl font-extrabold tracking-[.3em] text-center">{code}</span>
-            <span className="text-sm text-ink-3">בן/בת הזוג נרשמים לקן ובוחרים ״יש לי קוד הזמנה״.</span>
+        <div className="flex flex-col gap-2">{members.map((m) => (
+          <div key={m.user_id} className="flex items-center gap-2"><Icon name="users" size={18} className="text-ink-3" />{m.display_name}
+            {m.role && <span className="text-ink-3 text-sm">· {m.role === "pregnant" ? "בהריון" : "בן/בת זוג"}</span>}
+            {m.user_id === user.id && <span className="text-ink-3 text-sm">(את/ה)</span>}</div>
+        ))}</div>
+        <div className="flex items-center gap-2 flex-wrap text-sm">
+          <span className="text-ink-3">אני:</span>
+          <div className="seg">
+            {(["pregnant", "partner"] as const).map((r) => (
+              <button key={r} aria-pressed={me?.role === r} onClick={() => setRole(r)}>{r === "pregnant" ? "בהריון" : "בן/בת הזוג"}</button>
+            ))}
           </div>
-        ) : <button className="btn btn-secondary self-start" onClick={invite}><Icon name="plus" />יצירת קוד הזמנה</button>)}
+        </div>
+        {members.length < 2 && <InviteCard />}
       </section>
 
       <Notifications />

@@ -44,7 +44,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     queryFn: async () => {
       const { data: mine, error } = await supabase
         .from("space_members")
-        .select("space_id, display_name, spaces(*)")
+        .select("space_id, display_name, role, spaces(*)")
         .eq("user_id", user!.id)
         .order("joined_at", { ascending: true })
         .limit(1)
@@ -53,7 +53,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       if (!mine) return null;
       const { data: members, error: e2 } = await supabase
         .from("space_members")
-        .select("space_id, user_id, display_name")
+        .select("space_id, user_id, display_name, role")
         .eq("space_id", mine.space_id);
       if (e2) throw e2;
       return { space: mine.spaces as unknown as Space, members: (members ?? []) as Member[] };
