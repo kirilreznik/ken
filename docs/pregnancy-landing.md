@@ -2,7 +2,7 @@
 
 `/pregnancy` serves the existing Hebrew RTL landing page as a standalone HTML document through a Next.js route handler. It intentionally does not mount the authenticated AppShell, Supabase session/data providers, analytics or the app's React layouts. No changes to the existing application routes, account access or Vercel deployment protection are required. Use ordinary `<a href="/pregnancy">` links when linking to this document from React pages.
 
-The replaceable working name and page markup are in `src/lib/pregnancy-landing.mjs`. Demo data is fictional and all features are described as planned. The waitlist endpoint is `/api/pregnancy-waitlist`, separate from the application's medical records. No dependency or database migration is added.
+The brand name (`BRAND`, now קן) and page markup are in `src/lib/pregnancy-landing.mjs`. The look follows the app's Claude Design redesign (Heebo, warm grey canvas, purple accent, photo hero with glass cards). Its static assets (self-hosted Heebo subsets under the SIL Open Font License, and the hero photo) live in `public/landing/`, so the page still loads nothing from third parties. Copy is gender-neutral (infinitives, nouns, "אפשר…") and addresses whoever manages the pregnancy, alone or with someone they choose. Demo data is fictional and all features are described as planned. The waitlist endpoint is `/api/pregnancy-waitlist`, separate from the application's medical records. No dependency or database migration is added.
 
 ## Waitlist configuration
 
