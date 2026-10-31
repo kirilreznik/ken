@@ -1,6 +1,7 @@
 // Standalone public marketing document, intentionally outside the authenticated app shell.
 // Visual language follows the Claude Design redesign of the app: Heebo, warm grey canvas,
-// near-black ink, peach and clay accents, a photo hero with liquid-glass cards.
+// near-black ink, peach and clay accents, a photo hero with liquid-glass cards,
+// and the lowercase "nest" wordmark whose n shelters a clay dot.
 const BRAND = 'Nest'; // שם המותג: החלפה כאן מעדכנת את האתר כולו.
 const VERSION = '2026-10-31';
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -21,7 +22,7 @@ const icon = (name) => { const paths = {
   more:'M5 12h.01|M12 12h.01|M19 12h.01'};
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${(paths[name]||paths.check).split('|').map(p=>`<path d="${p}"/>`).join('')}</svg>`; };
 
-const MARK = `<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke-linecap="round"><path d="M9 28a23 23 0 0 0 46 0" stroke="currentColor" stroke-width="5.5"/><path d="M17.5 28a14.5 14.5 0 0 0 29 0" stroke="#C97A3E" stroke-width="5.5"/></g><circle cx="32" cy="26.5" r="6.5" fill="#FFCFA8"/></svg>`;
+const WORDMARK = `<svg viewBox="14 1 148 56" role="img" aria-label="Nest"><g fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 50V30a14 14 0 0 1 28 0v20"/><path d="M59 33H89A15 17 0 1 0 85.49 43.93"/><path d="M126 21.5C122 16.5 103 15 103 24.5C103 33 127 32 127 41.5C127 51.5 108 52 103 45.5"/><path d="M148 6V42a8 8 0 0 0 8 8"/><path d="M140 20H158"/></g><circle cx="32" cy="43" r="6" fill="#C97A3E"/></svg>`;
 
 const STYLE = `
 @font-face{font-family:'Heebo';font-style:normal;font-weight:400 800;font-display:swap;src:url(/landing/heebo-hebrew.woff2) format('woff2');unicode-range:U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
@@ -34,8 +35,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{o
 .skip{position:fixed;top:-100px;inset-inline-start:16px;z-index:30;background:var(--surface);padding:12px 16px;border-radius:12px}.skip:focus{top:12px}
 header{position:sticky;top:0;z-index:20;background:rgba(244,242,241,.82);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border-bottom:1px solid rgba(31,27,30,.06)}
 .nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:28px;letter-spacing:-.8px;line-height:1;direction:ltr}
-.mark{width:44px;height:44px;color:var(--ink);display:grid;place-items:center}.mark svg{width:44px;height:44px}
+.brand{display:flex;align-items:center;color:var(--ink);line-height:0}.brand svg{width:auto;height:34px}
+
 .navlinks{display:flex;gap:28px;font-size:15px;font-weight:500;color:var(--ink-2)}.navlinks a{padding:10px 0}.navlinks a:hover{color:var(--ink)}
 .button{display:inline-flex;justify-content:center;align-items:center;gap:10px;min-height:48px;background:var(--ink);color:#fff;padding:12px 24px;border-radius:999px;border:0;font-weight:700;font-size:16px;cursor:pointer;transition:transform .2s,background .2s}.button:hover{background:#3a3238;transform:translateY(-1px)}.button svg{width:18px;height:18px}
 .button.small{min-height:44px;font-size:14px;padding:10px 18px}
@@ -134,7 +135,7 @@ input[type=checkbox]{margin:3px 0 0;accent-color:var(--accent-2);width:20px;heig
 .honeypot{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
 footer{padding-block:40px;margin-top:56px;font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid var(--line)}
-footer .brand{font-size:18px;color:var(--ink)}footer .mark,footer .mark svg{width:32px;height:32px}
+footer .brand svg{height:26px}
 dialog{background:var(--surface);color:var(--ink);border:0;border-radius:24px;max-width:650px;width:calc(100% - 32px);max-height:85vh;padding:32px;line-height:1.8}
 dialog::backdrop{background:rgba(31,27,30,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 dialog h2{font-size:26px}dialog h3{font-size:18px;margin-top:18px}dialog p{font-size:14.5px;color:var(--ink-2)}
@@ -148,7 +149,7 @@ body:has(dialog[open]){overflow:hidden}
 .who,.faq,.signup{grid-template-columns:1fr;gap:28px}
 }
 @media(max-width:740px){
-.wrap{padding-inline:16px}.nav{height:64px}.navlinks{display:none}.brand{font-size:21px}.mark,.mark svg{width:38px;height:38px}
+.wrap{padding-inline:16px}.nav{height:64px}.navlinks{display:none}.brand svg{height:28px}
 .hero{padding-top:12px}.hero-card{padding:28px 20px 20px;border-radius:26px}.hero h1{font-size:44px;letter-spacing:-1px}.hero .lead{font-size:17px}
 .strip{grid-template-columns:1fr 1fr;gap:10px}.strip div{padding:12px;font-size:13.5px;gap:10px}.strip .ico{width:34px;height:34px}
 .section{padding-block:64px 0}.section-head{display:block}
@@ -162,7 +163,7 @@ footer{flex-direction:column;align-items:flex-start}
 
 function page(env={}) { const enabled=ready(env); return `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#F4F2F1"><link rel="icon" href="/landing/nest-mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/landing/apple-touch-icon.png"><meta name="description" content="${BRAND}: אפליקציה בעברית לניהול ההריון. תורים, בדיקות, משימות, שאלות ומסמכים במקום אחד, לבד או עם מי שבוחרים לשתף. בקרוב ב־App Store וב־Google Play."><title>${BRAND} | כל ההריון במקום אחד</title><link rel="preload" href="/landing/heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin><style>${STYLE}</style></head><body>
 <a class="skip" href="#main">דילוג לתוכן</a>
-<header><nav class="wrap nav" aria-label="ניווט ראשי"><a href="#main" class="brand" aria-label="${BRAND}, לראש הדף"><span class="mark">${MARK}</span>${BRAND}</a><div class="navlinks"><a href="#features">מה יש באפליקציה</a><a href="#peek">הצצה למסכים</a><a href="#who">למי זה מתאים</a><a href="#faq">שאלות ותשובות</a></div><a href="#waitlist" class="button small">עדכון על ההשקה</a></nav></header>
+<header><nav class="wrap nav" aria-label="ניווט ראשי"><a href="#main" class="brand" aria-label="${BRAND}, לראש הדף">${WORDMARK}</a><div class="navlinks"><a href="#features">מה יש באפליקציה</a><a href="#peek">הצצה למסכים</a><a href="#who">למי זה מתאים</a><a href="#faq">שאלות ותשובות</a></div><a href="#waitlist" class="button small">עדכון על ההשקה</a></nav></header>
 <main id="main"><div class="wrap">
 
 <section class="hero" aria-labelledby="hero-title"><div class="hero-card">
@@ -206,7 +207,7 @@ function page(env={}) { const enabled=ready(env); return `<!doctype html><html l
 <form id="signup-form">${enabled?'':`<div class="notice" role="status">ההרשמה תיפתח בקרוב. הטופס כרגע בתצוגה מקדימה ולא אוסף כתובות אימייל.</div>`}<label class="email-label" for="email">כתובת אימייל</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com" required ${enabled?'':'disabled'}><label class="honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label><label class="consent"><input name="consent" type="checkbox" required ${enabled?'':'disabled'}><span>אני מאשר/ת לקבל באימייל עדכונים על ההשקה והבטא של ${BRAND}. אפשר לבטל את ההסכמה בכל עת. קראתי את <button type="button" class="privacy-link" data-privacy>מדיניות הפרטיות</button>.</span></label><button class="button" type="submit" ${enabled?'':'disabled'}>לקבל עדכון על ההשקה ${icon('arrow')}</button><div id="form-status" class="status" role="status" aria-live="polite"></div></form></div></section>
 
 </div></main>
-<footer class="wrap"><span class="brand"><span class="mark">${MARK}</span>${BRAND}</span><span>כל ההריון במקום אחד · בקרוב ב־App Store וב־Google Play</span><button class="privacy-link" data-privacy>מדיניות פרטיות</button></footer>
+<footer class="wrap"><span class="brand">${WORDMARK}</span><span>כל ההריון במקום אחד · בקרוב ב־App Store וב־Google Play</span><button class="privacy-link" data-privacy>מדיניות פרטיות</button></footer>
 <dialog id="privacy" aria-labelledby="privacy-title"><h2 id="privacy-title">מדיניות פרטיות: רשימת העדכונים</h2><p>עודכן: 31.10.2026 · גרסה ${VERSION}</p>${enabled?`<p>מפעיל הפרויקט: ${esc(env.OPERATOR_NAME)}. לפניות, ביטול הסכמה או בקשת מחיקה: <a href="mailto:${esc(env.CONTACT_EMAIL)}">${esc(env.CONTACT_EMAIL)}</a>.</p>`:'<p><strong>זו גרסת תצוגה מקדימה. איסוף האימיילים מושבת עד להגדרת פרטי המפעיל, כתובת לפניות ושירות הרשמה.</strong></p>'}<h3>מה נאסף ולשם מה?</h3><p>כשההרשמה פעילה, נשלחים כתובת האימייל, אישור ההסכמה, מועד ההרשמה וגרסת נוסח ההסכמה. הם משמשים לניהול רשימת העדכונים ולשליחת עדכונים על ההשקה והבטא בלבד. אין בטופס שדות למידע רפואי ואין חובה להירשם.</p><h3>אחסון ושיתוף</h3><p>פרטי ההרשמה מועברים לשירות הרשימה שהמפעיל מגדיר לצורך ניהול הרשימה ומשלוח העדכונים. הם אינם מוצגים באתר. האתר אינו משתמש בכלי פרסום או ניתוח תנועה, אינו טוען משאבים מצד שלישי ואינו שומר את האימייל בדפדפן. ספק האירוח עשוי לעבד נתוני חיבור טכניים לצורך תפעול ואבטחה.</p><h3>בחירה, הסרה ומחיקה</h3><p>אפשר לבטל הסכמה ולבקש מחיקה באמצעות כתובת הקשר לעיל. המידע נשמר רק כל עוד הוא נחוץ למטרת העדכונים, ומוסר עם סיום הרשימה או בקשת מחיקה. בכל עדכון תינתן דרך להסרה.</p><h3>הפרדה ממידע רפואי</h3><p>מדיניות זו מתייחסת לדף הנחיתה ולרשימת העדכונים בלבד. לפני שימוש באפליקציה עצמה תפורסם מדיניות המתאימה למידע וליכולות שלה. אין לשלוח מידע רפואי דרך טופס זה.</p><form method="dialog"><button class="button">סגירה</button></form></dialog><script>
 const modal=document.querySelector('#privacy');document.querySelectorAll('[data-privacy]').forEach(b=>b.addEventListener('click',()=>modal.showModal()));modal.addEventListener('click',e=>{if(e.target===modal){const r=modal.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)modal.close();}});
 const form=document.querySelector('#signup-form');form.addEventListener('submit',async e=>{e.preventDefault();if(!form.reportValidity())return;const status=document.querySelector('#form-status'),button=form.querySelector('[type=submit]');button.disabled=true;status.textContent='שולחים את הבקשה…';try{const fields=new FormData(form);const response=await fetch('/api/pregnancy-waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:fields.get('email'),consent:fields.get('consent')==='on',website:fields.get('website')})});if(!response.ok)throw Error();status.textContent='ההרשמה נקלטה. נעדכן באימייל כשהבטא או האפליקציה יהיו זמינות.';form.reset();}catch{status.textContent='לא הצלחנו להשלים את ההרשמה. אפשר לנסות שוב בעוד כמה רגעים.';}finally{button.disabled=false;}});
