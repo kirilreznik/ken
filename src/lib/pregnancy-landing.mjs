@@ -1,7 +1,7 @@
 // Standalone public marketing document, intentionally outside the authenticated app shell.
 // Visual language follows the Claude Design redesign of the app: Heebo, warm grey canvas,
-// near-black ink, purple accent, a photo hero with liquid-glass cards.
-const BRAND = 'קן'; // שם המותג: החלפה כאן מעדכנת את האתר כולו.
+// near-black ink, peach and clay accents, a photo hero with liquid-glass cards.
+const BRAND = 'Nest'; // שם המותג: החלפה כאן מעדכנת את האתר כולו.
 const VERSION = '2026-10-31';
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ready = env => Boolean(env.WAITLIST_WEBHOOK_URL && env.CONTACT_EMAIL && env.OPERATOR_NAME);
@@ -21,10 +21,12 @@ const icon = (name) => { const paths = {
   more:'M5 12h.01|M12 12h.01|M19 12h.01'};
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${(paths[name]||paths.check).split('|').map(p=>`<path d="${p}"/>`).join('')}</svg>`; };
 
+const MARK = `<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke-linecap="round"><path d="M9 28a23 23 0 0 0 46 0" stroke="currentColor" stroke-width="5.5"/><path d="M17.5 28a14.5 14.5 0 0 0 29 0" stroke="#C97A3E" stroke-width="5.5"/></g><circle cx="32" cy="26.5" r="6.5" fill="#FFCFA8"/></svg>`;
+
 const STYLE = `
 @font-face{font-family:'Heebo';font-style:normal;font-weight:400 800;font-display:swap;src:url(/landing/heebo-hebrew.woff2) format('woff2');unicode-range:U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
 @font-face{font-family:'Heebo';font-style:normal;font-weight:400 800;font-display:swap;src:url(/landing/heebo-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+FEFF,U+FFFD}
-:root{--bg:#F4F2F1;--surface:#FFFFFF;--ink:#1F1B1E;--ink-2:#4A4149;--muted:#6E655F;--faint:#B5ACA6;--line:#E6E1DE;--accent:#5B3F9E;--accent-2:#8569D6;--accent-soft:#ECE6F8;--peach:#FFD9B8;--peach-soft:#FFEBDB;--radius-xl:30px;--radius-l:22px;--radius-m:16px;--shadow:0 18px 36px -18px rgba(31,27,30,.28);--shadow-s:0 2px 8px rgba(0,0,0,.06)}
+:root{--bg:#F4F2F1;--surface:#FFFFFF;--ink:#1F1B1E;--ink-2:#4A4149;--muted:#6E655F;--faint:#B5ACA6;--line:#E6E1DE;--accent:#8A5225;--accent-2:#C97A3E;--accent-soft:#FFE2C9;--peach:#FFD9B8;--peach-soft:#FFEBDB;--radius-xl:30px;--radius-l:22px;--radius-m:16px;--shadow:0 18px 36px -18px rgba(31,27,30,.28);--shadow-s:0 2px 8px rgba(0,0,0,.06)}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;overflow-x:clip;background:var(--bg);color:var(--ink);font-family:'Heebo',system-ui,'Noto Sans Hebrew',Arial,sans-serif;font-size:17px;line-height:1.65}
 a{color:inherit;text-decoration:none}button,input{font:inherit}svg{width:22px;height:22px;flex-shrink:0}p{margin:0 0 14px}
 a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent-2);outline-offset:4px;border-radius:8px}
@@ -32,8 +34,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{o
 .skip{position:fixed;top:-100px;inset-inline-start:16px;z-index:30;background:var(--surface);padding:12px 16px;border-radius:12px}.skip:focus{top:12px}
 header{position:sticky;top:0;z-index:20;background:rgba(244,242,241,.82);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);border-bottom:1px solid rgba(31,27,30,.06)}
 .nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:24px;line-height:1}
-.mark{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#fff;display:grid;place-items:center;box-shadow:0 8px 18px -8px rgba(91,63,158,.6)}.mark svg{width:20px;height:20px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:28px;letter-spacing:-.8px;line-height:1;direction:ltr}
+.mark{width:44px;height:44px;color:var(--ink);display:grid;place-items:center}.mark svg{width:44px;height:44px}
 .navlinks{display:flex;gap:28px;font-size:15px;font-weight:500;color:var(--ink-2)}.navlinks a{padding:10px 0}.navlinks a:hover{color:var(--ink)}
 .button{display:inline-flex;justify-content:center;align-items:center;gap:10px;min-height:48px;background:var(--ink);color:#fff;padding:12px 24px;border-radius:999px;border:0;font-weight:700;font-size:16px;cursor:pointer;transition:transform .2s,background .2s}.button:hover{background:#3a3238;transform:translateY(-1px)}.button svg{width:18px;height:18px}
 .button.small{min-height:44px;font-size:14px;padding:10px 18px}
@@ -81,33 +83,14 @@ h1,h2,h3{margin:0;color:inherit}h2{font-size:clamp(30px,3.6vw,44px);font-weight:
 .features{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
 .feature{background:var(--surface);border-radius:var(--radius-l);padding:28px;box-shadow:var(--shadow-s);display:grid;grid-template-columns:52px 1fr;gap:6px 18px}
 .feature .ico{grid-row:span 2;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
-.feature:nth-child(2n) .ico{background:var(--peach-soft);color:#8A4B1E}
+.feature:nth-child(2n) .ico{background:#EEEAE8;color:var(--ink)}
 .feature h3{font-size:20px;font-weight:800;line-height:1.35;align-self:center}.feature p{color:var(--muted);font-size:15.5px;margin:0}
 .fineprint{font-size:12.5px;color:var(--muted);margin-top:18px}
 
 /* peek: phone mockups */
-.peek{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch}
-.peek figure{margin:0;display:flex;flex-direction:column}.peek figure .phone{flex:1;width:100%}.peek figcaption{text-align:center;margin-top:14px;font-size:15px;font-weight:700}.peek figcaption span{display:block;font-size:13px;font-weight:400;color:var(--muted)}
-.phone{background:var(--bg);border:8px solid var(--ink);border-radius:44px;padding:18px 14px 14px;box-shadow:0 30px 60px -30px rgba(31,27,30,.45);font-size:11.5px;line-height:1.45;max-width:320px;margin:auto;min-height:560px;display:flex;flex-direction:column;gap:10px}
-.notch{width:84px;height:22px;background:var(--ink);border-radius:14px;margin:-6px auto 6px}
-.mini-hero{border-radius:20px;overflow:hidden;position:relative;background:#3b302a url(/landing/hero.webp) center 20%/cover;padding:16px 14px 12px;color:#fff}
-.mini-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,14,10,.6),rgba(20,14,10,.1) 40%,rgba(20,14,10,.3))}
-.mini-hero>*{position:relative}.mini-hero b{font-size:18px;font-weight:800;display:block}.mini-hero small{font-size:10.5px;opacity:.9}
-.mini-hero .glass{margin-top:44px;padding:10px 12px;border-radius:14px;font-size:10.5px}.mini-hero .glass strong{display:block;font-size:12px}
-.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.quick span{background:var(--surface);border-radius:12px;padding:8px 2px;text-align:center;font-size:9.5px;font-weight:600;color:var(--ink-2)}.quick svg{display:block;margin:0 auto 3px;width:16px;height:16px;color:var(--accent)}
-.card{background:var(--surface);border-radius:16px;padding:12px;box-shadow:var(--shadow-s)}
-.card-title{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:12.5px;margin-bottom:6px}.card-title span{font-weight:500;font-size:10px;color:var(--muted)}
-.row{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line)}.row:first-of-type{border-top:0}
-.box{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--faint);display:grid;place-items:center;flex-shrink:0}.box.on{background:var(--ink);border-color:var(--ink);color:#fff}.box svg{width:11px;height:11px}
-.row em{font-style:normal;margin-inline-start:auto;font-size:9.5px;color:var(--muted)}
-.tag{display:inline-block;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
-.tag.peach{background:var(--peach-soft);color:#8A4B1E}.tag.grey{background:#EEEAE8;color:var(--ink-2)}
-.tabs{display:flex;gap:6px;margin-bottom:4px}.tabs span{padding:6px 10px;border-radius:999px;background:var(--surface);font-size:10px;font-weight:600;color:var(--ink-2)}.tabs span.on{background:var(--ink);color:#fff}
-.screen-title{font-size:20px;font-weight:800;margin:4px 2px}
-.week-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}.week-row:first-of-type{border-top:0}
-.wk{width:34px;height:34px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:11px;flex-shrink:0}
-.week-row b{display:block;font-size:11.5px}.week-row small{color:var(--muted);font-size:10px}
-.tabbar{margin-top:auto;display:flex;justify-content:space-around;background:var(--surface);border-radius:999px;padding:8px 6px;font-size:9px;color:var(--muted);box-shadow:var(--shadow-s)}.tabbar span{text-align:center}.tabbar svg{display:block;margin:0 auto 2px;width:16px;height:16px}.tabbar .on{color:var(--accent);font-weight:700}
+.peek{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;align-items:start}
+.peek figure{margin:0}
+.device{background:var(--ink);padding:7px;border-radius:40px;box-shadow:0 30px 60px -30px rgba(31,27,30,.45);max-width:300px;margin:auto}.device img{display:block;width:100%;height:auto;border-radius:33px}.peek figcaption{text-align:center;margin-top:14px;font-size:15px;font-weight:700}.peek figcaption span{display:block;font-size:13px;font-weight:400;color:var(--muted)}
 .peek-note{text-align:center;font-size:12.5px;color:var(--muted);margin-top:22px}
 
 /* who it's for */
@@ -135,7 +118,7 @@ details p{color:var(--muted);font-size:15.5px;padding-bottom:12px}
 
 /* signup */
 .signup{position:relative;overflow:hidden;background:var(--ink);color:#fff;border-radius:var(--radius-xl);padding:56px;display:grid;grid-template-columns:1fr 1fr;gap:56px}
-.signup:before{content:'';position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(133,105,214,.45),rgba(133,105,214,0) 70%);top:-220px;inset-inline-end:-160px;pointer-events:none}
+.signup:before{content:'';position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(201,122,62,.42),rgba(201,122,62,0) 70%);top:-220px;inset-inline-end:-160px;pointer-events:none}
 .signup>*{position:relative}
 .signup .eyebrow{color:var(--peach)}.signup .intro{color:rgba(255,255,255,.78)}
 .signup form{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius-l);padding:28px}
@@ -151,7 +134,7 @@ input[type=checkbox]{margin:3px 0 0;accent-color:var(--accent-2);width:20px;heig
 .honeypot{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
 footer{padding-block:40px;margin-top:56px;font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid var(--line)}
-footer .brand{font-size:18px;color:var(--ink)}footer .mark{width:32px;height:32px;border-radius:10px}footer .mark svg{width:16px;height:16px}
+footer .brand{font-size:18px;color:var(--ink)}footer .mark,footer .mark svg{width:32px;height:32px}
 dialog{background:var(--surface);color:var(--ink);border:0;border-radius:24px;max-width:650px;width:calc(100% - 32px);max-height:85vh;padding:32px;line-height:1.8}
 dialog::backdrop{background:rgba(31,27,30,.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 dialog h2{font-size:26px}dialog h3{font-size:18px;margin-top:18px}dialog p{font-size:14.5px;color:var(--ink-2)}
@@ -161,25 +144,25 @@ body:has(dialog[open]){overflow:hidden}
 .hero-card{grid-template-columns:1fr;min-height:0;padding:40px;gap:32px}.hero-card:before{background:linear-gradient(180deg,rgba(20,14,10,.66) 0%,rgba(20,14,10,.35) 45%,rgba(20,14,10,.25) 70%,rgba(20,14,10,.5) 100%)}
 .hero-stack{justify-self:stretch;max-width:420px}
 .strip{grid-template-columns:repeat(2,1fr)}
-.peek{grid-template-columns:1fr;max-width:340px;margin-inline:auto}
+.peek{grid-template-columns:1fr 1fr}
 .who,.faq,.signup{grid-template-columns:1fr;gap:28px}
 }
 @media(max-width:740px){
-.wrap{padding-inline:16px}.nav{height:64px}.navlinks{display:none}.brand{font-size:21px}.mark{width:36px;height:36px;border-radius:12px}
+.wrap{padding-inline:16px}.nav{height:64px}.navlinks{display:none}.brand{font-size:21px}.mark,.mark svg{width:38px;height:38px}
 .hero{padding-top:12px}.hero-card{padding:28px 20px 20px;border-radius:26px}.hero h1{font-size:44px;letter-spacing:-1px}.hero .lead{font-size:17px}
 .strip{grid-template-columns:1fr 1fr;gap:10px}.strip div{padding:12px;font-size:13.5px;gap:10px}.strip .ico{width:34px;height:34px}
 .section{padding-block:64px 0}.section-head{display:block}
 .features{grid-template-columns:1fr}.feature{padding:22px;grid-template-columns:46px 1fr}.feature .ico{width:46px;height:46px}
-.steps{grid-template-columns:1fr}
+.steps{grid-template-columns:1fr}.peek{grid-template-columns:1fr;max-width:300px;margin-inline:auto}
 .who,.signup{padding:28px 20px;border-radius:26px}.faq-list{padding:4px 18px}
 footer{flex-direction:column;align-items:flex-start}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 `;
 
-function page(env={}) { const enabled=ready(env); return `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#F4F2F1"><meta name="description" content="${BRAND}: אפליקציה בעברית לניהול ההריון. תורים, בדיקות, משימות, שאלות ומסמכים במקום אחד, לבד או עם מי שבוחרים לשתף. בקרוב ב־App Store וב־Google Play."><title>${BRAND} | כל ההריון במקום אחד</title><link rel="preload" href="/landing/heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin><style>${STYLE}</style></head><body>
+function page(env={}) { const enabled=ready(env); return `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#F4F2F1"><link rel="icon" href="/landing/nest-mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/landing/apple-touch-icon.png"><meta name="description" content="${BRAND}: אפליקציה בעברית לניהול ההריון. תורים, בדיקות, משימות, שאלות ומסמכים במקום אחד, לבד או עם מי שבוחרים לשתף. בקרוב ב־App Store וב־Google Play."><title>${BRAND} | כל ההריון במקום אחד</title><link rel="preload" href="/landing/heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin><style>${STYLE}</style></head><body>
 <a class="skip" href="#main">דילוג לתוכן</a>
-<header><nav class="wrap nav" aria-label="ניווט ראשי"><a href="#main" class="brand" aria-label="${BRAND}, לראש הדף"><span class="mark">${icon('home')}</span>${BRAND}</a><div class="navlinks"><a href="#features">מה יש באפליקציה</a><a href="#peek">הצצה למסכים</a><a href="#who">למי זה מתאים</a><a href="#faq">שאלות ותשובות</a></div><a href="#waitlist" class="button small">עדכון על ההשקה</a></nav></header>
+<header><nav class="wrap nav" aria-label="ניווט ראשי"><a href="#main" class="brand" aria-label="${BRAND}, לראש הדף"><span class="mark">${MARK}</span>${BRAND}</a><div class="navlinks"><a href="#features">מה יש באפליקציה</a><a href="#peek">הצצה למסכים</a><a href="#who">למי זה מתאים</a><a href="#faq">שאלות ותשובות</a></div><a href="#waitlist" class="button small">עדכון על ההשקה</a></nav></header>
 <main id="main"><div class="wrap">
 
 <section class="hero" aria-labelledby="hero-title"><div class="hero-card">
@@ -202,26 +185,12 @@ function page(env={}) { const enabled=ready(env); return `<!doctype html><html l
 </div>
 <p class="fineprint">${BRAND} לא נותנת ייעוץ רפואי ולא מחליפה את הצוות המטפל. האפליקציה לקראת השקה, והתכונות עשויות להשתנות.</p></section>
 
-<section class="section" id="peek" aria-labelledby="peek-title"><div class="section-head"><div><div class="eyebrow">הצצה פנימה</div><h2 id="peek-title">ככה זה נראה.</h2></div><p>שלושה מסכים מתוך האפליקציה, עם נתונים לדוגמה.</p></div>
+<section class="section" id="peek" aria-labelledby="peek-title"><div class="section-head"><div><div class="eyebrow">הצצה פנימה</div><h2 id="peek-title">ככה זה נראה.</h2></div><p>ארבעה מסכים מתוך העיצוב של האפליקציה, עם נתונים לדוגמה.</p></div>
 <div class="peek">
-<figure><div class="phone" aria-hidden="true"><div class="notch"></div>
-<div class="mini-hero"><small>שלום, נוי</small><b>שבוע 24 להריון</b><small>60% מהדרך</small><div class="glass"><strong>התור הקרוב · בעוד 5 ימים</strong>אולטרסאונד · יום רביעי 10:30</div></div>
-<div class="quick"><span>${icon('list')}משימות</span><span>${icon('question')}שאלות</span><span>${icon('calendar')}תורים</span><span>${icon('file')}מסמכים</span></div>
-<div class="card"><div class="card-title">משימות קרובות<span>הצגת הכול</span></div><div class="row"><span class="box"></span>לקבוע תור לסקירת מערכות<em>השבוע</em></div><div class="row"><span class="box"></span>להירשם לקורס הכנה ללידה<em>עד שבוע 30</em></div><div class="row"><span class="box on">${icon('check')}</span>לתאם חופשה עם העבודה<em>בוצע</em></div></div>
-<div class="card"><div class="card-title">שאלות פתוחות<span>3</span></div><div class="row">אפשר להמשיך להתאמן כרגיל?</div><div class="row">מתי כדאי להתחיל קורס הכנה?</div></div>
-<div class="tabbar"><span class="on">${icon('home')}בית</span><span>${icon('calendar')}תורים</span><span>${icon('list')}משימות</span><span>${icon('more')}עוד</span></div></div><figcaption>מסך הבית<span>השבוע, התור הבא ומה פתוח</span></figcaption></figure>
-<figure><div class="phone" aria-hidden="true"><div class="notch"></div><div class="screen-title">תוכנית מעקב</div><div class="tabs"><span class="on">הכול</span><span>לקבוע</span><span>נקבע</span><span>בוצע</span></div>
-<div class="card"><div class="card-title">שליש שני<span>שבועות 14–27</span></div>
-<div class="week-row"><span class="wk">20</span><div><b>סקירת מערכות</b><small>תור לדוגמה · 10:30</small></div><span class="tag grey" style="margin-inline-start:auto">נקבע</span></div>
-<div class="week-row"><span class="wk">24</span><div><b>בדיקת דם</b><small>לקבוע עד שבוע 22</small></div><span class="tag peach" style="margin-inline-start:auto">לקבוע</span></div>
-<div class="week-row"><span class="wk">26</span><div><b>ביקור מעקב</b><small>עוד לא נקבע</small></div><span class="tag" style="margin-inline-start:auto">בהמשך</span></div></div>
-<div class="card"><div class="card-title">שליש שלישי<span>שבועות 28–40</span></div><div class="week-row"><span class="wk">28</span><div><b>ביקור מעקב</b><small>עוד לא נקבע</small></div><span class="tag" style="margin-inline-start:auto">בהמשך</span></div><div class="week-row"><span class="wk">32</span><div><b>אולטרסאונד</b><small>עוד לא נקבע</small></div><span class="tag" style="margin-inline-start:auto">בהמשך</span></div></div>
-<div class="tabbar"><span>${icon('home')}בית</span><span class="on">${icon('calendar')}תורים</span><span>${icon('list')}משימות</span><span>${icon('more')}עוד</span></div></div><figcaption>תוכנית המעקב<span>מה נקבע ומה עוד צריך לקבוע</span></figcaption></figure>
-<figure><div class="phone" aria-hidden="true"><div class="notch"></div><div class="screen-title">משימות</div><div class="tabs"><span class="on">פתוחות</span><span>שלי</span><span>משותפות</span><span>בוצעו</span></div>
-<div class="card"><div class="card-title">השבוע<span>2</span></div><div class="row"><span class="box"></span>לקבוע תור לסקירת מערכות<em>נוי</em></div><div class="row"><span class="box"></span>להזמין ויטמינים<em>דניאל</em></div></div>
-<div class="card"><div class="card-title">החודש<span>3</span></div><div class="row"><span class="box"></span>להירשם לקורס הכנה ללידה<em>משותף</em></div><div class="row"><span class="box"></span>לבדוק זכויות בעבודה<em>נוי</em></div><div class="row"><span class="box"></span>להתחיל רשימה לתיק ללידה<em>משותף</em></div></div>
-<div class="card"><div class="card-title">בוצעו לאחרונה<span>1</span></div><div class="row"><span class="box on">${icon('check')}</span>להעלות את הפניה לבדיקה<em>בוצע</em></div></div>
-<div class="tabbar"><span>${icon('home')}בית</span><span>${icon('calendar')}תורים</span><span class="on">${icon('list')}משימות</span><span>${icon('more')}עוד</span></div></div><figcaption>משימות<span>לבד או מתחלקים, כל אחד יודע מה עליו</span></figcaption></figure>
+<figure><div class="device"><img src="/landing/screen-home.webp" width="402" height="874" loading="lazy" alt="מסך הבית של Nest עם נתונים לדוגמה: שבוע 24 להריון, התור הקרוב לאולטרסאונד בעוד 5 ימים, ופעולות מהירות למשימות, שאלות, תורים ומסמכים"></div><figcaption>מסך הבית<span>השבוע, התור הבא ופעולות מהירות</span></figcaption></figure>
+<figure><div class="device"><img src="/landing/screen-plan.webp" width="402" height="874" loading="lazy" alt="מסך תוכנית המעקב של Nest עם נתונים לדוגמה: חלון קביעת תור שנסגר בקרוב, וסיכום של בדיקות שדורשות קביעה, קרובות והושלמו"></div><figcaption>תוכנית המעקב<span>מה נקבע ומה עוד צריך לקבוע</span></figcaption></figure>
+<figure><div class="device"><img src="/landing/screen-tasks.webp" width="402" height="874" loading="lazy" alt="מסך המשימות של Nest עם נתונים לדוגמה: משימות פתוחות, משימות שהושלמו, וסינון לפי נושא"></div><figcaption>משימות<span>לבד או מתחלקים, כל אחד יודע מה עליו</span></figcaption></figure>
+<figure><div class="device"><img src="/landing/screen-week.webp" width="402" height="874" loading="lazy" alt="חלון עדכון שבועי ב־Nest עם נתונים לדוגמה: מה מתפתח השבוע, בשבוע 24 מתוך 40"></div><figcaption>עדכון שבועי<span>מה קורה השבוע, בקצרה</span></figcaption></figure>
 </div><p class="peek-note">הדמיה בלבד · כל השמות, התאריכים והתכנים מומצאים · העיצוב עשוי להשתנות</p></section>
 
 <section class="section" id="who" aria-labelledby="who-title"><div class="who"><div><div class="eyebrow">למי זה מתאים</div><h2 id="who-title">למי שמנהל את ההריון.<br>בכל הרכב.</h2><p>${BRAND} נבנתה למי שמחזיק את כל הפרטים: ההורה בהריון, בן/בת הזוג, או שניכם יחד. אפשר להשתמש בה לבד מההתחלה ועד הסוף, ואפשר להזמין מישהו נוסף בכל שלב.</p></div>
@@ -237,7 +206,7 @@ function page(env={}) { const enabled=ready(env); return `<!doctype html><html l
 <form id="signup-form">${enabled?'':`<div class="notice" role="status">ההרשמה תיפתח בקרוב. הטופס כרגע בתצוגה מקדימה ולא אוסף כתובות אימייל.</div>`}<label class="email-label" for="email">כתובת אימייל</label><input id="email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="you@example.com" required ${enabled?'':'disabled'}><label class="honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label><label class="consent"><input name="consent" type="checkbox" required ${enabled?'':'disabled'}><span>אני מאשר/ת לקבל באימייל עדכונים על ההשקה והבטא של ${BRAND}. אפשר לבטל את ההסכמה בכל עת. קראתי את <button type="button" class="privacy-link" data-privacy>מדיניות הפרטיות</button>.</span></label><button class="button" type="submit" ${enabled?'':'disabled'}>לקבל עדכון על ההשקה ${icon('arrow')}</button><div id="form-status" class="status" role="status" aria-live="polite"></div></form></div></section>
 
 </div></main>
-<footer class="wrap"><span class="brand"><span class="mark">${icon('home')}</span>${BRAND}</span><span>כל ההריון במקום אחד · בקרוב ב־App Store וב־Google Play</span><button class="privacy-link" data-privacy>מדיניות פרטיות</button></footer>
+<footer class="wrap"><span class="brand"><span class="mark">${MARK}</span>${BRAND}</span><span>כל ההריון במקום אחד · בקרוב ב־App Store וב־Google Play</span><button class="privacy-link" data-privacy>מדיניות פרטיות</button></footer>
 <dialog id="privacy" aria-labelledby="privacy-title"><h2 id="privacy-title">מדיניות פרטיות: רשימת העדכונים</h2><p>עודכן: 31.10.2026 · גרסה ${VERSION}</p>${enabled?`<p>מפעיל הפרויקט: ${esc(env.OPERATOR_NAME)}. לפניות, ביטול הסכמה או בקשת מחיקה: <a href="mailto:${esc(env.CONTACT_EMAIL)}">${esc(env.CONTACT_EMAIL)}</a>.</p>`:'<p><strong>זו גרסת תצוגה מקדימה. איסוף האימיילים מושבת עד להגדרת פרטי המפעיל, כתובת לפניות ושירות הרשמה.</strong></p>'}<h3>מה נאסף ולשם מה?</h3><p>כשההרשמה פעילה, נשלחים כתובת האימייל, אישור ההסכמה, מועד ההרשמה וגרסת נוסח ההסכמה. הם משמשים לניהול רשימת העדכונים ולשליחת עדכונים על ההשקה והבטא בלבד. אין בטופס שדות למידע רפואי ואין חובה להירשם.</p><h3>אחסון ושיתוף</h3><p>פרטי ההרשמה מועברים לשירות הרשימה שהמפעיל מגדיר לצורך ניהול הרשימה ומשלוח העדכונים. הם אינם מוצגים באתר. האתר אינו משתמש בכלי פרסום או ניתוח תנועה, אינו טוען משאבים מצד שלישי ואינו שומר את האימייל בדפדפן. ספק האירוח עשוי לעבד נתוני חיבור טכניים לצורך תפעול ואבטחה.</p><h3>בחירה, הסרה ומחיקה</h3><p>אפשר לבטל הסכמה ולבקש מחיקה באמצעות כתובת הקשר לעיל. המידע נשמר רק כל עוד הוא נחוץ למטרת העדכונים, ומוסר עם סיום הרשימה או בקשת מחיקה. בכל עדכון תינתן דרך להסרה.</p><h3>הפרדה ממידע רפואי</h3><p>מדיניות זו מתייחסת לדף הנחיתה ולרשימת העדכונים בלבד. לפני שימוש באפליקציה עצמה תפורסם מדיניות המתאימה למידע וליכולות שלה. אין לשלוח מידע רפואי דרך טופס זה.</p><form method="dialog"><button class="button">סגירה</button></form></dialog><script>
 const modal=document.querySelector('#privacy');document.querySelectorAll('[data-privacy]').forEach(b=>b.addEventListener('click',()=>modal.showModal()));modal.addEventListener('click',e=>{if(e.target===modal){const r=modal.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)modal.close();}});
 const form=document.querySelector('#signup-form');form.addEventListener('submit',async e=>{e.preventDefault();if(!form.reportValidity())return;const status=document.querySelector('#form-status'),button=form.querySelector('[type=submit]');button.disabled=true;status.textContent='שולחים את הבקשה…';try{const fields=new FormData(form);const response=await fetch('/api/pregnancy-waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:fields.get('email'),consent:fields.get('consent')==='on',website:fields.get('website')})});if(!response.ok)throw Error();status.textContent='ההרשמה נקלטה. נעדכן באימייל כשהבטא או האפליקציה יהיו זמינות.';form.reset();}catch{status.textContent='לא הצלחנו להשלים את ההרשמה. אפשר לנסות שוב בעוד כמה רגעים.';}finally{button.disabled=false;}});
