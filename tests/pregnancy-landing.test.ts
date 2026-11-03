@@ -10,6 +10,7 @@ describe('public pregnancy landing page',()=>{
   it('renders Hebrew without app auth or collection when unconfigured',async()=>{
     const res = await landing.fetch(new Request(origin+'/pregnancy'),{});
     expect(res.status).toBe(200);
+    expect((await landing.fetch(new Request(origin+'/'),{})).status).toBe(200);
     const html = await res.text();
     expect(html).toContain('lang="he" dir="rtl"');
     expect(html).toContain('לא אוסף כתובות אימייל');

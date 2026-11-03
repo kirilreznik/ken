@@ -39,20 +39,22 @@ const ICON = {
 export const namesStyle = `
 /* name swipe demo */
 .nd-wrap{display:grid;grid-template-columns:minmax(0,410px) minmax(0,1fr);gap:56px;align-items:start}
-.nd{--nd-glass:rgba(255,255,255,.34);--nd-soft:rgba(255,255,255,.22);--nd-well:rgba(255,255,255,.42);--nd-bar:#FFCFA8;position:relative;background:var(--ink);padding:8px;border-radius:46px;box-shadow:0 30px 60px -30px rgba(31,27,30,.5);user-select:none;-webkit-user-select:none}
-.nd-screen{position:relative;overflow:hidden;border-radius:38px;background:var(--bg) center/cover no-repeat;transition:background-image .3s}
+.nd{--nd-glass:rgba(255,255,255,.34);--nd-soft:rgba(255,255,255,.22);--nd-well:rgba(255,255,255,.42);--nd-bar:#FFCFA8;position:relative;container-type:inline-size;background:var(--ink);padding:8px;border-radius:52px;box-shadow:0 30px 60px -30px rgba(31,27,30,.5);user-select:none;-webkit-user-select:none}
+.nd-screen{position:relative;overflow:hidden;border-radius:44px;display:flex;flex-direction:column;height:min(216cqw,calc(100svh - 96px));min-height:560px;background:var(--bg) center/cover no-repeat;transition:background-image .3s}
 .nd[data-bg=fabric] .nd-screen{background-image:url(/landing/names-fabric.webp)}
 .nd[data-bg=notebook] .nd-screen{background-image:url(/landing/names-notebook.webp)}
 .nd[data-bg=nursery] .nd-screen{background-image:url(/landing/names-nursery.webp)}
 .nd[data-bg=none] .nd-screen{background-image:radial-gradient(circle at 85% 30%,rgba(255,207,168,.55),rgba(255,207,168,0) 45%),radial-gradient(circle at 10% 85%,rgba(255,226,201,.7),rgba(255,226,201,0) 40%)}
 .nd-screen:before{content:'';position:absolute;inset:0 0 auto;height:180px;background:linear-gradient(180deg,rgba(244,242,241,.75),rgba(244,242,241,0));pointer-events:none}
 .nd-screen>*{position:relative}
+.nd-island{flex:none;align-self:center;width:112px;height:30px;margin-top:11px;border-radius:999px;background:#000}
+.nd-home{flex:none;align-self:center;width:128px;height:5px;margin:2px 0 8px;border-radius:999px;background:rgba(31,27,30,.75)}
 .nd-glass{background:var(--nd-glass);-webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 14px 30px -16px rgba(0,0,0,.4)}
 .nd-soft{background:var(--nd-soft);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);border:1px solid rgba(255,255,255,.45)}
 .nd[data-bg=none] .nd-glass{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;border-color:transparent;box-shadow:0 18px 36px -18px rgba(31,27,30,.28)}
 .nd[data-bg=none] .nd-soft{background:rgba(255,255,255,.7)}
 .nd button,.nd a{color:var(--ink);cursor:pointer}
-.nd-head{display:flex;align-items:center;gap:8px;padding:22px 18px 8px}
+.nd-head{display:flex;align-items:center;gap:8px;padding:12px 18px 8px}
 .nd-head h3{margin:0;flex-grow:1;font-size:22px;line-height:28px;font-weight:800}
 .nd-round{width:44px;height:44px;border-radius:999px;display:grid;place-items:center;padding:0}
 .nd-saved{height:44px;padding:0 14px;border-radius:999px;background:var(--ink);color:#fff!important;display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700}
@@ -60,14 +62,13 @@ export const namesStyle = `
 .nd-chip{min-height:36px;padding:4px 14px;border-radius:999px;font-size:13px;font-weight:700;position:relative}
 .nd-chip:after{content:'';position:absolute;inset:-4px 0}
 .nd .nd-chip[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
-.nd-stage{position:relative;margin:0 18px;height:calc(var(--nd-h,540px) + 30px)}
-.nd-back{position:absolute;top:28px;inset-inline:40px;height:var(--nd-h,540px);border-radius:30px;transform:rotate(-3deg);display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px;font-size:14px;font-weight:800;color:var(--ink-2)}
-.nd-back.n1{top:14px;inset-inline:28px;transform:rotate(2deg);background:rgba(255,255,255,.3);font-size:15px}
-.nd-card{position:absolute;top:0;inset-inline:0;height:var(--nd-h,540px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border-radius:30px;padding:20px;display:flex;flex-direction:column;gap:12px;touch-action:pan-y;cursor:grab;will-change:transform;line-height:1.45}
+.nd-stage{position:relative;flex:1;min-height:0;margin:0 18px}
+.nd-back{position:absolute;top:28px;inset-inline:40px;bottom:2px;border-radius:30px;transform:rotate(-3deg);display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px;font-size:14px;font-weight:800;color:var(--ink-2)}
+.nd-back.n1{top:14px;bottom:16px;inset-inline:28px;transform:rotate(2deg);background:rgba(255,255,255,.3);font-size:15px}
+.nd-card{position:absolute;top:0;bottom:30px;inset-inline:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border-radius:30px;padding:20px;display:flex;flex-direction:column;gap:12px;touch-action:pan-y;cursor:grab;will-change:transform;line-height:1.45}
 .nd-card:active{cursor:grabbing}
 .nd-card.enter{animation:nd-in .28s ease-out}
 @keyframes nd-in{from{transform:translateY(14px) scale(.96);opacity:.5}}
-.nd-measure{visibility:hidden;height:auto;pointer-events:none}
 .nd-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .nd-tag{padding:4px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:700}
 .nd-pos{font-size:12.5px;color:var(--ink-2);font-weight:500}
@@ -99,7 +100,7 @@ export const namesStyle = `
 .nd-stamp.keep{inset-inline-end:20px;transform:rotate(-12deg);color:var(--ink);opacity:var(--keep,0)}
 .nd-stamp.skip{inset-inline-start:20px;transform:rotate(12deg);color:var(--ink-2);opacity:var(--skip,0)}
 .nd-stamp.love{inset-inline:0;margin:auto;width:max-content;top:40%;color:var(--accent);opacity:var(--love,0)}
-.nd-empty{position:absolute;inset:0 0 30px;border-radius:30px;padding:28px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px}
+.nd-empty{position:absolute;inset:0 0 30px;overflow-y:auto;border-radius:30px;padding:28px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px}
 .nd-empty b{font-size:20px;line-height:1.4}.nd-empty p{margin:0;font-size:14.5px;color:var(--ink-2)}
 .nd-empty ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .nd-empty li{padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.6);font-weight:700;font-size:14px}
@@ -129,7 +130,7 @@ export const namesStyle = `
 .nd-list li small{font-weight:600;font-size:12px;color:var(--accent);display:inline-flex;align-items:center;gap:4px}.nd-list li svg{width:14px;height:14px}
 .nd-note{font-size:12.5px;color:var(--muted);margin:0}.nd-note a{text-decoration:underline;text-underline-offset:2px}
 @media(max-width:1020px){.nd-wrap{grid-template-columns:1fr;gap:28px}.nd{max-width:410px;width:100%;margin-inline:auto}.nd-side{max-width:560px;margin-inline:auto;width:100%}}
-@media(max-width:600px){.nd{padding:5px;border-radius:40px}.nd-screen{border-radius:35px}.nd-head{padding:14px 14px 4px}.nd-head h3{font-size:20px}.nd-chips{padding:2px 14px 10px;gap:6px}.nd-stage{margin:0 12px;height:calc(var(--nd-h,500px) + 20px)}.nd-back{top:20px;inset-inline:34px}.nd-back.n1{top:10px;inset-inline:22px}.nd-card{padding:16px;gap:9px}.nd-name{font-size:44px;line-height:52px;padding-top:0}.nd-intro{font-size:14.5px;line-height:21px}.nd-well{padding:10px}.nd-tiles{gap:8px}.nd-actions{gap:12px;padding:12px 12px 8px}.nd-actions button{height:52px}.nd-love{width:52px!important}.nd-keep,.nd-skip{padding:0 18px!important}.nd-foot{padding:0 14px 14px}}
+@media(max-width:600px){.nd{padding:5px;border-radius:40px}.nd-screen{border-radius:35px}.nd-head{padding:14px 14px 4px}.nd-head h3{font-size:20px}.nd-chips{padding:2px 14px 10px;gap:6px}.nd-stage{margin:0 12px}.nd-card{bottom:20px}.nd-empty{bottom:20px}.nd-back{top:20px;bottom:0;inset-inline:34px}.nd-back.n1{top:10px;bottom:10px;inset-inline:22px}.nd-island,.nd-home{display:none}.nd-head{padding-top:14px}.nd-foot{padding-bottom:14px}.nd-card{padding:16px;gap:9px}.nd-name{font-size:44px;line-height:52px;padding-top:0}.nd-intro{font-size:14.5px;line-height:21px}.nd-well{padding:10px}.nd-tiles{gap:8px}.nd-actions{gap:12px;padding:12px 12px 8px}.nd-actions button{height:52px}.nd-love{width:52px!important}.nd-keep,.nd-skip{padding:0 18px!important}.nd-foot{padding:0 14px 14px}}
 @media(prefers-reduced-motion:reduce){.nd-card.enter{animation:nd-fade .2s}@keyframes nd-fade{from{opacity:0}}}
 `;
 
@@ -137,11 +138,13 @@ export const namesSection = (brand) => `<section class="section" id="names" aria
 <div class="nd-wrap">
 <div class="nd" data-names-demo data-bg="fabric" role="region" aria-label="הדגמה של בחירת שם, עם 10 שמות לדוגמה">
 <div class="nd-screen">
+<div class="nd-island" aria-hidden="true"></div>
 <div class="nd-head"><h3>בחירת שם</h3><button type="button" class="nd-round nd-soft" data-bg-next aria-label="החלפת רקע. עכשיו: בדים">${svg(ICON.image)}</button><a class="nd-saved" href="#nd-list" aria-label="השמות שלי: 0 נשמרו">${svg(ICON.bookmark, 18)}<span data-count>0</span></a></div>
 <div class="nd-chips" role="group" aria-label="סינון לפי מין"><button type="button" class="nd-chip nd-soft" data-filter="all" aria-pressed="true">כל השמות</button><button type="button" class="nd-chip nd-soft" data-filter="u" aria-pressed="false">מתאים לכולם</button><button type="button" class="nd-chip nd-soft" data-filter="f" aria-pressed="false">בת</button><button type="button" class="nd-chip nd-soft" data-filter="m" aria-pressed="false">בן</button></div>
 <div class="nd-stage"><noscript><div class="nd-empty nd-glass"><b>ההדגמה צריכה JavaScript.</b></div></noscript></div>
 <div class="nd-actions"><button type="button" class="nd-keep" data-act="keep" aria-label="שמירה לרשימה">${svg(ICON.bookmark)}שמירה</button><button type="button" class="nd-love" data-act="love" aria-label="אהבתי מאוד">${svg(ICON.heart, 22)}</button><button type="button" class="nd-skip nd-glass" data-act="skip" aria-label="דילוג, לא בשבילנו">דילוג${svg(ICON.close)}</button></div>
 <div class="nd-foot"><button type="button" class="nd-undo nd-soft" data-undo aria-label="ביטול ההחלטה האחרונה" disabled>${svg(ICON.undo, 18)}ביטול</button><span class="nd-status nd-soft" role="status" aria-live="polite">10 שמות לדוגמה</span></div>
+<div class="nd-home" aria-hidden="true"></div>
 </div></div>
 <div class="nd-side">
 <ul class="nd-how">
@@ -199,18 +202,6 @@ ${c.bible ? `<div class="nd-well nd-bible"><svg width="18" height="18" viewBox="
 ${c.people.length ? `<div class="nd-people"><span class="nd-label">אנשים ידועים בשם הזה</span>${c.people.slice(0, 2).map(p => `<div class="nd-person"><span class="nd-initial" aria-hidden="true">${esc(p.name.charAt(0))}</span><span><b>${esc(p.name)}</b> · ${esc(p.what)}</span></div>`).join('')}</div>` : ''}
 <div class="nd-sex" role="img" aria-label="מאז 1949: בנים ${bt}, בנות ${gt}"><div aria-hidden="true"><span>בנים ${bt}</span><span>בנות ${gt}</span></div><div class="nd-bar" aria-hidden="true"><i style="width:${b.toFixed(1)}%"></i></div></div>
 <div class="nd-tiles"><div class="nd-well nd-tile"><span class="nd-label">ב־2024</span><strong>${fmt(last)}</strong><span>תינוקות · ${c.band}</span></div><div class="nd-well nd-tile"><span class="nd-label">מגמה מאז 2000</span><svg viewBox="0 0 132 36" aria-hidden="true">${spark(c.y)}</svg><span class="nd-trend"><span aria-hidden="true">${ta}</span> ${tw}</span></div></div>`;
-  };
-
-  // All cards share one height (the tallest), so the buttons never jump between cards.
-  const measure = () => {
-    const m = document.createElement('article'); m.className = 'nd-card nd-glass nd-measure'; stage.appendChild(m);
-    let h = 0; for (const c of NAMES) { m.innerHTML = cardInner(c, 'שם 10 מתוך 10'); h = Math.max(h, m.offsetHeight); }
-    m.remove();
-    // Keep the whole demo (card and buttons) inside one screen on phones; a longer card scrolls inside.
-    const back = innerWidth <= 600 ? 20 : 30; // the stacked cards peeking under the top one
-    const chrome = root.offsetHeight - stage.offsetHeight + back;
-    const fit = Math.floor(innerHeight - 64 - 16 - chrome);
-    root.style.setProperty('--nd-h', Math.min(h, Math.max(340, fit)) + 'px');
   };
 
   const renderList = () => {
@@ -304,10 +295,7 @@ ${c.people.length ? `<div class="nd-people"><span class="nd-label">אנשים י
     if (e.target.closest('[data-restart]')) { decided.clear(); history.length = 0; say('מתחילים מחדש'); render(true); actBtns[0].focus(); }
   });
   BGS.slice(1, 3).forEach(([k]) => { const img = new Image(); img.src = `/landing/names-${k}.webp`; });
-  measure(); render(false);
-  if (document.fonts) document.fonts.ready.then(measure);
-  // Phones fire resize when the address bar shows or hides; only re-measure when the width changes.
-  let rt, w = innerWidth; addEventListener('resize', () => { if (innerWidth === w) return; w = innerWidth; clearTimeout(rt); rt = setTimeout(measure, 150); });
+  render(false);
 }
 
 export const namesScript = `(${demo.toString()
