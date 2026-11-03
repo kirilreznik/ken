@@ -131,15 +131,27 @@ export const namesStyle = `
 .nd-note{font-size:12.5px;color:var(--muted);margin:0}.nd-note a{text-decoration:underline;text-underline-offset:2px}
 @media(max-width:1020px){.nd-wrap{grid-template-columns:1fr;gap:28px}.nd{max-width:410px;width:100%;margin-inline:auto}.nd-side{max-width:560px;margin-inline:auto;width:100%}}
 @media(max-width:600px){.nd{padding:5px;border-radius:40px}.nd-screen{border-radius:35px}.nd-head{padding:14px 14px 4px}.nd-head h3{font-size:20px}.nd-chips{padding:2px 14px 10px;gap:6px}.nd-stage{margin:0 12px}.nd-card{bottom:20px}.nd-empty{bottom:20px}.nd-back{top:20px;bottom:0;inset-inline:34px}.nd-back.n1{top:10px;bottom:10px;inset-inline:22px}.nd-island,.nd-home{display:none}.nd-head{padding-top:14px}.nd-foot{padding-bottom:14px}.nd-card{padding:16px;gap:9px}.nd-name{font-size:44px;line-height:52px;padding-top:0}.nd-intro{font-size:14.5px;line-height:21px}.nd-well{padding:10px}.nd-tiles{gap:8px}.nd-actions{gap:12px;padding:12px 12px 8px}.nd-actions button{height:52px}.nd-love{width:52px!important}.nd-keep,.nd-skip{padding:0 18px!important}.nd-foot{padding:0 14px 14px}}
+.nd-close{display:none}
+.nd-launch{display:none;position:relative;overflow:hidden;width:100%;min-height:380px;border:0;border-radius:30px;padding:24px 20px;background:var(--bg) url(/landing/names-fabric.webp) center/cover;box-shadow:0 30px 60px -30px rgba(31,27,30,.5);flex-direction:column;align-items:center;justify-content:center;gap:22px;color:var(--ink);cursor:pointer;text-align:center}
+.nd-launch-card{width:min(260px,100%);border-radius:26px;padding:18px 18px 22px;display:flex;flex-direction:column;align-items:center;gap:6px;transform:rotate(-2deg)}
+.nd-launch-card b{font-size:52px;line-height:62px;font-weight:800}
+.nd-launch-card span:last-child{font-size:14px;color:var(--ink-2);font-weight:500}
+.nd-launch-cta{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 24px;border-radius:999px;background:var(--ink);color:#fff;font-weight:700;font-size:16px;box-shadow:0 8px 20px rgba(31,27,30,.25)}
+.nd.nd-full{position:fixed;inset:0;z-index:60;width:auto;max-width:none;margin:0;padding:0;border-radius:0;box-shadow:none}
+.nd-full .nd-screen{height:100vh;height:100dvh;min-height:0;border-radius:0;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.nd-full .nd-close{display:grid}.nd-full .nd-island,.nd-full .nd-home{display:none}
+body.nd-open{overflow:hidden}
+@media(max-width:600px){.nd:not(.nd-full){display:none}.nd-launch{display:flex}}
 @media(prefers-reduced-motion:reduce){.nd-card.enter{animation:nd-fade .2s}@keyframes nd-fade{from{opacity:0}}}
 `;
 
 export const namesSection = (brand) => `<section class="section" id="names" aria-labelledby="names-title"><div class="section-head"><div><div class="eyebrow">חדש · בחירת שם</div><h2 id="names-title">מחפשים שם?<br>נסו להחליק.</h2></div><p>כל כרטיס מציג שם אחד: מה הוא אומר, איפה הוא מופיע בתנ״ך וכמה תינוקות קיבלו אותו ב־2024. ככה זה יעבוד ב־${brand}, ואפשר לנסות כבר כאן.</p></div>
 <div class="nd-wrap">
+<button type="button" class="nd-launch" data-nd-open aria-label="פתיחת ההדגמה של בחירת שם במסך מלא"><span class="nd-launch-card nd-glass" aria-hidden="true"><span class="nd-tag">מתאים לכולם</span><b>זִיו</b><span>ועוד 9 שמות לדוגמה</span></span><span class="nd-launch-cta">${svg(ICON.swipe)}לנסות במסך מלא</span></button>
 <div class="nd" data-names-demo data-bg="fabric" role="region" aria-label="הדגמה של בחירת שם, עם 10 שמות לדוגמה">
 <div class="nd-screen">
 <div class="nd-island" aria-hidden="true"></div>
-<div class="nd-head"><h3>בחירת שם</h3><button type="button" class="nd-round nd-soft" data-bg-next aria-label="החלפת רקע. עכשיו: בדים">${svg(ICON.image)}</button><a class="nd-saved" href="#nd-list" aria-label="השמות שלי: 0 נשמרו">${svg(ICON.bookmark, 18)}<span data-count>0</span></a></div>
+<div class="nd-head"><button type="button" class="nd-round nd-soft nd-close" data-nd-close aria-label="סגירת ההדגמה">${svg(ICON.close)}</button><h3>בחירת שם</h3><button type="button" class="nd-round nd-soft" data-bg-next aria-label="החלפת רקע. עכשיו: בדים">${svg(ICON.image)}</button><a class="nd-saved" href="#nd-list" aria-label="השמות שלי: 0 נשמרו">${svg(ICON.bookmark, 18)}<span data-count>0</span></a></div>
 <div class="nd-chips" role="group" aria-label="סינון לפי מין"><button type="button" class="nd-chip nd-soft" data-filter="all" aria-pressed="true">כל השמות</button><button type="button" class="nd-chip nd-soft" data-filter="u" aria-pressed="false">מתאים לכולם</button><button type="button" class="nd-chip nd-soft" data-filter="f" aria-pressed="false">בת</button><button type="button" class="nd-chip nd-soft" data-filter="m" aria-pressed="false">בן</button></div>
 <div class="nd-stage"><noscript><div class="nd-empty nd-glass"><b>ההדגמה צריכה JavaScript.</b></div></noscript></div>
 <div class="nd-actions"><button type="button" class="nd-keep" data-act="keep" aria-label="שמירה לרשימה">${svg(ICON.bookmark)}שמירה</button><button type="button" class="nd-love" data-act="love" aria-label="אהבתי מאוד">${svg(ICON.heart, 22)}</button><button type="button" class="nd-skip nd-glass" data-act="skip" aria-label="דילוג, לא בשבילנו">דילוג${svg(ICON.close)}</button></div>
@@ -174,7 +186,7 @@ function demo(NAMES) {
   const fmt = n => n.toLocaleString('he-IL');
   const order = NAMES.map((_, i) => i);
   for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-  const decided = new Map(); const history = [];
+  const decided = new Map(); const past = [];
   let filter = 'all', busy = false, bg = 0;
 
   const share = c => {
@@ -205,7 +217,7 @@ ${c.people.length ? `<div class="nd-people"><span class="nd-label">אנשים י
   };
 
   const renderList = () => {
-    const loved = history.filter(i => decided.get(i) === 'love'), kept = history.filter(i => decided.get(i) === 'keep');
+    const loved = past.filter(i => decided.get(i) === 'love'), kept = past.filter(i => decided.get(i) === 'keep');
     const saved = [...loved, ...kept];
     countEl.textContent = saved.length; savedLink.setAttribute('aria-label', `השמות שלי: ${saved.length} נשמרו`);
     list.hidden = !saved.length; listEmpty.hidden = !!saved.length;
@@ -215,7 +227,7 @@ ${c.people.length ? `<div class="nd-people"><span class="nd-label">אנשים י
 
   const render = (enter) => {
     const d = deck(), saved = renderList();
-    undoBtn.disabled = !history.length;
+    undoBtn.disabled = !past.length;
     actBtns.forEach(b => { b.disabled = !d.length; });
     if (!d.length) {
       const all = decided.size === NAMES.length;
@@ -240,7 +252,7 @@ ${c.people.length ? `<div class="nd-people"><span class="nd-label">אנשים י
     const frames = reduce.matches ? [{ opacity: 1, transform: from }, { opacity: 0, transform: from }] : [{ transform: from }, { transform: to, opacity: .4 }];
     if (kind === 'love' && !reduce.matches) card.style.setProperty('--love', 1);
     try { await card.animate(frames, { duration: reduce.matches ? 160 : 300, easing: 'ease-in', fill: 'forwards' }).finished; } catch { /* element replaced */ }
-    decided.set(i, kind); history.push(i);
+    decided.set(i, kind); past.push(i);
     say(kind === 'skip' ? `דילגת על ${name}` : kind === 'love' ? `${name} נשמר, ראשון ברשימה` : `${name} נשמר`);
     const hadFocus = root.contains(document.activeElement);
     busy = false; render(true);
@@ -280,8 +292,8 @@ ${c.people.length ? `<div class="nd-people"><span class="nd-label">אנשים י
     render(true); say(filter === 'all' ? 'מוצגים כל השמות' : `סינון: ${b.textContent}`);
   }));
   undoBtn.addEventListener('click', () => {
-    if (busy || !history.length) return;
-    const i = history.pop(); decided.delete(i);
+    if (busy || !past.length) return;
+    const i = past.pop(); decided.delete(i);
     order.splice(order.indexOf(i), 1); order.unshift(i);
     if (!matches(NAMES[i])) { filter = 'all'; chips.forEach(x => x.setAttribute('aria-pressed', String(x.dataset.filter === 'all'))); }
     say(`בוטל: ${NAMES[i].n}`); render(true);
@@ -292,9 +304,33 @@ ${c.people.length ? `<div class="nd-people"><span class="nd-label">אנשים י
   });
   stage.addEventListener('click', e => {
     if (e.target.closest('[data-reset]')) { chips[0].click(); chips[0].focus(); }
-    if (e.target.closest('[data-restart]')) { decided.clear(); history.length = 0; say('מתחילים מחדש'); render(true); actBtns[0].focus(); }
+    if (e.target.closest('[data-restart]')) { decided.clear(); past.length = 0; say('מתחילים מחדש'); render(true); actBtns[0].focus(); }
   });
   BGS.slice(1, 3).forEach(([k]) => { const img = new Image(); img.src = `/landing/names-${k}.webp`; });
+  // Phones: the demo opens full screen from a launch card. Back, Escape and the close button close it.
+  const launch = document.querySelector('[data-nd-open]');
+  let returnTo = null;
+  const isFull = () => root.classList.contains('nd-full');
+  const closeUI = () => {
+    root.classList.remove('nd-full'); document.body.classList.remove('nd-open');
+    requestAnimationFrame(() => {
+      const t = returnTo && document.querySelector(returnTo); returnTo = null;
+      if (t) t.scrollIntoView(); else launch?.focus({ preventScroll: true });
+    });
+  };
+  const close = () => { if (history.state && history.state.nd) history.back(); else closeUI(); };
+  launch?.addEventListener('click', () => {
+    root.classList.add('nd-full'); document.body.classList.add('nd-open');
+    history.pushState({ nd: 1 }, '');
+    actBtns[0].focus({ preventScroll: true });
+  });
+  addEventListener('popstate', () => { if (isFull()) closeUI(); });
+  q('[data-nd-close]').addEventListener('click', close);
+  root.addEventListener('keydown', e => { if (e.key === 'Escape' && isFull()) close(); });
+  root.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (a && isFull()) { e.preventDefault(); returnTo = a.getAttribute('href'); close(); }
+  });
   render(false);
 }
 
