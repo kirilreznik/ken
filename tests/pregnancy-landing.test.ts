@@ -35,4 +35,14 @@ describe('public pregnancy landing page',()=>{
     upstream.mockResolvedValue(new Response('{}',{status:500}));
     expect((await landing.fetch(request({email:'a@b.com',consent:true}),env)).status).toBe(502);
   });
+  it('includes the name swipe demo with CBS attribution and a script that parses',async()=>{
+    const html = await (await landing.fetch(new Request(origin+'/pregnancy'),{})).text();
+    expect(html).toContain('id="names"');
+    expect(html).toContain('data-names-demo');
+    expect(html).toContain('הלשכה המרכזית לסטטיסטיקה');
+    for (const name of ['זיו','נועם','יעל','לביא','תמר','שקד','אריאל','אביגיל','עמית','אלה']) expect(html).toContain(`"n":"${name}"`);
+    const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+    expect(scripts.length).toBe(2);
+    for (const code of scripts) expect(()=>new Function(code)).not.toThrow();
+  });
 });
