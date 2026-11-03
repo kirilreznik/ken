@@ -10,6 +10,7 @@ describe('public pregnancy landing page',()=>{
   it('renders Hebrew without app auth or collection when unconfigured',async()=>{
     const res = await landing.fetch(new Request(origin+'/pregnancy'),{});
     expect(res.status).toBe(200);
+    expect((await landing.fetch(new Request(origin+'/'),{})).status).toBe(200);
     const html = await res.text();
     expect(html).toContain('lang="he" dir="rtl"');
     expect(html).toContain('לא אוסף כתובות אימייל');
@@ -34,5 +35,15 @@ describe('public pregnancy landing page',()=>{
     expect(payload.consent).toBe(true);
     upstream.mockResolvedValue(new Response('{}',{status:500}));
     expect((await landing.fetch(request({email:'a@b.com',consent:true}),env)).status).toBe(502);
+  });
+  it('includes the name swipe demo with CBS attribution and a script that parses',async()=>{
+    const html = await (await landing.fetch(new Request(origin+'/pregnancy'),{})).text();
+    expect(html).toContain('id="names"');
+    expect(html).toContain('data-names-demo');
+    expect(html).toContain('הלשכה המרכזית לסטטיסטיקה');
+    for (const name of ['זיו','נועם','יעל','לביא','תמר','שקד','אריאל','אביגיל','עמית','אלה']) expect(html).toContain(`"n":"${name}"`);
+    const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+    expect(scripts.length).toBe(2);
+    for (const code of scripts) expect(()=>new Function(code)).not.toThrow();
   });
 });
