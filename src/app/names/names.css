@@ -83,3 +83,47 @@
     transition-delay: 0s !important;
   }
 }
+
+/* Liquid glass (PRD 3.2.16). .names-glass is the strong panel (cards, sign-in panel),
+ * .names-glass-soft the lighter one (round buttons, wells). Without backdrop-filter
+ * support, or with reduced transparency, both turn into solid white cards. */
+@layer components {
+  .nest-names .names-glass {
+    background-color: var(--nest-glass-tint);
+    -webkit-backdrop-filter: var(--nest-glass-filter);
+    backdrop-filter: var(--nest-glass-filter);
+    border: 1px solid var(--nest-glass-border);
+    box-shadow: var(--nest-shadow-glass);
+  }
+
+  .nest-names .names-glass-soft {
+    background-color: var(--nest-glass-soft-tint);
+    -webkit-backdrop-filter: var(--nest-glass-soft-filter);
+    backdrop-filter: var(--nest-glass-soft-filter);
+    border: 1px solid var(--nest-glass-soft-border);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nest-names .names-glass,
+    .nest-names .names-glass-soft {
+      background-color: var(--nest-surface);
+      border-color: transparent;
+    }
+    .nest-names .names-glass {
+      box-shadow: var(--nest-shadow-hero);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .nest-names .names-glass,
+    .nest-names .names-glass-soft {
+      background-color: var(--nest-surface);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      border-color: transparent;
+    }
+    .nest-names .names-glass {
+      box-shadow: var(--nest-shadow-hero);
+    }
+  }
+}
