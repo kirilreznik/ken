@@ -1,3 +1,4 @@
+import { clearInviteCache } from "./invite";
 import { clearAll } from "./prefs";
 import { clearMatchesCache } from "./matches";
 import { deleteOwnPhoto } from "./photo";
@@ -66,6 +67,7 @@ export function welcomeUrl(pathname: string, opts: { expired?: boolean } = {}): 
 export async function clearLocalData(userId: string): Promise<void> {
   clearAll(userId);
   clearSpaceCache();
+  clearInviteCache();
   try {
     await Promise.all([deleteOwnPhoto(userId), clearVoteCache(userId), clearMatchesCache(userId)]);
   } catch {
