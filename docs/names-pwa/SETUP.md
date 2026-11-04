@@ -216,7 +216,8 @@ Ralph writes Hebrew drafts at `/names/privacy` and `/names/terms`, marked "טי�
 2. A privacy lawyer reviews both pages once (decided 2026-10-30).
 3. Replace the text in `src/content/names-legal/` (see the PRD) and remove the "טיוטה" banner by setting `LEGAL_DRAFT = false` there.
 4. Translate the 4 email templates that are still Supabase's English defaults (Authentication → Emails: **Invite user**, **Change email address**, **Reset password**, **Reauthentication**) into short Hebrew in the same Nest style as the code email, keeping their `{{ .ConfirmationURL }}` / `{{ .Token }}` variables. The swiper and the Nest app don't send them today, but nothing in English should go out after launch.
-5. Turn on **Allow new users to sign up** (step 3.3).
+5. Set `PREGNANCY_WAITLIST_WEBHOOK_URL` and `PREGNANCY_WAITLIST_WEBHOOK_TOKEN` in Vercel (Production + Preview). The landing waitlist reads them, and they were missing on 2026-11-04, so sign-ups the "not open yet" message sends to `/#waitlist` aren't forwarded anywhere.
+6. Turn on **Allow new users to sign up** (step 3.3).
 
 ## 13. Owner checks after the run (things Ralph can't do)
 
