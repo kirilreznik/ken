@@ -4,7 +4,7 @@ import { staticCards } from "@/lib/names/staticCards";
 import type { Background } from "@/lib/names/prefs";
 import DevStack from "./DevStack";
 
-// Dev-only check page for the card stack (US-040); removed in US-047.
+// Dev-only check page for the card stack, action bar and footer (US-040, US-041); removed in US-047.
 // /names/dev/stack?bg=none
 export default async function DevStackPage({
   searchParams,
@@ -15,7 +15,7 @@ export default async function DevStackPage({
   const q = await searchParams;
   return (
     <ScreenBackground background={(q.bg ?? "fabric") as Background}>
-      <div className="flex flex-1 flex-col px-5 pt-16 pb-7">
+      <div className="flex h-dvh flex-col pt-16">
         <DevStack cards={staticCards()} />
       </div>
     </ScreenBackground>
