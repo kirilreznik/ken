@@ -11,21 +11,35 @@ export interface ClientLogReport {
   name?: string;
 }
 
-/** Fire-and-forget POST to `{SUPABASE_URL}/functions/v1/client-log`; failures are swallowed. */
-export async function reportClientLog(report: ClientLogReport): Promise<void> {
+/** The page path for a report, without invite codes. */
+export function reportPath(pathname: string): string {
+  return pathname.replace(/^\/names\/join\/.*/, "/names/join");
+}
+
+/**
+ * POSTs to `{SUPABASE_URL}/functions/v1/client-log` with only the report's fields, the path
+ * and appVersion. Resolves true when the function accepted it, false on any failure.
+ */
+export async function sendClientLog(report: ClientLogReport): Promise<boolean> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
-  if (!url || !key || typeof fetch === "undefined") return;
-  // Invite codes stay out of reports.
-  const path = typeof location === "undefined" ? "" : location.pathname.replace(/^\/names\/join\/.*/, "/names/join");
+  if (!url || !key || typeof fetch === "undefined") return false;
+  const path = typeof location === "undefined" ? "" : reportPath(location.pathname);
+  const body = { area: report.area, ...(report.name ? { name: report.name } : {}), message: report.message, path, appVersion: APP_VERSION };
   try {
-    await fetch(`${url}/functions/v1/client-log`, {
+    const res = await fetch(`${url}/functions/v1/client-log`, {
       method: "POST",
       headers: { "Content-Type": "application/json", apikey: key, Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ ...report, path, appVersion: APP_VERSION }),
+      body: JSON.stringify(body),
       keepalive: true,
     });
+    return res.ok;
   } catch {
-    // Reporting is best effort.
+    return false;
   }
+}
+
+/** Fire-and-forget sendClientLog; failures are swallowed. */
+export async function reportClientLog(report: ClientLogReport): Promise<void> {
+  await sendClientLog(report);
 }

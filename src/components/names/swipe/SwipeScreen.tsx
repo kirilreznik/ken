@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
+import AboutSheet from "@/components/names/about/AboutSheet";
+import ReportSheet from "@/components/names/about/ReportSheet";
 import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
 import FiltersSheet from "@/components/names/FiltersSheet";
@@ -20,6 +22,7 @@ import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 import type { SexTag, Vote } from "@/lib/names/types";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
+import AboutLink from "./AboutLink";
 import EmptyDeck from "./EmptyDeck";
 import QuickChips from "./QuickChips";
 import SwipeFooter from "./SwipeFooter";
@@ -132,6 +135,7 @@ export default function SwipeScreen() {
                 surname={surname}
                 className={`min-h-0 ${dragClass}`}
                 aria-describedby={SWIPE_KEYS_ID}
+                footer={<AboutLink />}
                 {...drag.card}
               />
             ) : deck && deck.state !== "ok" ? (
@@ -156,6 +160,8 @@ export default function SwipeScreen() {
         </SwipeKeys>
       </main>
       <BackgroundSheet />
+      <AboutSheet hasName={!!current} />
+      <ReportSheet name={current?.stats.name ?? null} />
       <FiltersSheet userId={userId} cards={cards} votes={votes} />
       <MatchSheet
         match={newMatch}

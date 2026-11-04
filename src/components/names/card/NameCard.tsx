@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef } from "react";
+import type { ComponentPropsWithRef, ReactNode } from "react";
 import { cardLabel } from "@/lib/names/a11y";
 import type { Card } from "@/lib/names/types";
 import CardBible from "./CardBible";
@@ -13,6 +13,8 @@ type NameCardProps = Omit<ComponentPropsWithRef<"article">, "children"> & {
   position?: number;
   total?: number;
   surname?: string | null;
+  /** After the number tiles, e.g. the swipe screen's "על הנתונים" link. */
+  footer?: ReactNode;
 };
 
 const stamp =
@@ -25,7 +27,7 @@ const stamp =
  * (שמירה, דילוג, אהבתי מאוד) show through the --keep, --skip and --love CSS variables (0..1)
  * that the drag sets on the article, like the landing demo's .nd-stamp.
  */
-export default function NameCard({ card, position, total, surname, className = "", ...rest }: NameCardProps) {
+export default function NameCard({ card, position, total, surname, footer, className = "", ...rest }: NameCardProps) {
   const { stats, content, derived } = card;
   return (
     <article
@@ -46,6 +48,7 @@ export default function NameCard({ card, position, total, surname, className = "
       <CardPeople people={content.people} />
       <CardSexBar {...derived} />
       <CardStats stats={stats} {...derived} />
+      {footer}
       <span aria-hidden="true" className={`${stamp} end-5 -rotate-12 text-ink opacity-[var(--keep,0)]`}>
         שמירה
       </span>
