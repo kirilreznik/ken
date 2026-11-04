@@ -10,14 +10,7 @@ import ResendTimer from "@/components/names/auth/ResendTimer";
 import Turnstile, { captchaEnabled } from "@/components/names/auth/Turnstile";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
-import {
-  INVALID_EMAIL_MESSAGE,
-  OFFLINE_MESSAGE,
-  authErrorKind,
-  authErrorMessage,
-  isValidEmail,
-  reportAuthError,
-} from "@/lib/names/authErrors";
+import { INVALID_EMAIL_MESSAGE, OFFLINE_MESSAGE, handleAuthError, isOffline, isValidEmail } from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
 import { getPref } from "@/lib/names/prefs";
 import { nextRoute } from "@/lib/names/routing";
@@ -53,19 +46,18 @@ export default function EmailSignIn() {
   }, [loading, user, join, router]);
 
   function fail(area: string, err: unknown): void {
-    const kind = authErrorKind(err);
-    if (kind === "signups-closed") {
+    const { message } = handleAuthError(area, err);
+    if (message === null) {
       router.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));
       return;
     }
-    if (kind === "other") reportAuthError(area, err);
-    setError(authErrorMessage(kind));
+    setError(message);
   }
 
   async function sendCode(): Promise<boolean> {
     const supabase = getSupabase();
     if (!supabase || busy) return false;
-    if (!navigator.onLine) {
+    if (isOffline()) {
       setError(OFFLINE_MESSAGE);
       return false;
     }
@@ -110,7 +102,7 @@ export default function EmailSignIn() {
   async function verify(token: string) {
     const supabase = getSupabase();
     if (!supabase || busy || token.length !== CODE_LENGTH) return;
-    if (!navigator.onLine) {
+    if (isOffline()) {
       setError(OFFLINE_MESSAGE);
       return;
     }

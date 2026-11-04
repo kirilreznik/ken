@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { INTRO_PATH, ONBOARDING_PATH, callbackError, joinPath, nextRoute, oauthRedirectTo } from "@/lib/names/routing";
+import { INTRO_PATH, ONBOARDING_PATH, joinPath, nextRoute, oauthRedirectTo } from "@/lib/names/routing";
 
 const onboarded = { user_metadata: { terms_accepted_at: "2026-11-04T10:00:00.000Z" } };
 
@@ -43,22 +43,5 @@ describe("oauthRedirectTo", () => {
     expect(oauthRedirectTo(undefined, "http://localhost:3000", "AB12cd34")).toBe(
       "http://localhost:3000/names/auth/callback?join=AB12cd34",
     );
-  });
-});
-
-describe("callbackError", () => {
-  it("reads error_description from the query or the hash", () => {
-    expect(callbackError("?error=access_denied&error_description=Signups+not+allowed", "")).toBe("Signups not allowed");
-    expect(callbackError("", "#error=server_error&error_description=Unable%20to%20exchange")).toBe("Unable to exchange");
-  });
-
-  it("falls back to error_code and error", () => {
-    expect(callbackError("?error_code=bad_oauth_state", "")).toBe("bad_oauth_state");
-    expect(callbackError("?error=access_denied", "")).toBe("access_denied");
-  });
-
-  it("is null on a normal callback", () => {
-    expect(callbackError("?code=abc&join=AB12cd34", "")).toBeNull();
-    expect(callbackError("", "")).toBeNull();
   });
 });

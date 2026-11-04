@@ -6,14 +6,20 @@ import { useRouter } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import AuthLayout from "@/components/names/auth/AuthLayout";
-import { WELCOME_PATH } from "@/lib/names/auth";
+import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
+import { authErrorKind, reportAuthError, urlAuthError } from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
 import { getPref } from "@/lib/names/prefs";
-import { GOOGLE_FAILED_MESSAGE, callbackError, nextRoute } from "@/lib/names/routing";
+import { GOOGLE_FAILED_MESSAGE, nextRoute } from "@/lib/names/routing";
 import { useAuth } from "./AuthProvider";
 
 const noSubscribe = () => () => {};
-const readError = () => callbackError(window.location.search, window.location.hash);
+const readUrlError = () => urlAuthError(window.location.search, window.location.hash);
+// A string snapshot (the error kind) keeps useSyncExternalStore stable.
+const readError = () => {
+  const err = readUrlError();
+  return err ? authErrorKind(err) : null;
+};
 const serverError = () => null;
 
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
@@ -30,12 +36,19 @@ export default function AuthCallback() {
   const urlError = useSyncExternalStore(noSubscribe, readError, serverError);
   const failed = urlError !== null || (!loading && !session);
 
+  // FR-W5: closed sign-ups go to welcome with the waitlist notice; anything unexpected is reported
+  // by its code only. The screen itself only ever shows the Hebrew failure.
+  useEffect(() => {
+    if (urlError === "signups-closed") router.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));
+    else if (urlError === "other") reportAuthError("sign-in-google-callback", readUrlError());
+  }, [urlError, join, router]);
+
   useEffect(() => {
     if (urlError || loading || !user) return;
     router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
   }, [urlError, loading, user, join, router]);
 
-  if (failed) {
+  if (failed && urlError !== "signups-closed") {
     return (
       <AuthLayout title={GOOGLE_FAILED_MESSAGE} lead="אפשר לנסות שוב או להיכנס עם קוד במייל." hero={wordmark}>
         <Link

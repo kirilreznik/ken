@@ -32,16 +32,3 @@ export function oauthRedirectTo(siteUrl: string | undefined, origin: string, joi
   const base = siteUrl?.trim() || origin;
   return callbackUrl(base, join);
 }
-
-/**
- * The provider's error on the callback URL (query, or hash for the implicit form), or null.
- * Supabase sends error / error_code / error_description when Google or the exchange fails.
- */
-export function callbackError(search: string, hash: string): string | null {
-  for (const raw of [search, hash.replace(/^#/, "")]) {
-    const params = new URLSearchParams(raw);
-    const msg = params.get("error_description") ?? params.get("error_code") ?? params.get("error");
-    if (msg) return msg;
-  }
-  return null;
-}
