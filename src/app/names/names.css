@@ -143,7 +143,6 @@
   .nest-names [data-names-bg="none"] .names-chip-off {
     background-color: var(--nest-sand);
     border-color: transparent;
-    color: var(--nest-ink-soft);
   }
 
   /* A well inside a glass card (the stat tiles, GlassFabric.dc.html .well). On "ללא רקע"

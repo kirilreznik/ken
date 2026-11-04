@@ -54,7 +54,7 @@ export function chipClass(selected: boolean): string {
   return [
     "relative inline-flex items-center rounded-pill px-3 py-1.5 text-caption font-bold",
     "before:absolute before:inset-x-0 before:-inset-y-2 before:content-['']",
-    selected ? "border border-ink bg-ink text-surface" : "names-glass-soft names-chip-off text-ink",
+    selected ? "border border-ink bg-ink text-surface" : "names-glass-soft names-chip-off text-ink in-data-[names-bg=none]:text-ink-soft",
     PRESS,
     DISABLED,
   ].join(" ");

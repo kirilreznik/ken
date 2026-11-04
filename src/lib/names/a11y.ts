@@ -39,3 +39,8 @@ export function statusText(kind: StatusKind, name: string): string {
       return `בוטל: ${name}`;
   }
 }
+
+/** aria-label of the "השמות שלי" pill in the swipe header (FR-W10). */
+export function savedLabel(count: number): string {
+  return `השמות שלי: ${count} נשמרו`;
+}

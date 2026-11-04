@@ -82,3 +82,16 @@ export function count(cards: Iterable<FilterableCard>, filters: Filters): number
   for (const card of cards) if (matches(card, filters)) n++;
   return n;
 }
+
+/** The swipe screen's quick chips (PRD 3.2.14): each sets only the sex filter. */
+export const QUICK_CHIPS: readonly { label: string; sex: SexTag | null }[] = [
+  { label: "כל השמות", sex: null },
+  { label: "מתאים לכולם", sex: "מתאים לכולם" },
+  { label: "בת", sex: "בת" },
+  { label: "בן", sex: "בן" },
+];
+
+/** Filters with the sex group set from a quick chip; the other groups stay. */
+export function withSex(filters: Filters, sex: SexTag | null): Filters {
+  return { ...filters, sex };
+}

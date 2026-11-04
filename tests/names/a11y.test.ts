@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
 import contentFile from "../../data/names/name-content.json";
-import { barLabel, cardLabel, statusText } from "@/lib/names/a11y";
+import { barLabel, cardLabel, savedLabel, statusText } from "@/lib/names/a11y";
 import { contentNames, parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
 import { countLine, trend } from "@/lib/names/popularity";
 import { sexSplit, sexTag } from "@/lib/names/sex";
@@ -87,5 +87,12 @@ describe("statusText", () => {
     expect(statusText("love", name)).toBe(`${name} נשמר, ראשון ברשימה`);
     expect(statusText("skip", name)).toBe(`דילגת על ${name}`);
     expect(statusText("undo", name)).toBe(`בוטל: ${name}`);
+  });
+});
+
+describe("savedLabel", () => {
+  it("states the saved count", () => {
+    expect(savedLabel(0)).toBe("השמות שלי: 0 נשמרו");
+    expect(savedLabel(12)).toBe("השמות שלי: 12 נשמרו");
   });
 });

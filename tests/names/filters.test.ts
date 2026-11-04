@@ -10,6 +10,8 @@ import {
   isDefault,
   matches,
   nameLength,
+  QUICK_CHIPS,
+  withSex,
   type FilterableCard,
   type Filters,
 } from "@/lib/names/filters";
@@ -105,5 +107,19 @@ describe("length and first letter", () => {
   it("4 letters is neither short nor long", () => {
     expect(nameLength("נועם")).toBe(null);
     expect(nameLength("לביא")).toBe(null);
+  });
+});
+
+describe("quick chips", () => {
+  it("lists the four chips in board order", () => {
+    expect(QUICK_CHIPS.map((c) => c.label)).toEqual(["כל השמות", "מתאים לכולם", "בת", "בן"]);
+    expect(QUICK_CHIPS.map((c) => c.sex)).toEqual([null, "מתאים לכולם", "בת", "בן"]);
+  });
+
+  it("withSex changes only the sex group", () => {
+    const filters = { ...defaultFilters(), popularity: "נדיר" as const, letter: "א" };
+    expect(withSex(filters, "בת")).toEqual({ ...filters, sex: "בת" });
+    expect(withSex({ ...filters, sex: "בן" }, null)).toEqual(filters);
+    expect(filters.sex).toBeNull();
   });
 });
