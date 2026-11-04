@@ -9,7 +9,7 @@ import { useVotes } from "@/components/names/useVotes";
 import { statusText } from "@/lib/names/a11y";
 import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
 import { withSex } from "@/lib/names/filters";
-import type { DragKind } from "@/lib/names/gesture";
+import type { Decision } from "@/lib/names/gesture";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 import type { SexTag, Vote } from "@/lib/names/types";
 import { applyVote, isSaved, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
@@ -69,7 +69,7 @@ export default function SwipeScreen() {
   const progress = deck && cards && filters ? deckProgress(cards, votes, filters, deck.cards.length) : null;
   const current = deck?.cards[0] ?? null;
 
-  const decide = (kind: DragKind) => {
+  const decide = (kind: Decision) => {
     if (!store || !current) return;
     const name = current.stats.name;
     const next = applyVote({ votes, undo: undoStack }, name, kind);
@@ -98,7 +98,7 @@ export default function SwipeScreen() {
   const setSex = (sex: SexTag | null) => {
     if (userId && filters) setPref(userId, "filters", withSex(filters, sex));
   };
-  const fly = (kind: DragKind) => () => drag.fly(kind);
+  const fly = (kind: Decision) => () => drag.fly(kind);
 
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col">
@@ -124,6 +124,7 @@ export default function SwipeScreen() {
             onKeep={fly("keep")}
             onLove={fly("love")}
             onSkip={fly("skip")}
+            onHide={fly("hidden")}
             disabled={!current}
             describedBy={SWIPE_KEYS_ID}
           />

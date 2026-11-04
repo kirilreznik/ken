@@ -7,6 +7,7 @@ import {
   dragStyle,
   flingTo,
   keepDir,
+  type Decision,
   type DragKind,
   type DragMode,
   type KeepDir,
@@ -41,7 +42,7 @@ function paint(el: HTMLElement, transform: string, keep = 0, skip = 0, love = 0)
  * the next card takes it, so keyboard users stay on the card; `holdFocus()` does the same
  * before an undo brings the previous card back.
  */
-export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (kind: DragKind) => void; disabled?: boolean }) {
+export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decision: Decision) => void; disabled?: boolean }) {
   const el = useRef<HTMLElement | null>(null);
   const drag = useRef<Drag | null>(null);
   const busy = useRef(false);
@@ -81,7 +82,7 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (kind: 
     if (from && !reducedMotion()) node.animate([{ transform: from }, { transform: "none" }], { duration: 220, easing: "ease-out" });
   };
 
-  const fling = async (node: HTMLElement, kind: DragKind, dir: KeepDir) => {
+  const fling = async (node: HTMLElement, kind: DragKind, dir: KeepDir, decision: Decision = kind) => {
     busy.current = true;
     const from = node.style.transform || "none";
     const frames = reducedMotion()
@@ -95,7 +96,7 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (kind: 
     }
     if (el.current !== node) return;
     refocus.current = document.activeElement === node;
-    decide.current(kind);
+    decide.current(decision);
     busy.current = false;
   };
 
@@ -139,10 +140,11 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (kind: 
     if (drag.current?.id === e.pointerId) snapBack();
   };
 
-  const fly = (kind: DragKind) => {
+  /** "hidden" leaves the way a skip does. */
+  const fly = (decision: Decision) => {
     const node = el.current;
     if (!node || disabled || busy.current || drag.current) return;
-    void fling(node, kind, keepDir());
+    void fling(node, decision === "hidden" ? "skip" : decision, keepDir(), decision);
   };
 
   /** Call before anything that replaces the card (undo) to move focus to the new one. */

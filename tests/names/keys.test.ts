@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SWIPE_KEYS_HINT, swipeKey } from "@/lib/names/keys";
+import { isMenuKey, SWIPE_KEYS_HINT, swipeKey } from "@/lib/names/keys";
 
 describe("swipeKey", () => {
   it("maps K, L, S, Z and Backspace", () => {
@@ -30,6 +30,21 @@ describe("swipeKey", () => {
     expect(swipeKey({ key: "a", code: "KeyA" })).toBeNull();
   });
   it("hint lists every shortcut", () => {
-    expect(SWIPE_KEYS_HINT).toBe("קיצורי מקלדת: K שמירה, L אהבתי מאוד, S דילוג, Z ביטול");
+    expect(SWIPE_KEYS_HINT).toBe(
+      "קיצורי מקלדת: K שמירה, L אהבתי מאוד, S דילוג, Z ביטול. על דילוג, מקש התפריט או Shift+F10: דילוג ולא להציג שוב",
+    );
+  });
+});
+
+describe("isMenuKey", () => {
+  it("accepts the menu key and Shift+F10", () => {
+    expect(isMenuKey({ key: "ContextMenu" })).toBe(true);
+    expect(isMenuKey({ key: "F10", shiftKey: true })).toBe(true);
+  });
+  it("ignores F10 alone, modified keys and other keys", () => {
+    expect(isMenuKey({ key: "F10" })).toBe(false);
+    expect(isMenuKey({ key: "F10", shiftKey: true, ctrlKey: true })).toBe(false);
+    expect(isMenuKey({ key: "ContextMenu", metaKey: true })).toBe(false);
+    expect(isMenuKey({ key: "s" })).toBe(false);
   });
 });

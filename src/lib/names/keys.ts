@@ -1,7 +1,8 @@
 export type SwipeKey = "keep" | "love" | "skip" | "undo";
 
 /** The shortcuts (FR-W11), read aloud through the swipe area's aria-describedby hint. */
-export const SWIPE_KEYS_HINT = "קיצורי מקלדת: K שמירה, L אהבתי מאוד, S דילוג, Z ביטול";
+export const SWIPE_KEYS_HINT =
+  "קיצורי מקלדת: K שמירה, L אהבתי מאוד, S דילוג, Z ביטול. על דילוג, מקש התפריט או Shift+F10: דילוג ולא להציג שוב";
 
 const BY_CODE: Record<string, SwipeKey> = { KeyK: "keep", KeyL: "love", KeyS: "skip", KeyZ: "undo", Backspace: "undo" };
 const BY_KEY: Record<string, SwipeKey> = { k: "keep", l: "love", s: "skip", z: "undo", backspace: "undo" };
@@ -16,6 +17,12 @@ type KeyInput = { key: string; code?: string; ctrlKey?: boolean; metaKey?: boole
 export function swipeKey(e: KeyInput): SwipeKey | null {
   if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return null;
   return (e.code && BY_CODE[e.code]) || BY_KEY[e.key.toLowerCase()] || null;
+}
+
+/** The context-menu key or Shift+F10 (US-046: opens "דילוג ולא להציג שוב" on "דילוג"). */
+export function isMenuKey(e: Pick<KeyInput, "key" | "ctrlKey" | "metaKey" | "altKey"> & { shiftKey?: boolean }): boolean {
+  if (e.ctrlKey || e.metaKey || e.altKey) return false;
+  return e.key === "ContextMenu" || (e.key === "F10" && !!e.shiftKey);
 }
 
 /** Keys typed into a text field are text, not shortcuts. */

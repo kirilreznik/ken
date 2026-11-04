@@ -7,7 +7,7 @@ import SwipeFooter from "@/components/names/swipe/SwipeFooter";
 import SwipeKeys, { SWIPE_KEYS_ID } from "@/components/names/swipe/SwipeKeys";
 import { dragClass, useSwipeDrag } from "@/components/names/swipe/useSwipeDrag";
 import { statusText } from "@/lib/names/a11y";
-import type { DragKind } from "@/lib/names/gesture";
+import type { Decision } from "@/lib/names/gesture";
 import type { Card } from "@/lib/names/types";
 
 // Dev-only: the stack with the action bar and footer, to check the enter animation (US-040),
@@ -30,7 +30,7 @@ export default function DevStack({ cards }: { cards: Card[] }) {
     setStatus(statusText("undo", cards[done - 1].stats.name));
     setDone((d) => d - 1);
   };
-  const fly = (kind: DragKind) => () => drag.fly(kind);
+  const fly = (kind: Decision) => () => drag.fly(kind);
   return (
     <SwipeKeys onKey={(key) => (key === "undo" ? undo() : drag.fly(key))} className="flex min-h-0 flex-1 flex-col">
       <div className="flex min-h-0 flex-1 flex-col px-5">
@@ -48,6 +48,7 @@ export default function DevStack({ cards }: { cards: Card[] }) {
         onKeep={fly("keep")}
         onLove={fly("love")}
         onSkip={fly("skip")}
+        onHide={fly("hidden")}
         disabled={!current}
         describedBy={SWIPE_KEYS_ID}
       />

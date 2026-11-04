@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dragOutcome, dragStart, dragStyle, flingTo } from "@/lib/names/gesture";
+import { dragOutcome, dragStart, dragStyle, flingTo, longPressMoved } from "@/lib/names/gesture";
 
 describe("dragStart", () => {
   it("waits under 8 px", () => {
@@ -60,5 +60,14 @@ describe("flingTo", () => {
     expect(flingTo("skip", 1)).toBe("translateX(-130%) rotate(-18deg)");
     expect(flingTo("keep", -1)).toBe("translateX(-130%) rotate(-18deg)");
     expect(flingTo("love", 1)).toBe("translateY(-120%) scale(0.9)");
+  });
+});
+
+describe("longPressMoved", () => {
+  it("allows a 10 px wobble and cancels past it", () => {
+    expect(longPressMoved(0, 0)).toBe(false);
+    expect(longPressMoved(6, 8)).toBe(false);
+    expect(longPressMoved(8, 8)).toBe(true);
+    expect(longPressMoved(0, -11)).toBe(true);
   });
 });

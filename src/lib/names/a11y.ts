@@ -24,7 +24,7 @@ export function barLabel({ boysLabel, girlsLabel }: Pick<CardDerived, "boysLabel
   return `מאז 1949 ניתן ל־${spoken(boysLabel)} בנים ול־${spoken(girlsLabel)} בנות`;
 }
 
-export type StatusKind = "keep" | "love" | "skip" | "undo";
+export type StatusKind = "keep" | "love" | "skip" | "hidden" | "undo";
 
 /** Live region text after a vote or an undo, the demo's wording. */
 export function statusText(kind: StatusKind, name: string): string {
@@ -35,6 +35,8 @@ export function statusText(kind: StatusKind, name: string): string {
       return `${name} נשמר, ראשון ברשימה`;
     case "skip":
       return `דילגת על ${name}`;
+    case "hidden":
+      return `${name} לא יוצג שוב`;
     case "undo":
       return `בוטל: ${name}`;
   }

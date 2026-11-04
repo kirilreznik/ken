@@ -1,4 +1,5 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ReactNode } from "react";
+import SkipButton from "./SkipButton";
 
 type Act = "keep" | "love" | "skip";
 
@@ -12,10 +13,9 @@ const CLASS: Record<Act, string> = {
   skip: `names-glass names-button-glass text-ink ${PILL}`,
 };
 
-const LABEL: Record<Act, string> = {
+const LABEL: Record<Exclude<Act, "skip">, string> = {
   keep: "שמירה לרשימה",
   love: "אהבתי מאוד",
-  skip: "דילוג, לא בשבילנו",
 };
 
 function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
@@ -41,10 +41,10 @@ type ActionBarProps = {
   onKeep: () => void;
   onLove: () => void;
   onSkip: () => void;
+  /** "דילוג ולא להציג שוב" from the skip button's menu (long-press, right-click, menu key). */
+  onHide: () => void;
   /** No card to decide on (end of deck, loading): the buttons stay focusable but do nothing. */
   disabled?: boolean;
-  /** Extra props for "דילוג" (the hide menu's long-press and right-click, US-046). */
-  skipProps?: ButtonHTMLAttributes<HTMLButtonElement>;
   /** id of the keyboard shortcut hint (SwipeKeys). */
   describedBy?: string;
 };
@@ -54,7 +54,7 @@ type ActionBarProps = {
  * with a bookmark, "אהבתי מאוד" peach circle with a heart, "דילוג" glass pill with an x, in
  * the demo's order. In RTL "שמירה" is the right-most one; the drag direction is read from it.
  */
-export default function ActionBar({ onKeep, onLove, onSkip, disabled = false, skipProps, describedBy }: ActionBarProps) {
+export default function ActionBar({ onKeep, onLove, onSkip, onHide, disabled = false, describedBy }: ActionBarProps) {
   const act = (fn: () => void) => () => {
     if (!disabled) fn();
   };
@@ -72,19 +72,12 @@ export default function ActionBar({ onKeep, onLove, onSkip, disabled = false, sk
           <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
         </Icon>
       </button>
-      <button
-        {...skipProps}
-        {...common}
-        data-act="skip"
-        aria-label={LABEL.skip}
-        className={CLASS.skip}
-        onClick={act(onSkip)}
-      >
+      <SkipButton onSkip={onSkip} onHide={onHide} disabled={disabled} className={CLASS.skip} describedBy={describedBy}>
         דילוג
         <Icon>
           <path d="M6 6l12 12M18 6L6 18" />
         </Icon>
-      </button>
+      </SkipButton>
     </div>
   );
 }

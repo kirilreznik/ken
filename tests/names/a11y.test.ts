@@ -85,6 +85,7 @@ describe("statusText", () => {
   it.each(cards.map((c) => c.stats.name))("%s", (name) => {
     expect(statusText("keep", name)).toBe(`${name} נשמר`);
     expect(statusText("love", name)).toBe(`${name} נשמר, ראשון ברשימה`);
+    expect(statusText("hidden", name)).toBe(`${name} לא יוצג שוב`);
     expect(statusText("skip", name)).toBe(`דילגת על ${name}`);
     expect(statusText("undo", name)).toBe(`בוטל: ${name}`);
   });

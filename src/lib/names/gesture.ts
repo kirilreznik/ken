@@ -4,6 +4,8 @@
 // 100 px is "אהבתי מאוד". Anything shorter snaps back.
 
 export type DragKind = "keep" | "skip" | "love";
+/** What a card can leave with: a drag kind, or "hidden" ("דילוג ולא להציג שוב", flies like a skip). */
+export type Decision = DragKind | "hidden";
 /** 1 when a drag toward the right keeps (RTL: "שמירה" is the right-most action), else −1. */
 export type KeepDir = 1 | -1;
 export type DragMode = "x" | "up";
@@ -13,6 +15,9 @@ export const CANCEL_PX = 12;
 export const DECIDE_PX = 100;
 export const FLING_PX = 40;
 export const FLING_PX_PER_MS = 0.6;
+/** Holding "דילוג" this long opens the hide menu (US-046); moving more than the slop cancels. */
+export const LONG_PRESS_MS = 500;
+export const LONG_PRESS_SLOP_PX = 10;
 /** The stamps are fully visible at 90 px. */
 export const STAMP_PX = 90;
 
@@ -63,4 +68,9 @@ export function keepDir(root: ParentNode = document): KeepDir {
   const skip = root.querySelector("[data-act=skip]")?.getBoundingClientRect();
   if (keep && skip && keep.width && skip.width) return keep.left + keep.width / 2 >= skip.left + skip.width / 2 ? 1 : -1;
   return 1; // The app is RTL.
+}
+
+/** Whether a pointer held on "דילוג" moved too far to still be a long press. */
+export function longPressMoved(dx: number, dy: number): boolean {
+  return Math.hypot(dx, dy) > LONG_PRESS_SLOP_PX;
 }
