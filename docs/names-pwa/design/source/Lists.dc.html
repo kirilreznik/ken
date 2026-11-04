@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>בחירת שם · השמות שלי</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;800&amp;display=swap">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; background: #F4F2F1; color: #1F1B1E; font-family: Heebo, system-ui, 'Noto Sans Hebrew', Arial, sans-serif; display: flex; flex-direction: column; padding: 56px 20px 24px; gap: 16px;">
+  <header style="display: flex; align-items: center; gap: 8px;">
+    <button type="button" aria-label="חזרה" style="width: 44px; height: 44px; border-radius: 999px; border: 1px solid #E6DDD6; background: #FFFFFF; display: flex; align-items: center; justify-content: center; color: #1F1B1E;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+    <h1 style="margin: 0; flex-grow: 1; font-size: 22px; line-height: 28px; font-weight: 800;">השמות שלי</h1>
+    <button type="button" aria-label="הוספת שם שלא ברשימה" style="height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid #E6DDD6; background: #FFFFFF; color: #1F1B1E; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      הוספת שם
+    </button>
+  </header>
+
+  <div role="tablist" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 999px; background: #FFFFFF; border: 1px solid #E6DDD6;">
+    <button type="button" role="tab" aria-selected="false" style="min-height: 40px; border-radius: 999px; border: none; background: transparent; color: #4A4149; font-size: 13px; font-weight: 700;">שמרתי · 12</button>
+    <button type="button" role="tab" aria-selected="true" style="min-height: 40px; border-radius: 999px; border: none; background: #1F1B1E; color: #FFFFFF; font-size: 13px; font-weight: 700;">התאמות · 3</button>
+    <button type="button" role="tab" aria-selected="false" style="min-height: 40px; border-radius: 999px; border: none; background: transparent; color: #4A4149; font-size: 13px; font-weight: 700;">דו־קרב</button>
+  </div>
+
+  <p style="margin: 0; font-size: 13px; line-height: 20px; font-weight: 500; color: #4A4149;">שמות ששניכם שמרתם. על שמות שדילגתם עליהם אף אחד לא יודע.</p>
+
+  <ul style="margin: 0; padding: 0; list-style: none; border-radius: 22px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(31,27,30,0.04), 0 8px 20px rgba(31,27,30,0.06); overflow: hidden;">
+    <li style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #E6DDD6;">
+      <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+        <span style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 17px; font-weight: 800;">אריאל</span>
+          <span style="padding: 2px 8px; border-radius: 999px; background: #FFE2C9; color: #8A5225; font-size: 10.5px; font-weight: 700;">חדש</span>
+        </span>
+        <span style="font-size: 12px; font-weight: 500; color: #6E655F;">מתאים לכולם · ניתן ל־2,099 ב־2024 · → יציב</span>
+      </div>
+      <span style="display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: #4A4149;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#C97A3E" stroke="#C97A3E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+        אהבו מאוד
+      </span>
+    </li>
+    <li style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #E6DDD6;">
+      <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 17px; font-weight: 800;">תמר</span>
+        <span style="font-size: 12px; font-weight: 500; color: #6E655F;">בת · ניתן ל־1,090 ב־2024 · → יציב</span>
+      </div>
+      <span style="font-size: 12px; font-weight: 700; color: #4A4149;">2 שמרו</span>
+    </li>
+    <li style="display: flex; align-items: center; gap: 12px; padding: 14px 16px;">
+      <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+        <span style="font-size: 17px; font-weight: 800;">לביא</span>
+        <span style="font-size: 12px; font-weight: 500; color: #6E655F;">בן · ניתן ל־1,523 ב־2024 · ↗ בעלייה</span>
+      </div>
+      <span style="font-size: 12px; font-weight: 700; color: #4A4149;">2 שמרו</span>
+    </li>
+  </ul>
+
+  <a href="Duel.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 22px; background: #FFE2C9; color: #1F1B1E; text-decoration: none;">
+    <span aria-hidden="true" style="flex: none; width: 40px; height: 40px; border-radius: 12px; background: #FFFFFF; display: flex; align-items: center; justify-content: center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F1B1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M17 4v16M3 8h8M13 16h8"/></svg></span>
+    <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+      <span style="font-size: 15px; font-weight: 700;">דו־קרב בין ההתאמות</span>
+      <span style="font-size: 12px; font-weight: 500; color: #4A4149;">שני שמות בכל פעם, עד שנשארת חמישייה</span>
+    </span>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+  </a>
+
+  <p style="margin: 0; margin-top: auto; text-align: center; font-size: 11px; font-weight: 500; color: #6E655F;">הנתונים במסך זה הם לדוגמה בלבד</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
