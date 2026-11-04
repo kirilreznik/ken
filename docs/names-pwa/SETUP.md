@@ -132,9 +132,8 @@ Supabase → Authentication → Emails → **SMTP Settings** → Enable custom S
 - Port: `465`
 - Username: `resend`
 - Password: the Resend API key from step 6
-- Minimum interval between emails: 30 seconds
 
-Then do step 3.4 (rate limits).
+Then do step 3.4 (rate limits). Turning custom SMTP on resets the email limit to 30 per hour, so step 3.4 is needed. (The dashboard had no "minimum interval" field as of 2026-11-04.)
 
 **Done when:** a code sent from the Supabase dashboard (Authentication → Users → Add user → Send magic link, to Kiril's own address) arrives from `no-reply@nestjourney.app` with the Hebrew template and a 6-digit code.
 
