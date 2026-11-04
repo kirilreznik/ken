@@ -1,20 +1,49 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { withJoin } from "@/lib/names/join";
+import { GOOGLE_FAILED_MESSAGE, oauthRedirectTo } from "@/lib/names/routing";
+import { getSupabase } from "@/lib/names/supabase";
 
 export const EMAIL_SIGN_IN_PATH = "/names/sign-in/email";
 
-/** The two sign-in buttons of FR-W1 (no SMS, PRD 3.1.3). Google is wired in US-026. */
+/** The two sign-in buttons of FR-W1 (no SMS, PRD 3.1.3). */
 export default function WelcomeActions() {
   const join = usePendingJoin();
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  // FR-W2: Supabase sends the browser to Google, then back to /names/auth/callback (PKCE).
+  async function signInWithGoogle() {
+    const supabase = getSupabase();
+    if (!supabase || busy) return;
+    setBusy(true);
+    setFailed(false);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: oauthRedirectTo(process.env.NEXT_PUBLIC_SITE_URL, window.location.origin, join) },
+    });
+    if (error) {
+      setBusy(false);
+      setFailed(true);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-3">
+      {failed ? (
+        <p role="alert" className="text-body text-ink">
+          {GOOGLE_FAILED_MESSAGE}
+        </p>
+      ) : null}
       <button
         type="button"
-        className="flex h-14 items-center justify-center gap-3 rounded-pill bg-ink px-6 text-button text-surface shadow-button"
+        onClick={signInWithGoogle}
+        disabled={busy}
+        aria-busy={busy}
+        className="flex h-14 items-center justify-center gap-3 rounded-pill bg-ink px-6 text-button text-surface shadow-button disabled:opacity-70"
       >
         <span className="flex size-7 items-center justify-center rounded-pill bg-surface" aria-hidden="true">
           {/* eslint-disable-next-line @next/next/no-img-element -- tiny static brand mark */}
