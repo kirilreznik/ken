@@ -15,7 +15,7 @@
         "QA users 1, 2 and 3 (NAMES_QA_EMAIL_1/2/3) sign in through REST without sending any email: POST /auth/v1/admin/generate_link {type: 'magiclink', email} with the service-role key returns properties.email_otp, then POST /auth/v1/verify {type: 'email', email, token} returns a session (§10). A user that doesn't exist yet is created first with the admin API (POST /auth/v1/admin/users with email, email_confirm true, user_metadata {qa: true}); record which were created",
         "GET {SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=http://localhost:3000/names/auth/callback answers with a redirect to accounts.google.com (Google provider enabled)",
         "GET {SUPABASE_URL}/auth/v1/settings shows external.google and external.email true (external.phone is expected false: SMS sign-in is postponed); record disable_signup's value (expected true until launch) in progress.txt",
-        "node -v is 22 or newer; jq exists; npm install succeeds; npx playwright --version works or US-002 will install it",
+        "node -v is 22 or newer; jq exists; npm ci succeeds and leaves package-lock.json unchanged; npx playwright --version works or US-002 will install it",
         "If ANY item fails: write a section 'BLOCKED: prerequisites missing' at the top of progress.txt listing each missing item with the SETUP.md step that fixes it, leave passes false, and stop (don't start other stories)",
         "No commit",
         "Lint passes with 0 errors (npm run lint)"
@@ -46,7 +46,7 @@
       "title": "Add Playwright, QA folders and helper scripts",
       "description": "As the Ralph agent, I need repeatable browser checks and a scripted QA sign-in so every UI story can be verified.",
       "acceptanceCriteria": [
-        "@playwright/test added as a dev dependency (npm install -D); npx playwright install chromium",
+        "@playwright/test added as a dev dependency (npm install -D, then the lockfile check in scripts/ralph/CLAUDE.md: no @esbuild/* entries removed); npx playwright install chromium",
         ".gitignore already ignores the Ralph run state and QA shots/.auth (added with the PRD); add test-results/ and playwright-report/",
         "scripts/ralph/qa/names-pwa/ created with bugs.md (header only), ux-insights.md (header only) and shots/",
         "scripts/ralph/qa/names-pwa/env.mjs loads scripts/ralph/.env.test.local without printing values",

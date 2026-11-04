@@ -166,7 +166,7 @@ Google and Resend secrets are **not** Vercel variables. They live only in the Su
 In the `ken` checkout on the Mac:
 
 1. Tools: Node 22 or newer (`node -v`), `jq` (`brew install jq`), the Claude Code CLI signed in (`claude --version`), git with push access to `kirilreznik/ken`.
-2. `npm install`, then `npx playwright install chromium` (Ralph's browser checks; US-002 adds Playwright as a dev dependency if it isn't there yet).
+2. `npm ci` (not `npm install`: npm 11 on the Mac drops the Linux esbuild entries from `package-lock.json`, which Vercel needs), then `npx playwright install chromium` (Ralph's browser checks; US-002 adds Playwright as a dev dependency if it isn't there yet).
 3. Create `.env.local` (gitignored by `.env*`):
 
 ```

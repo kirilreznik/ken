@@ -52,3 +52,7 @@ supabase/functions/*/dist/
 /scripts/ralph/archive/
 /scripts/ralph/qa/names-pwa/shots/
 /scripts/ralph/qa/names-pwa/.auth/
+
+# Next 16 dev server writes these at the root
+/AGENTS.md
+/CLAUDE.md
