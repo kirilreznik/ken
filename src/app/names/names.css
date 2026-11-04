@@ -172,3 +172,39 @@
     }
   }
 }
+
+/* Sheets, dialogs and the toast (src/components/names/ui). Reduced motion switches the
+ * animations off with the rule above. */
+@keyframes names-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes names-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes names-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@layer components {
+  .nest-names .names-sheet-in {
+    animation: names-sheet-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .nest-names .names-scrim-in,
+  .nest-names .names-toast-in {
+    animation: names-fade-in 200ms ease-out;
+  }
+
+  .nest-names .names-dialog-in {
+    animation: names-dialog-in 200ms ease-out;
+  }
+}

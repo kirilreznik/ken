@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import AuthProvider from "@/components/names/AuthProvider";
 import Unconfigured from "@/components/names/Unconfigured";
+import { ToastRegion } from "@/components/names/ui";
 import { canvasColor } from "@/lib/names/brand";
 import { isConfigured } from "@/lib/names/supabase";
 import "@/styles/nest-tokens.css";
@@ -20,7 +21,14 @@ export const viewport: Viewport = {
 export default function NamesLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="nest-names min-h-dvh">
-      {isConfigured() ? <AuthProvider>{children}</AuthProvider> : <Unconfigured />}
+      {isConfigured() ? (
+        <>
+          <AuthProvider>{children}</AuthProvider>
+          <ToastRegion />
+        </>
+      ) : (
+        <Unconfigured />
+      )}
     </div>
   );
 }
