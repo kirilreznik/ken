@@ -38,7 +38,8 @@ export interface CardDerived {
   band: PopularityBand;
   countLine: string;
   trend: { word: TrendWord; arrow: string } | null;
-  spark: string;
+  /** Sparkline polyline points; null for names with no recent years. */
+  spark: string | null;
 }
 
 export interface Card {
