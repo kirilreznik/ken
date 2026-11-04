@@ -96,6 +96,9 @@
   --nest-text-stamp: 22px;
   --nest-text-stamp-line-height: 28px;
   --nest-text-stamp-weight: 800;
+  --nest-text-peek: 14px;
+  --nest-text-peek-line-height: 18px;
+  --nest-text-peek-weight: 800;
   --nest-glass-tint: rgba(255,255,255,0.34);
   --nest-glass-soft-tint: rgba(255,255,255,0.22);
   --nest-glass-well-tint: rgba(255,255,255,0.42);
@@ -128,6 +131,7 @@
   --nest-shadow-button: 0 8px 20px rgba(31,27,30,0.25);
   --nest-shadow-button-soft: 0 8px 20px rgba(31,27,30,0.18);
   --nest-shadow-card-raised: 0 1px 2px rgba(31,27,30,0.04), 0 8px 20px rgba(31,27,30,0.08);
+  --nest-surface-dim: #FBF9F8;
 }
 
 @theme inline {
@@ -216,4 +220,7 @@
   --text-stamp: var(--nest-text-stamp);
   --text-stamp--line-height: var(--nest-text-stamp-line-height);
   --text-stamp--font-weight: var(--nest-text-stamp-weight);
+  --text-peek: var(--nest-text-peek);
+  --text-peek--line-height: var(--nest-text-peek-line-height);
+  --text-peek--font-weight: var(--nest-text-peek-weight);
 }

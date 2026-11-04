@@ -250,3 +250,37 @@
     background-color: color-mix(in srgb, var(--nest-canvas) calc(var(--names-own-scrim, 0.2) * 100%), transparent);
   }
 }
+
+/* The card stack (CardStack, Main.dc.html / GlassFabric.dc.html): the peeking cards are soft
+ * glass, the nearer one whiter. On "ללא רקע" they're solid: sand behind, near-white in front,
+ * line border and card shadows. The current card enters like the demo's .nd-card.enter; with
+ * reduced motion it only fades (data-motion="fade" keeps it at 200 ms). */
+@keyframes names-card-in {
+  from {
+    transform: translateY(14px) scale(0.96);
+    opacity: 0.5;
+  }
+}
+
+@layer components {
+  .nest-names .names-back-near {
+    background-color: var(--nest-white-30);
+  }
+  .nest-names [data-names-bg="none"] .names-back-far {
+    background-color: var(--nest-sand);
+    box-shadow: var(--nest-shadow-card);
+  }
+  .nest-names [data-names-bg="none"] .names-back-near {
+    background-color: var(--nest-surface-dim);
+    box-shadow: var(--nest-shadow-card-raised);
+  }
+
+  .nest-names .names-card-enter {
+    animation: names-card-in 280ms ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nest-names .names-card-enter {
+      animation-name: names-fade-in;
+    }
+  }
+}

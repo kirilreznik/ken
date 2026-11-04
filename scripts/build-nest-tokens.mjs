@@ -50,6 +50,8 @@ const extras = {
   "shadow-button": "0 8px 20px rgba(31,27,30,0.25)",
   "shadow-button-soft": "0 8px 20px rgba(31,27,30,0.18)",
   "shadow-card-raised": "0 1px 2px rgba(31,27,30,0.04), 0 8px 20px rgba(31,27,30,0.08)",
+  // The nearer peeking card under the current one on "ללא רקע" (Main.dc.html).
+  "surface-dim": "#FBF9F8",
 };
 
 // Type sizes of the names boards that the brand scale doesn't have: the card's name
@@ -68,6 +70,8 @@ const extraStyles = [
   // The card's intro line (Main.dc.html) and the swipe stamps (the demo's .nd-stamp).
   { name: "intro", fontSize: "15px", lineHeight: "22px", fontWeight: 500 },
   { name: "stamp", fontSize: "22px", lineHeight: "28px", fontWeight: 800 },
+  // The next-but-one name on the farther peeking card (Main.dc.html).
+  { name: "peek", fontSize: "14px", lineHeight: "18px", fontWeight: 800 },
 ];
 
 const colors = tokens.color.tokens;
