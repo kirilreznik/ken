@@ -3,10 +3,14 @@ import {
   DUEL_TOP,
   currentPair,
   deserialize,
+  duelAnnouncement,
+  duelSource,
   isDone,
   pick,
   progress,
   ranking,
+  resumeOrStart,
+  roundText,
   sameNames,
   serialize,
   start,
@@ -174,5 +178,65 @@ describe("save and resume", () => {
     expect(sameNames(s, [...names].reverse())).toBe(true);
     expect(sameNames(s, names.slice(1))).toBe(false);
     expect(sameNames(s, [...names.slice(1), "חדש"])).toBe(false);
+  });
+});
+
+describe("source and resume (FR-W21)", () => {
+  const names = POOL.slice(0, 6);
+  const prefer = [...names];
+  const choose = byPreference(prefer);
+
+  it("keeps the source through a save", () => {
+    const s = { ...start(names, SEED), source: "matches" as const };
+    expect(deserialize(serialize(s))).toEqual(s);
+    expect(deserialize(JSON.stringify({ ...s, source: "other" }))).toBeNull();
+  });
+
+  it("resumes the saved duel only for the same source and names", () => {
+    const { state: fresh, restarted: r0 } = resumeOrStart(null, "saved", names, SEED);
+    expect(r0).toBe(false);
+    expect(fresh.source).toBe("saved");
+    const mid = pick(fresh, choose(fresh));
+    expect(resumeOrStart(mid, "saved", [...names].reverse(), 99)).toEqual({ state: mid, restarted: false });
+    // Another source starts its own duel and the saved one isn't "restarted".
+    const other = resumeOrStart(mid, "matches", names, 99);
+    expect(other.restarted).toBe(false);
+    expect(other.state.source).toBe("matches");
+    expect(other.state.picks).toBe(0);
+    // The list changed under a started duel: start over and say so.
+    const changed = resumeOrStart(mid, "saved", [...names, "חדש"], 99);
+    expect(changed.restarted).toBe(true);
+    expect(changed.state.names).toContain("חדש");
+    // A save without a source is a "שמרתי" duel.
+    const legacy = { ...mid };
+    delete legacy.source;
+    expect(resumeOrStart(legacy, "saved", names, 99).state).toBe(legacy);
+  });
+
+  it("a finished duel over a changed list starts over quietly", () => {
+    const done = run({ ...start(names, SEED), source: "saved" }, choose);
+    expect(resumeOrStart(done, "saved", names, 99).state).toBe(done);
+    expect(resumeOrStart(done, "saved", names.slice(1), 99).restarted).toBe(false);
+  });
+
+  it("picks the source to open with", () => {
+    const savedDuel = { ...start(names, SEED), source: "matches" as const };
+    expect(duelSource(null, null, 5, 0)).toBe("saved");
+    expect(duelSource(null, null, 1, 3)).toBe("matches");
+    expect(duelSource("matches", null, 5, 3)).toBe("matches");
+    expect(duelSource("matches", null, 5, 1)).toBe("saved");
+    expect(duelSource(null, savedDuel, 5, 3)).toBe("matches");
+    expect(duelSource(null, savedDuel, 5, 1)).toBe("saved");
+    expect(duelSource("saved", savedDuel, 5, 3)).toBe("saved");
+    expect(duelSource("bogus", null, 5, 3)).toBe("saved");
+  });
+
+  it("writes the round and the screen reader line", () => {
+    const s = start(["תמר", "לביא"], SEED);
+    expect(roundText(progress(s))).toBe("סיבוב 1 מתוך 1");
+    const pair = currentPair(s)!;
+    expect(duelAnnouncement(s)).toBe(`סיבוב 1 מתוך 1: ${pair.a} או ${pair.b}`);
+    const done = pick(s, "תמר");
+    expect(duelAnnouncement(done)).toBe("הדו־קרב הסתיים. 1. תמר, 2. לביא");
   });
 });

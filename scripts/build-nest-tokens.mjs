@@ -81,6 +81,7 @@ const extraStyles = [
   // The match sheet's name and the line under it (Match.dc.html).
   { name: "match-name", fontSize: "60px", lineHeight: "68px", fontWeight: 800 },
   { name: "match-line", fontSize: "15px", lineHeight: "23px", fontWeight: 500 },
+  { name: "duel-name", fontSize: "48px", lineHeight: "56px", fontWeight: 800 },
 ];
 
 const colors = tokens.color.tokens;

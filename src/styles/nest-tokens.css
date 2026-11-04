@@ -114,6 +114,9 @@
   --nest-text-match-line: 15px;
   --nest-text-match-line-line-height: 23px;
   --nest-text-match-line-weight: 500;
+  --nest-text-duel-name: 48px;
+  --nest-text-duel-name-line-height: 56px;
+  --nest-text-duel-name-weight: 800;
   --nest-glass-tint: rgba(255,255,255,0.34);
   --nest-glass-soft-tint: rgba(255,255,255,0.22);
   --nest-glass-well-tint: rgba(255,255,255,0.42);
@@ -253,4 +256,7 @@
   --text-match-line: var(--nest-text-match-line);
   --text-match-line--line-height: var(--nest-text-match-line-line-height);
   --text-match-line--font-weight: var(--nest-text-match-line-weight);
+  --text-duel-name: var(--nest-text-duel-name);
+  --text-duel-name--line-height: var(--nest-text-duel-name-line-height);
+  --text-duel-name--font-weight: var(--nest-text-duel-name-weight);
 }

@@ -24,7 +24,12 @@ export interface DuelState {
   hi: number;
   /** Picks made so far. */
   picks: number;
+  /** The list the duel runs over (FR-W21 toggle). Missing in older saves: "saved". */
+  source?: DuelSource;
 }
+
+/** "שמרתי" or "התאמות". */
+export type DuelSource = "saved" | "matches";
 
 export interface DuelPair {
   a: string;
@@ -164,6 +169,7 @@ export function deserialize(text: string | null | undefined): DuelState | null {
   if (s.next < names.length) {
     if (s.lo >= s.hi || s.hi > Math.min(ranked.length, DUEL_TOP)) return null;
   }
+  if (s.source !== undefined && s.source !== "saved" && s.source !== "matches") return null;
   const state: DuelState = {
     version: 1,
     seed: s.seed,
@@ -174,5 +180,53 @@ export function deserialize(text: string | null | undefined): DuelState | null {
     hi: s.hi,
     picks: s.picks,
   };
+  if (s.source) state.source = s.source;
   return state;
+}
+
+export function sourceOf(state: DuelState): DuelSource {
+  return state.source ?? "saved";
+}
+
+/**
+ * The duel to show for a list: the saved one when it ran over the same source and the same
+ * names, otherwise a new one with `seed`. `restarted` is true when a started, unfinished duel
+ * over this source was dropped because the list changed since.
+ */
+export function resumeOrStart(
+  saved: DuelState | null,
+  source: DuelSource,
+  names: readonly string[],
+  seed: number,
+): { state: DuelState; restarted: boolean } {
+  if (saved && sourceOf(saved) === source && sameNames(saved, names)) return { state: saved, restarted: false };
+  const restarted = !!saved && sourceOf(saved) === source && saved.picks > 0 && !isDone(saved);
+  return { state: { ...start(names, seed), source }, restarted };
+}
+
+/**
+ * The source to open with: `?from=` when that list can duel, then the saved duel's source,
+ * then "שמרתי" unless only "התאמות" has 2+ names. "התאמות" needs 2+ matches.
+ */
+export function duelSource(
+  param: string | null,
+  saved: DuelState | null,
+  savedCount: number,
+  matchCount: number,
+): DuelSource {
+  const can = (s: DuelSource) => (s === "matches" ? matchCount >= 2 : true);
+  if ((param === "saved" || param === "matches") && can(param)) return param;
+  if (saved && can(sourceOf(saved))) return sourceOf(saved);
+  return savedCount < 2 && matchCount >= 2 ? "matches" : "saved";
+}
+
+export function roundText(p: DuelProgress): string {
+  return `סיבוב ${p.round} מתוך ${p.total}`;
+}
+
+/** What a screen reader hears after a pick: the new round and its two names, or the end. */
+export function duelAnnouncement(state: DuelState): string {
+  const pair = currentPair(state);
+  if (!pair) return `הדו־קרב הסתיים. ${ranking(state).map((n, i) => `${i + 1}. ${n}`).join(", ")}`;
+  return `${roundText(progress(state))}: ${pair.a} או ${pair.b}`;
 }

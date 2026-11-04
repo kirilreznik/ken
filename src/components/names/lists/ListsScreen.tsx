@@ -16,6 +16,7 @@ import { addedText, listsTab, rowActionText, rowMeta, rowMetaText, savedRows, ty
 import { showToast } from "@/lib/names/toast";
 import type { NameStats } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
+import DuelScreen from "./DuelScreen";
 import RowMenu from "./RowMenu";
 
 const LISTS_PATH = "/names/lists";
@@ -75,6 +76,37 @@ export default function ListsScreen() {
     if (hasAppEntry()) router.back();
     else router.replace(APP_PATH);
   };
+
+  // Coming back from the duel screen: its title is gone, so start from this one.
+  const lastTab = useRef(tab);
+  useEffect(() => {
+    if (lastTab.current === "duel" && tab !== "duel" && (!document.activeElement || document.activeElement === document.body)) {
+      headingRef.current?.focus();
+    }
+    lastTab.current = tab;
+  }, [tab]);
+
+  const online = useOnline();
+  // The matches the duel can use: the last fetched list, or the cache while offline.
+  const matchesLoaded = !space.isShared || (!!matches?.ready && (matches.fetchedAt !== null || !online));
+  const matchNames = useMemo(() => (space.isShared && matches ? matches.matches.map((m) => m.name) : []), [space.isShared, matches]);
+  const customNames = useMemo(() => new Set(rows.filter((r) => r.custom).map((r) => r.name)), [rows]);
+
+  if (tab === "duel") {
+    return (
+      <DuelScreen
+        userId={user?.id ?? null}
+        from={params.get("from")}
+        ready={ready && matchesLoaded}
+        savedNames={rows.map((r) => r.name)}
+        matchNames={matchNames}
+        names={names}
+        customNames={customNames}
+        onSource={(source) => router.replace(`${LISTS_PATH}?tab=duel&from=${source}`, { scroll: false })}
+        onBack={(source) => selectTab(source === "matches" && space.isShared ? "matches" : "saved")}
+      />
+    );
+  }
 
   const add = (name: string, custom: boolean) => {
     if (!store) return;
@@ -146,12 +178,8 @@ export default function ListsScreen() {
               }}
               headingRef={headingRef}
             />
-          ) : tab === "matches" ? (
-            <MatchesPanel userId={user?.id ?? null} state={matches} memberCount={space.members.length} names={names} />
-          ) : rows.length < 2 && ready ? (
-            <NeedTwo />
           ) : (
-            <p className="m-0 text-person text-ink-soft">שני שמות בכל פעם, עד שנשארת חמישייה.</p>
+            <MatchesPanel userId={user?.id ?? null} state={matches} memberCount={space.members.length} names={names} />
           )}
         </section>
 
@@ -281,15 +309,15 @@ function MatchRows({ userId, matches, memberCount, names }: MatchRowsProps) {
           );
         })}
       </ul>
-      {matches.length >= 2 ? <DuelLink title="דו־קרב בין ההתאמות" /> : null}
+      {matches.length >= 2 ? <DuelLink title="דו־קרב בין ההתאמות" from="matches" /> : null}
     </>
   );
 }
 
-function DuelLink({ title }: { title: string }) {
+function DuelLink({ title, from }: { title: string; from: "saved" | "matches" }) {
   return (
     <Link
-      href={`${LISTS_PATH}?tab=duel`}
+      href={`${LISTS_PATH}?tab=duel&from=${from}`}
       replace
       scroll={false}
       className="flex items-center gap-3 rounded-lg bg-peach-soft px-4 py-3.5 text-ink"
@@ -307,17 +335,6 @@ function DuelLink({ title }: { title: string }) {
         <path d="M15 6l-6 6 6 6" />
       </Icon>
     </Link>
-  );
-}
-
-function NeedTwo() {
-  return (
-    <div className="flex flex-col items-start gap-2 rounded-lg bg-surface px-4 py-5 shadow-card">
-      <p className="m-0 text-card-title">לדו־קרב צריך לפחות שני שמות ברשימה.</p>
-      <Button variant="link" href={APP_PATH}>
-        לבחירת שמות
-      </Button>
-    </div>
   );
 }
 
@@ -415,7 +432,7 @@ function SavedPanel({ ready, rows, names, onAction, headingRef }: SavedPanelProp
           );
         })}
       </ul>
-      {rows.length >= 2 ? <DuelLink title="דו־קרב בין השמות ששמרתי" /> : null}
+      {rows.length >= 2 ? <DuelLink title="דו־קרב בין השמות ששמרתי" from="saved" /> : null}
     </>
   );
 }
