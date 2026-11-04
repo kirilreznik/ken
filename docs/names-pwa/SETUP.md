@@ -128,7 +128,7 @@ Known limit: Google's consent screen says "to continue to hkoumskvmkqqnwhnizbq.s
 
 1. Sign up at https://resend.com with Kiril's email.
 2. **Domains → Add domain:** `nestjourney.app`. Region: **EU (Ireland, eu-west-1)**, to keep email data in the EU like the database.
-3. Resend shows DNS records (an MX and a TXT for SPF on the `send` subdomain, and a DKIM TXT on `resend._domainkey`). Add them where the DNS for `nestjourney.app` is managed: Vercel → Domains → `nestjourney.app` → DNS Records if the domain uses Vercel's nameservers, otherwise the registrar. Also add a DMARC record: name `_dmarc`, type TXT, value `v=DMARC1; p=none; rua=mailto:<Kiril's address>`.
+3. Resend shows DNS records (an MX and a TXT for SPF on the `send` subdomain, and a DKIM TXT on `resend._domainkey`). The DNS for `nestjourney.app` is at **GoDaddy** (nameservers `ns45/ns46.domaincontrol.com`, checked 2026-11-04; the site reaches Vercel through an A record), so add them in GoDaddy → My Products → `nestjourney.app` → DNS. Don't touch the existing A record. Also add a DMARC record: name `_dmarc`, type TXT, value `v=DMARC1; p=none; rua=mailto:<Kiril's address>`.
 4. Wait for Resend to show the domain as **Verified** (minutes to a few hours).
 5. **API Keys → Create API key:** name `supabase-auth-smtp`, permission **Sending access**, domain `nestjourney.app`. Copy it once into the password manager.
 
@@ -159,7 +159,7 @@ Supabase → Project Settings → **API Keys**:
 
 ## 9. Vercel environment variables (before the run)
 
-Vercel → project `ken` → Settings → Environment Variables. Add each for **Production** and **Preview** (Development is not used; local runs read `.env.local`):
+Vercel → project `ken` → Settings → Environment Variables. As of 2026-11-04 the project still has `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` pointing at the old Mumbai project (`nxskkpcjyqjtgccnemgu`); **edit** those two to the EU values (after ken PR #5 is merged, since the old app on `main` still reads them), and add the rest. Add or edit each for **Production** and **Preview** (Development is not used; local runs read `.env.local`):
 
 | Name | Value | Sensitive |
 |---|---|---|
