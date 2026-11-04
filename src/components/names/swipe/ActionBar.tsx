@@ -45,6 +45,8 @@ type ActionBarProps = {
   disabled?: boolean;
   /** Extra props for "דילוג" (the hide menu's long-press and right-click, US-046). */
   skipProps?: ButtonHTMLAttributes<HTMLButtonElement>;
+  /** id of the keyboard shortcut hint (SwipeKeys). */
+  describedBy?: string;
 };
 
 /**
@@ -52,11 +54,11 @@ type ActionBarProps = {
  * with a bookmark, "אהבתי מאוד" peach circle with a heart, "דילוג" glass pill with an x, in
  * the demo's order. In RTL "שמירה" is the right-most one; the drag direction is read from it.
  */
-export default function ActionBar({ onKeep, onLove, onSkip, disabled = false, skipProps }: ActionBarProps) {
+export default function ActionBar({ onKeep, onLove, onSkip, disabled = false, skipProps, describedBy }: ActionBarProps) {
   const act = (fn: () => void) => () => {
     if (!disabled) fn();
   };
-  const common = { type: "button" as const, "aria-disabled": disabled || undefined };
+  const common = { type: "button" as const, "aria-disabled": disabled || undefined, "aria-describedby": describedBy };
   return (
     <div className="flex items-center justify-center gap-5 px-5 pb-3">
       <button {...common} data-act="keep" aria-label={LABEL.keep} className={CLASS.keep} onClick={act(onKeep)}>

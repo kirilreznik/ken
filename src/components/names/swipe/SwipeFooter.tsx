@@ -3,6 +3,8 @@ type SwipeFooterProps = {
   onUndo: () => void;
   /** The last decision ("זיו נשמר", "דילגת על יעל", "בוטל: נועם"), from src/lib/names/a11y.ts. */
   status: string;
+  /** id of the keyboard shortcut hint (SwipeKeys). */
+  describedBy?: string;
 };
 
 /**
@@ -12,12 +14,13 @@ type SwipeFooterProps = {
  * nothing to undo the button stays focusable with aria-disabled. The status region is
  * always rendered (an empty one has no pill) so the first message is announced.
  */
-export default function SwipeFooter({ canUndo, onUndo, status }: SwipeFooterProps) {
+export default function SwipeFooter({ canUndo, onUndo, status, describedBy }: SwipeFooterProps) {
   return (
     <div className="flex items-center justify-between gap-2.5 px-7 pb-4">
       <button
         type="button"
         aria-label="ביטול ההחלטה האחרונה"
+        aria-describedby={describedBy}
         aria-disabled={!canUndo || undefined}
         onClick={() => {
           if (canUndo) onUndo();

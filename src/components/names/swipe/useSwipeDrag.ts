@@ -34,12 +34,18 @@ function paint(el: HTMLElement, transform: string, keep = 0, skip = 0, love = 0)
  * up can love it; a card that scrolls leaves vertical touch to scrolling (pan-y), and the
  * "אהבתי מאוד" button stays the way to love it by touch.
  *
- * Spread the result on the current card; it's keyed by name, so each card gets a fresh element.
+ * Spread `card` on the current card; it's keyed by name, so each card gets a fresh element.
+ * `fly(kind)` sends the card off the same way for the buttons and the keys (FR-W11); with
+ * reduced motion every decision is a short fade instead of a fling (PRD 3.2.17). The card is
+ * focusable (it sits between the chips and the actions in the tab order), and when it had focus
+ * the next card takes it, so keyboard users stay on the card; `holdFocus()` does the same
+ * before an undo brings the previous card back.
  */
 export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (kind: DragKind) => void; disabled?: boolean }) {
   const el = useRef<HTMLElement | null>(null);
   const drag = useRef<Drag | null>(null);
   const busy = useRef(false);
+  const refocus = useRef(false);
   const observer = useRef<ResizeObserver | null>(null);
   const decide = useRef(onDecide);
   useEffect(() => {
@@ -52,6 +58,10 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (kind: 
     drag.current = null;
     busy.current = false;
     if (!node) return;
+    if (refocus.current) {
+      refocus.current = false;
+      node.focus({ preventScroll: true });
+    }
     const fit = () => {
       node.style.touchAction = node.scrollHeight > node.clientHeight + 1 ? "pan-y" : "none";
     };
@@ -84,6 +94,7 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (kind: 
       // The card was replaced mid-flight.
     }
     if (el.current !== node) return;
+    refocus.current = document.activeElement === node;
     decide.current(kind);
     busy.current = false;
   };
@@ -128,5 +139,22 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (kind: 
     if (drag.current?.id === e.pointerId) snapBack();
   };
 
-  return { ref, onPointerDown, onPointerMove, onPointerUp, onPointerCancel };
+  const fly = (kind: DragKind) => {
+    const node = el.current;
+    if (!node || disabled || busy.current || drag.current) return;
+    void fling(node, kind, keepDir());
+  };
+
+  /** Call before anything that replaces the card (undo) to move focus to the new one. */
+  const holdFocus = () => {
+    refocus.current = !!el.current && document.activeElement === el.current;
+  };
+
+  return {
+    card: { ref, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, tabIndex: 0 },
+    fly,
+    holdFocus,
+    /** A decision is on its way out; ignore further ones until the next card. */
+    busy: () => busy.current,
+  };
 }
