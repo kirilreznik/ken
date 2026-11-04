@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
+import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
 import { useCards } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
@@ -144,6 +145,7 @@ export default function SwipeScreen() {
           <SwipeFooter canUndo={undoStack.length > 0} onUndo={undo} status={status} describedBy={SWIPE_KEYS_ID} />
         </SwipeKeys>
       </main>
+      <BackgroundSheet />
     </div>
   );
 }
