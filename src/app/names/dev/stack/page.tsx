@@ -4,7 +4,7 @@ import { staticCards } from "@/lib/names/staticCards";
 import type { Background } from "@/lib/names/prefs";
 import DevStack from "./DevStack";
 
-// Dev-only check page for the card stack, action bar and footer (US-040, US-041); removed in US-047.
+// Dev-only check page for the card stack, action bar and footer (US-040, US-041, US-043); removed in US-047.
 // /names/dev/stack?bg=none
 export default async function DevStackPage({
   searchParams,
