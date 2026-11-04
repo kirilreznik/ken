@@ -56,3 +56,7 @@ supabase/functions/*/dist/
 # Next 16 dev server writes these at the root
 /AGENTS.md
 /CLAUDE.md
+
+# Playwright
+/test-results/
+/playwright-report/
