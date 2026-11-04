@@ -78,6 +78,9 @@ const extraStyles = [
   { name: "note", fontSize: "12.5px", lineHeight: "19px", fontWeight: 500 },
   // The name in a list row (Lists.dc.html).
   { name: "row-name", fontSize: "17px", lineHeight: "24px", fontWeight: 800 },
+  // The match sheet's name and the line under it (Match.dc.html).
+  { name: "match-name", fontSize: "60px", lineHeight: "68px", fontWeight: 800 },
+  { name: "match-line", fontSize: "15px", lineHeight: "23px", fontWeight: 500 },
 ];
 
 const colors = tokens.color.tokens;

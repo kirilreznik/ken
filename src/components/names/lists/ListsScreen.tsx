@@ -6,10 +6,12 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNod
 import { useAuth } from "@/components/names/AuthProvider";
 import { Button, IconButton, openSheet } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
+import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
+import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
 import { addedText, listsTab, rowActionText, rowMeta, rowMetaText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
 import { showToast } from "@/lib/names/toast";
 import type { NameStats } from "@/lib/names/types";
@@ -37,6 +39,7 @@ export default function ListsScreen() {
   const space = useSpace();
   const { names } = useNameStats();
   const { store, state } = useVotes(space.spaceId, user?.id ?? null);
+  const matches = useMatches(space.spaceId, user?.id ?? null, space.isShared, state?.votes);
   const [status, setStatus] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -46,7 +49,9 @@ export default function ListsScreen() {
 
   const tabs: { id: ListsTab; label: string }[] = [
     { id: "saved", label: ready ? `שמרתי · ${rows.length}` : "שמרתי" },
-    ...(space.isShared ? [{ id: "matches" as const, label: "התאמות" }] : []),
+    ...(space.isShared
+      ? [{ id: "matches" as const, label: matches?.ready && matches.fetchedAt !== null ? `התאמות · ${matches.matches.length}` : "התאמות" }]
+      : []),
     { id: "duel", label: "דו־קרב" },
   ];
 
@@ -142,7 +147,7 @@ export default function ListsScreen() {
               headingRef={headingRef}
             />
           ) : tab === "matches" ? (
-            <p className="m-0 text-person text-ink-soft">שמות שכל מי שבוחר איתך שמר יופיעו כאן.</p>
+            <MatchesPanel userId={user?.id ?? null} state={matches} memberCount={space.members.length} names={names} />
           ) : rows.length < 2 && ready ? (
             <NeedTwo />
           ) : (
@@ -156,6 +161,152 @@ export default function ListsScreen() {
       </main>
       <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
     </div>
+  );
+}
+
+type MatchesPanelProps = {
+  userId: string | null;
+  state: MatchesState | null;
+  memberCount: number;
+  names: Map<string, NameStats> | null;
+};
+
+/**
+ * FR-W19 "התאמות" (board 5): names 2+ members kept, newest first, from the matches cache.
+ * "{n} שמרו" from 3 up, a heart when someone loved it (never who), the last update time
+ * while offline. Nothing about anyone's skips.
+ */
+function MatchesPanel({ userId, state, memberCount, names }: MatchesPanelProps) {
+  const online = useOnline();
+  // The day to compare the last update with; the screen isn't open across midnight for long.
+  const [openedAt] = useState(() => Date.now());
+  const intro = <p className="m-0 text-person text-ink-soft">{matchesIntro(memberCount)}</p>;
+  const updated =
+    !online && state?.fetchedAt != null ? (
+      <p className="m-0 text-caption text-stone">{updatedText(state.fetchedAt, openedAt)}</p>
+    ) : null;
+
+  // Before the first fetch an empty list is only "no cache yet"; offline it's all there is.
+  if (!state?.ready || (state.fetchedAt === null && online)) {
+    return (
+      <>
+        {intro}
+        <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
+          <span className="sr-only">טוען</span>
+        </div>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {intro}
+      {updated}
+      <MatchRows userId={userId} matches={state.matches} memberCount={memberCount} names={names} />
+    </>
+  );
+}
+
+type MatchRowsProps = {
+  userId: string | null;
+  matches: readonly Match[];
+  memberCount: number;
+  names: Map<string, NameStats> | null;
+};
+
+function MatchRows({ userId, matches, memberCount, names }: MatchRowsProps) {
+  const { seen, setSeen } = useSeenMatches(userId);
+  // "חדש" marks matches this device hadn't shown before the list opened (or that came in since).
+  const [seenAtOpen] = useState(() => new Set(seen));
+
+  // Seeing the list counts as seeing the match: the match sheet won't pop up for these.
+  useEffect(() => {
+    if (newMatches(matches, seen).length > 0) setSeen(withSeen(seen, matches));
+  }, [matches, seen, setSeen]);
+
+  if (matches.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-2 rounded-lg bg-surface px-4 py-6 text-center shadow-card">
+        <p className="m-0 text-card-title text-ink-soft">עוד אין התאמות.</p>
+        <p className="m-0 text-person text-ink-soft">
+          {memberCount > 2 ? "שם ששניים מכם שמרו יופיע כאן." : "שם ששניכם שמרתם יופיע כאן."}
+        </p>
+        <Button variant="link" href={APP_PATH}>
+          לבחירת שמות
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <ul aria-label="התאמות" className="m-0 list-none rounded-lg bg-surface p-0 shadow-card">
+        {matches.map((match) => {
+          const meta = rowMeta(names?.get(match.name));
+          const kept = keptByText(match);
+          return (
+            <li key={match.name} className="flex items-center gap-3 border-b border-line px-4 py-3.5 last:border-b-0">
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                  <span className="text-row-name break-words">{match.name}</span>
+                  {!seenAtOpen.has(match.name) ? (
+                    <span className="rounded-pill bg-peach-soft px-2 py-0.5 text-label text-clay-deep">חדש</span>
+                  ) : null}
+                  {match.lovedByCount > 0 ? (
+                    <span className="flex items-center gap-1 text-caption font-bold text-ink-soft">
+                      <Icon size={16} className="fill-clay stroke-clay">
+                        <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
+                      </Icon>
+                      מישהו אהב מאוד
+                    </span>
+                  ) : null}
+                </span>
+                {meta ? (
+                  <>
+                    <span aria-hidden="true" className="text-caption text-stone">
+                      {meta.sexTag} · {meta.count}
+                      {meta.trend ? (
+                        <>
+                          {" · "}
+                          {meta.trend.arrow} {meta.trend.word}
+                        </>
+                      ) : null}
+                    </span>
+                    <span className="sr-only">{rowMetaText(meta)}</span>
+                  </>
+                ) : null}
+              </div>
+              {kept ? <span className="flex-none text-caption font-bold text-ink-soft">{kept}</span> : null}
+            </li>
+          );
+        })}
+      </ul>
+      {matches.length >= 2 ? <DuelLink title="דו־קרב בין ההתאמות" /> : null}
+    </>
+  );
+}
+
+function DuelLink({ title }: { title: string }) {
+  return (
+    <Link
+      href={`${LISTS_PATH}?tab=duel`}
+      replace
+      scroll={false}
+      className="flex items-center gap-3 rounded-lg bg-peach-soft px-4 py-3.5 text-ink"
+    >
+      <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-md bg-surface">
+        <Icon>
+          <path d="M7 4v16M17 4v16M3 8h8M13 16h8" />
+        </Icon>
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-card-title">{title}</span>
+        <span className="text-caption text-ink-soft">שני שמות בכל פעם, עד שנשארת חמישייה</span>
+      </span>
+      <Icon size={18} className="ltr:-scale-x-100">
+        <path d="M15 6l-6 6 6 6" />
+      </Icon>
+    </Link>
   );
 }
 
@@ -264,27 +415,7 @@ function SavedPanel({ ready, rows, names, onAction, headingRef }: SavedPanelProp
           );
         })}
       </ul>
-      {rows.length >= 2 ? (
-        <Link
-          href={`${LISTS_PATH}?tab=duel`}
-          replace
-          scroll={false}
-          className="flex items-center gap-3 rounded-lg bg-peach-soft px-4 py-3.5 text-ink"
-        >
-          <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-md bg-surface">
-            <Icon>
-              <path d="M7 4v16M17 4v16M3 8h8M13 16h8" />
-            </Icon>
-          </span>
-          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span className="text-card-title">דו־קרב בין השמות ששמרתי</span>
-            <span className="text-caption text-ink-soft">שני שמות בכל פעם, עד שנשארת חמישייה</span>
-          </span>
-          <Icon size={18} className="ltr:-scale-x-100">
-            <path d="M15 6l-6 6 6 6" />
-          </Icon>
-        </Link>
-      ) : null}
+      {rows.length >= 2 ? <DuelLink title="דו־קרב בין השמות ששמרתי" /> : null}
     </>
   );
 }

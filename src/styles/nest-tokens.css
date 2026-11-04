@@ -108,6 +108,12 @@
   --nest-text-row-name: 17px;
   --nest-text-row-name-line-height: 24px;
   --nest-text-row-name-weight: 800;
+  --nest-text-match-name: 60px;
+  --nest-text-match-name-line-height: 68px;
+  --nest-text-match-name-weight: 800;
+  --nest-text-match-line: 15px;
+  --nest-text-match-line-line-height: 23px;
+  --nest-text-match-line-weight: 500;
   --nest-glass-tint: rgba(255,255,255,0.34);
   --nest-glass-soft-tint: rgba(255,255,255,0.22);
   --nest-glass-well-tint: rgba(255,255,255,0.42);
@@ -241,4 +247,10 @@
   --text-row-name: var(--nest-text-row-name);
   --text-row-name--line-height: var(--nest-text-row-name-line-height);
   --text-row-name--font-weight: var(--nest-text-row-name-weight);
+  --text-match-name: var(--nest-text-match-name);
+  --text-match-name--line-height: var(--nest-text-match-name-line-height);
+  --text-match-name--font-weight: var(--nest-text-match-name-weight);
+  --text-match-line: var(--nest-text-match-line);
+  --text-match-line--line-height: var(--nest-text-match-line-line-height);
+  --text-match-line--font-weight: var(--nest-text-match-line-weight);
 }

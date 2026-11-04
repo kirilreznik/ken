@@ -5,14 +5,17 @@ import { useAuth } from "@/components/names/AuthProvider";
 import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
 import FiltersSheet from "@/components/names/FiltersSheet";
+import MatchSheet from "@/components/names/MatchSheet";
 import { useCards } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
+import { useMatches, useSeenMatches } from "@/components/names/useMatches";
 import { useVotes } from "@/components/names/useVotes";
 import { statusText } from "@/lib/names/a11y";
 import { markAppEntry } from "@/lib/names/appHistory";
 import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
 import { defaultFilters, withSex } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
+import { matchToShow, withSeen } from "@/lib/names/matches";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 import type { SexTag, Vote } from "@/lib/names/types";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
@@ -47,6 +50,9 @@ export default function SwipeScreen() {
   const space = useSpace();
   const { cards } = useCards();
   const { store, state } = useVotes(space.spaceId, userId);
+  const matches = useMatches(space.spaceId, userId, space.isShared, state?.votes);
+  const { seen, setSeen } = useSeenMatches(userId);
+  const newMatch = useMemo(() => (matches?.ready ? matchToShow(matches.matches, seen) : null), [matches, seen]);
 
   const filtersJson = usePrefJson(userId, "filters");
   const surnameJson = usePrefJson(userId, "surname");
@@ -151,6 +157,12 @@ export default function SwipeScreen() {
       </main>
       <BackgroundSheet />
       <FiltersSheet userId={userId} cards={cards} votes={votes} />
+      <MatchSheet
+        match={newMatch}
+        ready={!!matches?.ready}
+        cards={cards}
+        onSeen={() => setSeen(withSeen(seen, matches?.matches ?? []))}
+      />
     </div>
   );
 }

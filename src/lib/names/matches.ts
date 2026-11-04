@@ -239,3 +239,48 @@ export function createMatchesStore({
     },
   };
 }
+
+/** "{n} שמרו" for a match kept by 3 or more (FR-W19); null for two, the usual case. */
+export function keptByText(match: Match): string | null {
+  return match.keptByCount >= 3 ? `${match.keptByCount} שמרו` : null;
+}
+
+/** The line under the name on the match sheet (board 4). */
+export function matchSheetLine(match: Match): string {
+  return match.keptByCount >= 3 ? `${match.keptByCount} שמרו את השם הזה.` : "שניכם שמרתם את השם הזה.";
+}
+
+/** The explainer above the "התאמות" list (board 5); never says who skipped what. */
+export function matchesIntro(memberCount: number): string {
+  const who = memberCount > 2 ? "שמות שלפחות שניים מכם שמרו." : "שמות ששניכם שמרתם.";
+  return `${who} על שמות שדילגתם עליהם אף אחד לא יודע.`;
+}
+
+/** The newest match the user hasn't been shown on this device, or null. */
+export function matchToShow(matches: readonly Match[], seenMatches: Iterable<string>): Match | null {
+  return newMatches(matches, seenMatches)[0] ?? null;
+}
+
+/** `seen` plus every name in `matches`, without duplicates (after the sheet or the list showed them). */
+export function withSeen(seen: readonly string[], matches: readonly Match[]): string[] {
+  const out = [...seen];
+  const have = new Set(seen);
+  for (const m of matches) {
+    if (!have.has(m.name)) {
+      have.add(m.name);
+      out.push(m.name);
+    }
+  }
+  return out;
+}
+
+const timeFmt = new Intl.DateTimeFormat("he-IL", { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+const dayFmt = new Intl.DateTimeFormat("he-IL", { day: "numeric", month: "numeric" });
+
+/** "עודכן לאחרונה ב־14:05" (today) or "עודכן לאחרונה ב־3.11, 14:05", in the device's time zone. */
+export function updatedText(fetchedAt: number, now: number): string {
+  const at = new Date(fetchedAt);
+  const sameDay = at.toDateString() === new Date(now).toDateString();
+  const time = timeFmt.format(at);
+  return sameDay ? `עודכן לאחרונה ב־${time}` : `עודכן לאחרונה ב־${dayFmt.format(at)}, ${time}`;
+}

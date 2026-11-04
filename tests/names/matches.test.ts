@@ -4,9 +4,15 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { clearLocalData } from "@/lib/names/auth";
 import {
   createMatchesStore,
+  keptByText,
+  matchesIntro,
+  matchSheetLine,
+  matchToShow,
   MATCHES_INTERVAL_MS,
   newMatches,
   toMatches,
+  updatedText,
+  withSeen,
   VOTE_DEBOUNCE_MS,
   type MatchesStoreOptions,
 } from "@/lib/names/matches";
@@ -68,6 +74,31 @@ describe("helpers", () => {
     expect(newMatches(list, ["זיו"]).map((m) => m.name)).toEqual(["יעל", "נועם"]);
     expect(newMatches(list, new Set(["זיו", "יעל", "נועם"]))).toEqual([]);
     expect(newMatches([], [])).toEqual([]);
+  });
+
+  it("says how many kept a name only from 3 up, and never who", () => {
+    const [two, three] = toMatches([row("זיו", "2026-11-02T10:00:00Z", 2, 1), row("יעל", "2026-11-01T10:00:00Z", 3)]);
+    expect(keptByText(two)).toBeNull();
+    expect(keptByText(three)).toBe("3 שמרו");
+    expect(matchSheetLine(two)).toBe("שניכם שמרתם את השם הזה.");
+    expect(matchSheetLine(three)).toBe("3 שמרו את השם הזה.");
+    expect(matchesIntro(2)).toBe("שמות ששניכם שמרתם. על שמות שדילגתם עליהם אף אחד לא יודע.");
+    expect(matchesIntro(3)).toBe("שמות שלפחות שניים מכם שמרו. על שמות שדילגתם עליהם אף אחד לא יודע.");
+  });
+
+  it("matchToShow picks the newest unseen match; withSeen adds every match once", () => {
+    const list = toMatches([row("זיו", "2026-11-01T10:00:00Z"), row("יעל", "2026-11-03T10:00:00Z")]);
+    expect(matchToShow(list, [])?.name).toBe("יעל");
+    expect(matchToShow(list, ["יעל"])?.name).toBe("זיו");
+    expect(matchToShow(list, ["יעל", "זיו"])).toBeNull();
+    expect(withSeen(["נועם", "יעל"], list)).toEqual(["נועם", "יעל", "זיו"]);
+    expect(withSeen([], [])).toEqual([]);
+  });
+
+  it("updatedText shows the time today and the date before", () => {
+    const at = new Date(2026, 10, 5, 9, 7).getTime();
+    expect(updatedText(at, new Date(2026, 10, 5, 23, 0).getTime())).toBe("עודכן לאחרונה ב־09:07");
+    expect(updatedText(at, new Date(2026, 10, 6, 8, 0).getTime())).toBe("עודכן לאחרונה ב־5.11, 09:07");
   });
 });
 

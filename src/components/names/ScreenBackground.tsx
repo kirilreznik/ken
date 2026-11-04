@@ -106,8 +106,8 @@ function useOwnPhoto(userId: string | null, enabled: boolean): OwnPhoto | "loadi
 interface ScreenBackgroundProps {
   /** Overrides the saved choice (e.g. a preview). */
   background?: Background;
-  /** The "ללא רקע" blobs: board 2's two (default) or board 1's single one at the top. */
-  blobs?: "main" | "intro";
+  /** The "ללא רקע" blobs: board 2's two (default), board 1's single one at the top or board 4's centered one. */
+  blobs?: "main" | "intro" | "match";
   children?: React.ReactNode;
 }
 
@@ -132,6 +132,12 @@ export default function ScreenBackground({ background, blobs = "main", children 
         {shown === "none" && blobs === "intro" ? (
           <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
             <div className="absolute -top-15 -end-20 size-80 rounded-full bg-peach opacity-25 blur-(--nest-blob-blur)" />
+          </div>
+        ) : null}
+
+        {shown === "none" && blobs === "match" ? (
+          <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
+            <div className="absolute top-40 inset-x-0 mx-auto size-90 rounded-full bg-peach opacity-25 blur-(--nest-blob-blur)" />
           </div>
         ) : null}
 
