@@ -32,3 +32,16 @@ describe("own photo", () => {
     await expect(deleteOwnPhoto("none")).resolves.toBeUndefined();
   });
 });
+
+describe("subscribeOwnPhoto", () => {
+  it("notifies after save and delete", async () => {
+    const { subscribeOwnPhoto } = await import("@/lib/names/photo");
+    let n = 0;
+    const stop = subscribeOwnPhoto(() => n++);
+    await saveOwnPhoto("s", jpeg([1]));
+    await deleteOwnPhoto("s");
+    stop();
+    await saveOwnPhoto("s", jpeg([2]));
+    expect(n).toBe(2);
+  });
+});

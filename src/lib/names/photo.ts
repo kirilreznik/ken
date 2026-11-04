@@ -13,10 +13,19 @@ function photoStore(): UseStore | null {
   return store;
 }
 
+const listeners = new Set<() => void>();
+
+/** Calls the listener after this tab saves or deletes an own photo; returns the unsubscribe. */
+export function subscribeOwnPhoto(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
 export async function saveOwnPhoto(userId: string, blob: Blob): Promise<void> {
   const s = photoStore();
   if (!s) throw new Error("IndexedDB is not available");
   await set(userId, blob, s);
+  listeners.forEach((l) => l());
 }
 
 /** The saved photo, or null when there is none (or it can't be read): the caller falls back to "בדים". */
@@ -35,5 +44,6 @@ export async function deleteOwnPhoto(userId: string): Promise<void> {
   const s = photoStore();
   if (!s) return;
   await del(userId, s);
+  listeners.forEach((l) => l());
 }
 

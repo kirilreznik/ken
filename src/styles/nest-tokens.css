@@ -91,6 +91,9 @@
   --nest-glass-soft-border: rgba(255,255,255,0.45);
   --nest-glass-well-border: rgba(255,255,255,0.5);
   --nest-glass-highlight: inset 0 1px 0 rgba(255,255,255,0.5);
+  --nest-glass-own-tint: rgba(255,255,255,0.55);
+  --nest-glass-own-soft-tint: rgba(255,255,255,0.4);
+  --nest-glass-own-well-tint: rgba(255,255,255,0.6);
   --nest-white-30: rgba(255,255,255,0.3);
   --nest-white-55: rgba(255,255,255,0.55);
   --nest-white-60: rgba(255,255,255,0.6);

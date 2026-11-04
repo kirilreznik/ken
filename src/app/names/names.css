@@ -146,8 +146,17 @@
     color: var(--nest-ink-soft);
   }
 
+  /* The user's own photo (PRD 3.2.15): any photo can sit behind the glass, so it's whiter. */
+  .nest-names [data-names-bg="own"] .names-glass {
+    background-color: var(--nest-glass-own-tint);
+  }
+  .nest-names [data-names-bg="own"] .names-glass-soft {
+    background-color: var(--nest-glass-own-soft-tint);
+  }
+
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .nest-names :is(.names-glass, .names-glass-soft, .names-button-glass) {
+    .nest-names :is(.names-glass, .names-glass-soft, .names-button-glass),
+    .nest-names [data-names-bg="own"] :is(.names-glass, .names-glass-soft) {
       background-color: var(--nest-surface);
     }
     .nest-names :is(.names-glass, .names-glass-soft):not([data-names-bg="none"] *) {
@@ -159,7 +168,8 @@
   }
 
   @media (prefers-reduced-transparency: reduce) {
-    .nest-names :is(.names-glass, .names-glass-soft, .names-button-glass) {
+    .nest-names :is(.names-glass, .names-glass-soft, .names-button-glass),
+    .nest-names [data-names-bg="own"] :is(.names-glass, .names-glass-soft) {
       background-color: var(--nest-surface);
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
@@ -206,5 +216,13 @@
 
   .nest-names .names-dialog-in {
     animation: names-dialog-in 200ms ease-out;
+  }
+}
+
+/* Own-photo scrim (PRD 3.2.15): canvas-colored, its strength set per photo by
+ * ScreenBackground through --names-own-scrim (0–1, from the luminance under the card). */
+@layer components {
+  .nest-names .names-own-scrim {
+    background-color: color-mix(in srgb, var(--nest-canvas) calc(var(--names-own-scrim, 0.2) * 100%), transparent);
   }
 }

@@ -94,16 +94,36 @@ export function getPref<K extends PrefKey>(userId: string, key: K): Prefs[K] {
   }
 }
 
+const listeners = new Set<() => void>();
+const notify = () => listeners.forEach((l) => l());
+
+/**
+ * Calls the listener after any pref changes, in this tab (setPref, removePref, clearAll)
+ * or in another one (storage event). For useSyncExternalStore; returns the unsubscribe.
+ */
+export function subscribePrefs(listener: () => void): () => void {
+  listeners.add(listener);
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === null || e.key.startsWith(PREFIX)) listener();
+  };
+  if (typeof window !== "undefined") window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    if (typeof window !== "undefined") window.removeEventListener("storage", onStorage);
+  };
+}
+
 /** Returns false when the value couldn't be stored (no storage, quota). */
 export function setPref<K extends PrefKey>(userId: string, key: K, value: Prefs[K]): boolean {
   const s = storage();
   if (!s) return false;
   try {
     s.setItem(prefKey(userId, key), JSON.stringify(value));
-    return true;
   } catch {
     return false;
   }
+  notify();
+  return true;
 }
 
 export function removePref(userId: string, key: PrefKey): void {
@@ -112,6 +132,7 @@ export function removePref(userId: string, key: PrefKey): void {
   } catch {
     // Nothing to remove.
   }
+  notify();
 }
 
 /** Removes every nest-names:{userId}:* key (sign-out of a deleted account). */
@@ -129,4 +150,5 @@ export function clearAll(userId: string): void {
   } catch {
     // Blocked storage has nothing of ours in it.
   }
+  notify();
 }

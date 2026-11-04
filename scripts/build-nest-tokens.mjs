@@ -29,6 +29,10 @@ const extras = {
   "glass-soft-border": "rgba(255,255,255,0.45)",
   "glass-well-border": "rgba(255,255,255,0.5)",
   "glass-highlight": "inset 0 1px 0 rgba(255,255,255,0.5)",
+  // Stronger glass over the user's own photo (PRD 3.2.15), any photo can sit behind it.
+  "glass-own-tint": "rgba(255,255,255,0.55)",
+  "glass-own-soft-tint": "rgba(255,255,255,0.4)",
+  "glass-own-well-tint": "rgba(255,255,255,0.6)",
   "white-30": "rgba(255,255,255,0.3)",
   "white-55": "rgba(255,255,255,0.55)",
   "white-60": "rgba(255,255,255,0.6)",

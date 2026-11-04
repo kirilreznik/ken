@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { start, pick, currentPair } from "@/lib/names/duel";
 import { defaultFilters } from "@/lib/names/filters";
-import { clearAll, defaultPref, getPref, prefKey, removePref, setPref } from "@/lib/names/prefs";
+import { clearAll, defaultPref, getPref, prefKey, removePref, setPref, subscribePrefs } from "@/lib/names/prefs";
 
 /** Minimal in-memory Storage. */
 class MemoryStorage implements Storage {
@@ -162,5 +162,19 @@ describe("clearAll", () => {
     expect(ls.getItem("nest-names-auth")).toBe("{}");
     expect(ls.getItem("other")).toBe("x");
     expect(ls.length).toBe(3);
+  });
+});
+
+describe("subscribePrefs", () => {
+  it("notifies on set, remove and clearAll until unsubscribed", () => {
+    const calls = vi.fn();
+    const stop = subscribePrefs(calls);
+    setPref("u", "background", "none");
+    removePref("u", "background");
+    clearAll("u");
+    expect(calls).toHaveBeenCalledTimes(3);
+    stop();
+    setPref("u", "background", "fabric");
+    expect(calls).toHaveBeenCalledTimes(3);
   });
 });
