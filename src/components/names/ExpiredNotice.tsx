@@ -13,7 +13,7 @@ export default function ExpiredNotice() {
   const show = useSyncExternalStore(noSubscribe, readExpired, serverExpired);
 
   return (
-    <p role="status" className="text-body text-ink-soft">
+    <p role="status" className="text-body text-ink-soft empty:hidden">
       {show ? EXPIRED_MESSAGE : null}
     </p>
   );

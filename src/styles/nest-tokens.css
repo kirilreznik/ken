@@ -68,6 +68,16 @@
   --nest-text-label: 10.5px;
   --nest-text-label-line-height: 14px;
   --nest-text-label-weight: 700;
+  --nest-text-name: 52px;
+  --nest-text-name-line-height: 60px;
+  --nest-text-name-weight: 800;
+  --nest-text-name-tracking: -1px;
+  --nest-text-button: 16px;
+  --nest-text-button-line-height: 22px;
+  --nest-text-button-weight: 700;
+  --nest-text-tag: 11px;
+  --nest-text-tag-line-height: 14px;
+  --nest-text-tag-weight: 700;
   --nest-glass-tint: rgba(255,255,255,0.34);
   --nest-glass-soft-tint: rgba(255,255,255,0.22);
   --nest-glass-well-tint: rgba(255,255,255,0.42);
@@ -157,4 +167,14 @@
   --text-label: var(--nest-text-label);
   --text-label--line-height: var(--nest-text-label-line-height);
   --text-label--font-weight: var(--nest-text-label-weight);
+  --text-name: var(--nest-text-name);
+  --text-name--line-height: var(--nest-text-name-line-height);
+  --text-name--font-weight: var(--nest-text-name-weight);
+  --text-name--letter-spacing: var(--nest-text-name-tracking);
+  --text-button: var(--nest-text-button);
+  --text-button--line-height: var(--nest-text-button-line-height);
+  --text-button--font-weight: var(--nest-text-button-weight);
+  --text-tag: var(--nest-text-tag);
+  --text-tag--line-height: var(--nest-text-tag-line-height);
+  --text-tag--font-weight: var(--nest-text-tag-weight);
 }

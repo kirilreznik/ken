@@ -11,6 +11,11 @@ export const APP_PATH = "/names";
 export const EXPIRED_PARAM = "expired";
 export const EXPIRED_MESSAGE = "צריך להיכנס שוב";
 
+/** Query flag on welcome when Supabase refuses a new account (PRD 3.2.2, FR-W5). */
+export const CLOSED_PARAM = "closed";
+export const SIGNUPS_CLOSED_MESSAGE = "ההרשמה עוד לא פתוחה. אפשר להשאיר אימייל בעמוד הבית ונעדכן כשנפתח.";
+export const WAITLIST_HREF = "/#waitlist";
+
 /** Routes that never need a session (PRD 3.2.11). Everything else under /names is an app page. */
 const PUBLIC_PATHS = [
   "/names/welcome",

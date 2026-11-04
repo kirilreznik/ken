@@ -48,11 +48,20 @@ const extras = {
   "shadow-card-raised": "0 1px 2px rgba(31,27,30,0.04), 0 8px 20px rgba(31,27,30,0.08)",
 };
 
+// Type sizes of the names boards that the brand scale doesn't have: the card's name
+// (52/60, GlassFabric.dc.html), the primary button label (16, Intro.dc.html) and the
+// card's sex tag (11, GlassFabric.dc.html).
+const extraStyles = [
+  { name: "name", fontSize: "52px", lineHeight: "60px", fontWeight: 800, letterSpacing: "-1px" },
+  { name: "button", fontSize: "16px", lineHeight: "22px", fontWeight: 700 },
+  { name: "tag", fontSize: "11px", lineHeight: "14px", fontWeight: 700 },
+];
+
 const colors = tokens.color.tokens;
 const radii = tokens.radius.tokens;
 const shadows = tokens.shadow.tokens;
 const spacing = tokens.spacing.tokens;
-const styles = tokens.type.groups.flatMap((g) => g.styles);
+const styles = [...tokens.type.groups.flatMap((g) => g.styles), ...extraStyles];
 
 const rootVars = [
   ...colors.map((t) => [t.name, t.value]),
