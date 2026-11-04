@@ -50,7 +50,7 @@ export function latestCount({ y }: YearCounts): { n: number; year: number } | nu
 }
 
 /** Two significant digits, for the approximate all-time line. */
-function roughly(n: number): number {
+export function roughly(n: number): number {
   if (n < 100) return n;
   const step = 10 ** (Math.floor(Math.log10(n)) - 1);
   return Math.round(n / step) * step;

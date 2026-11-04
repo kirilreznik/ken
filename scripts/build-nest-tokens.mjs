@@ -63,6 +63,8 @@ const extraStyles = [
   { name: "quote", fontSize: "13.5px", lineHeight: "20px", fontWeight: 500 },
   { name: "ref", fontSize: "12px", lineHeight: "16px", fontWeight: 500 },
   { name: "person", fontSize: "13px", lineHeight: "18px", fontWeight: 500 },
+  // The number in a card's births tile.
+  { name: "stat", fontSize: "18px", lineHeight: "22px", fontWeight: 800 },
 ];
 
 const colors = tokens.color.tokens;

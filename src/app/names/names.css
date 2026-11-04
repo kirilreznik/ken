@@ -146,6 +146,17 @@
     color: var(--nest-ink-soft);
   }
 
+  /* A well inside a glass card (the stat tiles, GlassFabric.dc.html .well). On "ללא רקע"
+   * and on solid cards it's canvas without a border, as in Main.dc.html. */
+  .nest-names .names-well {
+    background-color: var(--nest-glass-well-tint);
+    border: 1px solid var(--nest-glass-well-border);
+  }
+  .nest-names [data-names-bg="none"] .names-well {
+    background-color: var(--nest-canvas);
+    border-color: transparent;
+  }
+
   /* The user's own photo (PRD 3.2.15): any photo can sit behind the glass, so it's whiter. */
   .nest-names [data-names-bg="own"] .names-glass {
     background-color: var(--nest-glass-own-tint);
@@ -153,8 +164,16 @@
   .nest-names [data-names-bg="own"] .names-glass-soft {
     background-color: var(--nest-glass-own-soft-tint);
   }
+  .nest-names [data-names-bg="own"] .names-well {
+    background-color: var(--nest-glass-own-well-tint);
+  }
 
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nest-names .names-well,
+    .nest-names [data-names-bg="own"] .names-well {
+      background-color: var(--nest-canvas);
+      border-color: transparent;
+    }
     .nest-names :is(.names-glass, .names-glass-soft, .names-button-glass),
     .nest-names [data-names-bg="own"] :is(.names-glass, .names-glass-soft) {
       background-color: var(--nest-surface);
@@ -168,6 +187,11 @@
   }
 
   @media (prefers-reduced-transparency: reduce) {
+    .nest-names .names-well,
+    .nest-names [data-names-bg="own"] .names-well {
+      background-color: var(--nest-canvas);
+      border-color: transparent;
+    }
     .nest-names :is(.names-glass, .names-glass-soft, .names-button-glass),
     .nest-names [data-names-bg="own"] :is(.names-glass, .names-glass-soft) {
       background-color: var(--nest-surface);

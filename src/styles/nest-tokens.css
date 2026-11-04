@@ -87,6 +87,9 @@
   --nest-text-person: 13px;
   --nest-text-person-line-height: 18px;
   --nest-text-person-weight: 500;
+  --nest-text-stat: 18px;
+  --nest-text-stat-line-height: 22px;
+  --nest-text-stat-weight: 800;
   --nest-glass-tint: rgba(255,255,255,0.34);
   --nest-glass-soft-tint: rgba(255,255,255,0.22);
   --nest-glass-well-tint: rgba(255,255,255,0.42);
@@ -198,4 +201,7 @@
   --text-person: var(--nest-text-person);
   --text-person--line-height: var(--nest-text-person-line-height);
   --text-person--font-weight: var(--nest-text-person-weight);
+  --text-stat: var(--nest-text-stat);
+  --text-stat--line-height: var(--nest-text-stat-line-height);
+  --text-stat--font-weight: var(--nest-text-stat-weight);
 }
