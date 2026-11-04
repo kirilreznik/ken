@@ -72,3 +72,17 @@ export function buildDeck<T extends FilterableCard>(
     remaining.length > 0 ? "ok" : undecided.length > 0 ? "empty-filter" : "all-decided";
   return { state, cards: remaining };
 }
+
+/**
+ * The numbers in "שם {n} מתוך {total}" (the demo's count): `total` is every name that passes
+ * the filters except hidden ones, `position` is how many of them are decided, plus one.
+ */
+export function deckProgress(
+  cards: readonly FilterableCard[],
+  votes: ReadonlyMap<string, Vote>,
+  filters: Filters,
+  remaining: number,
+): { position: number; total: number } {
+  const total = cards.filter((c) => votes.get(c.stats.name) !== "hidden" && matches(c, filters)).length;
+  return { position: Math.max(1, Math.min(total, total - remaining + 1)), total };
+}

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
 import contentFile from "../../data/names/name-content.json";
 import { contentNames, parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
-import { buildDeck, hashSeed, mulberry32, shuffle } from "@/lib/names/deck";
+import { buildDeck, deckProgress, hashSeed, mulberry32, shuffle } from "@/lib/names/deck";
 import { defaultFilters, type FilterableCard } from "@/lib/names/filters";
 import { popularityBand, rankByLastYear, trend } from "@/lib/names/popularity";
 import { sexTag } from "@/lib/names/sex";
@@ -98,5 +98,25 @@ describe("buildDeck", () => {
 
   it("is 'all-decided' for an empty card set", () => {
     expect(buildDeck([], none, defaultFilters(), seed1).state).toBe("all-decided");
+  });
+});
+
+describe("deckProgress", () => {
+  const f = defaultFilters();
+  it("counts from 1 of all names before any vote", () => {
+    expect(deckProgress(cards, none, f, cards.length)).toEqual({ position: 1, total: cards.length });
+  });
+
+  it("moves on with each decision and leaves hidden names out of the total", () => {
+    const [a, b, c] = cards.map((x) => x.stats.name);
+    const votes = new Map<string, Vote>([[a, "keep"], [b, "skip"], [c, "hidden"]]);
+    const left = buildDeck(cards, votes, f, seed1).cards.length;
+    expect(deckProgress(cards, votes, f, left)).toEqual({ position: 3, total: cards.length - 1 });
+  });
+
+  it("counts only names that pass the filters", () => {
+    const girls = { ...f, sex: "בת" as const };
+    const deck = buildDeck(cards, none, girls, seed1);
+    expect(deckProgress(cards, none, girls, deck.cards.length)).toEqual({ position: 1, total: deck.cards.length });
   });
 });
