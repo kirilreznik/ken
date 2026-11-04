@@ -59,6 +59,10 @@ const extraStyles = [
   { name: "name", fontSize: "52px", lineHeight: "60px", fontWeight: 800, letterSpacing: "-1px" },
   { name: "button", fontSize: "16px", lineHeight: "22px", fontWeight: 700 },
   { name: "tag", fontSize: "11px", lineHeight: "14px", fontWeight: 700 },
+  // Card details (Main.dc.html): Bible text, its reference, a known-person row.
+  { name: "quote", fontSize: "13.5px", lineHeight: "20px", fontWeight: 500 },
+  { name: "ref", fontSize: "12px", lineHeight: "16px", fontWeight: 500 },
+  { name: "person", fontSize: "13px", lineHeight: "18px", fontWeight: 500 },
 ];
 
 const colors = tokens.color.tokens;

@@ -78,6 +78,15 @@
   --nest-text-tag: 11px;
   --nest-text-tag-line-height: 14px;
   --nest-text-tag-weight: 700;
+  --nest-text-quote: 13.5px;
+  --nest-text-quote-line-height: 20px;
+  --nest-text-quote-weight: 500;
+  --nest-text-ref: 12px;
+  --nest-text-ref-line-height: 16px;
+  --nest-text-ref-weight: 500;
+  --nest-text-person: 13px;
+  --nest-text-person-line-height: 18px;
+  --nest-text-person-weight: 500;
   --nest-glass-tint: rgba(255,255,255,0.34);
   --nest-glass-soft-tint: rgba(255,255,255,0.22);
   --nest-glass-well-tint: rgba(255,255,255,0.42);
@@ -180,4 +189,13 @@
   --text-tag: var(--nest-text-tag);
   --text-tag--line-height: var(--nest-text-tag-line-height);
   --text-tag--font-weight: var(--nest-text-tag-weight);
+  --text-quote: var(--nest-text-quote);
+  --text-quote--line-height: var(--nest-text-quote-line-height);
+  --text-quote--font-weight: var(--nest-text-quote-weight);
+  --text-ref: var(--nest-text-ref);
+  --text-ref--line-height: var(--nest-text-ref-line-height);
+  --text-ref--font-weight: var(--nest-text-ref-weight);
+  --text-person: var(--nest-text-person);
+  --text-person--line-height: var(--nest-text-person-line-height);
+  --text-person--font-weight: var(--nest-text-person-weight);
 }
