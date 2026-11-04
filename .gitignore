@@ -44,3 +44,11 @@ next-env.d.ts
 
 # bundled edge functions
 supabase/functions/*/dist/
+
+# Ralph run state (scripts/ralph/run-names-pwa.sh)
+/scripts/ralph/prd.json
+/scripts/ralph/progress.txt
+/scripts/ralph/.last-branch
+/scripts/ralph/archive/
+/scripts/ralph/qa/names-pwa/shots/
+/scripts/ralph/qa/names-pwa/.auth/

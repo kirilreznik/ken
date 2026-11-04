@@ -1,0 +1,2111 @@
+{
+  "project": "Nest name swiper PWA (kirilreznik/ken)",
+  "branchName": "ralph/names-pwa",
+  "description": "Build the name swiper PWA at nestjourney.app/names end to end (sign-in with Google, SMS and email codes; onboarding without a due date; swipe with full parity to the landing demo and the E16 design; lists, matches by invite link, duel; offline; installable; account deletion; legal drafts), then up to 3 QA → fix cycles. Spec: tasks/prd-names-pwa.md. Prerequisites: docs/names-pwa/SETUP.md.",
+  "userStories": [
+    {
+      "id": "US-000",
+      "title": "Check every prerequisite before anything else",
+      "description": "As the Ralph agent, I need to know the accounts, settings, database and tools from docs/names-pwa/SETUP.md are in place, so no later story stalls on the environment.",
+      "acceptanceCriteria": [
+        "Read docs/names-pwa/SETUP.md and tasks/prd-names-pwa.md in full",
+        "These exist: .env.local with NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY; scripts/ralph/.env.test.local with every NAMES_QA_* key from SETUP §10. Never print or commit their values; record only which keys exist",
+        "NEXT_PUBLIC_SUPABASE_URL contains hkoumskvmkqqnwhnizbq (the EU project), not nxskkpcjyqjtgccnemgu",
+        "Migration 0009 is applied: an authenticated REST call to rpc/names_space works for QA user 1 (see the next item) and returns a uuid; the service-role REST read of spaces?select=origin&limit=1 succeeds (column exists)",
+        "QA users 1, 2 and 3 sign in through REST with their test phone numbers and NAMES_QA_OTP (POST /auth/v1/otp then POST /auth/v1/verify type sms). A user that doesn't exist yet is created first with the admin API (POST /auth/v1/admin/users with phone, phone_confirm true, user_metadata {qa: true}); record which were created",
+        "GET {SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=http://localhost:3000/names/auth/callback answers with a redirect to accounts.google.com (Google provider enabled)",
+        "GET {SUPABASE_URL}/auth/v1/settings shows external.google, external.phone and external.email true; record disable_signup's value (expected true until launch) in progress.txt",
+        "node -v is 22 or newer; jq exists; npm install succeeds; npx playwright --version works or US-002 will install it",
+        "If ANY item fails: write a section 'BLOCKED: prerequisites missing' at the top of progress.txt listing each missing item with the SETUP.md step that fixes it, leave passes false, and stop (don't start other stories)",
+        "No commit",
+        "Lint passes with 0 errors (npm run lint)"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-001",
+      "title": "Set up the branch and record the baseline",
+      "description": "As the Ralph agent, I need the run branch on top of the cleaned-up repo and a green baseline.",
+      "acceptanceCriteria": [
+        "On branch ralph/names-pwa (create it from origin/main if missing; never work on main)",
+        "origin/main no longer has src/app/login or src/components/AppShell.tsx (ken PR #5 merged). If it still has them, record a blocker in progress.txt and stop",
+        "Files present: tasks/prd-names-pwa.md, docs/names-pwa/SETUP.md, docs/names-pwa/E16-name-swipe-spec.md, docs/names-pwa/design/screens/01-intro.png … 11-background.png, docs/names-pwa/design/source/*.dc.html, docs/names-pwa/brand/tokens.json, data/names/names.json, data/names/name-content.json",
+        "Read docs/names-pwa/E16-name-swipe-spec.md in full and note in progress.txt any conflict with tasks/prd-names-pwa.md (the PRD wins)",
+        "Baseline results of npm run lint, npx tsc --noEmit, npm test and npm run build recorded in progress.txt (pre-existing failures recorded, not fixed)",
+        "Check whether node_modules/next/dist/docs/ exists and record it in the Codebase Patterns section of progress.txt",
+        "No commit"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Add Playwright, QA folders and helper scripts",
+      "description": "As the Ralph agent, I need repeatable browser checks and a scripted QA sign-in so every UI story can be verified.",
+      "acceptanceCriteria": [
+        "@playwright/test added as a dev dependency (npm install -D); npx playwright install chromium",
+        ".gitignore already ignores the Ralph run state and QA shots/.auth (added with the PRD); add test-results/ and playwright-report/",
+        "scripts/ralph/qa/names-pwa/ created with bugs.md (header only), ux-insights.md (header only) and shots/",
+        "scripts/ralph/qa/names-pwa/env.mjs loads scripts/ralph/.env.test.local without printing values",
+        "scripts/ralph/qa/names-pwa/login.mjs <1|2|3> signs the QA user in through Supabase REST (test phone + NAMES_QA_OTP) and writes scripts/ralph/qa/names-pwa/.auth/user<N>.json, a Playwright storageState whose localStorage for http://localhost:3000 and http://localhost:3100 holds the session under the key nest-names-auth in the shape supabase-js v2 stores it (read the supabase-js source in node_modules to get the shape right)",
+        "scripts/ralph/qa/names-pwa/shot.mjs <path> <out.png> [--state N] [--viewport WxH] [--port P] [--reduced-motion] [--offline] opens the page in Chromium (locale he-IL, timezone Asia/Jerusalem, deviceScaleFactor 2) and saves a full screenshot",
+        "scripts/ralph/qa/names-pwa/rest.mjs exports helpers used by QA: signIn(n) → access token, votes(token), matches(token, space), adminGetUser(id), adminDeleteUser(id), adminUpdateUser(id, attrs), createThrowawayUser() (phone-less email user via admin API, email_confirm true, user_metadata {qa: true})",
+        "A smoke run of shot.mjs on http://localhost:3000/ (the landing) produces a PNG",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'chore(names): add Playwright and QA helpers for the names PWA run'"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Create the /names layout shell",
+      "description": "As a visitor, I get a dedicated /names section with its own metadata, separate from the landing page.",
+      "acceptanceCriteria": [
+        "src/app/names/layout.tsx: metadata (title template '%s · בחירת שם', description, robots noindex by default, appleWebApp capable with title 'בחירת שם'), viewport themeColor from the canvas token, a body wrapper with the names font and canvas background",
+        "The root src/app/layout.tsx keeps lang he / dir rtl and analytics; the landing (/ and /pregnancy) renders exactly as before (tests/pregnancy-landing.test.ts passes, and a screenshot of / matches the one from US-002)",
+        "src/app/names/page.tsx renders a placeholder 'בחירת שם' for now",
+        "src/app/names/not-found.tsx: 'העמוד לא נמצא' with a link 'לבחירת שם' (FR-W33)",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against the landing page screenshot (unchanged): screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the /names layout shell'"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Copy brand assets into public/names",
+      "description": "As the app, I need the Nest logo and icon files served from /names.",
+      "acceptanceCriteria": [
+        "Copy docs/names-pwa/brand/svg/nest-wordmark.svg, nest-wordmark-on-dark.svg, nest-mark.svg, favicon.svg to public/names/brand/",
+        "Copy docs/names-pwa/brand/png/icon-192.png, icon-512.png, apple-touch-icon-180.png, android-adaptive-foreground-432.png to public/names/icons/",
+        "Build public/names/icons/maskable-512.png: the adaptive foreground centered on a peach-soft square (use sharp if already in node_modules via next, otherwise a small Node script with the canvas-free approach: write an SVG wrapper and rasterize with Playwright's page.screenshot); record the method in progress.txt",
+        "Files are unmodified copies except the maskable icon; the logo is never rebuilt from a font (BRAND.md)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'chore(names): add Nest brand assets for the names PWA'"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Turn the Nest tokens into CSS variables and Tailwind theme",
+      "description": "As a developer, I want every color, radius, shadow and type size from the brand tokens available as variables, so no names code hard-codes a value.",
+      "acceptanceCriteria": [
+        "src/styles/nest-tokens.css generated from docs/names-pwa/brand/tokens.json by scripts/build-nest-tokens.mjs (npm script tokens:css): CSS custom properties under :root for every color, radius, shadow, spacing and type token, plus the glass values (white tint alphas, blur 28px, saturate 180%, border alpha, inset highlight) and the photo scrim gradient used by the demo (src/lib/pregnancy-names-demo.mjs namesStyle) as named variables",
+        "The same file exposes them to Tailwind 4 with an @theme block (colors ink, ink-soft, stone, mist, faint, canvas, surface, sand, line, peach, peach-soft, clay, clay-deep, status pairs; radii; shadows; font sizes with line heights)",
+        "Imported once from src/app/names/layout.tsx (not from the landing)",
+        "A unit test asserts every color token in tokens.json appears in nest-tokens.css with the same value",
+        "README note in docs/names-pwa/README.md (create it): never edit nest-tokens.css by hand; run npm run tokens:css",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add Nest design tokens as CSS variables'"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Fonts and base styles for /names",
+      "description": "As a user, I see Heebo and the Nest base look on every names screen.",
+      "acceptanceCriteria": [
+        "@font-face for Heebo 500, 700, 800 from public/landing/heebo-hebrew.woff2 and heebo-latin.woff2 (same unicode ranges the landing uses), font-display swap, declared in src/app/names/names.css",
+        "Base styles in names.css: body text ink on canvas, Heebo, text sizes from tokens, focus-visible ring (ink, 2px, offset 2px), reduced-motion rule that disables transitions/animations longer than 200ms, selection color peach-soft",
+        "Utility classes for the type scale (display, title, section, card-title, body, caption, label) built from tokens",
+        "No hex or px font size outside nest-tokens.css",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 1 (01-intro.png) typography only: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add Heebo and base styles'"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Name data types and loading",
+      "description": "As the app, I can load the names data and the 10 content entries with types.",
+      "acceptanceCriteria": [
+        "src/lib/names/types.ts: NameStats {name, m, f, s, y?}, NameContent {niqqud, intro, bible?, people[]}, Card (stats + content + derived), Vote ('keep'|'love'|'skip'|'hidden')",
+        "src/lib/names/data.ts: loadNames() fetches the hashed static files from US-010's manifest (fallback to /names/data/names.json in tests) and returns a Map; contentNames() returns the names that have a content entry, in file order",
+        "Tests in tests/names/data.test.ts read data/names/*.json directly: 19,884 names, 10 content names, every content name exists in names.json",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): name data types and loading'"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Sex tag and boys/girls percentages",
+      "description": "As a user, I see the right sex tag and boys/girls labels (E16 §2, FR-5b).",
+      "acceptanceCriteria": [
+        "sexTag(stats): 'בן' ≥ 90% boys, 'בת' ≥ 90% girls, else 'מתאים לכולם', only for names with ≥ 200 births; smaller names use the majority sex",
+        "sexSplit(stats) returns boys/girls percent labels rounded to whole numbers, with 'פחות מ־1%' and 'מעל 99%' at the extremes, and the exact boys share for the bar width",
+        "Tests cover the 10 names (expected tags: זיו/נועם/שקד/אריאל/עמית 'מתאים לכולם'; יעל/תמר/אביגיל/אלה 'בת'; לביא 'בן') and edge cases (0 boys, 0 girls, exactly 90%, 199 births)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): sex tag and boys/girls percentages'"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Popularity band, count line and trend",
+      "description": "As a user, I see popularity and trend words computed with the E16 rules.",
+      "acceptanceCriteria": [
+        "rank2024(name) over all names by 2024 births; band: 'נפוץ' top 100, 'בינוני' 101–500, else 'נדיר' (and names with no recent year)",
+        "countLine: 'ניתן ל־{n} תינוקות ב־{year}' with he-IL number format, or the all-time line 'ניתן לכ־{rounded} תינוקות מאז 1949' when there is no recent year",
+        "trend(stats): average of the last 3 years vs the 3 years five years earlier: 'בעלייה' +25% or more, 'בירידה' −25% or more, else 'יציב'; null when data is too thin; arrow ↗ ↘ →",
+        "sparkline points for 2000–2024 (same math as the demo's spark())",
+        "Tests: computed band and trend for the 10 names compared with the demo's hard-coded values in src/lib/pregnancy-names-demo.mjs; any difference recorded in notes with the rule that produced it (the E16 rule wins)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): popularity band, count line and trend'"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "Build step for static, hashed names data",
+      "description": "As a user, the names data loads fast, caches well and works offline.",
+      "acceptanceCriteria": [
+        "scripts/build-names-data.mjs (run by a prebuild npm script and by npm run names:data): reads data/names/names.json and name-content.json, writes public/names/data/names.<hash>.json (minified) and content.<hash>.json, and public/names/data/manifest.json {names, content, builtAt}",
+        "Old hashed files are removed; public/names/data/ is gitignored except a .gitkeep",
+        "Tests check the script output for a temp dir: hashes are stable for the same input and change when content changes",
+        "npm run build runs it automatically",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): build step for static, hashed names data'"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Filter model",
+      "description": "As a user, my filters narrow the deck correctly (E16 FR-10).",
+      "acceptanceCriteria": [
+        "src/lib/names/filters.ts: Filters {sex, popularity, trend, letter, length, origin}; defaults all; matches(card, filters); count(cards, filters)",
+        "Length: קצר ≤ 3 letters, ארוך ≥ 5 (letters exclude niqqud and geresh); origin by sector codes in names.json 's'",
+        "Tests: 'בת' → girls only of the 10; 'בעלייה' → rising only; letter 'א' → אריאל, אביגיל, אלה; combined filters; reset",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): filter model'"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Deck builder",
+      "description": "As a user, I get a stable shuffled deck that never repeats a decided or hidden name (E16 FR-9 for 10 names).",
+      "acceptanceCriteria": [
+        "src/lib/names/deck.ts: seeded PRNG (mulberry32) with seed = 32-bit hash of the user id; buildDeck(cards, votes, filters, seed) returns the remaining cards; state 'empty-filter' vs 'all-decided' vs 'ok'",
+        "Undo puts the restored name on top",
+        "Tests: same seed → same order; different seed → different order; decided and hidden excluded; empty and end states",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): deck builder'"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Vote model and undo stack",
+      "description": "As a user, keep/love/skip/hide and undo behave as E16 FR-6/FR-7.",
+      "acceptanceCriteria": [
+        "src/lib/names/votes.ts: applyVote(state, name, vote) returns new state + an undo entry {name, previous: Vote|null}; undo() restores the previous vote or removes it; stack capped at 10",
+        "Love counts as keep and sorts first in 'שמרתי'; latest vote wins",
+        "Tests for all transitions, the 10-step cap, undo after a vote change",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): vote model and undo stack'"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "Duel engine",
+      "description": "As a user, a head-to-head round narrows my list to a ranked top 5 (E16 FR-13).",
+      "acceptanceCriteria": [
+        "src/lib/names/duel.ts: start(names, seed), pick(state, winner), isDone, ranking (top 5 or fewer), round x of y, serializable state for save/resume",
+        "Tests: 2, 3, 5, 8 and 12 names; deterministic with a seed; resume from serialized state",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): duel engine'"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "Accessibility strings",
+      "description": "As a screen reader user, cards and bars are read clearly (E16 acceptance #5).",
+      "acceptanceCriteria": [
+        "cardLabel(card) = '{name}, {sex tag}, {intro}, ניתן ל־{n} תינוקות ב־{year}, {trend}' (trend omitted when null)",
+        "barLabel = 'מאז 1949 ניתן ל־{x} אחוז בנים ול־{y} אחוז בנות' using the same 'פחות מ־1'/'מעל 99' rules",
+        "statusText for keep/love/skip/undo as in the demo ('{name} נשמר', '{name} נשמר, ראשון ברשימה', 'דילגת על {name}', 'בוטל: {name}')",
+        "Tests for all 10 names",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): accessibility strings'"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Custom name validation",
+      "description": "As a user, I can add a rare name safely (E16 FR-12).",
+      "acceptanceCriteria": [
+        "validateCustomName(input, names, myList): trims; Hebrew letters plus ׳ ״ - and inner spaces; 1–20 characters; returns {ok, name, isDataName} or {error: 'empty'|'not-hebrew'|'too-long'|'duplicate'} with the Hebrew messages",
+        "Tests including 'ש\"י', niqqud input stripped for matching, Latin rejected",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): custom name validation'"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Phone and email validation",
+      "description": "As a user, the sign-in forms accept what I type and reject mistakes with a clear message (FR-W3, FR-W4).",
+      "acceptanceCriteria": [
+        "normalizeIlMobile(input): accepts 05X-XXXXXXX, 05XXXXXXXX, +972 5X XXX XXXX, 9725XXXXXXXX with spaces/dashes; returns +9725XXXXXXXX or null",
+        "maskPhone('+972501234567') → '050-•••-4567' shown in a bdi; isEmail(input) simple and permissive; normalizeEmail lowercases and trims",
+        "Tests for valid/invalid samples including landlines (02-…) rejected",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): phone and email validation'"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "Local preferences store",
+      "description": "As a user, my device-only choices survive a reload (§3.2.8).",
+      "acceptanceCriteria": [
+        "src/lib/names/prefs.ts: get/set for surname, filters, background, introSeen, seenMatches, duelState, installHintDismissed, under nest-names:{userId}:{key} in localStorage, with safe JSON parse and defaults (background 'fabric')",
+        "clearAll(userId) removes every nest-names:* key for that user",
+        "src/lib/names/photo.ts: saveOwnPhoto(blob), loadOwnPhoto(), deleteOwnPhoto() in IndexedDB (idb-keyval allowed), per user",
+        "Tests with a localStorage mock and fake-indexeddb if needed (allowed as a dev dependency)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): local preferences store'"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "Supabase browser client with an env guard",
+      "description": "As the app, I talk to the EU Supabase project from the browser and fail gracefully when it isn't configured.",
+      "acceptanceCriteria": [
+        "src/lib/names/supabase.ts: a singleton createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, { auth: { flowType 'pkce', persistSession true, autoRefreshToken true, detectSessionInUrl true, storageKey 'nest-names-auth' } }) created only in the browser",
+        "isConfigured(); when false every /names page shows 'השירות לא מוגדר' and npm run build still succeeds without the variables (check by building with them unset)",
+        "SUPABASE_SERVICE_ROLE_KEY is never imported from client code (a test greps src/app/names, src/components/names and src/lib/names for it, except src/lib/names/server/)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the Supabase browser client'"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Auth state and route guard",
+      "description": "As a user, signed-out visits to app pages go to the welcome screen and signed-in visits to welcome go to the app.",
+      "acceptanceCriteria": [
+        "src/components/names/AuthProvider.tsx: session, user, loading, signOut (clears prefs keys, IndexedDB and the session); listens to onAuthStateChange",
+        "A guard component used by app pages: loading → a calm skeleton (no layout jump); no session → router.replace('/names/welcome' with ?next= for join links); rejected refresh token → sign out with 'צריך להיכנס שוב' on welcome (FR-W8)",
+        "Public routes (welcome, sign-in/*, auth/callback, privacy, terms, about, join/[code]) don't require a session",
+        "Playwright: signed out /names → /names/welcome; with storageState user 1 /names/welcome → /names",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add auth state and route guard'"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Space bootstrap and members",
+      "description": "As a user, I always have a space for my votes, and the app knows who's in it.",
+      "acceptanceCriteria": [
+        "src/lib/names/space.ts: ensureSpace(displayName) calls rpc('names_space'); members(spaceId) reads space_members (display_name, user_id, joined_at); cached per session",
+        "useSpace() hook exposes spaceId, members, isShared (2+ members), refresh()",
+        "Playwright/REST check: user 1 gets a space with origin 'names' and due_date null (service-role read); calling twice returns the same id",
+        "Never sends or asks for a due date",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): bootstrap the user's names space'"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Votes with an offline cache and outbox",
+      "description": "As a user, my votes save instantly, survive going offline and sync later (§3.2.9).",
+      "acceptanceCriteria": [
+        "src/lib/names/voteStore.ts: loads own name_votes for the space, caches them in IndexedDB, exposes a subscribe-able state; setVote(name, vote, custom?) and removeVote(name) update local state at once and append to an IndexedDB outbox",
+        "The outbox flushes in order on online, focus, every 30s and right after each change: upsert on (space_id,user_id,name) with updated_at now, delete for removals; a failed request stays queued with backoff; pendingCount exposed",
+        "A 'not member' / RLS error drops the item and reports to client-log without personal data",
+        "Unit tests with a mocked client: ordering, retry, removal after keep, coalescing several changes to one name",
+        "REST check: a vote made in the browser for user 1 appears in name_votes",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the vote store with an offline outbox'"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Realtime and matches",
+      "description": "As a user, my votes from another device appear, and matches refresh on their own (§3.2.10).",
+      "acceptanceCriteria": [
+        "Subscribe to postgres_changes on name_votes filtered by user_id=eq.{uid}; apply remote changes newer than local",
+        "src/lib/names/matches.ts: fetch rpc('name_matches', {p_space}) on focus, after own vote changes (debounced 2s) and every 60s while the swipe or lists screen is visible; cache last result with fetchedAt in IndexedDB; newMatches(seenMatches)",
+        "Graceful when the space has 1 member (no calls)",
+        "REST check: user 2 keeps a name user 1 kept in a shared test space (set up via names_invite/names_join with REST) and user 1's matches include it within 60s; clean up the test space membership afterwards with the service role",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add realtime votes and matches'"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Shared sign-in parts",
+      "description": "As a user, sign-in screens look and behave consistently.",
+      "acceptanceCriteria": [
+        "src/components/names/auth/: AuthLayout (photo background with glass panel like board 1), CodeInput (6 boxes or one field with autocomplete one-time-code, inputmode numeric, dir ltr, auto-submit), ResendTimer (60s, announced in words), Turnstile wrapper that renders only when NEXT_PUBLIC_TURNSTILE_SITE_KEY is set and returns a captchaToken (load the script from challenges.cloudflare.com only then)",
+        "Pending join code is read from ?join= or sessionStorage nest-names-join and kept through every sign-in path",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 1 (01-intro.png, Intro.dc.html) for the glass panel look: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add shared sign-in components'"
+      ],
+      "priority": 25,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Welcome screen",
+      "description": "As a visitor, I see what the name swiper is and how to sign in (FR-W1).",
+      "acceptanceCriteria": [
+        "/names/welcome per FR-W1: wordmark, 'בחירת שם', pitch, static preview card of זיו (reuses the card component once it exists; until then a static version built from the same tokens, replaced in US-039), three sign-in buttons, legal line with links",
+        "Indexable (robots index), with og title/description",
+        "Shows the sign-ups-closed note when ?closed=1 (set by FR-W5 errors)",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 8 (08-glass-fabric.png) for the photo and glass, and the landing demo's launch card: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the welcome screen'"
+      ],
+      "priority": 26,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-026",
+      "title": "Google sign-in and callback",
+      "description": "As a user, I can sign in with Google (FR-W2).",
+      "acceptanceCriteria": [
+        "'כניסה עם Google' calls signInWithOAuth with redirectTo {NEXT_PUBLIC_SITE_URL or origin}/names/auth/callback (+ ?join=CODE when pending)",
+        "/names/auth/callback waits for the session from the PKCE exchange, shows a loading state 'מתחברים…', then routes per FR-W6; error_description in the URL shows 'הכניסה עם Google לא הצליחה' with 'חזרה לכניסה'",
+        "Playwright: clicking the button reaches accounts.google.com with client_id and the Supabase callback redirect_uri (stop there); callback error path renders",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against the welcome screen layout: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add Google sign-in'"
+      ],
+      "priority": 27,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-027",
+      "title": "Sign-in with an SMS code",
+      "description": "As a user, I can sign in with a code sent to my phone (FR-W3).",
+      "acceptanceCriteria": [
+        "/names/sign-in/phone two steps per FR-W3 using normalizeIlMobile and maskPhone; signInWithOtp({phone, options:{channel:'sms', captchaToken}}); verifyOtp type 'sms'",
+        "'שינוי מספר' and 'שליחה חוזרת' work; the code field auto-submits",
+        "Playwright with NAMES_QA_PHONE_1 and NAMES_QA_OTP: signs in through the UI and lands per FR-W6; a wrong code shows the Hebrew error",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against the welcome screen layout: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add SMS code sign-in'"
+      ],
+      "priority": 28,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-028",
+      "title": "Sign-in with an email code",
+      "description": "As a user, I can sign in with a code sent to my email (FR-W4).",
+      "acceptanceCriteria": [
+        "/names/sign-in/email two steps per FR-W4; signInWithOtp({email, options:{shouldCreateUser:true, captchaToken}}); verifyOtp type 'email'",
+        "Playwright with NAMES_QA_EMAIL_SINK: reaches the code step (or the sign-ups-closed message if Supabase answers that); a wrong code shows the Hebrew error. Send at most 2 emails while building this story",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against the SMS sign-in screen: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add email code sign-in'"
+      ],
+      "priority": 29,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-029",
+      "title": "Hebrew error messages for sign-in",
+      "description": "As a user, I never see a raw English error (FR-W5).",
+      "acceptanceCriteria": [
+        "src/lib/names/authErrors.ts maps Supabase AuthError codes/status/messages (otp_expired, invalid otp, over_email_send_rate_limit, over_sms_send_rate_limit, signup_disabled / 'Signups not allowed', network TypeError) to the FR-W5 Hebrew strings; unknown → generic + client-log report without personal data",
+        "Unit tests for each mapping with real error shapes from supabase-js (read node_modules/@supabase/auth-js for the codes)",
+        "Used by the Google callback, phone and email screens; offline shows the connection message before sending",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): map sign-in errors to Hebrew'"
+      ],
+      "priority": 30,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-030",
+      "title": "Onboarding without a due date",
+      "description": "As a new user, I give a name and the required confirmations, and nothing else (FR-W7).",
+      "acceptanceCriteria": [
+        "/names/onboarding per FR-W7: display name (prefilled from Google metadata), 18+ checkbox, terms+privacy checkbox with links, optional updates opt-in unchecked; there is no due date field and no question about pregnancy",
+        "Submit saves user_metadata (display_name, age_confirmed_at, terms_version, privacy_version from src/content/names-legal versions, terms_accepted_at, updates_opt_in, updates_opt_in_at when true, signup_source 'names-pwa') and calls ensureSpace(display_name)",
+        "Playwright with user 3 after clearing their metadata via the admin API: the button is disabled until valid, submit works, admin read shows the metadata",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 1 (01-intro.png) layout: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add onboarding'"
+      ],
+      "priority": 31,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-031",
+      "title": "Routing after sign-in",
+      "description": "As a user, I land in the right place after any sign-in (FR-W6).",
+      "acceptanceCriteria": [
+        "One function nextRoute(user, prefs, pendingJoin) used by callback, phone, email and onboarding: onboarding → join → intro → /names",
+        "Unit tests for every branch; Playwright: user 1 with intro seen goes to /names, with intro not seen to /names/intro",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): route users after sign-in'"
+      ],
+      "priority": 32,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-032",
+      "title": "Glass surfaces and buttons",
+      "description": "As a user, panels, chips and buttons look like the liquid glass in the boards.",
+      "acceptanceCriteria": [
+        "src/components/names/ui/: Glass (strong/soft variants, solid fallback for 'none' background, reduced transparency and missing backdrop-filter support), Button (primary ink pill, secondary glass, peach circle, text link), IconButton (44px round glass, required Hebrew aria-label), Chip (aria-pressed, ink when selected)",
+        "Values only from nest-tokens.css; pressed scale 0.95 except under reduced motion",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8 (02-main.png, 08-glass-fabric.png) for chips and buttons: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add glass surfaces and buttons'"
+      ],
+      "priority": 33,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-033",
+      "title": "Sheet, dialog and toast",
+      "description": "As a user, sheets and dialogs open over the screen and close with Back, Escape or the close button.",
+      "acceptanceCriteria": [
+        "BottomSheet bound to the ?sheet= search param (open pushes history, Back closes), focus trap, Escape, returns focus, drag handle with a 44px close button 'סגירה'; Dialog (alertdialog) for confirms; Toast with role status",
+        "useSearchParams usage wrapped in Suspense as Next 16 requires (read the docs)",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 3 (03-filters.png) sheet chrome: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add sheet, dialog and toast'"
+      ],
+      "priority": 34,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-034",
+      "title": "Screen background",
+      "description": "As a user, the screen sits on the chosen background (FR-W17 visuals).",
+      "acceptanceCriteria": [
+        "ScreenBackground: 'none' (canvas + one or two peach blobs as in the demo), 'fabric' / 'notebook' / 'nursery' (public/landing/names-*.webp, cover), 'own' (IndexedDB blob via object URL, stronger glass + scrim, luminance-based extra scrim per §3.2.15); top scrim as in the demo; safe-area padding",
+        "Falls back to 'fabric' when the own photo is missing",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2, 8, 9 and 10: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the screen background'"
+      ],
+      "priority": 35,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-035",
+      "title": "Card header and name block",
+      "description": "As a user, the top of the card shows the tag, position and name (FR-W12).",
+      "acceptanceCriteria": [
+        "Sex tag pill, 'שם {n} מתוך {total}', the name with niqqud in display size 800, the full name with surname below when set",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8 and the demo's cardInner: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add card header and name block'"
+      ],
+      "priority": 36,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-036",
+      "title": "Bible block and known people",
+      "description": "As a user, I see the Bible reference and known people when a name has them.",
+      "acceptanceCriteria": [
+        "'מהתנ״ך' well with the book icon, text and reference; 'אנשים ידועים בשם הזה' with up to 2 rows (initial avatar, bold name, one line); both hidden when empty",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add bible block and known people'"
+      ],
+      "priority": 37,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-037",
+      "title": "Boys/girls bar",
+      "description": "As a user, I see the boys/girls split since 1949 (E16 FR-5b).",
+      "acceptanceCriteria": [
+        "Labels at both ends from sexSplit; boys ink, girls peach; one element with role img and barLabel",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add boys/girls bar'"
+      ],
+      "priority": 38,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-038",
+      "title": "Stat tiles with the trend sparkline",
+      "description": "As a user, I see births in 2024 with the band, and the trend with a word.",
+      "acceptanceCriteria": [
+        "Two tiles: 'ב־2024' + count + 'תינוקות · {band}'; 'מגמה מאז 2000' + SVG sparkline (LTR, clay end dot) + arrow + word; a name with no recent data shows the all-time line and no sparkline",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add stat tiles with the trend sparkline'"
+      ],
+      "priority": 39,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-039",
+      "title": "Card assembly",
+      "description": "As a user, a whole card reads as one article with every section in order (E16 FR-5a).",
+      "acceptanceCriteria": [
+        "NameCard composes US-035–038 in FR-5a order inside a scrollable glass article with aria-label cardLabel; swipe stamps (שמירה, דילוג, אהבתי מאוד) driven by CSS variables like the demo",
+        "Welcome's preview card now uses NameCard (static)",
+        "Each of the 10 names rendered in a dev-only page src/app/names/dev/cards/page.tsx (removed in US-047) and screenshotted",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8 for each of the 10 names: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add card assembly'"
+      ],
+      "priority": 40,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-040",
+      "title": "Card stack",
+      "description": "As a user, two cards peek out under the current one.",
+      "acceptanceCriteria": [
+        "Two back cards at −3° and +2° showing the next names at their bottom edge, soft glass, aria-hidden; the stack advances after a decision with the demo's enter animation",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add card stack'"
+      ],
+      "priority": 41,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-041",
+      "title": "Action bar and footer",
+      "description": "As a user, I have keep, love, skip and undo buttons and a status line (FR-W10).",
+      "acceptanceCriteria": [
+        "'שמירה' ink pill with bookmark icon, 'אהבתי מאוד' peach circle with heart (aria-label), 'דילוג' glass pill with x icon; footer 'ביטול' (disabled with aria-disabled when nothing to undo) and a polite live status",
+        "All ≥ 44px, Hebrew labels, the demo's order and sizes",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8 and the demo's action bar: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add action bar and footer'"
+      ],
+      "priority": 42,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-042",
+      "title": "Swipe header and quick chips",
+      "description": "As a user, the swipe screen header has the title, background, menu and my saved count (FR-W10).",
+      "acceptanceCriteria": [
+        "Header: 'בחירת שם', background IconButton (aria-label 'בחירת רקע', opens ?sheet=background), menu IconButton to settings (aria-label 'הגדרות'), 'השמות שלי' pill with count (aria-label 'השמות שלי: {n} נשמרו') linking to /names/lists",
+        "Quick chips per §3.2.14 (group aria-label 'סינון לפי מין')",
+        "Desktop: centered column max 480px",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the swipe header and chips'"
+      ],
+      "priority": 43,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-043",
+      "title": "Drag gesture",
+      "description": "As a user, I can swipe cards with touch, mouse or pen (FR-W11).",
+      "acceptanceCriteria": [
+        "Pointer events with the demo's thresholds; direction from the keep button's position (§3.2.12); up = love; short drag snaps back; vertical scroll inside the card still works",
+        "Playwright: mouse drag right keeps, left skips, up loves, short drag nothing; touchscreen swipe works",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against the demo's drag behaviour: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the swipe gesture'"
+      ],
+      "priority": 44,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-044",
+      "title": "Keyboard and reduced motion",
+      "description": "As a keyboard or motion-sensitive user, I can decide without gestures or flings (FR-W11, §3.2.17).",
+      "acceptanceCriteria": [
+        "Shortcuts K/L/S/Z/Backspace when focus is in the swipe region, described by a hint; focus moves sensibly after each decision",
+        "Reduced motion: no fling, fade in",
+        "Playwright with reducedMotion reduce and keyboard-only flow",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add keyboard control and reduced motion'"
+      ],
+      "priority": 45,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-045",
+      "title": "Swipe screen wiring",
+      "description": "As a user, my decisions save and undo works on the real swipe screen (FR-W14, FR-W15).",
+      "acceptanceCriteria": [
+        "/names composes header, chips, stack, actions, footer with the deck (US-012), vote store (US-022), undo (US-013), prefs (filters, surname)",
+        "Status text per US-015; saved count updates",
+        "REST check: each action writes the right vote; undo restores",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 2 and 8: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): wire up the swipe screen'"
+      ],
+      "priority": 46,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-046",
+      "title": "Hide a name from the swipe screen",
+      "description": "As a user, I can skip a name and never see it again (§3.2.13).",
+      "acceptanceCriteria": [
+        "Long-press 500ms and right-click on 'דילוג' open a small menu 'דילוג ולא להציג שוב'; also exposed to keyboard users through a visible 'עוד' affordance or the menu key",
+        "Vote 'hidden'",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): hide a name from the deck'"
+      ],
+      "priority": 47,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-047",
+      "title": "Empty-filter and end-of-deck states",
+      "description": "As a user, I know what to do when no names are left (FR-W14).",
+      "acceptanceCriteria": [
+        "Empty filter: 'אין שמות שמתאימים לסינון הזה' + 'איפוס סינון'; all decided: 'עברת על כל השמות. בקרוב יתווספו עוד.' + 'לשמות שלי' + 'להזמין מישהו לבחור ביחד' when solo",
+        "Actions disabled while empty; focus moves to the first button",
+        "Delete src/app/names/dev/",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against the demo's empty states in the glass style: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add empty and end-of-deck states'"
+      ],
+      "priority": 48,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-048",
+      "title": "Intro screen",
+      "description": "As a new user, I see a short intro once (FR-W9).",
+      "acceptanceCriteria": [
+        "/names/intro per E16 FR-3/FR-4 and board 1; shared line only with 2+ members; surname field (optional, RTL, device only); 'התחלת בחירה' sets introSeen",
+        "Network check: the surname never appears in any request",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 1 (01-intro.png, Intro.dc.html): screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the intro screen'"
+      ],
+      "priority": 49,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-049",
+      "title": "Backgrounds sheet",
+      "description": "As a user, I choose a background (FR-W17).",
+      "acceptanceCriteria": [
+        "?sheet=background per board 11 with 5 options, ring + check + 'נבחר'; applies immediately and persists",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 11 (11-background.png, Background.dc.html): screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the backgrounds sheet'"
+      ],
+      "priority": 50,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-050",
+      "title": "Own photo background",
+      "description": "As a user, I can use my own photo, kept on my device (§3.2.15).",
+      "acceptanceCriteria": [
+        "'תמונה משלי' opens a file picker (accept image/*, no capture); resize to 1,200px long side with canvas, JPEG ~0.85, save to IndexedDB, replace deletes the old; luminance check raises the scrim; text stays ink",
+        "Playwright setInputFiles with a dark and a busy image; no network request carries image data",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against boards 8–10 for glass strength: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the own photo background'"
+      ],
+      "priority": 51,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-051",
+      "title": "Filters sheet",
+      "description": "As a user, I filter the deck (FR-W16).",
+      "acceptanceCriteria": [
+        "?sheet=filters per board 3: all groups, live count on 'הצגת {n} שמות', 'איפוס', 'שמות שהסתרתי ({n})' → /names/hidden; persisted",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 3 (03-filters.png, Filters.dc.html): screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the filters sheet'"
+      ],
+      "priority": 52,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-052",
+      "title": "Hidden names list",
+      "description": "As a user, I can bring back a hidden name (FR-W22).",
+      "acceptanceCriteria": [
+        "/names/hidden lists hidden names with 'החזרה' (deletes the vote); empty state 'אין שמות מוסתרים'",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 5 list rows: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the hidden names list'"
+      ],
+      "priority": 53,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-053",
+      "title": "My names: saved and add a name",
+      "description": "As a user, I see the names I kept and can add my own (FR-W18).",
+      "acceptanceCriteria": [
+        "/names/lists with segments (tabs with roles) 'שמרתי', 'התאמות' (only when shared), 'דו־קרב'; ?tab= param",
+        "'שמרתי' rows per FR-W18 with row menu; 'הוספת שם' form with US-016 validation",
+        "Invite entry in the header",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 5 (05-lists.png, Lists.dc.html): screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add my names list'"
+      ],
+      "priority": 54,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-054",
+      "title": "Matches and the match sheet",
+      "description": "As a user sharing a space, I see our matches and a calm note for a new one (FR-W19, FR-W20).",
+      "acceptanceCriteria": [
+        "'התאמות' tab from matches cache; '{n} שמרו' when n ≥ 3; loved marker without names; last-updated time when offline",
+        "Match sheet (board 4) once per name per device; 'לרשימת ההתאמות' and 'להמשיך לבחור'",
+        "REST check with users 1 and 2 in a shared test space",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 4 (04-match.png, Match.dc.html) and board 5: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add matches'"
+      ],
+      "priority": 55,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-055",
+      "title": "Duel",
+      "description": "As a user, I narrow my list head to head (FR-W21).",
+      "acceptanceCriteria": [
+        "'דו־קרב' tab per board 6 and FR-W21 with save/resume via prefs duelState",
+        "Source toggle 'שמרתי' / 'התאמות' when there are 2+ matches",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 6 (06-duel.png, Duel.dc.html): screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the duel'"
+      ],
+      "priority": 56,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-056",
+      "title": "Invite screen",
+      "description": "As a user, I can invite someone to choose with me (FR-W23).",
+      "acceptanceCriteria": [
+        "/names/invite: copy per FR-W23, names_invite(), Web Share with clipboard fallback, expiry date in he-IL format, members list",
+        "Link format https://{site}/names/join/{CODE}",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 5's list layout on canvas: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the invite screen'"
+      ],
+      "priority": 57,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-057",
+      "title": "Join by invite link",
+      "description": "As an invited person, I can join from the link whether or not I have an account (FR-W24).",
+      "acceptanceCriteria": [
+        "/names/join/[code] per FR-W24 signed out and signed in; names_join; invalid_code message; pending code survives sign-in (sessionStorage + ?join=)",
+        "REST/Playwright: user 2 joins user 1's space, votes moved, matches visible; a reused code fails for user 3; clean up memberships afterwards with the service role",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against the welcome screen layout: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): join a space by invite link'"
+      ],
+      "priority": 58,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-058",
+      "title": "Settings screen",
+      "description": "As a user, I manage my account and app (FR-W25).",
+      "acceptanceCriteria": [
+        "/names/settings per FR-W25 (display name edit, sign-in method, opt-in toggle, invite, about, install entry, legal links, sign out, delete account entry)",
+        "Display name saves to own space_members row and metadata (REST check)",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 5's list layout on canvas: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the settings screen'"
+      ],
+      "priority": 59,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-059",
+      "title": "Account deletion API",
+      "description": "As a user, I can delete my account and everything tied to it (§6).",
+      "acceptanceCriteria": [
+        "src/app/api/names/account/route.ts DELETE per §6 using src/lib/names/server/admin.ts (service client, server only); 204 / 401 / 500; one call per user per minute",
+        "Integration check against the real project with a throwaway user from rest.mjs: user gone, votes gone; with a shared space they created, the space passes to the other member",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the account deletion endpoint'"
+      ],
+      "priority": 60,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-060",
+      "title": "Account deletion UI",
+      "description": "As a user, deleting my account is clear and final (FR-W25).",
+      "acceptanceCriteria": [
+        "Confirm dialog with the FR-W25 copy; calls the API with the access token; on success clears local data, signs out, shows 'החשבון נמחק' with a link to the landing",
+        "Playwright with a throwaway user",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against the dialog component: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add account deletion to settings'"
+      ],
+      "priority": 61,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-061",
+      "title": "About the data and error report",
+      "description": "As a user, I see where the numbers come from and can report a mistake (FR-W30, §3.2.18).",
+      "acceptanceCriteria": [
+        "?sheet=about and /names/about per board 7 and FR-W30 (indexable page)",
+        "Report sheet posting to client-log with only area, name, message, path, appVersion; confirmation",
+        "Network check of the payload",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 7 (07-about.png, About.dc.html): screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add about the data and reports'"
+      ],
+      "priority": 62,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-062",
+      "title": "Privacy policy and terms drafts",
+      "description": "As a visitor, I can read the privacy policy and terms (FR-W31).",
+      "acceptanceCriteria": [
+        "src/content/names-legal/privacy.ts and terms.ts with LEGAL_DRAFT = true, version strings, and the FR-W31 content; only facts from the PRD; operator name and contact from PREGNANCY_OPERATOR_NAME / PREGNANCY_CONTACT_EMAIL (a clear placeholder 'יעודכן לפני ההשקה' when unset)",
+        "/names/privacy and /names/terms render them with the draft banner, indexable",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 5's list layout on canvas: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add draft privacy policy and terms'"
+      ],
+      "priority": 63,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-063",
+      "title": "Web app manifest and icons",
+      "description": "As a user, I can install the swiper as an app (FR-W26).",
+      "acceptanceCriteria": [
+        "src/app/names/manifest.webmanifest/route.ts (or the Next 16 way to serve a scoped manifest, per the docs) with FR-W26 fields; /names layout links it via metadata; apple-touch-icon and appleWebApp metadata",
+        "Playwright fetch: manifest JSON valid, every icon URL 200 with the right size",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the web app manifest'"
+      ],
+      "priority": 64,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-064",
+      "title": "Service worker",
+      "description": "As a user, the app loads offline and fast (FR-W28).",
+      "acceptanceCriteria": [
+        "public/names/sw.js hand-written per FR-W28 (versioned caches, precache list including the hashed data files read from /names/data/manifest.json at install, the strategies, never caching /api, Supabase or the callback); registered from the names layout in production only with scope /names/",
+        "public/sw.js untouched (git diff shows no change)",
+        "On a production build (port 3100): registration scope is /names/, offline reload of /names works",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add the service worker'"
+      ],
+      "priority": 65,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-065",
+      "title": "Offline status and update prompt",
+      "description": "As a user, I can tell when I'm offline and when an update is ready (FR-W29).",
+      "acceptanceCriteria": [
+        "Footer status 'לא מחובר · {n} בחירות ממתינות לסנכרון' while offline or pending; sign-in screens show the connection message; matches show 'עודכן לאחרונה {time}'",
+        "'עדכון זמין' toast with 'רענון' when a new worker is waiting (skipWaiting on request, then reload)",
+        "Playwright offline/online run on the production build with a REST check of the flushed votes",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 2 footer: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add offline status and the update prompt'"
+      ],
+      "priority": 66,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-066",
+      "title": "Install prompts",
+      "description": "As a user, I'm shown how to install the app on my phone (FR-W27).",
+      "acceptanceCriteria": [
+        "beforeinstallprompt handling with an install entry in settings and a one-time dismissible hint after the 5th vote; iOS Safari steps sheet; hidden in standalone",
+        "Playwright with an iPhone Safari user agent shows the iOS sheet; standalone emulation hides it",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against board 11's sheet style: screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add install prompts'"
+      ],
+      "priority": 67,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-067",
+      "title": "Link the landing demo to the app",
+      "description": "As a landing visitor, I can go from the demo to the real app (FR-W32).",
+      "acceptanceCriteria": [
+        "Add the /names links to the demo's side note and end-of-deck state in src/lib/pregnancy-names-demo.mjs; nothing else on the landing changes",
+        "tests/pregnancy-landing.test.ts updated to assert the link",
+        "Browser check (tasks/prd-names-pwa.md §10) at 390x844 and 1280x800 against the landing page at / (only the new links differ): screenshot saved to scripts/ralph/qa/names-pwa/shots/, differences fixed until it matches (deliberate differences from §3 go in notes)",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): link the landing demo to the app'"
+      ],
+      "priority": 68,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-068",
+      "title": "Metadata, robots, errors and not found",
+      "description": "As a visitor and a search engine, pages have the right titles and errors are handled (FR-W33, §3.2.20).",
+      "acceptanceCriteria": [
+        "Titles for every route; robots index only on welcome, privacy, terms, about; error.tsx boundary with 'ניסיון חוזר' and client-log; not-found from US-003 checked",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'feat(names): add metadata and error handling'"
+      ],
+      "priority": 69,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-069",
+      "title": "Keep analytics free of personal data",
+      "description": "As a user, my data doesn't reach analytics (§3.2.19).",
+      "acceptanceCriteria": [
+        "Analytics beforeSend strips query strings and the join code from /names URLs",
+        "Playwright network check: analytics payloads contain no code, phone, email or name",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'fix(names): strip private data from analytics'"
+      ],
+      "priority": 70,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-070",
+      "title": "Accessibility audit",
+      "description": "As a user with assistive tech, every screen works.",
+      "acceptanceCriteria": [
+        "@axe-core/playwright (allowed dev dependency) on every names route and sheet: no serious or critical issues",
+        "Keyboard-only walkthrough of sign-in → swipe → lists → duel → settings; 200% zoom and 320px width with no horizontal scroll",
+        "Fix what's found",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'fix(names): accessibility fixes from the audit'"
+      ],
+      "priority": 71,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-071",
+      "title": "RTL and token audit",
+      "description": "As the owner, the code follows the design rules (§8).",
+      "acceptanceCriteria": [
+        "A Vitest test scans src/app/names, src/components/names, src/lib/names for hex/rgb colors, px font sizes, left/right/ml-/mr-/pl-/pr- classes and properties, and icon-only buttons without aria-label; it fails on any hit",
+        "Fix every hit",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'test(names): add the RTL and token guard'"
+      ],
+      "priority": 72,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-072",
+      "title": "Performance pass",
+      "description": "As a user on a phone, the app starts fast.",
+      "acceptanceCriteria": [
+        "Production build: /names first load JS reported by next build recorded; names data fetched once and cached; images sized; no layout shift on the swipe screen (measure CLS with Playwright PerformanceObserver < 0.1)",
+        "Record numbers in docs/names-pwa/README.md",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'perf(names): performance pass'"
+      ],
+      "priority": 73,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-073",
+      "title": "Docs",
+      "description": "As the next developer, I know how the names PWA works.",
+      "acceptanceCriteria": [
+        "docs/names-pwa/README.md: routes, data flow, auth, outbox, service worker, env vars, how to run locally, QA helpers, how to swap name-content.json for E16b",
+        "README.md (root) mentions /names and links the doc",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'docs(names): document the names PWA'"
+      ],
+      "priority": 74,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-074",
+      "title": "Full regression and smoke walkthrough",
+      "description": "As the owner, the whole flow works before QA.",
+      "acceptanceCriteria": [
+        "Fresh browser profile: welcome → SMS sign-in (user 3 with metadata cleared) → onboarding → intro → 10 decisions with undo and a hide → filters → background change → lists → duel → invite (user 3 makes one) → user 2 joins via REST → match appears → settings → sign out",
+        "Landing at / still works; all checks green",
+        "Push branch ralph/names-pwa",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'chore(names): pass the full regression before QA'"
+      ],
+      "priority": 75,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA0",
+      "title": "Set up the QA run",
+      "description": "As the QA agent, I need a clean, known starting state.",
+      "acceptanceCriteria": [
+        "Production build running on port 3100 (npm run build && npm run start -- -p 3100)",
+        "QA users 1–3 sign in through REST; their name_votes deleted with the service role; if any of them share a space, record it; user 3's onboarding metadata cleared",
+        "bugs.md and ux-insights.md exist with headers",
+        "No commit"
+      ],
+      "priority": 76,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-A",
+      "title": "QA cycle 1: Sign-in",
+      "description": "As the QA agent, I check the 'A: Sign-in' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'A' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 77,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-B",
+      "title": "QA cycle 1: Onboarding and routing",
+      "description": "As the QA agent, I check the 'B: Onboarding and routing' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'B' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 78,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-C",
+      "title": "QA cycle 1: Card content",
+      "description": "As the QA agent, I check the 'C: Card content' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'C' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 79,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-D",
+      "title": "QA cycle 1: Actions, gestures, undo",
+      "description": "As the QA agent, I check the 'D: Actions, gestures, undo' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'D' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 80,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-E",
+      "title": "QA cycle 1: Backgrounds",
+      "description": "As the QA agent, I check the 'E: Backgrounds' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'E' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 81,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-F",
+      "title": "QA cycle 1: Filters, chips, hidden, deck end",
+      "description": "As the QA agent, I check the 'F: Filters, chips, hidden, deck end' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'F' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 82,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-G",
+      "title": "QA cycle 1: Lists",
+      "description": "As the QA agent, I check the 'G: Lists' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'G' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 83,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-H",
+      "title": "QA cycle 1: Invite, join, matches",
+      "description": "As the QA agent, I check the 'H: Invite, join, matches' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'H' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 84,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-I",
+      "title": "QA cycle 1: Duel",
+      "description": "As the QA agent, I check the 'I: Duel' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'I' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 85,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-J",
+      "title": "QA cycle 1: About, report, legal, settings",
+      "description": "As the QA agent, I check the 'J: About, report, legal, settings' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'J' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 86,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-K",
+      "title": "QA cycle 1: PWA and offline",
+      "description": "As the QA agent, I check the 'K: PWA and offline' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'K' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 87,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-L",
+      "title": "QA cycle 1: Accessibility, RTL, design-system and privacy audit",
+      "description": "As the QA agent, I check the 'L: Accessibility, RTL, design-system and privacy audit' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'L' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 1, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 1'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 1')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 88,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-FIX1",
+      "title": "Fix the bugs from QA cycle 1",
+      "description": "As the agent, I fix every open bug so the next QA cycle can re-verify (tasks/prd-names-pwa.md §11.3).",
+      "acceptanceCriteria": [
+        "Count bugs with status open in scripts/ralph/qa/names-pwa/bugs.md (blocked doesn't count)",
+        "If the count is 0: mark every remaining QA and FIX story passes true with the note 'skipped: QA clean after cycle 1' and stop; US-FINAL runs next",
+        "Otherwise fix every open bug with the smallest correct change, following tasks/prd-names-pwa.md §8",
+        "Verify each fix in the browser, then set status fixed with a one-line note and 'fixed in cycle 1'",
+        "A bug that needs an owner decision or a backend/settings change is set to wontfix-owner with the question",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'fix(names): resolve the {k} bugs found in QA cycle 1' including bugs.md"
+      ],
+      "priority": 89,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-A",
+      "title": "QA cycle 2: Sign-in",
+      "description": "As the QA agent, I check the 'A: Sign-in' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'A' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 90,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-B",
+      "title": "QA cycle 2: Onboarding and routing",
+      "description": "As the QA agent, I check the 'B: Onboarding and routing' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'B' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 91,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-C",
+      "title": "QA cycle 2: Card content",
+      "description": "As the QA agent, I check the 'C: Card content' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'C' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 92,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-D",
+      "title": "QA cycle 2: Actions, gestures, undo",
+      "description": "As the QA agent, I check the 'D: Actions, gestures, undo' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'D' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 93,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-E",
+      "title": "QA cycle 2: Backgrounds",
+      "description": "As the QA agent, I check the 'E: Backgrounds' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'E' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 94,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-F",
+      "title": "QA cycle 2: Filters, chips, hidden, deck end",
+      "description": "As the QA agent, I check the 'F: Filters, chips, hidden, deck end' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'F' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 95,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-G",
+      "title": "QA cycle 2: Lists",
+      "description": "As the QA agent, I check the 'G: Lists' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'G' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 96,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-H",
+      "title": "QA cycle 2: Invite, join, matches",
+      "description": "As the QA agent, I check the 'H: Invite, join, matches' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'H' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 97,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-I",
+      "title": "QA cycle 2: Duel",
+      "description": "As the QA agent, I check the 'I: Duel' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'I' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 98,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-J",
+      "title": "QA cycle 2: About, report, legal, settings",
+      "description": "As the QA agent, I check the 'J: About, report, legal, settings' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'J' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 99,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-K",
+      "title": "QA cycle 2: PWA and offline",
+      "description": "As the QA agent, I check the 'K: PWA and offline' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'K' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 100,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-L",
+      "title": "QA cycle 2: Accessibility, RTL, design-system and privacy audit",
+      "description": "As the QA agent, I check the 'L: Accessibility, RTL, design-system and privacy audit' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'L' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 2, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 2'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 2')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 101,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-FIX2",
+      "title": "Fix the bugs from QA cycle 2",
+      "description": "As the agent, I fix every open bug so the next QA cycle can re-verify (tasks/prd-names-pwa.md §11.3).",
+      "acceptanceCriteria": [
+        "Count bugs with status open in scripts/ralph/qa/names-pwa/bugs.md (blocked doesn't count)",
+        "If the count is 0: mark every remaining QA and FIX story passes true with the note 'skipped: QA clean after cycle 2' and stop; US-FINAL runs next",
+        "Otherwise fix every open bug with the smallest correct change, following tasks/prd-names-pwa.md §8",
+        "Verify each fix in the browser, then set status fixed with a one-line note and 'fixed in cycle 2'",
+        "A bug that needs an owner decision or a backend/settings change is set to wontfix-owner with the question",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'fix(names): resolve the {k} bugs found in QA cycle 2' including bugs.md"
+      ],
+      "priority": 102,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-A",
+      "title": "QA cycle 3: Sign-in",
+      "description": "As the QA agent, I check the 'A: Sign-in' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'A' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 103,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-B",
+      "title": "QA cycle 3: Onboarding and routing",
+      "description": "As the QA agent, I check the 'B: Onboarding and routing' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'B' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 104,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-C",
+      "title": "QA cycle 3: Card content",
+      "description": "As the QA agent, I check the 'C: Card content' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'C' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 105,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-D",
+      "title": "QA cycle 3: Actions, gestures, undo",
+      "description": "As the QA agent, I check the 'D: Actions, gestures, undo' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'D' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 106,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-E",
+      "title": "QA cycle 3: Backgrounds",
+      "description": "As the QA agent, I check the 'E: Backgrounds' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'E' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 107,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-F",
+      "title": "QA cycle 3: Filters, chips, hidden, deck end",
+      "description": "As the QA agent, I check the 'F: Filters, chips, hidden, deck end' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'F' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 108,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-G",
+      "title": "QA cycle 3: Lists",
+      "description": "As the QA agent, I check the 'G: Lists' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'G' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 109,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-H",
+      "title": "QA cycle 3: Invite, join, matches",
+      "description": "As the QA agent, I check the 'H: Invite, join, matches' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'H' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 110,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-I",
+      "title": "QA cycle 3: Duel",
+      "description": "As the QA agent, I check the 'I: Duel' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'I' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 111,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-J",
+      "title": "QA cycle 3: About, report, legal, settings",
+      "description": "As the QA agent, I check the 'J: About, report, legal, settings' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'J' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 112,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-K",
+      "title": "QA cycle 3: PWA and offline",
+      "description": "As the QA agent, I check the 'K: PWA and offline' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'K' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 113,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-L",
+      "title": "QA cycle 3: Accessibility, RTL, design-system and privacy audit",
+      "description": "As the QA agent, I check the 'L: Accessibility, RTL, design-system and privacy audit' area against its checklist in tasks/prd-names-pwa.md §11.4, in the browser.",
+      "acceptanceCriteria": [
+        "Read tasks/prd-names-pwa.md §11.2 and the §11.4 checklist 'L' first; the checklist, not this entry, is the spec",
+        "Work through every item on the running production build (port 3100) as the QA users it names, at 390x844 (and desktop where it says)",
+        "Every failure is a new entry in scripts/ralph/qa/names-pwa/bugs.md (status open, cycle 3, steps, expected, actual, screenshot) unless an identical open entry exists, then add 'seen again in cycle 3'",
+        "A bug marked fixed earlier that fails again is reopened ('regressed in cycle 3')",
+        "Items the environment can't run are logged once as blocked with the reason",
+        "Non-blocking ideas go to ux-insights.md",
+        "Clean up any data you created (memberships, throwaway users) with the service role",
+        "Do not fix anything and do not commit; append a short result line to progress.txt (items checked, new, reopened, blocked)"
+      ],
+      "priority": 114,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-FIX3",
+      "title": "Fix the bugs from QA cycle 3",
+      "description": "As the agent, I fix every open bug so the next QA cycle can re-verify (tasks/prd-names-pwa.md §11.3).",
+      "acceptanceCriteria": [
+        "Count bugs with status open in scripts/ralph/qa/names-pwa/bugs.md (blocked doesn't count)",
+        "This is the last fix pass: no cycle 4, and this story never skips ahead. If the count is 0, mark it passing with a note",
+        "Otherwise fix every open bug with the smallest correct change, following tasks/prd-names-pwa.md §8",
+        "Verify each fix in the browser, then set status fixed with a one-line note and 'fixed in cycle 3'",
+        "A bug that needs an owner decision or a backend/settings change is set to wontfix-owner with the question",
+        "Lint passes with 0 errors (npm run lint)",
+        "Typecheck passes (npx tsc --noEmit)",
+        "Tests pass (npm test)",
+        "Build passes (npm run build)",
+        "One commit: 'fix(names): resolve the {k} bugs found in QA cycle 3' including bugs.md",
+        "After this story, stop fixing even if bugs remain: US-FINAL reports them"
+      ],
+      "priority": 115,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-FINAL",
+      "title": "Write the QA summary and push",
+      "description": "As the owner, I want an honest summary of where the PWA stands (tasks/prd-names-pwa.md §11.3 step 5).",
+      "acceptanceCriteria": [
+        "Re-check in the browser each bug the last fix pass marked fixed; any that fail go back to open",
+        "Write scripts/ralph/qa/names-pwa/SUMMARY.md: the outcome line ('clean after cycle N' or 'stopped after 3 cycles, {k} bugs open for the owner's review'), a table per cycle (found / fixed / reopened / blocked), every open, blocked and wontfix-owner bug in one line each, the owner checks still to do (docs/names-pwa/SETUP.md §11–§13), anything written to docs/names-pwa/backend-requests.md, and a pointer to ux-insights.md",
+        "Never call the run clean while any bug is open",
+        "One docs commit: 'docs(names): add the names PWA QA summary', then git push -u origin ralph/names-pwa",
+        "If every story now passes, reply with <promise>COMPLETE</promise>"
+      ],
+      "priority": 116,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
