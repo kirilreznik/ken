@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/build-names-data.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "TZ=Asia/Jerusalem vitest run",
-    "tokens:css": "node scripts/build-nest-tokens.mjs"
+    "tokens:css": "node scripts/build-nest-tokens.mjs",
+    "names:data": "node scripts/build-names-data.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

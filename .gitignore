@@ -60,3 +60,7 @@ supabase/functions/*/dist/
 # Playwright
 /test-results/
 /playwright-report/
+
+# Built by scripts/build-names-data.mjs (prebuild)
+/public/names/data/*
+!/public/names/data/.gitkeep
