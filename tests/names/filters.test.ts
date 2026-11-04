@@ -3,11 +3,15 @@ import namesFile from "../../data/names/names.json";
 import contentFile from "../../data/names/name-content.json";
 import { contentNames, parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
 import {
+  applyLabel,
   count,
   DEFAULT_FILTERS,
   defaultFilters,
   firstLetter,
   isDefault,
+  lengthValue,
+  letterOptions,
+  letterValue,
   matches,
   nameLength,
   QUICK_CHIPS,
@@ -121,5 +125,24 @@ describe("quick chips", () => {
     expect(withSex(filters, "בת")).toEqual({ ...filters, sex: "בת" });
     expect(withSex({ ...filters, sex: "בן" }, null)).toEqual(filters);
     expect(filters.sex).toBeNull();
+  });
+});
+
+describe("filters sheet labels", () => {
+  it("letterOptions lists each first letter once, in alphabet order", () => {
+    expect(letterOptions(["תמר", "אלה", "אריאל", "נֹעַם", "יעל"])).toEqual(["א", "י", "נ", "ת"]);
+    const all = letterOptions(cards.map((c) => c.stats.name));
+    expect(all).toContain("א");
+    expect(new Set(all).size).toBe(all.length);
+  });
+
+  it("button values and the apply label", () => {
+    expect(letterValue(null)).toBe("כל האותיות");
+    expect(letterValue("א")).toBe("א");
+    expect(lengthValue(null)).toBe("קצר וארוך");
+    expect(lengthValue("קצר")).toContain("עד 3");
+    expect(applyLabel(4)).toBe("הצגת 4 שמות");
+    expect(applyLabel(0)).toBe("הצגת 0 שמות");
+    expect(applyLabel(1)).toBe("הצגת שם אחד");
   });
 });

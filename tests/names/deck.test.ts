@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
 import contentFile from "../../data/names/name-content.json";
 import { contentNames, parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
-import { buildDeck, deckProgress, hashSeed, mulberry32, shuffle } from "@/lib/names/deck";
+import { buildDeck, deckCount, deckProgress, hiddenCount, hashSeed, mulberry32, shuffle } from "@/lib/names/deck";
 import { defaultFilters, type FilterableCard } from "@/lib/names/filters";
 import { popularityBand, rankByLastYear, trend } from "@/lib/names/popularity";
 import { sexTag } from "@/lib/names/sex";
@@ -118,5 +118,18 @@ describe("deckProgress", () => {
     const girls = { ...f, sex: "בת" as const };
     const deck = buildDeck(cards, none, girls, seed1);
     expect(deckProgress(cards, none, girls, deck.cards.length)).toEqual({ position: 1, total: deck.cards.length });
+  });
+});
+
+describe("deckCount and hiddenCount", () => {
+  it("counts undecided names that match, the same as the deck", () => {
+    const votes = new Map<string, Vote>([[cards[0].stats.name, "keep"], [cards[1].stats.name, "hidden"]]);
+    const girls = { ...defaultFilters(), sex: "בת" as const };
+    for (const f of [defaultFilters(), girls]) {
+      expect(deckCount(cards, votes, f)).toBe(buildDeck(cards, votes, f, seed1).cards.length);
+    }
+    expect(deckCount(cards, none, defaultFilters())).toBe(cards.length);
+    expect(hiddenCount(votes)).toBe(1);
+    expect(hiddenCount(none)).toBe(0);
   });
 });

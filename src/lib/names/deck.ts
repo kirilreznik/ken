@@ -86,3 +86,15 @@ export function deckProgress(
   const total = cards.filter((c) => votes.get(c.stats.name) !== "hidden" && matches(c, filters)).length;
   return { position: Math.max(1, Math.min(total, total - remaining + 1)), total };
 }
+
+/** How many cards the deck would hold with these filters: undecided names that match. */
+export function deckCount(cards: readonly FilterableCard[], votes: ReadonlyMap<string, Vote>, filters: Filters): number {
+  return cards.filter((c) => !votes.has(c.stats.name) && matches(c, filters)).length;
+}
+
+/** "שמות שהסתרתי ({n})". */
+export function hiddenCount(votes: ReadonlyMap<string, Vote>): number {
+  let n = 0;
+  for (const v of votes.values()) if (v === "hidden") n++;
+  return n;
+}

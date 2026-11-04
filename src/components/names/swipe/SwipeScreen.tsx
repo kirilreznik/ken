@@ -4,6 +4,7 @@ import { useMemo, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
+import FiltersSheet from "@/components/names/FiltersSheet";
 import { useCards } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
@@ -146,6 +147,7 @@ export default function SwipeScreen() {
         </SwipeKeys>
       </main>
       <BackgroundSheet />
+      <FiltersSheet userId={userId} cards={cards} votes={votes} />
     </div>
   );
 }

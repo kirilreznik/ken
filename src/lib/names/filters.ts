@@ -95,3 +95,27 @@ export const QUICK_CHIPS: readonly { label: string; sex: SexTag | null }[] = [
 export function withSex(filters: Filters, sex: SexTag | null): Filters {
   return { ...filters, sex };
 }
+
+/** Board 3's first-letter picker: the first letters of the given names, in alphabet order. */
+export function letterOptions(names: Iterable<string>): string[] {
+  const set = new Set<string>();
+  for (const name of names) {
+    const l = firstLetter(name);
+    if (l) set.add(l);
+  }
+  return [...set].sort((a, b) => a.localeCompare(b, "he"));
+}
+
+/** The value shown on board 3's "אות ראשונה" and "אורך" buttons. */
+export function letterValue(letter: string | null): string {
+  return letter ?? "כל האותיות";
+}
+
+export function lengthValue(length: NameLength | null): string {
+  return length === "קצר" ? "קצר, עד 3 אותיות" : length === "ארוך" ? "ארוך, 5 אותיות ומעלה" : "קצר וארוך";
+}
+
+/** The filters sheet's apply button (FR-W16). */
+export function applyLabel(n: number): string {
+  return n === 1 ? "הצגת שם אחד" : `הצגת ${n} שמות`;
+}
