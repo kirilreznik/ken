@@ -6,6 +6,7 @@ import {
   canUndo,
   emptyVoteState,
   isSaved,
+  savedInOrder,
   savedNames,
   undo,
   type VoteState,
@@ -132,5 +133,22 @@ describe("saved list", () => {
     ]);
     s = vote(s, "א", "love");
     expect(savedNames(s.votes).map((x) => x.name)).toEqual(["ב", "ה", "א", "ד"]);
+  });
+});
+
+describe("savedInOrder", () => {
+  it("lists loved names first, then kept, in the given order, without skips or hidden", () => {
+    const votes = new Map<string, Vote>([
+      ["זיו", "keep"],
+      ["יעל", "love"],
+      ["נועם", "skip"],
+      ["אורי", "hidden"],
+      ["תמר", "love"],
+    ]);
+    expect(savedInOrder(["זיו", "יעל", "נועם", "אורי", "תמר", "רון"], votes)).toEqual(["יעל", "תמר", "זיו"]);
+  });
+
+  it("is empty with no saved votes", () => {
+    expect(savedInOrder(["זיו"], new Map())).toEqual([]);
   });
 });

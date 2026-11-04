@@ -8,12 +8,13 @@ import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
 import { statusText } from "@/lib/names/a11y";
 import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
-import { withSex } from "@/lib/names/filters";
+import { defaultFilters, withSex } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 import type { SexTag, Vote } from "@/lib/names/types";
-import { applyVote, isSaved, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
+import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
+import EmptyDeck from "./EmptyDeck";
 import QuickChips from "./QuickChips";
 import SwipeFooter from "./SwipeFooter";
 import SwipeHeader from "./SwipeHeader";
@@ -59,7 +60,8 @@ export default function SwipeScreen() {
     for (const [name, v] of state?.votes ?? []) map.set(name, v.vote);
     return map;
   }, [state?.votes]);
-  const saved = useMemo(() => [...votes.values()].filter(isSaved).length, [votes]);
+  const savedCount = useMemo(() => [...votes.values()].filter(isSaved).length, [votes]);
+  const saved = useMemo(() => savedInOrder((cards ?? []).map((c) => c.stats.name), votes), [cards, votes]);
 
   const ready = !!(cards && filters && userId && store && state?.ready);
   const deck = useMemo(
@@ -98,11 +100,14 @@ export default function SwipeScreen() {
   const setSex = (sex: SexTag | null) => {
     if (userId && filters) setPref(userId, "filters", withSex(filters, sex));
   };
+  const resetFilters = () => {
+    if (userId) setPref(userId, "filters", defaultFilters());
+  };
   const fly = (kind: Decision) => () => drag.fly(kind);
 
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col">
-      <SwipeHeader saved={saved} />
+      <SwipeHeader saved={savedCount} />
       <QuickChips sex={filters?.sex ?? null} onChange={setSex} />
       <main className="flex min-h-0 flex-1 flex-col">
         <SwipeKeys onKey={(key) => (key === "undo" ? undo() : drag.fly(key))} className="flex min-h-0 flex-1 flex-col">
@@ -117,6 +122,14 @@ export default function SwipeScreen() {
                 className={`min-h-0 ${dragClass}`}
                 aria-describedby={SWIPE_KEYS_ID}
                 {...drag.card}
+              />
+            ) : deck && deck.state !== "ok" ? (
+              <EmptyDeck
+                state={deck.state}
+                saved={saved}
+                solo={space.members.length === 1}
+                onReset={resetFilters}
+                takeFocus={entered}
               />
             ) : null}
           </div>

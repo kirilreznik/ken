@@ -28,6 +28,11 @@ export function isSaved(vote: Vote | null | undefined): boolean {
   return vote === "keep" || vote === "love";
 }
 
+/** The saved names among `names`: loved first, then kept, each in `names` order. */
+export function savedInOrder(names: readonly string[], votes: ReadonlyMap<string, Vote>): string[] {
+  return [...names.filter((n) => votes.get(n) === "love"), ...names.filter((n) => votes.get(n) === "keep")];
+}
+
 function withVote(votes: ReadonlyMap<string, Vote>, name: string, vote: Vote | null): Map<string, Vote> {
   const next = new Map(votes);
   next.delete(name);
