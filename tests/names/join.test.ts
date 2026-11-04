@@ -3,6 +3,8 @@ import {
   JOIN_STORAGE_KEY,
   callbackUrl,
   clearPendingJoin,
+  isInvalidCodeError,
+  joinOutcome,
   normalizeJoinCode,
   readPendingJoin,
   rememberJoinCode,
@@ -98,5 +100,24 @@ describe("withJoin and callbackUrl", () => {
     expect(callbackUrl("https://nestjourney.app/", "ABCD1234")).toBe(
       "https://nestjourney.app/names/auth/callback?join=ABCD1234",
     );
+  });
+});
+
+describe("names_join results", () => {
+  it("recognises invalid_code", () => {
+    expect(isInvalidCodeError({ message: "invalid_code" })).toBe(true);
+    expect(isInvalidCodeError({ message: "network" })).toBe(false);
+    expect(isInvalidCodeError(null)).toBe(false);
+  });
+
+  it("says votes move only from a solo space with saved names", () => {
+    expect(joinOutcome({ spaceId: "a", solo: true, saved: 2 }, "b")).toEqual({ kind: "joined", spaceId: "b", votesMoved: true });
+    expect(joinOutcome({ spaceId: "a", solo: true, saved: 0 }, "b")).toEqual({ kind: "joined", spaceId: "b", votesMoved: false });
+    expect(joinOutcome({ spaceId: "a", solo: false, saved: 0 }, "b")).toEqual({ kind: "joined", spaceId: "b", votesMoved: false });
+    expect(joinOutcome({ spaceId: null, solo: false, saved: 0 }, "b")).toEqual({ kind: "joined", spaceId: "b", votesMoved: false });
+  });
+
+  it("treats the same space back as already a member", () => {
+    expect(joinOutcome({ spaceId: "a", solo: true, saved: 3 }, "a")).toEqual({ kind: "already", spaceId: "a" });
   });
 });

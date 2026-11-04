@@ -71,3 +71,37 @@ export function withJoin(path: string, code: string | null): string {
 export function callbackUrl(origin: string, code: string | null): string {
   return withJoin(`${origin.replace(/\/+$/, "")}${CALLBACK_PATH}`, code);
 }
+
+/** FR-W24 copy. Each message is a short title plus its second sentence as the lead. */
+export const JOIN_INVITED_TITLE = "קיבלת הזמנה לבחור שם ביחד ב־Nest";
+export const JOIN_INVITED_LEAD = "כל אחד מחליק אצלו. שם ששניכם שמרתם יופיע בהתאמות.";
+export const JOIN_COPY = {
+  joined: { title: "הצטרפת.", lead: "מעכשיו שמות ששניכם שמרתם יופיעו בהתאמות." },
+  already: { title: "כבר משתתפים בבחירה הזו.", lead: "אפשר להמשיך לבחור." },
+  invalid: { title: "הקישור כבר לא בתוקף.", lead: "אפשר לבקש קישור חדש." },
+  offline: { title: "אין חיבור לאינטרנט.", lead: "ההצטרפות צריכה חיבור." },
+  error: { title: "ההצטרפות לא הצליחה.", lead: "אפשר לנסות שוב." },
+} as const;
+export const VOTES_MOVE_TEXT = "השמות ששמרת עוברים איתך.";
+
+export type JoinOutcome =
+  | { kind: "joined"; spaceId: string; votesMoved: boolean }
+  | { kind: "already"; spaceId: string }
+  | { kind: "invalid" }
+  | { kind: "offline" }
+  | { kind: "error" };
+
+/** names_join raises `invalid_code` for an unknown, used or expired code. */
+export function isInvalidCodeError(err: unknown): boolean {
+  const message = (err as { message?: unknown } | null)?.message;
+  return typeof message === "string" && message.includes("invalid_code");
+}
+
+/**
+ * Reads a names_join result against the space the user was in before. The same space back
+ * means the user already belonged to it (their own link, or a second click); then nothing moved.
+ */
+export function joinOutcome(before: { spaceId: string | null; solo: boolean; saved: number }, joinedSpaceId: string): JoinOutcome {
+  if (before.spaceId === joinedSpaceId) return { kind: "already", spaceId: joinedSpaceId };
+  return { kind: "joined", spaceId: joinedSpaceId, votesMoved: before.solo && before.saved > 0 };
+}

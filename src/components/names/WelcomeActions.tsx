@@ -11,9 +11,10 @@ import { getSupabase } from "@/lib/names/supabase";
 
 export const EMAIL_SIGN_IN_PATH = "/names/sign-in/email";
 
-/** The two sign-in buttons of FR-W1 (no SMS, PRD 3.1.3). */
-export default function WelcomeActions() {
-  const join = usePendingJoin();
+/** The two sign-in buttons of FR-W1 (no SMS, PRD 3.1.3). The join screen passes its code, which isn't in ?join=. */
+export default function WelcomeActions({ joinCode }: { joinCode?: string | null }) {
+  const pending = usePendingJoin();
+  const join = joinCode ?? pending;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
