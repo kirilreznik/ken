@@ -1,0 +1,51 @@
+import { describe, expect, it } from "vitest";
+import namesFile from "../../data/names/names.json";
+import { parseNames, type RawNamesFile } from "@/lib/names/data";
+import { trend } from "@/lib/names/popularity";
+import { hiddenNames, restoredText, rowMeta, rowMetaText } from "@/lib/names/lists";
+import type { NameStats, Vote } from "@/lib/names/types";
+
+const names = parseNames(namesFile as RawNamesFile);
+
+describe("rowMeta", () => {
+  it("matches board 5's rows for the demo names", () => {
+    expect(rowMeta(names.get("תמר"))).toEqual({ sexTag: "בת", count: "ניתן ל־1,090 ב־2024", trend: { word: "יציב", arrow: "→" } });
+    // The board's "בעלייה" for לביא is sample data; the trend comes from the CBS numbers.
+    const t = trend(names.get("לביא")!)!;
+    expect(rowMeta(names.get("לביא"))).toEqual({ sexTag: "בן", count: "ניתן ל־1,523 ב־2024", trend: { word: t.word, arrow: t.arrow } });
+    expect(rowMeta(names.get("אריאל"))?.sexTag).toBe("מתאים לכולם");
+  });
+
+  it("uses the all-time line for a name with no recent births", () => {
+    const old: NameStats = { name: "ישן", m: 54_321, f: 12, s: "J" };
+    expect(rowMeta(old)).toEqual({ sexTag: "בן", count: "ניתן לכ־54,000 מאז 1949", trend: null });
+  });
+
+  it("is null for a custom name", () => {
+    expect(rowMeta(undefined)).toBeNull();
+    expect(rowMeta(null)).toBeNull();
+  });
+
+  it("reads as one line without the arrow", () => {
+    expect(rowMetaText(rowMeta(names.get("לביא"))!)).toBe(`בן · ניתן ל־1,523 ב־2024 · ${trend(names.get("לביא")!)!.word}`);
+    expect(rowMetaText({ sexTag: "בת", count: "ניתן לכ־100 מאז 1949", trend: null })).toBe("בת · ניתן לכ־100 מאז 1949");
+  });
+});
+
+describe("hiddenNames", () => {
+  it("lists hidden names only, the latest first", () => {
+    const votes = new Map<string, Vote>([
+      ["נועם", "hidden"],
+      ["תמר", "keep"],
+      ["לביא", "skip"],
+      ["אלה", "hidden"],
+      ["שקד", "love"],
+    ]);
+    expect(hiddenNames(votes)).toEqual(["אלה", "נועם"]);
+    expect(hiddenNames(new Map())).toEqual([]);
+  });
+});
+
+it("restoredText", () => {
+  expect(restoredText("אלה")).toBe("אלה יחזור לבחירה");
+});

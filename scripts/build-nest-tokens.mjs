@@ -76,6 +76,8 @@ const extraStyles = [
   { name: "hero-name", fontSize: "34px", lineHeight: "40px", fontWeight: 800 },
   // The privacy note under the background options (Background.dc.html).
   { name: "note", fontSize: "12.5px", lineHeight: "19px", fontWeight: 500 },
+  // The name in a list row (Lists.dc.html).
+  { name: "row-name", fontSize: "17px", lineHeight: "24px", fontWeight: 800 },
 ];
 
 const colors = tokens.color.tokens;

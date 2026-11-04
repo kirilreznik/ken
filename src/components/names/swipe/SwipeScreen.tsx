@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
@@ -9,6 +9,7 @@ import { useCards } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
 import { statusText } from "@/lib/names/a11y";
+import { markAppEntry } from "@/lib/names/appHistory";
 import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
 import { defaultFilters, withSex } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
@@ -56,6 +57,8 @@ export default function SwipeScreen() {
   const [top, setTop] = useState<string | null>(null);
   const [status, setStatus] = useState("");
   const [entered, setEntered] = useState(false);
+
+  useEffect(markAppEntry, []);
 
   const votes = useMemo(() => {
     const map = new Map<string, Vote>();
