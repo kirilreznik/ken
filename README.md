@@ -1,39 +1,18 @@
-# קן — Pregnancy OS
+# Nest site
 
-Private, Hebrew/RTL, offline-first PWA for an expecting couple.
-Next.js 16 · React 19 · Tailwind 4 · Supabase · TanStack Query (persisted to IndexedDB).
+The public site at https://nestjourney.app: the landing page and, soon, the name swiper PWA at `/names`.
+Next.js 16 · React 19 · Tailwind 4. Deploys to Vercel from `main`.
 
-## Setup
+- `/` (and `/pregnancy`): the landing page, a standalone HTML document from `src/lib/pregnancy-landing.mjs`
+  with the name swipe demo from `src/lib/pregnancy-names-demo.mjs`. Waitlist sign-ups go to `/api/pregnancy-waitlist`.
+- `public/sw.js`: a self-removing service worker that clears the old Ken PWA from phones that installed it.
 
-1. `npm install`
-2. Fill `.env.local` (see `.env.example`) with your Supabase **Project URL** and **anon public key**
-   (Supabase → Project Settings → API).
-3. Supabase → SQL Editor → paste and run `supabase/migrations/0001_init.sql`.
-4. Supabase → Authentication → Providers → Email: enabled. For quick local testing you can
-   turn off "Confirm email"; otherwise each sign-up gets a confirmation mail.
-5. `npm run dev` → http://localhost:3000
+The old Ken PWA that lived here was removed in November 2026; it is in git history before that change.
+The Nest app and its database live in https://github.com/kirilreznik/pregnancy-manager.
 
-First user: sign up → onboarding (name + due date, optional standard Israeli test checklist).
-Partner: Settings → "יצירת קוד הזמנה" → partner signs up → "יש לי קוד הזמנה".
-
-## Deploy (Vercel)
-
-Import the repo, add the two `NEXT_PUBLIC_SUPABASE_*` env vars, deploy.
-Add your Vercel domain to Supabase → Authentication → URL Configuration (Site URL / Redirect URLs).
-Install on phones: iPhone Safari → Share → "הוספה למסך הבית"; Android Chrome → Install.
-
-## How it's built
-
-- `src/lib/pregnancy.ts` — week math from the due date (weeks, trimester, %), size/development copy, standard test windows.
-- `src/lib/data.ts` — query hooks + `useSave(table)` (optimistic insert/update/delete).
-  Mutations made offline are paused, persisted, and replayed on reconnect.
-- `src/lib/uploads.ts` — document upload queue in IndexedDB (works offline, retries).
-- `src/lib/session.tsx` — auth + the couple's shared space; palette (neutral / girl / boy) applied to `<html data-palette>`.
-- `public/sw.js` — app shell + static asset cache; "update available" banner via `src/lib/sw.ts`.
-  Only registered in production builds (`npm run build && npm start`).
-- Realtime: both partners see changes live (Supabase Realtime on all tables).
-- Design tokens: `src/app/globals.css` (three palettes as CSS variables).
-
-## Roadmap
-
-See `docs/ROADMAP.md`. Migrations live in `supabase/migrations/` (apply in order).
+```bash
+npm install
+npm run dev
+npm test
+npm run lint
+```
