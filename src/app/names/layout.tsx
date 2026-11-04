@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { canvasColor } from "@/lib/names/brand";
+import "@/styles/nest-tokens.css";
 
 export const metadata: Metadata = {
   title: { template: "%s · בחירת שם", default: "בחירת שם" },
@@ -14,13 +15,7 @@ export const viewport: Viewport = {
 
 export default function NamesLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className="min-h-dvh"
-      style={{
-        backgroundColor: canvasColor,
-        fontFamily: "'Heebo', system-ui, 'Noto Sans Hebrew', Arial, sans-serif",
-      }}
-    >
+    <div className="min-h-dvh bg-canvas font-nest text-ink">
       {children}
     </div>
   );

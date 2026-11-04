@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "TZ=Asia/Jerusalem vitest run"
+    "test": "TZ=Asia/Jerusalem vitest run",
+    "tokens:css": "node scripts/build-nest-tokens.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
