@@ -141,7 +141,7 @@ Then do step 3.4 (rate limits). Turning custom SMTP on resets the email limit to
 
 Supabase → Project Settings → **API Keys**:
 - **Publishable key** (`sb_publishable_…`): safe in the browser. Used as `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-- **Secret key** (`sb_secret_…`): full admin access. Create one named `ken-server`. Server and local QA only, never in the browser or a `NEXT_PUBLIC_` variable. Used as `SUPABASE_SERVICE_ROLE_KEY`.
+- **Secret key** (`sb_secret_…`): full admin access. Create one named `ken_server` (Supabase allows only letters, digits and underscores). Server and local QA only, never in the browser or a `NEXT_PUBLIC_` variable. Used as `SUPABASE_SERVICE_ROLE_KEY`.
 
 ## 9. Vercel environment variables (before the run)
 
@@ -151,7 +151,7 @@ Vercel → project `ken` → Settings → Environment Variables. As of 2026-11-0
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://hkoumskvmkqqnwhnizbq.supabase.co` | no |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | the publishable key | no |
-| `SUPABASE_SERVICE_ROLE_KEY` | the `ken-server` secret key | **yes** (mark Sensitive) |
+| `SUPABASE_SERVICE_ROLE_KEY` | the `ken_server` secret key | **yes** (mark Sensitive) |
 | `NEXT_PUBLIC_SITE_URL` | Production: `https://nestjourney.app`. Preview: leave unset (the code falls back to the request origin) | no |
 | `PREGNANCY_OPERATOR_NAME` | **new** (not in Vercel yet as of 2026-11-04): the legal name of whoever runs the service (Kiril, as an individual) | no |
 | `PREGNANCY_CONTACT_EMAIL` | **new**: the monitored address for privacy and deletion requests | no |
@@ -172,7 +172,7 @@ In the `ken` checkout on the Mac:
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://hkoumskvmkqqnwhnizbq.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<publishable key>
-SUPABASE_SERVICE_ROLE_KEY=<ken-server secret key>
+SUPABASE_SERVICE_ROLE_KEY=<ken_server secret key>
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 PREGNANCY_OPERATOR_NAME=<same as Vercel>
 PREGNANCY_CONTACT_EMAIL=<same as Vercel>
@@ -183,7 +183,7 @@ PREGNANCY_CONTACT_EMAIL=<same as Vercel>
 ```
 NAMES_QA_SUPABASE_URL=https://hkoumskvmkqqnwhnizbq.supabase.co
 NAMES_QA_ANON_KEY=<publishable key>
-NAMES_QA_SERVICE_ROLE_KEY=<ken-server secret key>
+NAMES_QA_SERVICE_ROLE_KEY=<ken_server secret key>
 NAMES_QA_EMAIL_1=delivered+names-qa-1@resend.dev
 NAMES_QA_EMAIL_2=delivered+names-qa-2@resend.dev
 NAMES_QA_EMAIL_3=delivered+names-qa-3@resend.dev
