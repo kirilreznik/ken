@@ -1,6 +1,7 @@
 import { clearAll } from "./prefs";
 import { deleteOwnPhoto } from "./photo";
 import { clearSpaceCache } from "./space";
+import { clearVoteCache } from "./voteStore";
 
 export const WELCOME_PATH = "/names/welcome";
 export const APP_PATH = "/names";
@@ -55,12 +56,12 @@ export function welcomeUrl(pathname: string, opts: { expired?: boolean } = {}): 
   return q ? `${WELCOME_PATH}?${q}` : WELCOME_PATH;
 }
 
-/** Removes everything this user left on the device: prefs and the own photo (the votes cache joins in US-022). */
+/** Removes everything this user left on the device: prefs, the own photo and the votes cache with its outbox. */
 export async function clearLocalData(userId: string): Promise<void> {
   clearAll(userId);
   clearSpaceCache();
   try {
-    await deleteOwnPhoto(userId);
+    await Promise.all([deleteOwnPhoto(userId), clearVoteCache(userId)]);
   } catch {
     // IndexedDB can be unavailable (private mode); nothing to clear then.
   }
