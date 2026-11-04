@@ -12,7 +12,6 @@ export const OPT_IN_ON_TEXT = "העדכונים הופעלו";
 export const OPT_IN_OFF_TEXT = "העדכונים כובו";
 export const SETTINGS_OFFLINE_TEXT = "אין חיבור לאינטרנט. השמירה צריכה חיבור.";
 export const SETTINGS_ERROR_TEXT = "לא הצלחנו לשמור. אפשר לנסות שוב.";
-export const DELETE_UNAVAILABLE_TEXT = "אי אפשר למחוק את החשבון כרגע. אפשר לנסות שוב מאוחר יותר.";
 
 /** How the user signs in (FR-W25): Google, or the email the code goes to. */
 export type SignInMethod = { kind: "google" } | { kind: "email"; email: string };

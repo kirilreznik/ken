@@ -6,13 +6,21 @@ import { useId, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import { Button, Dialog, IconButton, closeDialog, openDialog } from "@/components/names/ui";
 import { useSpace } from "@/components/names/useSpace";
+import {
+  DELETE_BODY,
+  DELETE_OFFLINE_TEXT,
+  DELETE_TITLE,
+  GOODBYE_PATH,
+  deleteErrorText,
+  markAccountDeleted,
+  requestAccountDeletion,
+} from "@/lib/names/accountDeletion";
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { APP_PATH, WELCOME_PATH } from "@/lib/names/auth";
 import { isOffline } from "@/lib/names/authErrors";
 import { reportClientLog } from "@/lib/names/clientLog";
 import { DISPLAY_NAME_MAX, isValidDisplayName, suggestedDisplayName } from "@/lib/names/onboarding";
 import {
-  DELETE_UNAVAILABLE_TEXT,
   NAME_SAVED_TEXT,
   OPT_IN_OFF_TEXT,
   OPT_IN_ON_TEXT,
@@ -88,6 +96,8 @@ export default function SettingsScreen() {
   const [optInError, setOptInError] = useState<string | null>(null);
   const [savingOptIn, setSavingOptIn] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [status, setStatus] = useState("");
 
   const name = draft ?? savedName;
@@ -165,10 +175,37 @@ export default function SettingsScreen() {
     }
   }
 
-  // US-060 wires this to /api/names/account and the goodbye screen.
-  function confirmDelete() {
-    closeDialog(DELETE_DIALOG);
-    showToast(DELETE_UNAVAILABLE_TEXT);
+  function openDelete() {
+    setDeleteError(null);
+    openDialog(DELETE_DIALOG);
+  }
+
+  async function confirmDelete() {
+    const supabase = getSupabase();
+    if (!supabase || deleting) return;
+    if (isOffline()) {
+      setDeleteError(DELETE_OFFLINE_TEXT);
+      return;
+    }
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      // getSession refreshes an expired access token first.
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      const result = token ? await requestAccountDeletion(token) : "unauthorized";
+      const message = deleteErrorText(result);
+      if (message) {
+        if (result === "error") reportClientLog({ area: "settings", message: "account deletion failed" });
+        setDeleteError(isOffline() ? DELETE_OFFLINE_TEXT : message);
+        return;
+      }
+      markAccountDeleted();
+      await signOut();
+      router.replace(GOODBYE_PATH);
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -288,7 +325,7 @@ export default function SettingsScreen() {
             </button>
           </li>
           <li className={row}>
-            <button type="button" onClick={() => openDialog(DELETE_DIALOG)} className={`${rowAction} text-urgent`}>
+            <button type="button" onClick={openDelete} className={`${rowAction} text-urgent`}>
               מחיקת החשבון
             </button>
           </li>
@@ -299,9 +336,14 @@ export default function SettingsScreen() {
         </p>
       </main>
 
-      <Dialog name={DELETE_DIALOG} title="למחוק את החשבון?" description="מחיקת החשבון תמחק את כל הבחירות שלך. אם יש מרחב משותף, הוא נשאר אצל מי שהוזמן/ה.">
-        <Button onClick={confirmDelete}>
-          מחיקה לצמיתות
+      <Dialog name={DELETE_DIALOG} title={DELETE_TITLE} description={DELETE_BODY}>
+        {deleteError ? (
+          <p role="alert" className="m-0 text-caption font-bold text-urgent">
+            {deleteError}
+          </p>
+        ) : null}
+        <Button onClick={confirmDelete} aria-disabled={deleting} aria-busy={deleting} className="aria-disabled:opacity-60">
+          {deleting ? "מוחקים…" : "מחיקה לצמיתות"}
         </Button>
         <Button variant="secondary" data-autofocus="" onClick={() => closeDialog(DELETE_DIALOG)}>
           ביטול
