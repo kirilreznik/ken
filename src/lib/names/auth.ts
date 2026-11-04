@@ -1,5 +1,6 @@
 import { clearAll } from "./prefs";
 import { deleteOwnPhoto } from "./photo";
+import { clearSpaceCache } from "./space";
 
 export const WELCOME_PATH = "/names/welcome";
 export const APP_PATH = "/names";
@@ -57,6 +58,7 @@ export function welcomeUrl(pathname: string, opts: { expired?: boolean } = {}): 
 /** Removes everything this user left on the device: prefs and the own photo (the votes cache joins in US-022). */
 export async function clearLocalData(userId: string): Promise<void> {
   clearAll(userId);
+  clearSpaceCache();
   try {
     await deleteOwnPhoto(userId);
   } catch {
