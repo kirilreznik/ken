@@ -1,0 +1,84 @@
+import type { CardDerived, NameStats, PopularityBand, SexTag, TrendWord } from "./types";
+
+export type NameLength = "קצר" | "ארוך";
+/** Sector codes in names.json `s`. */
+export type Sector = "J" | "M" | "C" | "D";
+
+/** Board 3 labels for the origin group ("נפוץ בקרב"). */
+export const SECTOR_LABELS: Record<Sector, string> = {
+  J: "יהודים",
+  M: "מוסלמים",
+  C: "נוצרים",
+  D: "דרוזים",
+};
+
+/** Up to this many letters is "קצר". */
+export const SHORT_MAX = 3;
+/** This many letters or more is "ארוך". */
+export const LONG_MIN = 5;
+
+/** E16 FR-10. `null` in a group means "all" (the default). */
+export interface Filters {
+  sex: SexTag | null;
+  popularity: PopularityBand | null;
+  trend: TrendWord | null;
+  letter: string | null;
+  length: NameLength | null;
+  origin: Sector | null;
+}
+
+export const DEFAULT_FILTERS: Readonly<Filters> = Object.freeze({
+  sex: null,
+  popularity: null,
+  trend: null,
+  letter: null,
+  length: null,
+  origin: null,
+});
+
+export function defaultFilters(): Filters {
+  return { ...DEFAULT_FILTERS };
+}
+
+export function isDefault(filters: Filters): boolean {
+  return (Object.keys(DEFAULT_FILTERS) as (keyof Filters)[]).every((k) => filters[k] === null);
+}
+
+/** The fields of a card the filters read. */
+export interface FilterableCard {
+  stats: Pick<NameStats, "name" | "s">;
+  derived: Pick<CardDerived, "sexTag" | "band" | "trend">;
+}
+
+/** Letters only: niqqud, geresh, gershayim, apostrophes, hyphens and spaces don't count. */
+export function letters(name: string): string[] {
+  return name.match(/\p{L}/gu) ?? [];
+}
+
+export function nameLength(name: string): NameLength | null {
+  const n = letters(name).length;
+  if (n <= SHORT_MAX) return "קצר";
+  if (n >= LONG_MIN) return "ארוך";
+  return null;
+}
+
+export function firstLetter(name: string): string | null {
+  return letters(name)[0] ?? null;
+}
+
+export function matches(card: FilterableCard, filters: Filters): boolean {
+  const { stats, derived } = card;
+  if (filters.sex !== null && derived.sexTag !== filters.sex) return false;
+  if (filters.popularity !== null && derived.band !== filters.popularity) return false;
+  if (filters.trend !== null && derived.trend?.word !== filters.trend) return false;
+  if (filters.letter !== null && firstLetter(stats.name) !== filters.letter) return false;
+  if (filters.length !== null && nameLength(stats.name) !== filters.length) return false;
+  if (filters.origin !== null && !stats.s.includes(filters.origin)) return false;
+  return true;
+}
+
+export function count(cards: Iterable<FilterableCard>, filters: Filters): number {
+  let n = 0;
+  for (const card of cards) if (matches(card, filters)) n++;
+  return n;
+}
