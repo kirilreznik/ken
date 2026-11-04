@@ -53,7 +53,7 @@ Authentication → URL Configuration:
 
 ### 3.2 Email sign-in with a code
 1. Authentication → Sign In / Providers → **Email**: enabled. "Confirm email": on. **Email OTP length: 6**. Email OTP expiration: 600 seconds (10 minutes).
-2. Authentication → Emails → Templates. A sign-in code is sent through two templates: **Confirm signup** (a new address) and **Magic Link** (an existing one). Replace the body of both with a Hebrew, right-to-left code email that shows `{{ .Token }}` and no link. Suggested subject: `קוד הכניסה שלך ל־Nest`. Suggested body:
+2. **Do this after step 7:** Supabase locks template editing until custom SMTP is on. Authentication → Emails → Templates. A sign-in code is sent through two templates: **Confirm signup** (a new address) and **Magic Link** (an existing one). Replace the body of both with a Hebrew, right-to-left code email that shows `{{ .Token }}` and no link. Suggested subject: `קוד הכניסה שלך ל־Nest`. Suggested body:
 
 ```html
 <div dir="rtl" lang="he" style="font-family:Arial,sans-serif;color:#1F1B1E;font-size:16px;line-height:1.5">
@@ -64,7 +64,11 @@ Authentication → URL Configuration:
 </div>
 ```
 
-**Done when:** both templates contain `{{ .Token }}` and no `{{ .ConfirmationURL }}`.
+The Nest app's password sign-up also uses **Confirm signup** and needs a link back to `ken://auth-callback`. So Confirm signup shows the code **and**, below it, a line `<p><a href="{{ .ConfirmationURL }}">אפשר גם לאשר בקישור הזה</a></p>`. Magic Link stays code-only.
+
+**Done when:** both templates show `{{ .Token }}`; Confirm signup also has the `{{ .ConfirmationURL }}` link, Magic Link doesn't.
+
+Note: sign-ups off (3.3) applies to the Nest app too, since both use the same project.
 
 ### 3.3 Sign-ups switch
 Authentication → Sign In / Providers → **Allow new users to sign up**: keep **off** until the privacy policy and terms are reviewed (step 12). Accounts created by an admin (the QA users) still work while it's off. The PWA shows a "not open yet" message when a new person tries to sign in. Turn it on at public launch.
