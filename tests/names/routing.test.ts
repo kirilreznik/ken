@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { INTRO_PATH, ONBOARDING_PATH, joinPath, nextRoute, oauthRedirectTo } from "@/lib/names/routing";
+import { INTRO_PATH, ONBOARDING_PATH, hasAcceptedTerms, joinPath, nextRoute, oauthRedirectTo } from "@/lib/names/routing";
 
 const onboarded = { user_metadata: { terms_accepted_at: "2026-11-04T10:00:00.000Z" } };
 
@@ -27,6 +27,17 @@ describe("nextRoute (FR-W6)", () => {
 
   it("joinPath encodes the code", () => {
     expect(joinPath("a b")).toBe("/names/join/a%20b");
+  });
+});
+
+describe("hasAcceptedTerms", () => {
+  it("needs a non-empty timestamp string", () => {
+    expect(hasAcceptedTerms(onboarded)).toBe(true);
+    expect(hasAcceptedTerms({ user_metadata: { terms_accepted_at: "" } })).toBe(false);
+    expect(hasAcceptedTerms({ user_metadata: { terms_accepted_at: null } })).toBe(false);
+    expect(hasAcceptedTerms({ user_metadata: null })).toBe(false);
+    expect(hasAcceptedTerms(null)).toBe(false);
+    expect(hasAcceptedTerms(undefined)).toBe(false);
   });
 });
 

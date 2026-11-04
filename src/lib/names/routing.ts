@@ -14,13 +14,18 @@ interface UserLike {
   user_metadata?: Record<string, unknown> | null;
 }
 
+/** Onboarding is done once user_metadata.terms_accepted_at holds a timestamp (FR-W7). */
+export function hasAcceptedTerms(user: UserLike | null | undefined): boolean {
+  const accepted = user?.user_metadata?.terms_accepted_at;
+  return typeof accepted === "string" && accepted !== "";
+}
+
 /**
  * FR-W6, where a signed-in user goes next: onboarding until the terms are accepted, then a
  * pending invite, then the intro (once per device), then the swipe screen.
  */
 export function nextRoute(user: UserLike, prefs: { introSeen: boolean }, pendingJoin: string | null): string {
-  const accepted = user.user_metadata?.terms_accepted_at;
-  if (typeof accepted !== "string" || accepted === "") return ONBOARDING_PATH;
+  if (!hasAcceptedTerms(user)) return ONBOARDING_PATH;
   const code = normalizeJoinCode(pendingJoin);
   if (code) return joinPath(code);
   if (!prefs.introSeen) return INTRO_PATH;

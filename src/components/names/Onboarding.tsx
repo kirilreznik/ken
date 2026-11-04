@@ -16,7 +16,7 @@ import {
   type OnboardingForm,
 } from "@/lib/names/onboarding";
 import { getPref } from "@/lib/names/prefs";
-import { ONBOARDING_PATH, nextRoute } from "@/lib/names/routing";
+import { ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { ensureSpace } from "@/lib/names/space";
 import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
@@ -30,11 +30,6 @@ const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={8
 const checkboxRow = "flex min-h-11 cursor-pointer items-start gap-3 py-1 text-body text-ink";
 const checkbox = "mt-0.5 size-6 shrink-0 cursor-pointer accent-ink";
 const legalLink = "font-bold underline underline-offset-2";
-
-function hasAcceptedTerms(metadata: Record<string, unknown> | undefined): boolean {
-  const accepted = metadata?.terms_accepted_at;
-  return typeof accepted === "string" && accepted !== "";
-}
 
 function NewTabLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -71,7 +66,7 @@ export default function Onboarding() {
   const ageRef = useRef<HTMLInputElement>(null);
   const termsRef = useRef<HTMLInputElement>(null);
 
-  const alreadyOnboarded = hasAcceptedTerms(user?.user_metadata);
+  const alreadyOnboarded = hasAcceptedTerms(user);
 
   useEffect(() => {
     if (!user || !alreadyOnboarded || submitted) return;

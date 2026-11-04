@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 /** FR-W7: display name and the required confirmations, never a due date. */
 export default function OnboardingPage() {
   return (
-    <RequireAuth>
+    <RequireAuth allowWithoutTerms>
       <Onboarding />
     </RequireAuth>
   );

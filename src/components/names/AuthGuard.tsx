@@ -2,8 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { APP_PATH, welcomeUrl } from "@/lib/names/auth";
+import { welcomeUrl } from "@/lib/names/auth";
+import { getPref } from "@/lib/names/prefs";
+import { ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { useAuth } from "./AuthProvider";
+import { usePendingJoin } from "./auth/usePendingJoin";
 
 /** Calm full-screen placeholder while the session loads: canvas plus a faint card outline, so nothing jumps. */
 export function AuthSkeleton() {
@@ -15,27 +18,34 @@ export function AuthSkeleton() {
   );
 }
 
-/** Wraps app pages: no session → welcome (with ?next= for join links, ?expired=1 after FR-W8). */
-export function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { session, loading, expired } = useAuth();
+/**
+ * Wraps app pages: no session → welcome (with ?next= for join links, ?expired=1 after FR-W8);
+ * a session without accepted terms → onboarding (FR-W6). Onboarding itself passes allowWithoutTerms.
+ */
+export function RequireAuth({ children, allowWithoutTerms = false }: { children: React.ReactNode; allowWithoutTerms?: boolean }) {
+  const { session, user, loading, expired } = useAuth();
   const router = useRouter();
+  const blocked = !allowWithoutTerms && !!session && !hasAcceptedTerms(user);
 
   useEffect(() => {
-    if (!loading && !session) router.replace(welcomeUrl(window.location.pathname, { expired }));
-  }, [loading, session, expired, router]);
+    if (loading) return;
+    if (!session) router.replace(welcomeUrl(window.location.pathname, { expired }));
+    else if (blocked) router.replace(ONBOARDING_PATH);
+  }, [loading, session, blocked, expired, router]);
 
-  if (loading || !session) return <AuthSkeleton />;
+  if (loading || !session || blocked) return <AuthSkeleton />;
   return <>{children}</>;
 }
 
-/** Wraps welcome: a signed-in visitor goes on to the app (US-031 adds the full FR-W6 routing). */
+/** Wraps welcome: a signed-in visitor goes on as FR-W6 says (onboarding, invite, intro or the app). */
 export function RedirectIfSignedIn({ children }: { children: React.ReactNode }) {
-  const { session, loading } = useAuth();
+  const { session, user, loading } = useAuth();
   const router = useRouter();
+  const join = usePendingJoin();
 
   useEffect(() => {
-    if (!loading && session) router.replace(APP_PATH);
-  }, [loading, session, router]);
+    if (!loading && session && user) router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
+  }, [loading, session, user, join, router]);
 
   if (loading || session) return <AuthSkeleton />;
   return <>{children}</>;
