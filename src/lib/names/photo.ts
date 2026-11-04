@@ -47,3 +47,40 @@ export async function deleteOwnPhoto(userId: string): Promise<void> {
   listeners.forEach((l) => l());
 }
 
+/** PRD 3.2.15: the photo is kept at about 1,200 px on its long side, as a JPEG. */
+export const PHOTO_LONG_SIDE = 1200;
+export const PHOTO_QUALITY = 0.85;
+
+/** The size to draw an image at so its long side is at most `max` px (never upscaled). */
+export function fitLongSide(width: number, height: number, max = PHOTO_LONG_SIDE): { width: number; height: number } {
+  const w = Math.max(1, Math.round(width));
+  const h = Math.max(1, Math.round(height));
+  const scale = Math.min(1, max / Math.max(w, h));
+  return { width: Math.max(1, Math.round(w * scale)), height: Math.max(1, Math.round(h * scale)) };
+}
+
+/**
+ * Decodes a picked image file (EXIF orientation applied), draws it on a canvas at
+ * fitLongSide over `matte` (JPEG has no transparency) and returns a JPEG Blob. Runs
+ * entirely in the browser; throws when the file isn't a decodable image.
+ */
+export async function resizePhoto(file: Blob, matte: string): Promise<Blob> {
+  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  try {
+    const { width, height } = fitLongSide(bitmap.width, bitmap.height);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("No 2d canvas");
+    ctx.fillStyle = matte;
+    ctx.fillRect(0, 0, width, height);
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", PHOTO_QUALITY));
+    if (!blob) throw new Error("Could not encode the photo");
+    return blob;
+  } finally {
+    bitmap.close();
+  }
+}
