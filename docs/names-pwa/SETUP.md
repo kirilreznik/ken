@@ -128,7 +128,7 @@ Known limit: Google's consent screen says "to continue to hkoumskvmkqqnwhnizbq.s
 
 1. Sign up at https://resend.com with Kiril's email.
 2. **Domains → Add domain:** `nestjourney.app`. Region: **EU (Ireland, eu-west-1)**, to keep email data in the EU like the database.
-3. Resend shows DNS records (an MX and a TXT for SPF on the `send` subdomain, and a DKIM TXT on `resend._domainkey`). The DNS for `nestjourney.app` is at **GoDaddy** (nameservers `ns45/ns46.domaincontrol.com`, checked 2026-11-04; the site reaches Vercel through an A record), so add them in GoDaddy → My Products → `nestjourney.app` → DNS. Don't touch the existing A record. Also add a DMARC record: name `_dmarc`, type TXT, value `v=DMARC1; p=none; rua=mailto:<Kiril's address>`.
+3. Resend shows DNS records (an MX and a TXT for SPF on the `send` subdomain, and a DKIM TXT on `resend._domainkey`). The DNS for `nestjourney.app` is at **GoDaddy** (nameservers `ns45/ns46.domaincontrol.com`, checked 2026-11-04; the site reaches Vercel through an A record), so add them in GoDaddy → My Products → `nestjourney.app` → DNS. Don't touch the existing A record. The root domain already has Google Workspace MX/SPF and a DMARC record (`p=quarantine`, checked 2026-11-04): **don't add a second `_dmarc` record** and don't touch the root MX/SPF. Resend's records live only on `send` and `resend._domainkey`, and its DKIM signature on `nestjourney.app` passes the existing DMARC.
 4. Wait for Resend to show the domain as **Verified** (minutes to a few hours).
 5. **API Keys → Create API key:** name `supabase-auth-smtp`, permission **Sending access**, domain `nestjourney.app`. Copy it once into the password manager.
 
@@ -167,8 +167,8 @@ Vercel → project `ken` → Settings → Environment Variables. As of 2026-11-0
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | the publishable key | no |
 | `SUPABASE_SERVICE_ROLE_KEY` | the `ken-server` secret key | **yes** (mark Sensitive) |
 | `NEXT_PUBLIC_SITE_URL` | Production: `https://nestjourney.app`. Preview: leave unset (the code falls back to the request origin) | no |
-| `PREGNANCY_OPERATOR_NAME` | already exists for the landing waitlist: the legal name of whoever runs the service (Kiril, as an individual) | no |
-| `PREGNANCY_CONTACT_EMAIL` | already exists: the monitored address for privacy and deletion requests | no |
+| `PREGNANCY_OPERATOR_NAME` | **new** (not in Vercel yet as of 2026-11-04): the legal name of whoever runs the service (Kiril, as an individual) | no |
+| `PREGNANCY_CONTACT_EMAIL` | **new**: the monitored address for privacy and deletion requests | no |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | leave unset until step 11 | no |
 
 Twilio, Google and Resend secrets are **not** Vercel variables. They live only in the Supabase dashboard.
