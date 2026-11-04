@@ -1,6 +1,39 @@
 import { FIRST_TREND_YEAR } from "@/lib/names/data";
-import { latestCount, roughly } from "@/lib/names/popularity";
-import type { NameContent, NamePerson, NameStats, TrendWord } from "@/lib/names/types";
+import {
+  countLine,
+  latestCount,
+  popularityBand,
+  rankByLastYear,
+  roughly,
+  sparkline,
+  trend,
+} from "@/lib/names/popularity";
+import { sexSplit, sexTag } from "@/lib/names/sex";
+import type { Card, CardDerived, NameContent, NamePerson, NameStats, TrendWord } from "@/lib/names/types";
+
+/** Everything a card shows that is computed from the CBS numbers (E16 §2). `rank` is the 2024 rank. */
+export function deriveCard(stats: NameStats, rank: number | undefined): CardDerived {
+  const t = trend(stats);
+  return {
+    sexTag: sexTag(stats),
+    ...sexSplit(stats),
+    band: popularityBand(rank),
+    countLine: countLine(stats),
+    trend: t && { word: t.word, arrow: t.arrow },
+    spark: sparkline(stats),
+  };
+}
+
+/** Cards for the names that have content and births, in content order; ranks come from all names. */
+export function buildCards(names: Map<string, NameStats>, content: Map<string, NameContent>): Card[] {
+  const ranks = rankByLastYear(names.values());
+  const cards: Card[] = [];
+  for (const [name, c] of content) {
+    const stats = names.get(name);
+    if (stats) cards.push({ stats, content: c, derived: deriveCard(stats, ranks.get(name)) });
+  }
+  return cards;
+}
 
 /** "שם {n} מתוך {total}": where the card sits in the filtered deck (FR-W12, the demo's wording). */
 export function positionText(n: number, total: number): string {

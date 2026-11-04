@@ -1,5 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { bibleNote, countTile, fullName, knownPeople, positionText, sparkEnd, trendLabel } from "@/lib/names/card";
+import namesFile from "../../data/names/names.json";
+import contentFile from "../../data/names/name-content.json";
+import {
+  bibleNote,
+  buildCards,
+  countTile,
+  deriveCard,
+  fullName,
+  knownPeople,
+  positionText,
+  sparkEnd,
+  trendLabel,
+} from "@/lib/names/card";
+import { parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
 import { sparkline } from "@/lib/names/popularity";
 import type { NameStats } from "@/lib/names/types";
 
@@ -97,5 +110,47 @@ describe("trendLabel", () => {
   it("names the trend and the first year", () => {
     expect(trendLabel("יציב")).toBe("מגמה יציב מאז 2000");
     expect(trendLabel("בעלייה")).toBe("מגמה בעלייה מאז 2000");
+  });
+});
+
+describe("deriveCard", () => {
+  it("combines the E16 §2 rules", () => {
+    const stats: NameStats = { name: "א", m: 10, f: 30, s: "J", y: Array(25).fill(4) };
+    expect(deriveCard(stats, 50)).toEqual({
+      sexTag: "בת",
+      boysShare: 0.25,
+      boysLabel: "25%",
+      girlsLabel: "75%",
+      band: "נפוץ",
+      countLine: "ניתן ל־4 תינוקות ב־2024",
+      trend: null,
+      spark: sparkline(stats),
+    });
+  });
+
+  it("has no sparkline or trend without recent years, and is rare without a rank", () => {
+    const d = deriveCard({ name: "ב", m: 900, f: 100, s: "J" }, undefined);
+    expect(d).toMatchObject({ sexTag: "בן", band: "נדיר", trend: null, spark: null });
+  });
+});
+
+describe("buildCards", () => {
+  const cards = buildCards(
+    parseNames(namesFile as RawNamesFile),
+    parseContent(contentFile as RawContentFile),
+  );
+
+  it("builds the 10 content names in content order", () => {
+    expect(cards.map((c) => c.stats.name)).toEqual(["זיו", "נועם", "יעל", "לביא", "תמר", "שקד", "אריאל", "אביגיל", "עמית", "אלה"]);
+    for (const c of cards) {
+      expect(c.derived.spark).not.toBeNull();
+      expect(c.content.niqqud).toBeTruthy();
+    }
+  });
+
+  it("skips content names with no births", () => {
+    const names = parseNames(namesFile as RawNamesFile);
+    const content = parseContent({ names: { חדש: { niqqud: "חָדָשׁ", intro: "x", people: [] } } });
+    expect(buildCards(names, content)).toEqual([]);
   });
 });

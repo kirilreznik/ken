@@ -5,9 +5,9 @@ interface CardHeaderProps {
   name: string;
   niqqud: string;
   sexTag: SexTag;
-  /** 1-based place of the card in the filtered deck. */
-  position: number;
-  total: number;
+  /** 1-based place of the card in the filtered deck; the line is left out without it. */
+  position?: number;
+  total?: number;
   /** The user's surname from the device prefs; the full name line shows only when set. */
   surname?: string | null;
 }
@@ -23,9 +23,11 @@ export default function CardHeader({ name, niqqud, sexTag, position, total, surn
     <>
       <div className="flex items-center justify-between gap-2">
         <span className="rounded-pill bg-peach-soft px-2.5 py-1.5 text-tag text-clay-deep">{sexTag}</span>
-        <span className="text-caption text-ink-soft in-data-[names-bg=none]:text-stone">
-          {positionText(position, total)}
-        </span>
+        {position != null && total != null && (
+          <span className="text-caption text-ink-soft in-data-[names-bg=none]:text-stone">
+            {positionText(position, total)}
+          </span>
+        )}
       </div>
       <div className="flex flex-col items-center gap-0.5 pt-2 text-center">
         <h2 className="text-name break-words text-ink">{niqqud}</h2>

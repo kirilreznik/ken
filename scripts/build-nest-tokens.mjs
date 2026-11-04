@@ -65,6 +65,9 @@ const extraStyles = [
   { name: "person", fontSize: "13px", lineHeight: "18px", fontWeight: 500 },
   // The number in a card's births tile.
   { name: "stat", fontSize: "18px", lineHeight: "22px", fontWeight: 800 },
+  // The card's intro line (Main.dc.html) and the swipe stamps (the demo's .nd-stamp).
+  { name: "intro", fontSize: "15px", lineHeight: "22px", fontWeight: 500 },
+  { name: "stamp", fontSize: "22px", lineHeight: "28px", fontWeight: 800 },
 ];
 
 const colors = tokens.color.tokens;
