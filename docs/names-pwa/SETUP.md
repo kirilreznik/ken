@@ -76,7 +76,6 @@ Authentication → Sign In / Providers → **Allow new users to sign up**: keep 
 ### 3.4 Rate limits
 Authentication → Rate Limits, after step 7 (custom SMTP) is in place:
 - Emails sent per hour: 100
-- SMS sent per hour: 30 (raise after launch if real traffic needs it)
 - Token verifications: keep the default
 
 ## 4. Google sign-in (before the run)
@@ -85,7 +84,7 @@ You need a Google account that will own the project (Kiril's).
 
 1. Open https://console.cloud.google.com and select the existing **Nest** project (`nest-4c83e`, also the Nest app's Firebase project; owner chose to reuse it on 2026-11-04). Adding a consent screen and a Web client doesn't affect Firebase.
 2. Menu → **Google Auth Platform** (older consoles: APIs & Services → OAuth consent screen) → **Get started**:
-   - App name: `Nest`
+   - App name: `Nest Journey`. Google rejects `Nest` (it matches its own Google Nest brand), checked 2026-11-04.
    - User support email: Kiril's address
    - Audience: **External**
    - Contact email: Kiril's address
@@ -106,27 +105,11 @@ You need a Google account that will own the project (Kiril's).
 
 Known limit: Google's consent screen says "to continue to hkoumskvmkqqnwhnizbq.supabase.co". Showing `nestjourney.app` there needs a Supabase custom domain (paid add-on). Not needed for launch.
 
-**Done when:** on any page, `supabase.auth.signInWithOAuth({ provider: 'google' })` lands on Google's account chooser for "Nest", and after choosing an account it returns to `/names/auth/callback`. (Ralph checks the redirect; the full round trip is the owner check in step 13.)
+**Done when:** on any page, `supabase.auth.signInWithOAuth({ provider: 'google' })` lands on Google's account chooser for "Nest Journey", and after choosing an account it returns to `/names/auth/callback`. (Ralph checks the redirect; the full round trip is the owner check in step 13.)
 
-## 5. Twilio Verify for SMS codes (before the run)
+## 5. SMS codes: postponed (next phase)
 
-1. Sign up at https://www.twilio.com/try-twilio with Kiril's email and phone.
-2. **Upgrade** the account (Console → Admin → Account billing → Upgrade) and add a payment method. A trial account only texts verified numbers. Check current prices on Twilio's Verify pricing page (a per-verification fee plus the SMS fee for Israel) and set a low auto-recharge amount.
-3. Console → **Verify → Services → Create new**:
-   - Friendly name: `Nest`. This name appears in the SMS text.
-   - Verification channels: **SMS** only.
-   - Code length: 6.
-   - Fraud Guard: on (default).
-4. Verify → Settings → **Geo permissions**: allow **Israel** only. Add other countries later if real users need them; every allowed country is exposure to SMS-pumping fraud.
-5. Note the SMS language: send yourself one code (step 13). If the text arrives in English, Verify → Services → Nest → **Templates** lets you pick a Hebrew template if one is offered; a custom template needs Twilio's approval. English is acceptable for launch.
-6. Copy into the password manager: **Account SID** and **Auth Token** (Console home → Account info), and the **Verify Service SID** (starts with `VA`).
-7. Supabase → Authentication → Sign In / Providers → **Phone**: enable.
-   - SMS provider: **Twilio Verify**
-   - Twilio Account SID, Twilio Auth Token, Twilio Verify Service SID: paste.
-   - **Test Phone Numbers and OTPs:** `972500000001=246810,972500000002=246810,972500000003=246810`. These three numbers never get a real SMS; the code is always `246810`. Ralph signs in with them. Pick other digits if you like, then use the same ones in step 10.
-   - Save.
-
-**Done when:** Supabase saves the Phone provider without an error, and step 13's real-phone check gets an SMS.
+Owner decision 2026-11-04: SMS sign-in (Twilio Verify) is **not** part of this run. Leave Supabase's Phone provider off. Ralph's QA users sign in with admin-generated email codes instead (step 10). When the next phase adds SMS: create a Twilio account (paid upgrade), a Verify service (SMS only, 6 digits, Fraud Guard on, Geo permissions Israel only), paste Account SID, Auth Token and Verify Service SID into Supabase → Sign In / Providers → Phone, add test numbers, and set Cloudflare Turnstile (step 11) before opening it to the public.
 
 ## 6. Resend for email codes (before the run)
 
@@ -175,7 +158,7 @@ Vercel → project `ken` → Settings → Environment Variables. As of 2026-11-0
 | `PREGNANCY_CONTACT_EMAIL` | **new**: the monitored address for privacy and deletion requests | no |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | leave unset until step 11 | no |
 
-Twilio, Google and Resend secrets are **not** Vercel variables. They live only in the Supabase dashboard.
+Google and Resend secrets are **not** Vercel variables. They live only in the Supabase dashboard.
 
 **Done when:** the five variables are set in Production and Preview, and a redeploy of `main` succeeds.
 
@@ -202,20 +185,20 @@ PREGNANCY_CONTACT_EMAIL=<same as Vercel>
 NAMES_QA_SUPABASE_URL=https://hkoumskvmkqqnwhnizbq.supabase.co
 NAMES_QA_ANON_KEY=<publishable key>
 NAMES_QA_SERVICE_ROLE_KEY=<ken-server secret key>
-NAMES_QA_PHONE_1=+972500000001
-NAMES_QA_PHONE_2=+972500000002
-NAMES_QA_PHONE_3=+972500000003
-NAMES_QA_OTP=246810
-NAMES_QA_EMAIL_SINK=delivered@resend.dev
+NAMES_QA_EMAIL_1=delivered+names-qa-1@resend.dev
+NAMES_QA_EMAIL_2=delivered+names-qa-2@resend.dev
+NAMES_QA_EMAIL_3=delivered+names-qa-3@resend.dev
 ```
 
-`delivered@resend.dev` is Resend's test inbox: mail to it is accepted and never delivered, so QA can check the "code sent" step without bouncing mail from a made-up address. Ralph never reads a real inbox.
+These are Resend test addresses: mail to them is accepted and never delivered, so a sign-in screen test never bounces or reaches a real person. Ralph never reads an inbox: it gets each code from the Supabase admin API (`generate_link`, which returns the 6-digit `email_otp` without sending mail) using the secret key.
+
+5. Create the three QA users (Supabase → Authentication → Users → Add user → Create new user, one per address above, **Auto Confirm User** on, no password needed), or let US-000 create them with the admin API. They work while sign-ups are off.
 
 **Done when:** `npm run dev` serves `http://localhost:3000` and `scripts/ralph/.env.test.local` exists.
 
 ## 11. Bot protection with Cloudflare Turnstile (before public launch)
 
-SMS codes cost money per send, so the public sign-in needs a CAPTCHA against SMS-pumping bots. Do this **after** the Ralph run (with CAPTCHA on, Ralph's scripted sign-ins can't get a token).
+Code emails can be abused by bots (and SMS codes, once added, cost money per send), so the public sign-in needs a CAPTCHA. Do this **after** the Ralph run (with CAPTCHA on, Ralph's scripted sign-ins can't get a token).
 
 1. Sign up at https://dash.cloudflare.com (free) → **Turnstile → Add widget**: name `Nest names`, hostnames `nestjourney.app` and `localhost`, mode **Managed**. Copy the site key and the secret key.
 2. Supabase → Authentication → **Attack Protection** → Enable CAPTCHA protection → provider Turnstile → paste the **secret** key → Save.
@@ -227,7 +210,7 @@ The PWA already renders the widget and sends `captchaToken` when that variable i
 
 ## 12. Privacy policy and terms (before public launch)
 
-Ralph writes Hebrew drafts at `/names/privacy` and `/names/terms`, marked "טיוטה" at the top, from facts in the PRD (what's stored, where, for how long, who processes it: Supabase in Frankfurt, Vercel, Twilio, Resend, Google, Cloudflare). Before turning on sign-ups (step 3.3):
+Ralph writes Hebrew drafts at `/names/privacy` and `/names/terms`, marked "טיוטה" at the top, from facts in the PRD (what's stored, where, for how long, who processes it: Supabase in Frankfurt, Vercel, Resend, Google, Cloudflare). Before turning on sign-ups (step 3.3):
 
 1. Fill the operator name and contact email (step 9).
 2. A privacy lawyer reviews both pages once (decided 2026-10-30).
@@ -238,12 +221,11 @@ Ralph writes Hebrew drafts at `/names/privacy` and `/names/terms`, marked "טי�
 
 On a real iPhone (Safari) and a real Android phone (Chrome), at `https://nestjourney.app/names`:
 
-1. **Google:** sign in with a real Google account in the browser, then again from the installed home-screen app. Known risk: on iPhone, the home-screen app and Safari keep separate storage, so check that the Google round trip lands back inside the installed app, signed in. If it doesn't, tell Claude; the fallback is to hide Google inside the installed iOS app and keep phone and email codes.
-2. **SMS:** sign in with your own phone number. The SMS arrives within a minute, shows "Nest", and the code works.
-3. **Email:** sign in with your own address. The Hebrew email arrives from `no-reply@nestjourney.app`, not in spam, and the code works.
-4. **Install:** iPhone: Share → "הוספה למסך הבית"; Android: the install button. The icon is the peach Nest mark, the app opens full screen at the swipe screen.
-5. **Partner:** send an invite link to a second phone, join, keep the same name on both: it shows up as a match within a minute.
-6. **Delete account** from settings on a test account: it disappears from Supabase → Authentication → Users.
+1. **Google:** sign in with a real Google account in the browser, then again from the installed home-screen app. Known risk: on iPhone, the home-screen app and Safari keep separate storage, so check that the Google round trip lands back inside the installed app, signed in. If it doesn't, tell Claude; the fallback is to hide Google inside the installed iOS app and keep email codes.
+2. **Email:** sign in with your own address. The Hebrew email arrives from `no-reply@nestjourney.app`, not in spam, and the code works.
+3. **Install:** iPhone: Share → "הוספה למסך הבית"; Android: the install button. The icon is the peach Nest mark, the app opens full screen at the swipe screen.
+4. **Partner:** send an invite link to a second phone, join, keep the same name on both: it shows up as a match within a minute.
+5. **Delete account** from settings on a test account: it disappears from Supabase → Authentication → Users.
 
 ## Accounts summary
 
@@ -252,6 +234,6 @@ On a real iPhone (Safari) and a real Android phone (Chrome), at `https://nestjou
 | Supabase ("Kiril Personal", free plan) | Kiril | Database, auth, edge functions | Free tier |
 | Vercel (project `ken`) | Kiril | Hosting nestjourney.app | Existing |
 | Google Cloud (project `Nest`, `nest-4c83e`, shared with Firebase) | Kiril | Google sign-in | Free |
-| Twilio | Kiril | SMS codes (Verify) | Pay per verification |
+| Twilio (next phase, not now) | Kiril | SMS codes (Verify) | Pay per verification |
 | Resend | Kiril | Sign-in code emails | Free tier (3,000/month, check current limits) |
 | Cloudflare (Turnstile) | Kiril | Bot protection on sign-in | Free |
