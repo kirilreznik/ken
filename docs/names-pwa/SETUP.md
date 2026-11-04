@@ -215,7 +215,8 @@ Ralph writes Hebrew drafts at `/names/privacy` and `/names/terms`, marked "טי�
 1. Fill the operator name and contact email (step 9). Set 2026-11-04 to "Kiril Reznik" and `privacy@nestjourney.app`. **Create `privacy@nestjourney.app` as a Google Workspace alias (or group) for Kiril's mailbox before launch**, and send it a test email: the address is public on both pages.
 2. A privacy lawyer reviews both pages once (decided 2026-10-30).
 3. Replace the text in `src/content/names-legal/` (see the PRD) and remove the "טיוטה" banner by setting `LEGAL_DRAFT = false` there.
-4. Turn on **Allow new users to sign up** (step 3.3).
+4. Translate the 4 email templates that are still Supabase's English defaults (Authentication → Emails: **Invite user**, **Change email address**, **Reset password**, **Reauthentication**) into short Hebrew in the same Nest style as the code email, keeping their `{{ .ConfirmationURL }}` / `{{ .Token }}` variables. The swiper and the Nest app don't send them today, but nothing in English should go out after launch.
+5. Turn on **Allow new users to sign up** (step 3.3).
 
 ## 13. Owner checks after the run (things Ralph can't do)
 
