@@ -39,3 +39,41 @@ export function hiddenNames(votes: ReadonlyMap<string, Vote>): string[] {
 export function restoredText(name: string): string {
   return `${name} יחזור לבחירה`;
 }
+
+/** The segments of "השמות שלי" (`?tab=`). */
+export type ListsTab = "saved" | "matches" | "duel";
+
+/** The tab to show for `?tab=`: "התאמות" exists only in a shared space; anything else is "שמרתי". */
+export function listsTab(param: string | null, shared: boolean): ListsTab {
+  if (param === "duel") return "duel";
+  if (param === "matches" && shared) return "matches";
+  return "saved";
+}
+
+/** A row of "שמרתי". `custom`: added with "הוספת שם", so it has no CBS data. */
+export interface SavedRow {
+  name: string;
+  vote: "keep" | "love";
+  custom: boolean;
+}
+
+/** The "שמרתי" rows (FR-W18): loved first, then kept, each the most recent first. */
+export function savedRows(votes: ReadonlyMap<string, { vote: Vote; custom?: boolean }>): SavedRow[] {
+  const loved: SavedRow[] = [];
+  const kept: SavedRow[] = [];
+  for (const [name, v] of votes) {
+    if (v.vote === "love") loved.push({ name, vote: "love", custom: !!v.custom });
+    else if (v.vote === "keep") kept.push({ name, vote: "keep", custom: !!v.custom });
+  }
+  return [...loved.reverse(), ...kept.reverse()];
+}
+
+/** Live region text after a row menu action. */
+export function rowActionText(name: string, action: "remove" | "hide"): string {
+  return action === "remove" ? `${name} הוסר מהרשימה` : `${name} הוסתר ולא יוצג יותר`;
+}
+
+/** Live region / toast text after "הוספת שם". */
+export function addedText(name: string): string {
+  return `${name} נוסף לרשימה`;
+}
