@@ -64,9 +64,9 @@ Authentication → URL Configuration:
 </div>
 ```
 
-The Nest app's password sign-up also uses **Confirm signup** and needs a link back to `ken://auth-callback`. So Confirm signup shows the code **and**, below it, a line `<p><a href="{{ .ConfirmationURL }}">אפשר גם לאשר בקישור הזה</a></p>`. Magic Link stays code-only.
+The swiper is **code only** (owner, 2026-11-04). The Nest app's password sign-up also uses **Confirm signup** and needs a link back to the app, so Confirm signup branches on the redirect: `{{ if or (eq .RedirectTo "ken://auth-callback") (eq .RedirectTo "pregnancymanager://auth-callback") }}` the app's confirmation link (`{{ .ConfirmationURL }}`) `{{ else }}` the Hebrew code-only body above `{{ end }}`. Match the redirect the app actually sends (`emailRedirectTo` in pregnancy-manager `src/`). Magic Link is code-only.
 
-**Done when:** both templates show `{{ .Token }}`; Confirm signup also has the `{{ .ConfirmationURL }}` link, Magic Link doesn't.
+**Done when:** a swiper code email (Confirm signup and Magic Link) shows only the code; a Nest app sign-up still gets its confirmation link.
 
 Note: sign-ups off (3.3) applies to the Nest app too, since both use the same project.
 
