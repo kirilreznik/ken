@@ -106,6 +106,8 @@ function useOwnPhoto(userId: string | null, enabled: boolean): OwnPhoto | "loadi
 interface ScreenBackgroundProps {
   /** Overrides the saved choice (e.g. a preview). */
   background?: Background;
+  /** The "ללא רקע" blobs: board 2's two (default) or board 1's single one at the top. */
+  blobs?: "main" | "intro";
   children?: React.ReactNode;
 }
 
@@ -115,7 +117,7 @@ interface ScreenBackgroundProps {
  * the user's own photo adds a canvas scrim, stronger for dark photos (PRD 3.2.15), and
  * makes the glass whiter. Children sit in a centered column of max 480 px inside the safe area.
  */
-export default function ScreenBackground({ background, children }: ScreenBackgroundProps) {
+export default function ScreenBackground({ background, blobs = "main", children }: ScreenBackgroundProps) {
   const { user } = useAuth();
   const saved = useBackgroundChoice();
   const choice = background ?? saved;
@@ -127,7 +129,13 @@ export default function ScreenBackground({ background, children }: ScreenBackgro
   return (
     <div data-names-bg={shown ?? "own"} className="relative isolate min-h-dvh">
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        {shown === "none" ? (
+        {shown === "none" && blobs === "intro" ? (
+          <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
+            <div className="absolute -top-15 -end-20 size-80 rounded-full bg-peach opacity-25 blur-(--nest-blob-blur)" />
+          </div>
+        ) : null}
+
+        {shown === "none" && blobs === "main" ? (
           <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
             <div className="absolute top-30 -end-30 size-75 rounded-full bg-peach opacity-[0.22] blur-(--nest-blob-blur)" />
             <div className="absolute bottom-20 -start-[90px] size-60 rounded-full bg-peach opacity-[0.18] blur-(--nest-blob-blur)" />

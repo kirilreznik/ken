@@ -72,6 +72,8 @@ const extraStyles = [
   { name: "stamp", fontSize: "22px", lineHeight: "28px", fontWeight: 800 },
   // The next-but-one name on the farther peeking card (Main.dc.html).
   { name: "peek", fontSize: "14px", lineHeight: "18px", fontWeight: 800 },
+  // The name on the intro's small card illustration (Intro.dc.html).
+  { name: "hero-name", fontSize: "34px", lineHeight: "40px", fontWeight: 800 },
 ];
 
 const colors = tokens.color.tokens;
