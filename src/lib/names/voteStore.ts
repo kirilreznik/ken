@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { RealtimeChannel, RealtimePostgresChangesPayload, SupabaseClient } from "@supabase/supabase-js";
 import { createStore, delMany, getMany, keys, setMany, type UseStore } from "idb-keyval";
 import { reportClientLog } from "./clientLog";
 import { getSupabase } from "./supabase";
@@ -6,7 +6,8 @@ import type { Vote } from "./types";
 
 /**
  * The user's own votes for one space (PRD 3.2.9): read from `name_votes`, cached in
- * IndexedDB, written through an IndexedDB outbox that flushes in order.
+ * IndexedDB, written through an IndexedDB outbox that flushes in order, and kept in
+ * sync with the user's other devices through a Realtime subscription.
  */
 
 export const VOTES_DB = "nest-names-votes";
@@ -16,6 +17,8 @@ const STORE = "kv";
 export const FLUSH_INTERVAL_MS = 30_000;
 const BACKOFF_BASE_MS = 1_000;
 const BACKOFF_MAX_MS = 5 * 60_000;
+/** Remote deletes carry no name, so they trigger a re-read; bursts share one. */
+const RECONCILE_DELAY_MS = 500;
 
 /** Postgres errors a retry can't fix: RLS (not a member), missing membership FK, bad value. */
 const PERMANENT_CODES = new Set(["42501", "23503", "23514", "22P02"]);
@@ -57,7 +60,11 @@ export interface VoteStore {
   removeVote(name: string): void;
   /** Sends queued changes in order; `force` ignores the backoff (on `online`). */
   flush(opts?: { force?: boolean }): Promise<void>;
-  /** Flushes on online, focus and every 30 s; returns the stop function. */
+  /** Votes another device made; applied only when newer than the local copy. */
+  applyRemote(row: RemoteVoteRow): void;
+  /** Re-reads the server copy (a remote delete, a Realtime reconnect). */
+  reconcile(): Promise<void>;
+  /** Flushes on online, focus and every 30 s, follows own votes over Realtime and re-reads on focus; returns the stop function. */
   start(): () => void;
   /** Stops all writes, sends and listeners (before clearLocalData on sign-out); resolves after the last write. */
   dispose(): Promise<void>;
@@ -76,6 +83,12 @@ interface VoteRow {
   vote: Vote;
   custom: boolean | null;
   updated_at: string;
+}
+
+/** A `name_votes` row as Realtime sends it. */
+export interface RemoteVoteRow extends VoteRow {
+  space_id: string;
+  user_id: string;
 }
 
 let idbStore: UseStore | null = null;
@@ -127,6 +140,41 @@ export function applyOutbox(
   return next;
 }
 
+const time = (iso: string) => {
+  const t = Date.parse(iso);
+  return Number.isNaN(t) ? 0 : t;
+};
+
+/** True when `a` is a later change than `b` (ISO times from the client and from Postgres). */
+export function isNewer(a: string, b: string): boolean {
+  return time(a) > time(b);
+}
+
+/**
+ * Merges the server copy into the local votes: per name the later change wins, and queued
+ * changes stay on top. A local vote the server doesn't have is kept only when it was made
+ * after `since` (the read started before it reached the server); older ones were deleted
+ * on another device.
+ */
+export function mergeRemote(
+  local: ReadonlyMap<string, StoredVote>,
+  remote: ReadonlyMap<string, StoredVote>,
+  outbox: readonly OutboxItem[],
+  since: number,
+): Map<string, StoredVote> {
+  const merged = new Map<string, StoredVote>();
+  for (const [name, r] of remote) {
+    const l = local.get(name);
+    merged.set(name, l && isNewer(l.updatedAt, r.updatedAt) ? l : r);
+  }
+  for (const [name, l] of local) {
+    if (!remote.has(name) && time(l.updatedAt) >= since) merged.set(name, l);
+  }
+  // Keep the voting order: the merged map sorted by change time.
+  const ordered = new Map([...merged.values()].sort((a, b) => time(a.updatedAt) - time(b.updatedAt)).map((v) => [v.name, v]));
+  return applyOutbox(ordered, outbox);
+}
+
 type SendResult = "ok" | "permanent" | "retry";
 
 function classify(error: { code?: string } | null): SendResult {
@@ -160,6 +208,8 @@ export function createVoteStore({
   let disposed = false;
   let lastChangeAt = 0;
   const stops = new Set<() => void>();
+  /** In-flight changes a newer vote from another device replaced while they were sent. */
+  const overtaken = new Set<string>();
 
   function emit() {
     state = { ready, votes, pendingCount: outbox.length };
@@ -225,9 +275,10 @@ export function createVoteStore({
       inFlightId = item.id;
       const { result, code } = await send(item);
       inFlightId = null;
-      const superseded = outbox.some((o) => o.name === item.name && o.id !== item.id);
+      const superseded = outbox.some((o) => o.name === item.name && o.id !== item.id) || overtaken.has(item.id);
       if (result === "retry" && superseded) {
-        // A newer change to the same name is queued; it replaces this one.
+        // A newer change to the same name (queued, or from another device) replaces this one.
+        overtaken.delete(item.id);
         outbox = outbox.filter((o) => o.id !== item.id);
         persist();
         emit();
@@ -242,6 +293,13 @@ export function createVoteStore({
         return;
       }
       outbox = outbox.filter((o) => o.id !== item.id);
+      if (overtaken.delete(item.id)) {
+        const current = votes.get(item.name);
+        if (current && !outbox.some((o) => o.name === item.name)) {
+          const { vote, custom, updatedAt } = current;
+          outbox = [...outbox, { id: newId(now()), op: "upsert", name: item.name, vote, custom, updatedAt, attempts: 0, retryAt: 0 }];
+        }
+      }
       if (result === "permanent") {
         // No name, vote or user: only what went wrong.
         void report({ area: "names-votes", message: `vote ${item.op} dropped: ${code ?? "unknown"}` });
@@ -258,18 +316,131 @@ export function createVoteStore({
       againForced ||= force;
       return flushing;
     }
+    // Cleared inside the loop's own task, so a request right after the last pass starts a new flush.
     flushing = (async () => {
-      let forced = force;
-      do {
-        again = false;
-        await drain(forced);
-        forced = againForced;
-        againForced = false;
-      } while (again);
-    })().finally(() => {
-      flushing = null;
-    });
+      try {
+        let forced = force;
+        do {
+          again = false;
+          await drain(forced);
+          forced = againForced;
+          againForced = false;
+        } while (again);
+      } finally {
+        flushing = null;
+      }
+    })();
     return flushing;
+  }
+
+  const toStored = (row: VoteRow): StoredVote => ({
+    name: row.name,
+    vote: row.vote,
+    custom: row.custom ?? false,
+    updatedAt: row.updated_at,
+  });
+
+  /** Reads the server copy and merges it in; false when it couldn't be read. */
+  async function readServer(): Promise<boolean> {
+    if (!client) return false;
+    const since = now();
+    try {
+      const { data, error } = await client
+        .from("name_votes")
+        .select("name, vote, custom, updated_at")
+        .eq("space_id", spaceId)
+        .eq("user_id", userId)
+        .order("updated_at", { ascending: true });
+      if (error || !data || disposed) return false;
+      const remote = new Map<string, StoredVote>();
+      for (const row of data as VoteRow[]) remote.set(row.name, toStored(row));
+      votes = mergeRemote(votes, remote, outbox, since);
+      persist();
+      emit();
+      return true;
+    } catch {
+      // Offline: keep the cache.
+      return false;
+    }
+  }
+
+  let reconciling: Promise<void> | null = null;
+  let reconcileAgain = false;
+
+  /** One read at a time; a request during a read runs one more read after it. */
+  function reconcile(): Promise<void> {
+    if (disposed) return Promise.resolve();
+    if (reconciling) {
+      reconcileAgain = true;
+      return reconciling;
+    }
+    reconciling = (async () => {
+      try {
+        do {
+          reconcileAgain = false;
+          await readServer();
+        } while (reconcileAgain && !disposed);
+      } finally {
+        reconciling = null;
+      }
+    })();
+    return reconciling;
+  }
+
+  function applyRemote(row: RemoteVoteRow) {
+    if (disposed || row.space_id !== spaceId || row.user_id !== userId || !row.name) return;
+    const local = votes.get(row.name);
+    if (local && !isNewer(row.updated_at, local.updatedAt)) return; // Our own echo, or older.
+    // A queued change older than this one lost. The one in flight can't be stopped, so
+    // the newer vote is written back once it lands (see drain).
+    for (const o of outbox) {
+      if (o.name === row.name && o.id === inFlightId && !isNewer(o.updatedAt, row.updated_at)) overtaken.add(o.id);
+    }
+    outbox = outbox.filter((o) => o.name !== row.name || o.id === inFlightId || isNewer(o.updatedAt, row.updated_at));
+    const next = new Map(votes);
+    next.delete(row.name);
+    next.set(row.name, toStored(row));
+    votes = next;
+    persist();
+    emit();
+  }
+
+  /**
+   * Follows this user's rows. Supabase doesn't filter deletes, so they rarely arrive here;
+   * when one does it only has the row id, so it re-reads the server. Focus re-reads too.
+   */
+  function followRemote(): () => void {
+    if (!client || typeof client.channel !== "function") return () => {};
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const later = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        void reconcile();
+      }, RECONCILE_DELAY_MS);
+    };
+    let joined = false;
+    const channel: RealtimeChannel = client
+      .channel(`name_votes:${userId}:${spaceId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "name_votes", filter: `user_id=eq.${userId}` },
+        (payload: RealtimePostgresChangesPayload<RemoteVoteRow>) => {
+          if (payload.eventType === "DELETE") later();
+          else applyRemote(payload.new);
+        },
+      )
+      .subscribe((status) => {
+        // Changes made while the channel was down are read on every rejoin.
+        if (status === "SUBSCRIBED") {
+          if (joined) later();
+          joined = true;
+        }
+      });
+    return () => {
+      if (timer) clearTimeout(timer);
+      void client.removeChannel(channel);
+    };
   }
 
   async function load() {
@@ -296,43 +467,28 @@ export function createVoteStore({
     ready = true;
     emit();
 
-    if (client) {
-      try {
-        const { data, error } = await client
-          .from("name_votes")
-          .select("name, vote, custom, updated_at")
-          .eq("space_id", spaceId)
-          .eq("user_id", userId)
-          .order("updated_at", { ascending: true });
-        if (!error && data && !disposed) {
-          const remote = new Map<string, StoredVote>();
-          for (const row of data as VoteRow[]) {
-            remote.set(row.name, { name: row.name, vote: row.vote, custom: row.custom ?? false, updatedAt: row.updated_at });
-          }
-          // Queued changes are newer than the server copy.
-          votes = applyOutbox(remote, outbox);
-          persist();
-          emit();
-        }
-      } catch {
-        // Offline: keep the cache.
-      }
-    }
+    await readServer();
     void flush();
   }
 
   function start() {
     if (typeof window === "undefined") return () => {};
     const onOnline = () => void flush({ force: true });
-    const onFocus = () => void flush();
+    // Coming back to this device also re-reads: Realtime doesn't deliver filtered deletes.
+    const onFocus = () => {
+      void flush();
+      void reconcile();
+    };
     const onVisible = () => {
-      if (document.visibilityState === "visible") void flush();
+      if (document.visibilityState === "visible") onFocus();
     };
     window.addEventListener("online", onOnline);
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onVisible);
     const timer = setInterval(() => void flush(), FLUSH_INTERVAL_MS);
+    const unfollow = followRemote();
     const stop = () => {
+      unfollow();
       window.removeEventListener("online", onOnline);
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onVisible);
@@ -359,6 +515,8 @@ export function createVoteStore({
       change({ id: newId(t), op: "delete", name, updatedAt: new Date(t).toISOString(), attempts: 0, retryAt: 0 });
     },
     flush,
+    applyRemote,
+    reconcile,
     start,
     async dispose() {
       disposed = true;
