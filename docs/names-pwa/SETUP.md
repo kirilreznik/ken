@@ -83,7 +83,7 @@ Authentication → Rate Limits, after step 7 (custom SMTP) is in place:
 
 You need a Google account that will own the project (Kiril's).
 
-1. Open https://console.cloud.google.com → project picker → **New project**. Name: `Nest`. No organization. Create, then select it.
+1. Open https://console.cloud.google.com and select the existing **Nest** project (`nest-4c83e`, also the Nest app's Firebase project; owner chose to reuse it on 2026-11-04). Adding a consent screen and a Web client doesn't affect Firebase.
 2. Menu → **Google Auth Platform** (older consoles: APIs & Services → OAuth consent screen) → **Get started**:
    - App name: `Nest`
    - User support email: Kiril's address
@@ -251,7 +251,7 @@ On a real iPhone (Safari) and a real Android phone (Chrome), at `https://nestjou
 |---|---|---|---|
 | Supabase ("Kiril Personal", free plan) | Kiril | Database, auth, edge functions | Free tier |
 | Vercel (project `ken`) | Kiril | Hosting nestjourney.app | Existing |
-| Google Cloud (project `Nest`) | Kiril | Google sign-in | Free |
+| Google Cloud (project `Nest`, `nest-4c83e`, shared with Firebase) | Kiril | Google sign-in | Free |
 | Twilio | Kiril | SMS codes (Verify) | Pay per verification |
 | Resend | Kiril | Sign-in code emails | Free tier (3,000/month, check current limits) |
 | Cloudflare (Turnstile) | Kiril | Bot protection on sign-in | Free |
