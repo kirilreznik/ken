@@ -16,6 +16,7 @@ import { getPref } from "@/lib/names/prefs";
 import { nextRoute } from "@/lib/names/routing";
 import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
+import ConnectionNote from "./ConnectionNote";
 
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
 
@@ -128,9 +129,11 @@ export default function EmailSignIn() {
   if (loading || user) return <AuthSkeleton />;
 
   const backHref = withJoin(WELCOME_PATH, join);
-  const errorLine = error ? (
+  // ConnectionNote says it while offline; don't repeat it, or keep it once back online.
+  const shownError = error === OFFLINE_MESSAGE ? null : error;
+  const errorLine = shownError ? (
     <p id="email-sign-in-error" role="alert" className="text-body font-medium text-urgent">
-      {error}
+      {shownError}
     </p>
   ) : null;
   const sendBlocked = captchaEnabled && !captchaToken;
@@ -139,6 +142,7 @@ export default function EmailSignIn() {
     return (
       <AuthLayout eyebrow="בחירת שם" title="כניסה עם קוד במייל" lead="נשלח קוד בן 6 ספרות לכתובת שלך." backHref={backHref} hero={wordmark}>
         <form noValidate onSubmit={submitEmail} className="flex flex-col gap-4">
+          <ConnectionNote />
           <div className="flex flex-col gap-1.5">
             <label htmlFor="email" className="text-caption font-bold text-ink">
               כתובת אימייל
@@ -160,8 +164,8 @@ export default function EmailSignIn() {
                 setEmail(e.target.value);
                 if (error) setError(null);
               }}
-              aria-invalid={error === INVALID_EMAIL_MESSAGE || undefined}
-              aria-describedby={error ? "email-sign-in-error" : undefined}
+              aria-invalid={shownError === INVALID_EMAIL_MESSAGE || undefined}
+              aria-describedby={shownError ? "email-sign-in-error" : undefined}
               className="h-14 w-full rounded-md border border-line bg-surface px-3.5 text-start text-card-title text-ink placeholder:text-faint aria-invalid:border-urgent"
             />
           </div>
@@ -195,6 +199,7 @@ export default function EmailSignIn() {
         }}
         className="flex flex-col gap-4"
       >
+        <ConnectionNote />
         <CodeInput
           id="code"
           label="הקוד מהמייל"
@@ -204,8 +209,8 @@ export default function EmailSignIn() {
             if (error) setError(null);
           }}
           onComplete={(c) => void verify(c)}
-          invalid={error !== null}
-          describedBy={error ? "email-sign-in-error" : undefined}
+          invalid={shownError !== null}
+          describedBy={shownError ? "email-sign-in-error" : undefined}
           autoFocus
         />
         {errorLine}

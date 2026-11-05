@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
 import { describe, expect, it } from "vitest";
-import { SW_SCOPE, SW_URL, shouldRegisterWorker } from "@/lib/names/serviceWorker";
+import { SW_SCOPE, SW_URL, shouldRegisterWorker, watchForUpdates } from "@/lib/names/serviceWorker";
 
 const ORIGIN = "https://nest.example";
 const source = readFileSync(new URL("../../public/names/sw.js", import.meta.url), "utf8");
@@ -162,5 +162,99 @@ describe("public/names/sw.js", () => {
     expect(sw.skipped()).toBe(false);
     sw.fire("message", { data: { type: "SKIP_WAITING" } });
     expect(sw.skipped()).toBe(true);
+  });
+});
+
+function fakeWorker(state = "installing") {
+  const listeners: (() => void)[] = [];
+  const messages: unknown[] = [];
+  const worker = {
+    state,
+    postMessage: (m: unknown) => messages.push(m),
+    addEventListener: (_t: string, l: () => void) => listeners.push(l),
+    setState(next: string) {
+      worker.state = next;
+      for (const l of listeners) l();
+    },
+    messages,
+  };
+  return worker;
+}
+
+function fakeSetup(controller: unknown, waiting: ReturnType<typeof fakeWorker> | null = null) {
+  const found = new Set<() => void>();
+  const changed = new Set<() => void>();
+  const reg = {
+    waiting,
+    installing: null as ReturnType<typeof fakeWorker> | null,
+    addEventListener: (_t: "updatefound", l: () => void) => void found.add(l),
+    removeEventListener: (_t: "updatefound", l: () => void) => void found.delete(l),
+    update: async () => undefined,
+  };
+  const container = {
+    controller,
+    addEventListener: (_t: "controllerchange", l: () => void) => void changed.add(l),
+    removeEventListener: (_t: "controllerchange", l: () => void) => void changed.delete(l),
+  };
+  return {
+    reg,
+    container,
+    install(worker: ReturnType<typeof fakeWorker>) {
+      reg.installing = worker;
+      for (const l of found) l();
+    },
+    controllerChange() {
+      for (const l of changed) l();
+    },
+  };
+}
+
+describe("watchForUpdates", () => {
+  it("offers a worker already waiting behind a controller, then reloads after it takes over", () => {
+    const waiting = fakeWorker("installed");
+    const s = fakeSetup({}, waiting);
+    const applies: (() => void)[] = [];
+    let reloads = 0;
+    watchForUpdates(s.reg as never, s.container, (apply) => applies.push(apply), () => reloads++);
+    expect(applies).toHaveLength(1);
+    s.controllerChange();
+    expect(reloads).toBe(0);
+    applies[0]();
+    expect(waiting.messages).toEqual([{ type: "SKIP_WAITING" }]);
+    s.controllerChange();
+    expect(reloads).toBe(1);
+  });
+
+  it("offers a worker that finishes installing later, once", () => {
+    const s = fakeSetup({});
+    let offers = 0;
+    watchForUpdates(s.reg as never, s.container, () => offers++, () => undefined);
+    const worker = fakeWorker();
+    s.install(worker);
+    expect(offers).toBe(0);
+    worker.setState("installed");
+    worker.setState("installed");
+    expect(offers).toBe(1);
+  });
+
+  it("offers nothing on a first install (no controller)", () => {
+    const s = fakeSetup(null);
+    let offers = 0;
+    watchForUpdates(s.reg as never, s.container, () => offers++, () => undefined);
+    const worker = fakeWorker();
+    s.install(worker);
+    worker.setState("installed");
+    expect(offers).toBe(0);
+  });
+
+  it("stops listening", () => {
+    const s = fakeSetup({});
+    let offers = 0;
+    const stop = watchForUpdates(s.reg as never, s.container, () => offers++, () => undefined);
+    stop();
+    const worker = fakeWorker();
+    s.install(worker);
+    worker.setState("installed");
+    expect(offers).toBe(0);
   });
 });

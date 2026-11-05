@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import ConnectionNote from "@/components/names/ConnectionNote";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import { OFFLINE_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
@@ -53,7 +54,9 @@ export default function WelcomeActions({ joinCode }: { joinCode?: string | null 
 
   return (
     <div className="flex flex-col gap-3">
-      {error ? (
+      <ConnectionNote />
+      {/* ConnectionNote says it while offline; don't repeat it, or keep it once back online. */}
+      {error && error !== OFFLINE_MESSAGE ? (
         <p role="alert" className="text-body text-ink">
           {error}
         </p>

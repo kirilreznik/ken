@@ -11,6 +11,7 @@ import MatchSheet from "@/components/names/MatchSheet";
 import { useCards } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useMatches, useSeenMatches } from "@/components/names/useMatches";
+import { useSyncStatus } from "@/components/names/useSyncStatus";
 import { useVotes } from "@/components/names/useVotes";
 import { statusText } from "@/lib/names/a11y";
 import { markAppEntry } from "@/lib/names/appHistory";
@@ -54,6 +55,7 @@ export default function SwipeScreen() {
   const { cards } = useCards();
   const { store, state } = useVotes(space.spaceId, userId);
   const matches = useMatches(space.spaceId, userId, space.isShared, state?.votes);
+  const sync = useSyncStatus(state?.pendingCount ?? 0);
   const { seen, setSeen } = useSeenMatches(userId);
   const newMatch = useMemo(() => (matches?.ready ? matchToShow(matches.matches, seen) : null), [matches, seen]);
 
@@ -156,7 +158,7 @@ export default function SwipeScreen() {
             disabled={!current}
             describedBy={SWIPE_KEYS_ID}
           />
-          <SwipeFooter canUndo={undoStack.length > 0} onUndo={undo} status={status} describedBy={SWIPE_KEYS_ID} />
+          <SwipeFooter canUndo={undoStack.length > 0} onUndo={undo} status={status} describedBy={SWIPE_KEYS_ID} sync={sync} />
         </SwipeKeys>
       </main>
       <BackgroundSheet />
