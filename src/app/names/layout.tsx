@@ -3,6 +3,7 @@ import AuthProvider from "@/components/names/AuthProvider";
 import Unconfigured from "@/components/names/Unconfigured";
 import { ToastRegion } from "@/components/names/ui";
 import { canvasColor } from "@/lib/names/brand";
+import { APPLE_TOUCH_ICON, MANIFEST_PATH } from "@/lib/names/manifest";
 import { isConfigured } from "@/lib/names/supabase";
 import "@/styles/nest-tokens.css";
 import "./names.css";
@@ -11,6 +12,8 @@ export const metadata: Metadata = {
   title: { template: "%s · בחירת שם", default: "בחירת שם" },
   description: "בוחרים שם לתינוק או לתינוקת, לבד או ביחד: שמירה, דילוג והתאמות.",
   robots: { index: false, follow: false },
+  manifest: MANIFEST_PATH,
+  icons: { apple: [{ url: APPLE_TOUCH_ICON, sizes: "180x180", type: "image/png" }] },
   appleWebApp: { capable: true, title: "בחירת שם", statusBarStyle: "default" },
 };
 
