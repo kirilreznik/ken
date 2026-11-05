@@ -128,7 +128,7 @@ export const namesStyle = `
 .nd-list ol{margin:12px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
 .nd-list li{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--bg);font-weight:700}
 .nd-list li small{font-weight:600;font-size:12px;color:var(--accent);display:inline-flex;align-items:center;gap:4px}.nd-list li svg{width:14px;height:14px}
-.nd-note{font-size:12.5px;color:var(--muted);margin:0}.nd-note a{text-decoration:underline;text-underline-offset:2px}
+.nd-note{font-size:12.5px;color:var(--muted);margin:0}.nd-note a{text-decoration:underline;text-underline-offset:2px}.nd-note .nd-app{display:flex;width:fit-content;margin-top:6px;font-size:14px;color:var(--ink)}
 @media(max-width:1020px){.nd-wrap{grid-template-columns:1fr;gap:28px}.nd{max-width:410px;width:100%;margin-inline:auto}.nd-side{max-width:560px;margin-inline:auto;width:100%}}
 @media(max-width:600px){.nd{padding:5px;border-radius:40px}.nd-screen{border-radius:35px}.nd-head{padding:14px 14px 4px}.nd-head h3{font-size:20px}.nd-chips{padding:2px 14px 10px;gap:6px}.nd-stage{margin:0 12px}.nd-card{bottom:20px}.nd-empty{bottom:20px}.nd-back{top:20px;bottom:0;inset-inline:34px}.nd-back.n1{top:10px;bottom:10px;inset-inline:22px}.nd-island,.nd-home{display:none}.nd-head{padding-top:14px}.nd-foot{padding-bottom:14px}.nd-card{padding:16px;gap:9px}.nd-name{font-size:44px;line-height:52px;padding-top:0}.nd-intro{font-size:14.5px;line-height:21px}.nd-well{padding:10px}.nd-tiles{gap:8px}.nd-actions{gap:12px;padding:12px 12px 8px}.nd-actions button{height:52px}.nd-love{width:52px!important}.nd-keep,.nd-skip{padding:0 18px!important}.nd-foot{padding:0 14px 14px}}
 .nd-close{display:none}
@@ -165,7 +165,7 @@ export const namesSection = (brand) => `<section class="section" id="names" aria
 <li><span class="ico ink">${svg(ICON.people)}</span><span><b>בוחרים לבד או ביחד.</b> כל אחד מחליק אצלו, ושם ששניכם שמרתם מופיע בהתאמות.</span></li>
 </ul>
 <div class="nd-list" id="nd-list"><h3>השמות ששמרת</h3><p data-list-empty>עוד לא נשמרו שמות. מה שיישמר יופיע כאן.</p><ol data-list hidden></ol></div>
-<p class="nd-note">10 שמות לדוגמה. באפליקציה יהיו כמעט 20,000 שמות. מספרי הלידות לקוחים מ<a href="${CBS_URL}" target="_blank" rel="noopener">נתוני הלשכה המרכזית לסטטיסטיקה</a> על שמות שניתנו ליילודים בשנים 1949–2024 (הודעה לתקשורת 391/2025), לפי <a href="${CBS_LICENSE_URL}" target="_blank" rel="noopener">תנאי השימוש</a> שלה. ההסברים נכתבו בעזרת בינה מלאכותית ועשויים להכיל טעויות. מה שבוחרים כאן לא נשמר ולא נשלח לשום מקום.</p>
+<p class="nd-note">10 שמות לדוגמה. באפליקציה יהיו כמעט 20,000 שמות. מספרי הלידות לקוחים מ<a href="${CBS_URL}" target="_blank" rel="noopener">נתוני הלשכה המרכזית לסטטיסטיקה</a> על שמות שניתנו ליילודים בשנים 1949–2024 (הודעה לתקשורת 391/2025), לפי <a href="${CBS_LICENSE_URL}" target="_blank" rel="noopener">תנאי השימוש</a> שלה. ההסברים נכתבו בעזרת בינה מלאכותית ועשויים להכיל טעויות. מה שבוחרים כאן לא נשמר ולא נשלח לשום מקום.<a class="nd-link nd-app" href="/names">לבחירת שם עם שמירה והתאמות</a></p>
 </div>
 </div></section>`;
 
@@ -232,7 +232,7 @@ ${c.people.length ? `<div class="nd-people"><span class="nd-label">אנשים י
     if (!d.length) {
       const all = decided.size === NAMES.length;
       stage.innerHTML = all
-        ? `<div class="nd-empty nd-glass"><b>עברת על כל השמות.<br>בקרוב יתווספו עוד.</b>${saved.length ? `<p>השמות ששמרת:</p><ol>${saved.map(i => `<li>${esc(NAMES[i].n)}</li>`).join('')}</ol>` : '<p>לא נשמרו שמות הפעם.</p>'}<button type="button" class="nd-cta" data-restart>להתחיל מחדש</button><a class="nd-link" href="#waitlist">לקבל עדכון כשהאפליקציה יוצאת</a></div>`
+        ? `<div class="nd-empty nd-glass"><b>עברת על כל השמות.<br>בקרוב יתווספו עוד.</b>${saved.length ? `<p>השמות ששמרת:</p><ol>${saved.map(i => `<li>${esc(NAMES[i].n)}</li>`).join('')}</ol>` : '<p>לא נשמרו שמות הפעם.</p>'}<button type="button" class="nd-cta" data-restart>להתחיל מחדש</button><a class="nd-link" href="/names">לבחירת שם עם שמירה והתאמות</a><a class="nd-link" href="#waitlist">לקבל עדכון כשהאפליקציה יוצאת</a></div>`
         : `<div class="nd-empty nd-glass"><b>אין שמות שמתאימים לסינון הזה</b><button type="button" class="nd-cta" data-reset>איפוס סינון</button></div>`;
       return;
     }

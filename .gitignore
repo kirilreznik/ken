@@ -56,3 +56,11 @@ supabase/functions/*/dist/
 # Next 16 dev server writes these at the root
 /AGENTS.md
 /CLAUDE.md
+
+# Playwright
+/test-results/
+/playwright-report/
+
+# Built by scripts/build-names-data.mjs (prebuild)
+/public/names/data/*
+!/public/names/data/.gitkeep
