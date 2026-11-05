@@ -64,3 +64,5 @@ supabase/functions/*/dist/
 # Built by scripts/build-names-data.mjs (prebuild)
 /public/names/data/*
 !/public/names/data/.gitkeep
+.cache/
+__pycache__/

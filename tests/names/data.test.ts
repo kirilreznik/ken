@@ -26,12 +26,32 @@ describe("names data files", () => {
     }
   });
 
-  it("has 10 content names in file order, all present in names.json", async () => {
+  it("has content names that are all in names.json, with a complete card each", async () => {
     const { parseNames, parseContent, contentNames } = await freshData();
     const names = parseNames(rawNames);
-    const list = contentNames(parseContent(rawContent));
-    expect(list).toEqual(["זיו", "נועם", "יעל", "לביא", "תמר", "שקד", "אריאל", "אביגיל", "עמית", "אלה"]);
-    for (const name of list) expect(names.has(name), name).toBe(true);
+    const content = parseContent(rawContent);
+    const list = contentNames(content);
+    expect(list.length).toBeGreaterThanOrEqual(10);
+    expect(new Set(list).size).toBe(list.length);
+    for (const name of list) {
+      const card = content.get(name)!;
+      expect(names.has(name), name).toBe(true);
+      expect(card.niqqud, name).toMatch(/[\u05D0-\u05EA]/);
+      expect(card.intro.length, name).toBeGreaterThan(5);
+      if (card.bible) {
+        expect(card.bible.text.length, name).toBeGreaterThan(0);
+        expect(card.bible.ref.length, name).toBeGreaterThan(0);
+      }
+      expect(card.people.length, name).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it("keeps the 10 E16 sample names in the deck", async () => {
+    const { parseContent } = await freshData();
+    const content = parseContent(rawContent);
+    for (const name of ["זיו", "נועם", "יעל", "לביא", "תמר", "שקד", "אריאל", "אביגיל", "עמית", "אלה"]) {
+      expect(content.has(name), name).toBe(true);
+    }
   });
 
   it("rejects a file with other years", async () => {
@@ -60,7 +80,7 @@ describe("loadNames / loadContent", () => {
     vi.stubGlobal("fetch", fetchMock);
     const { loadNames, loadContent } = await freshData();
     expect((await loadNames()).size).toBe(19884);
-    expect((await loadContent()).size).toBe(10);
+    expect((await loadContent()).size).toBe(Object.keys(rawContent.names).length);
     const urls = fetchMock.mock.calls.map((c) => c[0]);
     expect(urls).toContain("/names/data/names.abc.json");
     expect(urls).toContain("/names/data/content.def.json");

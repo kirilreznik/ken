@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
-import contentFile from "../../data/names/name-content.json";
+import contentFile from "./fixtures/name-content-sample.json";
 import { contentNames, parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
 import { buildDeck, deckCount, deckProgress, hiddenCount, hashSeed, mulberry32, shuffle } from "@/lib/names/deck";
 import { defaultFilters, type FilterableCard } from "@/lib/names/filters";
