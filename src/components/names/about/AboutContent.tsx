@@ -4,10 +4,11 @@ import { CBS_ACCESSED, CBS_FILE, CBS_FILE_URL, CBS_LICENCE_URL, reportButtonLabe
 // 32 px tall on the board; -my-1.5 keeps that spacing while the hit area is 44 px.
 const sourceLink = "-my-1.5 inline-flex min-h-11 items-center text-person font-bold text-ink underline underline-offset-2";
 
-function Part({ title, children }: { title: string; children: ReactNode }) {
+function Part({ title, level, children }: { title: string; level: 2 | 3; children: ReactNode }) {
+  const Heading = level === 2 ? "h2" : "h3";
   return (
     <div className="flex flex-col gap-1.5">
-      <h3 className="m-0 text-card-title">{title}</h3>
+      <Heading className="m-0 text-card-title">{title}</Heading>
       <p className="m-0 text-body text-ink-soft">{children}</p>
     </div>
   );
@@ -26,12 +27,12 @@ function SourceLink({ href, children }: { href: string; children: ReactNode }) {
  * The body of "על הנתונים" (board 7, FR-W30, E16 FR-14), shared by the sheet and /names/about:
  * what the numbers count and the 5-births threshold, the CBS attribution the licence asks for
  * (release, file, access date, links, no endorsement), the AI-written texts and Wikidata, and
- * the report button.
+ * the report button. `level`: the part headings' level (2 on the page under its h1, 3 in the sheet).
  */
-export default function AboutContent({ hasName, onReport }: { hasName: boolean; onReport: () => void }) {
+export default function AboutContent({ hasName, onReport, level = 3 }: { hasName: boolean; onReport: () => void; level?: 2 | 3 }) {
   return (
     <div className="flex flex-col gap-4.5">
-      <Part title="מספרי הלידות">
+      <Part level={level} title="מספרי הלידות">
         המספרים הם תינוקות שנולדו בישראל וקיבלו את השם, לא אנשים שחיים היום. שמות שניתנו לפחות מ־5 תינוקות בשנה לא
         מתפרסמים באותה שנה.
       </Part>
@@ -49,7 +50,7 @@ export default function AboutContent({ hasName, onReport }: { hasName: boolean; 
         <p className="m-0 text-caption text-stone">השימוש בנתונים לא מעיד על תמיכה של הלמ&quot;ס ב־Nest.</p>
       </div>
 
-      <Part title="הפירושים">
+      <Part level={level} title="הפירושים">
         פירוש קצר, מידע כללי על מקור השם ומשמעותו, וההערה מהתנ״ך. ההסברים נכתבו בעזרת בינה מלאכותית ועשויים להכיל
         טעויות. האנשים הידועים נבדקו מול <bdi dir="ltr">Wikidata</bdi>.
       </Part>

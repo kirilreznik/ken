@@ -124,8 +124,8 @@ export default function SwipeScreen() {
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col">
       <SwipeHeader saved={savedCount} />
-      <QuickChips sex={filters?.sex ?? null} onChange={setSex} />
       <main className="flex min-h-0 flex-1 flex-col">
+        <QuickChips sex={filters?.sex ?? null} onChange={setSex} />
         <SwipeKeys onKey={(key) => (key === "undo" ? undo() : drag.fly(key))} className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 flex-col px-5">
             {deck && current && progress ? (

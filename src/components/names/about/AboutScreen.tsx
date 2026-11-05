@@ -18,7 +18,7 @@ export default function AboutScreen() {
           <h1 className="m-0 min-w-0 flex-1 text-title">על הנתונים</h1>
         </header>
         <section className="rounded-lg bg-surface p-5 shadow-card">
-          <AboutContent hasName={false} onReport={() => openSheet("report")} />
+          <AboutContent hasName={false} level={2} onReport={() => openSheet("report")} />
         </section>
       </main>
       <ReportSheet name={null} />
