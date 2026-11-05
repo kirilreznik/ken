@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
-import contentFile from "../../data/names/name-content.json";
+import contentFile from "./fixtures/name-content-sample.json";
 import {
   bibleNote,
   buildCards,
