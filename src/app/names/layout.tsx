@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import AuthProvider from "@/components/names/AuthProvider";
 import Unconfigured from "@/components/names/Unconfigured";
+import { InstallWatcher } from "@/components/names/pwa/Install";
 import RegisterWorker from "@/components/names/pwa/RegisterWorker";
 import { ToastRegion } from "@/components/names/ui";
 import { canvasColor } from "@/lib/names/brand";
@@ -30,6 +31,7 @@ export default function NamesLayout({ children }: { children: React.ReactNode })
           <AuthProvider>{children}</AuthProvider>
           <ToastRegion />
           <RegisterWorker />
+          <InstallWatcher />
         </>
       ) : (
         <Unconfigured />

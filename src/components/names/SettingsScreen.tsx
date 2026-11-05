@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import { Button, Dialog, IconButton, closeDialog, openDialog } from "@/components/names/ui";
+import { InstallSheet, useInstall } from "@/components/names/pwa/Install";
 import { useSpace } from "@/components/names/useSpace";
 import {
   DELETE_BODY,
@@ -18,6 +19,7 @@ import {
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { APP_PATH, WELCOME_PATH } from "@/lib/names/auth";
 import { isOffline } from "@/lib/names/authErrors";
+import { INSTALL_TITLE } from "@/lib/names/install";
 import { reportClientLog } from "@/lib/names/clientLog";
 import { DISPLAY_NAME_MAX, isValidDisplayName, suggestedDisplayName } from "@/lib/names/onboarding";
 import {
@@ -87,6 +89,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const space = useSpace();
+  const install = useInstall();
   const metadata = user?.user_metadata;
   const savedName = suggestedDisplayName(metadata);
   const [draft, setDraft] = useState<string | null>(null);
@@ -309,6 +312,14 @@ export default function SettingsScreen() {
         <Section title="מידע">
           <ul className={card}>
             <LinkRow href="/names/about">על הנתונים</LinkRow>
+            {install.mode ? (
+              <li className={row}>
+                <button type="button" onClick={() => void install.start()} aria-haspopup={install.mode === "ios" ? "dialog" : undefined} className={rowAction}>
+                  {INSTALL_TITLE}
+                  <Chevron />
+                </button>
+              </li>
+            ) : null}
             <LinkRow href="/names/terms" newTab>
               תנאי שימוש
             </LinkRow>
@@ -336,6 +347,7 @@ export default function SettingsScreen() {
         </p>
       </main>
 
+      <InstallSheet />
       <Dialog name={DELETE_DIALOG} title={DELETE_TITLE} description={DELETE_BODY}>
         {deleteError ? (
           <p role="alert" className="m-0 text-caption font-bold text-urgent">

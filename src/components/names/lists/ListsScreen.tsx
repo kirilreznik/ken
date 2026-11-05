@@ -7,6 +7,7 @@ import { useAuth } from "@/components/names/AuthProvider";
 import { Button, IconButton, openSheet } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
+import { InstallHint, InstallSheet } from "@/components/names/pwa/Install";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
 import { APP_PATH } from "@/lib/names/auth";
@@ -142,6 +143,8 @@ export default function ListsScreen() {
           </Button>
         </header>
 
+        {ready ? <InstallHint userId={user?.id ?? null} voteCount={state?.votes.size ?? 0} /> : null}
+
         <div role="tablist" aria-label="רשימות" className="grid auto-cols-fr grid-flow-col gap-1 rounded-pill border border-line bg-surface p-1">
           {tabs.map((t) => {
             const selected = t.id === tab;
@@ -188,6 +191,7 @@ export default function ListsScreen() {
         </p>
       </main>
       <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
+      <InstallSheet />
     </div>
   );
 }
