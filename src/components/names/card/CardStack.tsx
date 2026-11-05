@@ -14,8 +14,9 @@ const back =
 
 /**
  * The current card with the next two peeking out under it (Main.dc.html, GlassFabric.dc.html,
- * the demo's .nd-back): the nearer one at +2°, 12 px in and 14 px below, the farther one at
- * −3°, 24 px in and 28 px below, each showing its name at the bottom edge. They're decoration
+ * the demo's .nd-back): the nearer one at +2°, 12 px in and 22 px below, the farther one at
+ * −3°, 24 px in and 44 px below, each showing its name in its own visible strip (the boards'
+ * 14/28 px strips are shorter than a line, so the names overlapped behind the glass). They're decoration
  * (aria-hidden); the current card is a NameCard keyed by name, so a new one mounts with the
  * demo's enter animation (a fade with reduced motion).
  */
@@ -23,11 +24,11 @@ export default function CardStack({ cards, enter = false, className = "", ...car
   const [card, next, after] = cards;
   if (!card) return null;
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col pb-7">
+    <div className="relative flex min-h-0 flex-1 flex-col pb-11">
       {after && (
         <div
           aria-hidden="true"
-          className={`${back} names-back-far inset-x-6 top-7 bottom-0 -rotate-3 pb-3.5 text-peek in-data-[names-bg=none]:text-faint`}
+          className={`${back} names-back-far inset-x-6 top-7 bottom-0 -rotate-3 pb-1 text-peek leading-none in-data-[names-bg=none]:text-faint`}
         >
           {after.stats.name}
         </div>
@@ -35,7 +36,7 @@ export default function CardStack({ cards, enter = false, className = "", ...car
       {next && (
         <div
           aria-hidden="true"
-          className={`${back} names-back-near inset-x-3 top-3.5 bottom-3.5 rotate-2 pb-3 text-card-title font-extrabold in-data-[names-bg=none]:text-mist`}
+          className={`${back} names-back-near inset-x-3 top-3.5 bottom-5.5 rotate-2 pb-1.5 text-card-title leading-none font-extrabold in-data-[names-bg=none]:text-mist`}
         >
           {next.stats.name}
         </div>

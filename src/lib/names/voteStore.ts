@@ -452,12 +452,16 @@ export function createVoteStore({
 
   async function load() {
     const store = votesIdb();
+    // A device with no cached copy (new device, fresh sign-in) waits for the server, so screens
+    // don't show "no names" before the real list arrives.
+    let cached = false;
     if (store) {
       try {
         const [cachedVotes, cachedOutbox] = await getMany<unknown>(
           [votesKey(userId, spaceId), outboxKey(userId, spaceId)],
           store,
         );
+        cached = Array.isArray(cachedVotes);
         const fromCache = new Map<string, StoredVote>();
         for (const v of Array.isArray(cachedVotes) ? (cachedVotes as StoredVote[]) : []) fromCache.set(v.name, v);
         // Changes made while the cache was loading stay after the stored ones.
@@ -471,10 +475,16 @@ export function createVoteStore({
         // No cache: the server read below fills the state.
       }
     }
-    ready = true;
-    emit();
+    if (cached) {
+      ready = true;
+      emit();
+    }
 
     await readServer();
+    if (!ready) {
+      ready = true;
+      emit();
+    }
     void flush();
   }
 

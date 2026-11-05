@@ -274,6 +274,18 @@
     box-shadow: var(--nest-shadow-card-raised);
   }
 
+  /* Solid with the rest of the glass when transparency is off (PRD 3.2.16). */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nest-names .names-back-near {
+      background-color: var(--nest-surface);
+    }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .nest-names .names-back-near {
+      background-color: var(--nest-surface);
+    }
+  }
+
   .nest-names .names-card-enter {
     animation: names-card-in 280ms ease-out;
   }

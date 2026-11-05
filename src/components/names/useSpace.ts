@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getPref, setPref } from "@/lib/names/prefs";
+import { MATCHES_INTERVAL_MS } from "@/lib/names/matches";
 import { clearSpaceCache, ensureSpace, isSharedSpace, members, type SpaceMember } from "@/lib/names/space";
 import { useAuth } from "./AuthProvider";
 
@@ -76,6 +77,40 @@ export function useSpace(): SpaceState {
 
   const current = loaded?.key === key ? loaded : null;
   const list = current?.members ?? [];
+  const soloSpace = current && !current.error && !isSharedSpace(current.members) ? current.spaceId : null;
+
+  // While solo, re-read the members on focus and every minute (the matches cadence, PRD 3.2.10),
+  // so a screen left open learns that a partner joined without a reload.
+  useEffect(() => {
+    if (!soloSpace || !userId || !key) return;
+    let alive = true;
+    const recheck = async () => {
+      try {
+        const list = await members(soloSpace, { force: true });
+        if (!alive || !isSharedSpace(list)) return;
+        setPref(userId, "lastSpace", { spaceId: soloSpace, members: list });
+        setLoaded({ key, spaceId: soloSpace, members: list, error: false });
+      } catch {
+        // Offline or a server error: the next focus or tick tries again.
+      }
+    };
+    const onFocus = () => void recheck();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void recheck();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisible);
+    const timer = setInterval(() => {
+      if (document.visibilityState === "visible") void recheck();
+    }, MATCHES_INTERVAL_MS);
+    return () => {
+      alive = false;
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisible);
+      clearInterval(timer);
+    };
+  }, [soloSpace, userId, key]);
+
   return {
     spaceId: current?.spaceId ?? null,
     members: list,

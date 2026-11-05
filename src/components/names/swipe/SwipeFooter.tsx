@@ -19,8 +19,8 @@ type SwipeFooterProps = {
  */
 export default function SwipeFooter({ canUndo, onUndo, status, describedBy, sync }: SwipeFooterProps) {
   return (
-    <div className="flex flex-col gap-1 px-7 pb-4">
-      <div className="flex items-center justify-between gap-2.5">
+    <div className="flex flex-col gap-1 px-7 pb-4 max-[20rem]:px-3">
+      <div className="flex items-center justify-between gap-2.5 max-[20rem]:flex-wrap">
         <button
           type="button"
           aria-label="ביטול ההחלטה האחרונה"

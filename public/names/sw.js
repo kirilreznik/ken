@@ -3,23 +3,29 @@
 // (served with Service-Worker-Allowed: /names, see next.config.ts).
 //
 // Strategies:
-// - precache on install: the app shell pages, the hashed data files listed in
+// - precache on install: the app shell pages and every /_next/static file their HTML
+//   references (so a shell page never opened online still runs offline), the offline
+//   fallback page, the hashed data files listed in
 //   /names/data/manifest.json, the background photos, the Heebo fonts and the icons
 // - cache-first: /_next/static/*, /_next/image, /landing/*, /names/data/* (hashed),
 //   /names/icons/*, /names/brand/*
-// - network-first with cache fallback: /names* page navigations, /names/data/manifest.json
+// - network-first with cache fallback: /names* page navigations (an uncached page falls
+//   back to /names/offline), /names/data/manifest.json
 // - never cached: /api/*, /names/auth/callback, other origins (Supabase), non-GET requests
 //
 // Bump VERSION when this file's caching rules change; activate deletes every
 // cache that doesn't belong to the current version.
 
-const VERSION = "v1";
+const VERSION = "v2";
 const PREFIX = "nest-names-";
 const SHELL_CACHE = `${PREFIX}shell-${VERSION}`;
 const STATIC_CACHE = `${PREFIX}static-${VERSION}`;
 const CURRENT = [SHELL_CACHE, STATIC_CACHE];
 
-const SHELL_PAGES = ["/names", "/names/welcome", "/names/lists", "/names/intro"];
+const OFFLINE_PAGE = "/names/offline";
+const SHELL_PAGES = ["/names", "/names/welcome", "/names/lists", "/names/intro", "/names/sign-in/email", OFFLINE_PAGE];
+// Script, style and font URLs in a page's HTML (also inside the escaped RSC payload).
+const STATIC_REF = /\/_next\/static\/[^"'\s\\)]+/g;
 const DATA_MANIFEST = "/names/data/manifest.json";
 const STATIC_ASSETS = [
   "/landing/names-fabric.webp",
@@ -46,6 +52,20 @@ const CACHE_FIRST = [
   /^\/names\/brand\//,
 ];
 
+/** Caches the shell pages and the /_next/static files they load. */
+async function precacheShell(shell, statics) {
+  const refs = new Set();
+  await Promise.all(
+    SHELL_PAGES.map(async (url) => {
+      const res = await fetch(new Request(url, { cache: "reload" }));
+      if (!res.ok) throw new Error(`${url} ${res.status}`);
+      for (const ref of (await res.clone().text()).match(STATIC_REF) ?? []) refs.add(ref);
+      await shell.put(url, res);
+    }),
+  );
+  await statics.addAll([...refs]);
+}
+
 async function dataFiles() {
   const res = await fetch(DATA_MANIFEST, { cache: "no-store" });
   if (!res.ok) throw new Error(`data manifest ${res.status}`);
@@ -63,7 +83,7 @@ self.addEventListener("install", (event) => {
       const shell = await caches.open(SHELL_CACHE);
       const statics = await caches.open(STATIC_CACHE);
       await Promise.all([
-        shell.addAll(SHELL_PAGES.map((url) => new Request(url, { cache: "reload" }))),
+        precacheShell(shell, statics),
         statics.addAll(STATIC_ASSETS),
         dataFiles().then((files) => statics.addAll(files)),
       ]);
@@ -96,7 +116,7 @@ async function cacheFirst(request) {
   return res;
 }
 
-async function networkFirst(request, key) {
+async function networkFirst(request, key, fallback) {
   const cache = await caches.open(SHELL_CACHE);
   try {
     const res = await fetch(request);
@@ -105,7 +125,9 @@ async function networkFirst(request, key) {
     if (res.ok && res.type === "basic" && !res.redirected) cache.put(key, res.clone());
     return res;
   } catch (err) {
-    const hit = await cache.match(key, { ignoreVary: true });
+    const hit =
+      (await cache.match(key, { ignoreVary: true })) ??
+      (fallback ? await cache.match(fallback, { ignoreVary: true }) : undefined);
     if (hit) return hit;
     throw err;
   }
@@ -126,7 +148,7 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     if (!isNamesPath(path)) return;
     // Pages are keyed by path: query strings (?sheet=, ?tab=) render the same shell.
-    event.respondWith(networkFirst(request, path));
+    event.respondWith(networkFirst(request, path, OFFLINE_PAGE));
     return;
   }
   if (path === DATA_MANIFEST) {

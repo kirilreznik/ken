@@ -66,7 +66,10 @@ export function useModal(panel: RefObject<HTMLElement | null>, onClose: () => vo
       return;
     }
     if (event.key !== "Tab") return;
-    const items = Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((item) => item.getClientRects().length > 0);
+    const items = Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+      // Roving-tabindex options (tabIndex -1) match the selector but aren't Tab stops.
+      (item) => item.tabIndex >= 0 && item.getClientRects().length > 0,
+    );
     if (items.length === 0) {
       event.preventDefault();
       return;

@@ -111,6 +111,23 @@ describe("createVoteStore", () => {
     expect(store.getState().votes.get("שירה")).toMatchObject({ vote: "love", custom: true });
   });
 
+  it("with no cached copy, stays not ready until the server answered", async () => {
+    let answer: (v: { data: unknown[]; error: null }) => void = () => {};
+    const select = () => {
+      const query = { eq: () => query, order: () => new Promise((resolve) => (answer = resolve)) };
+      return query;
+    };
+    const client = { from: () => ({ select }) } as unknown as SupabaseClient;
+    const { store } = makeStore(client);
+    const loading = store.load();
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(store.getState().ready).toBe(false);
+    answer({ data: [{ name: "זיו", vote: "keep", custom: false, updated_at: "2026-11-01T10:00:00Z" }], error: null });
+    await loading;
+    expect(store.getState().ready).toBe(true);
+    expect(names(store)).toEqual(["זיו"]);
+  });
+
   it("gives same-millisecond changes increasing times", async () => {
     const { client, calls } = fakeClient();
     const store = createVoteStore({ spaceId: "s", userId: "u", client, now: () => 1_000, report: vi.fn() });

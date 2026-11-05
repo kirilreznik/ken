@@ -16,7 +16,7 @@ export default function ClosedNotice() {
   return (
     <p role="status" className="rounded-md bg-peach-pale p-3 text-body text-ink">
       {SIGNUPS_CLOSED_MESSAGE}{" "}
-      <Link href={WAITLIST_HREF} className="font-bold underline underline-offset-2">
+      <Link href={WAITLIST_HREF} className="-my-3 inline-flex min-h-11 items-center font-bold underline underline-offset-2">
         להשארת אימייל
       </Link>
     </p>

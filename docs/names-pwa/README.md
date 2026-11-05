@@ -34,6 +34,7 @@ Every route lives under `src/app/names/`. Signed-out visitors to an app route go
 | `/names/join/[code]` | accept an invite; signed out, the code is kept for after sign-in | no to open, yes to join |
 | `/names/settings` | surname, members, background, sign-out, account deletion | yes |
 | `/names/goodbye` | after account deletion | — |
+| `/names/offline` | served by the service worker for a `/names` page that isn't cached yet | no |
 | `/names/about`, `/names/privacy`, `/names/terms` | about the data, legal pages (server-rendered with the operator and contact) | no |
 | `/names/manifest.webmanifest` | web app manifest (route handler) | no |
 
@@ -70,9 +71,9 @@ Each decision becomes an outbox item (`upsert` with the vote, or `delete` when u
 
 `public/names/sw.js`, hand-written, no build step. `RegisterWorker` (in the names layout) registers it in production builds only, with scope `/names`; `next.config.ts` sends `Service-Worker-Allowed: /names` so the worker can control `/names` itself. It is separate from `public/sw.js`, the self-removing worker that clears the old Ken PWA.
 
-- Precached on install: the shell pages (`/names`, welcome, lists, intro), the hashed data files named in `manifest.json`, the background photos, the Heebo fonts and the icons.
+- Precached on install: the shell pages (`/names`, welcome, lists, intro, sign-in/email, offline) and every `/_next/static/*` file their HTML references (scripts, CSS, and chunks named in the RSC payload), so a shell page never opened online still runs offline; the hashed data files named in `manifest.json`, the background photos, the Heebo fonts and the icons.
 - Cache-first: `/_next/static/*`, `/_next/image`, `/landing/*`, `/names/data/*`, `/names/icons/*`, `/names/brand/*`.
-- Network-first with cache fallback: `/names*` navigations and `/names/data/manifest.json`.
+- Network-first with cache fallback: `/names*` navigations (a page with no cached copy gets `/names/offline`) and `/names/data/manifest.json`.
 - Never cached: `/api/*`, `/names/auth/callback`, other origins (Supabase), non-GET requests.
 - Updates: a new worker waits; the page shows "עדכון זמין" with "רענון", which posts `SKIP_WAITING` (`watchForUpdates` in `src/lib/names/serviceWorker.ts`). **Bump `VERSION` in `sw.js` whenever its caching rules change**; activation deletes every cache of other versions.
 - Test it on a production build (`npm run build && npm run start -- -p 3100`); `next dev` doesn't register it. `tests/names/serviceWorker.test.ts` runs the worker in `node:vm` with a stub Cache API.

@@ -60,7 +60,7 @@ export default function ActionBar({ onKeep, onLove, onSkip, onHide, disabled = f
   };
   const common = { type: "button" as const, "aria-disabled": disabled || undefined, "aria-describedby": describedBy };
   return (
-    <div className="flex items-center justify-center gap-5 px-5 pb-3">
+    <div className="flex items-center justify-center gap-5 px-5 pb-3 max-[20rem]:flex-wrap max-[20rem]:gap-2 max-[20rem]:px-3">
       <button {...common} data-act="keep" aria-label={LABEL.keep} className={CLASS.keep} onClick={act(onKeep)}>
         <Icon>
           <path d="M6 4h12v16l-6-4-6 4z" />

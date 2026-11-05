@@ -68,7 +68,7 @@ export default function Intro() {
         </IconButton>
 
         <div aria-hidden="true" className="flex justify-center py-2">
-          <div className="relative h-37.5 w-55">
+          <div className="relative h-37.5 w-55 max-[20rem]:scale-75">
             <div className="absolute start-8.5 top-4.5 h-27.5 w-37.5 -rotate-8 rounded-lg bg-surface opacity-60 shadow-card" />
             <div className="absolute start-10 top-2.5 flex h-30 w-37.5 rotate-4 flex-col items-center justify-center gap-1.5 rounded-lg bg-surface shadow-hero">
               <span className="text-hero-name text-ink">נֹעַם</span>

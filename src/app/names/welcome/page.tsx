@@ -34,11 +34,11 @@ export default function WelcomePage() {
         footer={
           <p className="text-center text-caption text-ink-soft">
             בהמשך מאשרים את{" "}
-            <Link href="/names/terms" className="font-bold text-ink underline underline-offset-2">
+            <Link href="/names/terms" className="-my-3 inline-flex min-h-11 items-center font-bold text-ink underline underline-offset-2">
               תנאי השימוש
             </Link>{" "}
             ו
-            <Link href="/names/privacy" className="font-bold text-ink underline underline-offset-2">
+            <Link href="/names/privacy" className="-my-3 inline-flex min-h-11 items-center font-bold text-ink underline underline-offset-2">
               מדיניות הפרטיות
             </Link>
           </p>

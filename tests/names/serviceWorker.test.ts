@@ -9,7 +9,10 @@ const source = readFileSync(new URL("../../public/names/sw.js", import.meta.url)
 type Listener = (event: Record<string, unknown>) => void;
 
 /** Runs sw.js against a stub worker scope and an in-memory Cache API. */
-function loadWorker(manifest = { names: "names.abc.json", content: "content.def.json" }) {
+function loadWorker(
+  manifest = { names: "names.abc.json", content: "content.def.json" },
+  pages: Record<string, string> = {},
+) {
   const listeners: Record<string, Listener> = {};
   const stores = new Map<string, Map<string, Response>>();
   const fetched: string[] = [];
@@ -35,7 +38,13 @@ function loadWorker(manifest = { names: "names.abc.json", content: "content.def.
     const url = keyOf(req);
     fetched.push(url);
     if (offline) throw new TypeError("Failed to fetch");
-    const res = url.endsWith("/names/data/manifest.json") ? Response.json(manifest) : new Response("net");
+    const path = new URL(url).pathname;
+    const res =
+      path === "/names/data/manifest.json"
+        ? Response.json(manifest)
+        : path in pages
+          ? new Response(pages[path])
+          : new Response("net");
     // Same-origin fetches in a worker come back as "basic" responses.
     return Object.defineProperty(res, "type", { value: "basic" });
   };
@@ -97,6 +106,8 @@ describe("public/names/sw.js", () => {
       "/names/welcome",
       "/names/lists",
       "/names/intro",
+      "/names/sign-in/email",
+      "/names/offline",
       "/names/data/manifest.json",
       "/names/data/names.abc.json",
       "/names/data/content.def.json",
@@ -110,6 +121,19 @@ describe("public/names/sw.js", () => {
       expect(keys).toContain(path);
     }
     expect([...sw.stores.keys()].every((name) => name.startsWith("nest-names-"))).toBe(true);
+  });
+
+  it("precaches the static files the shell pages load, including those in the RSC payload", async () => {
+    const sw = loadWorker(undefined, {
+      "/names/intro":
+        '<link rel="stylesheet" href="/_next/static/chunks/a.css"><script src="/_next/static/chunks/intro.js" async></script>' +
+        '<script>self.__next_f.push([1,"I:[\\"/_next/static/chunks/lazy.js\\"]"])</script>',
+    });
+    await sw.fire("install");
+    const statics = [...(sw.stores.get("nest-names-static-v2")?.keys() ?? [])].map((k) => new URL(k).pathname);
+    expect(statics).toEqual(
+      expect.arrayContaining(["/_next/static/chunks/a.css", "/_next/static/chunks/intro.js", "/_next/static/chunks/lazy.js"]),
+    );
   });
 
   it("deletes old names caches on activate and leaves other caches alone", async () => {
@@ -152,8 +176,14 @@ describe("public/names/sw.js", () => {
     expect(await (await sw.onFetch("/names?sheet=about", { navigate: true }))?.text()).toBe("net");
     sw.setOffline(true);
     expect(await (await sw.onFetch("/names?tab=duel", { navigate: true }))?.text()).toBe("net");
-    expect(await (await sw.onFetch("/names/welcome", { navigate: true }))?.text()).toBe("ok");
-    await expect(sw.onFetch("/names/hidden", { navigate: true })).rejects.toThrow();
+    expect(await (await sw.onFetch("/names/welcome", { navigate: true }))?.text()).toBe("net");
+  });
+
+  it("serves the offline page for a /names page never cached", async () => {
+    const sw = loadWorker(undefined, { "/names/offline": "offline page" });
+    await sw.fire("install");
+    sw.setOffline(true);
+    expect(await (await sw.onFetch("/names/settings", { navigate: true }))?.text()).toBe("offline page");
   });
 
   it("skips waiting only when the page asks", () => {

@@ -120,13 +120,13 @@ export default function ListsScreen() {
   return (
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
       <main className="mx-auto flex w-full max-w-[480px] flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
-        <header className="flex items-center gap-2">
+        <header className="flex items-center gap-2 max-[20rem]:flex-wrap">
           <IconButton aria-label="חזרה" onClick={back}>
             <Icon className="ltr:-scale-x-100">
               <path d="M9 6l6 6-6 6" />
             </Icon>
           </IconButton>
-          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title outline-none">
+          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title outline-none max-[20rem]:min-w-max">
             השמות שלי
           </h1>
           <IconButton href="/names/invite" aria-label="הזמנה לבחירה משותפת">
