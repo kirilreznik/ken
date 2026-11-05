@@ -3,6 +3,7 @@
 import type { Session, User } from "@supabase/supabase-js";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { clearLocalData } from "@/lib/names/auth";
+import { openPrefs } from "@/lib/names/prefs";
 import { AUTH_STORAGE_KEY, getSupabase } from "@/lib/names/supabase";
 
 interface AuthState {
@@ -48,6 +49,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       } else if (next) {
         setExpired(false);
       }
+      if (next) openPrefs(next.user.id);
       setSession(next);
     });
     return () => data.subscription.unsubscribe();

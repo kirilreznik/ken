@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { start, pick, currentPair } from "@/lib/names/duel";
 import { defaultFilters } from "@/lib/names/filters";
-import { clearAll, defaultPref, getPref, prefKey, removePref, setPref, subscribePrefs } from "@/lib/names/prefs";
+import { clearAll, defaultPref, getPref, openPrefs, prefKey, removePref, setPref, subscribePrefs } from "@/lib/names/prefs";
 
 /** Minimal in-memory Storage. */
 class MemoryStorage implements Storage {
@@ -30,6 +30,7 @@ let ls: MemoryStorage;
 beforeEach(() => {
   ls = new MemoryStorage();
   vi.stubGlobal("localStorage", ls);
+  for (const u of [U, "u", "user-2"]) openPrefs(u);
 });
 afterEach(() => vi.unstubAllGlobals());
 
@@ -173,6 +174,16 @@ describe("clearAll", () => {
     expect(ls.getItem("nest-names-auth")).toBe("{}");
     expect(ls.getItem("other")).toBe("x");
     expect(ls.length).toBe(3);
+  });
+
+  it("drops a late write after sign-out until the user signs in again", () => {
+    clearAll("late");
+    expect(setPref("late", "lastSpace", { spaceId: "s", members: [] })).toBe(false);
+    expect(ls.getItem(prefKey("late", "lastSpace"))).toBeNull();
+    expect(setPref("other", "surname", "כהן")).toBe(true);
+    openPrefs("late");
+    expect(setPref("late", "surname", "לוי")).toBe(true);
+    expect(getPref("late", "surname")).toBe("לוי");
   });
 });
 

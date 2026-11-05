@@ -170,6 +170,44 @@ describe("realtime", () => {
     expect(store.getState().votes.has("יעל")).toBe(false);
   });
 
+  it("ignores a late echo of a vote that was undone, whether the delete is sent or still queued", async () => {
+    stubBrowser();
+    const fake = fakeClient();
+    const { store, spaceId, userId } = makeStore(fake.client);
+    await store.load();
+    store.start();
+    const insert = (name: string, vote: string, updated_at: string) => ({
+      eventType: "INSERT",
+      new: { space_id: spaceId, user_id: userId, name, vote, custom: false, updated_at },
+    });
+    const lastTime = () => fake.writes.at(-1)!.split(":").slice(3).join(":");
+
+    // Delete already sent when the echo arrives.
+    store.setVote("שקד", "skip");
+    await store.flush();
+    const skipAt = lastTime();
+    store.removeVote("שקד"); // undo
+    await store.flush();
+    fake.push(insert("שקד", "skip", skipAt));
+    expect(store.getState().votes.has("שקד")).toBe(false);
+
+    // Delete still queued when the echo arrives.
+    store.setVote("נועם", "keep");
+    await store.flush();
+    const keepAt = lastTime();
+    const release = fake.holdWrites();
+    store.removeVote("נועם");
+    fake.push(insert("נועם", "keep", keepAt));
+    expect(store.getState().votes.has("נועם")).toBe(false);
+    release();
+    await store.flush();
+    expect(store.getState().votes.has("נועם")).toBe(false);
+
+    // A genuinely newer vote (another device, after the undo) still applies.
+    fake.push(insert("שקד", "love", "2026-11-04T12:00:00Z"));
+    expect(voteOf(store, "שקד")).toBe("love");
+  });
+
   it("a newer remote vote replaces an older queued change, which is never sent", async () => {
     stubBrowser();
     const fake = fakeClient();

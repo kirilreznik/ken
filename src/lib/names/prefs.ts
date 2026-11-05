@@ -132,10 +132,21 @@ export function subscribePrefs(listener: () => void): () => void {
   };
 }
 
-/** Returns false when the value couldn't be stored (no storage, quota). */
+/**
+ * Users signed out on this page. A fetch that started before sign-out can resolve after
+ * clearAll; its write is dropped so nothing of theirs is left behind. openPrefs undoes it.
+ */
+const closed = new Set<string>();
+
+/** Allows pref writes for a user again (they signed in). */
+export function openPrefs(userId: string): void {
+  closed.delete(userId);
+}
+
+/** Returns false when the value couldn't be stored (no storage, quota, user signed out). */
 export function setPref<K extends PrefKey>(userId: string, key: K, value: Prefs[K]): boolean {
   const s = storage();
-  if (!s) return false;
+  if (!s || closed.has(userId)) return false;
   try {
     s.setItem(prefKey(userId, key), JSON.stringify(value));
   } catch {
@@ -154,8 +165,9 @@ export function removePref(userId: string, key: PrefKey): void {
   notify();
 }
 
-/** Removes every nest-names:{userId}:* key (sign-out of a deleted account). */
+/** Removes every nest-names:{userId}:* key and drops later writes until openPrefs (sign-out). */
 export function clearAll(userId: string): void {
+  closed.add(userId);
   const s = storage();
   if (!s) return;
   const prefix = `${PREFIX}${userId}:`;

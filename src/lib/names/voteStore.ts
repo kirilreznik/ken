@@ -210,6 +210,8 @@ export function createVoteStore({
   const stops = new Set<() => void>();
   /** In-flight changes a newer vote from another device replaced while they were sent. */
   const overtaken = new Set<string>();
+  /** When each name's vote was last removed here (undo), so a late Realtime echo of it is ignored. */
+  const removedAt = new Map<string, string>();
 
   function emit() {
     state = { ready, votes, pendingCount: outbox.length };
@@ -237,6 +239,8 @@ export function createVoteStore({
 
   function change(item: OutboxItem) {
     if (disposed) return;
+    if (item.op === "delete") removedAt.set(item.name, item.updatedAt);
+    else removedAt.delete(item.name);
     outbox = enqueue(outbox, item, inFlightId);
     votes = applyOutbox(votes, [item]);
     persist();
@@ -391,6 +395,9 @@ export function createVoteStore({
     if (disposed || row.space_id !== spaceId || row.user_id !== userId || !row.name) return;
     const local = votes.get(row.name);
     if (local && !isNewer(row.updated_at, local.updatedAt)) return; // Our own echo, or older.
+    const removed = removedAt.get(row.name);
+    if (!local && removed && !isNewer(row.updated_at, removed)) return; // Echo of a vote undone here.
+    removedAt.delete(row.name);
     // A queued change older than this one lost. The one in flight can't be stopped, so
     // the newer vote is written back once it lands (see drain).
     for (const o of outbox) {
