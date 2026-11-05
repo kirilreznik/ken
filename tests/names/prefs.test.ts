@@ -44,6 +44,7 @@ describe("defaults", () => {
     expect(getPref(U, "seenMatches")).toEqual([]);
     expect(getPref(U, "duelState")).toBeNull();
     expect(getPref(U, "installHintDismissed")).toBe(false);
+    expect(getPref(U, "lastSpace")).toBeNull();
     expect(defaultPref("background")).toBe("fabric");
   });
 
@@ -94,6 +95,16 @@ describe("get/set round trip", () => {
     expect(getPref(U, "seenMatches")).toEqual(["נועם", "יעל"]);
     expect(getPref(U, "duelState")).toEqual(duel);
     expect(getPref(U, "installHintDismissed")).toBe(true);
+  });
+
+  it("keeps the last space and drops malformed members", () => {
+    const member = { userId: "u1", displayName: "QA", joinedAt: "2026-11-01T00:00:00Z" };
+    setPref(U, "lastSpace", { spaceId: "s1", members: [member] });
+    expect(getPref(U, "lastSpace")).toEqual({ spaceId: "s1", members: [member] });
+    ls.setItem(prefKey(U, "lastSpace"), JSON.stringify({ spaceId: "s1", members: [member, { userId: 3 }] }));
+    expect(getPref(U, "lastSpace")?.members).toEqual([member]);
+    ls.setItem(prefKey(U, "lastSpace"), JSON.stringify({ spaceId: "", members: [] }));
+    expect(getPref(U, "lastSpace")).toBeNull();
   });
 
   it("keeps users apart", () => {

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import AuthProvider from "@/components/names/AuthProvider";
 import Unconfigured from "@/components/names/Unconfigured";
+import RegisterWorker from "@/components/names/pwa/RegisterWorker";
 import { ToastRegion } from "@/components/names/ui";
 import { canvasColor } from "@/lib/names/brand";
 import { APPLE_TOUCH_ICON, MANIFEST_PATH } from "@/lib/names/manifest";
@@ -28,6 +29,7 @@ export default function NamesLayout({ children }: { children: React.ReactNode })
         <>
           <AuthProvider>{children}</AuthProvider>
           <ToastRegion />
+          <RegisterWorker />
         </>
       ) : (
         <Unconfigured />

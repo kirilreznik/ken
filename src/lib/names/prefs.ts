@@ -1,5 +1,6 @@
 import { deserialize as deserializeDuel, type DuelState } from "./duel";
 import { SECTOR_LABELS, defaultFilters, type Filters, type NameLength, type Sector } from "./filters";
+import type { SpaceMember } from "./space";
 import type { PopularityBand, SexTag, TrendWord } from "./types";
 
 /** FR-W17. "own" is the user's photo in IndexedDB (photo.ts). */
@@ -17,6 +18,8 @@ export interface Prefs {
   seenMatches: string[];
   duelState: DuelState | null;
   installHintDismissed: boolean;
+  /** The last space loaded online, so the app still opens offline (FR-W29). */
+  lastSpace: { spaceId: string; members: SpaceMember[] } | null;
 }
 
 export type PrefKey = keyof Prefs;
@@ -54,6 +57,21 @@ function readFilters(raw: unknown): Filters {
 
 const bool = (v: unknown) => v === true;
 
+function readLastSpace(raw: unknown): Prefs["lastSpace"] {
+  if (typeof raw !== "object" || raw === null) return null;
+  const r = raw as Record<string, unknown>;
+  if (typeof r.spaceId !== "string" || !r.spaceId || !Array.isArray(r.members)) return null;
+  const members = r.members.filter(
+    (m): m is SpaceMember =>
+      typeof m === "object" &&
+      m !== null &&
+      typeof m.userId === "string" &&
+      typeof m.displayName === "string" &&
+      typeof m.joinedAt === "string",
+  );
+  return { spaceId: r.spaceId, members };
+}
+
 /** Turns a parsed value into a valid pref, falling back to the default. */
 const readers: { [K in PrefKey]: (raw: unknown) => Prefs[K] } = {
   surname: (v) => (typeof v === "string" ? v : ""),
@@ -63,6 +81,7 @@ const readers: { [K in PrefKey]: (raw: unknown) => Prefs[K] } = {
   seenMatches: (v) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []),
   duelState: (v) => (v == null ? null : deserializeDuel(JSON.stringify(v))),
   installHintDismissed: bool,
+  lastSpace: readLastSpace,
 };
 
 export function defaultPref<K extends PrefKey>(key: K): Prefs[K] {

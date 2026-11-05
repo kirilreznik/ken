@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { getPref, setPref } from "@/lib/names/prefs";
 import { clearSpaceCache, ensureSpace, isSharedSpace, members, type SpaceMember } from "@/lib/names/space";
 import { useAuth } from "./AuthProvider";
 
@@ -29,12 +30,19 @@ function displayNameOf(metadata: Record<string, unknown> | undefined): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-async function fetchSpace(key: string, displayName: string, force: boolean): Promise<Loaded> {
+/**
+ * Loads the space and keeps a copy on the device. When the load fails (offline),
+ * the last copy still gives the screens a space id, with `error` set.
+ */
+async function fetchSpace(key: string, userId: string, displayName: string, force: boolean): Promise<Loaded> {
   try {
     const spaceId = await ensureSpace(displayName);
-    return { key, spaceId, members: await members(spaceId, { force }), error: false };
+    const list = await members(spaceId, { force });
+    setPref(userId, "lastSpace", { spaceId, members: list });
+    return { key, spaceId, members: list, error: false };
   } catch {
-    return { key, spaceId: null, members: [], error: true };
+    const last = getPref(userId, "lastSpace");
+    return { key, spaceId: last?.spaceId ?? null, members: last?.members ?? [], error: true };
   }
 }
 
@@ -50,21 +58,21 @@ export function useSpace(): SpaceState {
   const [loaded, setLoaded] = useState<Loaded | null>(null);
 
   useEffect(() => {
-    if (!key) return;
+    if (!key || !userId) return;
     let alive = true;
-    void fetchSpace(key, displayName, false).then((next) => {
+    void fetchSpace(key, userId, displayName, false).then((next) => {
       if (alive) setLoaded(next);
     });
     return () => {
       alive = false;
     };
-  }, [key, displayName]);
+  }, [key, userId, displayName]);
 
   const refresh = useCallback(async () => {
-    if (!key) return;
+    if (!key || !userId) return;
     clearSpaceCache();
-    setLoaded(await fetchSpace(key, displayName, true));
-  }, [key, displayName]);
+    setLoaded(await fetchSpace(key, userId, displayName, true));
+  }, [key, userId, displayName]);
 
   const current = loaded?.key === key ? loaded : null;
   const list = current?.members ?? [];
