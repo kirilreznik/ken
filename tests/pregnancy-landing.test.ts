@@ -46,4 +46,11 @@ describe('public pregnancy landing page',()=>{
     expect(scripts.length).toBe(2);
     for (const code of scripts) expect(()=>new Function(code)).not.toThrow();
   });
+  it('links the demo to the names app from the side note and the end of the deck',async()=>{
+    const html = await (await landing.fetch(new Request(origin+'/'),{})).text();
+    const link = '<a class="nd-link nd-app" href="/names">לבחירת שם עם שמירה והתאמות</a>';
+    const note = html.match(/<p class="nd-note">[\s\S]*?<\/p>/)?.[0] ?? '';
+    expect(note).toContain(link);
+    expect(html).toContain('data-restart>להתחיל מחדש</button><a class="nd-link" href="/names">לבחירת שם עם שמירה והתאמות</a>');
+  });
 });
