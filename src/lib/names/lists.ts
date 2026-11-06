@@ -37,7 +37,7 @@ export function hiddenNames(votes: ReadonlyMap<string, Vote>): string[] {
 
 /** Live region text after "החזרה". */
 export function restoredText(name: string): string {
-  return `${name} יחזור לבחירה`;
+  return `השם ${name} יחזור לבחירה`;
 }
 
 /** The segments of "השמות שלי" (`?tab=`). */
@@ -70,10 +70,10 @@ export function savedRows(votes: ReadonlyMap<string, { vote: Vote; custom?: bool
 
 /** Live region text after a row menu action. */
 export function rowActionText(name: string, action: "remove" | "hide"): string {
-  return action === "remove" ? `${name} הוסר מהרשימה` : `${name} הוסתר ולא יוצג יותר`;
+  return action === "remove" ? `השם ${name} הוסר מהרשימה` : `השם ${name} הוסתר ולא יוצג יותר`;
 }
 
 /** Live region / toast text after "הוספת שם". */
 export function addedText(name: string): string {
-  return `${name} נוסף לרשימה`;
+  return `השם ${name} נוסף לרשימה`;
 }

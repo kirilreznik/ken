@@ -26,17 +26,20 @@ export function barLabel({ boysLabel, girlsLabel }: Pick<CardDerived, "boysLabel
 
 export type StatusKind = "keep" | "love" | "skip" | "hidden" | "undo";
 
-/** Live region text after a vote or an undo, the demo's wording. */
+/**
+ * Live region text after a vote or an undo. "השם {name}" keeps the verb in agreement with
+ * the masculine noun, so a girl's name never reads with a mismatched verb.
+ */
 export function statusText(kind: StatusKind, name: string): string {
   switch (kind) {
     case "keep":
-      return `${name} נשמר`;
+      return `השם ${name} נשמר`;
     case "love":
-      return `${name} נשמר, ראשון ברשימה`;
+      return `השם ${name} נשמר, ראשון ברשימה`;
     case "skip":
-      return `דילגת על ${name}`;
+      return `דילוג על ${name}`;
     case "hidden":
-      return `${name} לא יוצג שוב`;
+      return `השם ${name} לא יוצג שוב`;
     case "undo":
       return `בוטל: ${name}`;
   }

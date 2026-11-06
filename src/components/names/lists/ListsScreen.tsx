@@ -224,7 +224,7 @@ function MatchesPanel({ userId, state, memberCount, names }: MatchesPanelProps) 
       <>
         {intro}
         <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-          <span className="sr-only">טוען</span>
+          <span className="sr-only">בטעינה</span>
         </div>
       </>
     );
@@ -261,11 +261,21 @@ function MatchRows({ userId, matches, memberCount, names }: MatchRowsProps) {
       <div className="flex flex-col items-center gap-2 rounded-lg bg-surface px-4 py-6 text-center shadow-card">
         <p className="m-0 text-card-title text-ink-soft">עוד אין התאמות.</p>
         <p className="m-0 text-person text-ink-soft">
-          {memberCount > 2 ? "שם ששניים מכם שמרו יופיע כאן." : "שם ששניכם שמרתם יופיע כאן."}
+          {memberCount < 2
+            ? "התאמה היא שם שגם מי שבוחר איתך שמר."
+            : memberCount > 2
+              ? "שם ששניים מכם שמרו יופיע כאן."
+              : "שם ששניכם שמרתם יופיע כאן."}
         </p>
-        <Button variant="link" href={APP_PATH}>
-          לבחירת שמות
-        </Button>
+        {memberCount < 2 ? (
+          <Button variant="link" href="/names/invite">
+            הזמנה לבחירה משותפת
+          </Button>
+        ) : (
+          <Button variant="link" href={APP_PATH}>
+            לבחירת שמות
+          </Button>
+        )}
       </div>
     );
   }
@@ -289,7 +299,7 @@ function MatchRows({ userId, matches, memberCount, names }: MatchRowsProps) {
                       <Icon size={16} className="fill-clay stroke-clay">
                         <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
                       </Icon>
-                      מישהו אהב מאוד
+                      סומן ״אהבתי מאוד״
                     </span>
                   ) : null}
                 </span>
@@ -368,7 +378,7 @@ function SavedPanel({ ready, rows, names, onAction, headingRef }: SavedPanelProp
   if (!ready) {
     return (
       <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-        <span className="sr-only">טוען</span>
+        <span className="sr-only">בטעינה</span>
       </div>
     );
   }

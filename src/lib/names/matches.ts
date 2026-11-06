@@ -252,6 +252,7 @@ export function matchSheetLine(match: Match): string {
 
 /** The explainer above the "התאמות" list (board 5); never says who skipped what. */
 export function matchesIntro(memberCount: number): string {
+  if (memberCount < 2) return "התאמות יופיעו כשמישהו נוסף יבחר איתך. הדילוגים נשארים פרטיים.";
   const who = memberCount > 2 ? "שמות שלפחות שניים מכם שמרו." : "שמות ששניכם שמרתם.";
   return `${who} על שמות שדילגתם עליהם אף אחד לא יודע.`;
 }

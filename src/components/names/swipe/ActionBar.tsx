@@ -3,7 +3,7 @@ import SkipButton from "./SkipButton";
 
 type Act = "keep" | "love" | "skip";
 
-const PRESS = "transition-transform duration-150 motion-safe:active:scale-95";
+const PRESS = "touch-manipulation transition-transform duration-150 motion-safe:active:scale-95";
 const DISABLED = "aria-disabled:opacity-60 aria-disabled:cursor-default motion-safe:aria-disabled:active:scale-100";
 // Three equal pills, each with its word: the heart used to be an unlabeled circle, and people
 // had to remember from the intro that it means "אהבתי מאוד".

@@ -12,6 +12,7 @@ export default function AboutSheet({ hasName }: { hasName: boolean }) {
     <BottomSheet
       name="about"
       title="על הנתונים"
+      closeInHeader
       headerEnd={
         <IconButton aria-label="סגירה" onClick={() => closeSheet("about")}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

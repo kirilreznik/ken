@@ -119,7 +119,7 @@ export default function SettingsScreen() {
     const supabase = getSupabase();
     if (!user || !supabase || savingName) return;
     if (!nameValid) {
-      setNameError(`השם צריך להיות באורך 1 עד ${DISPLAY_NAME_MAX} תווים.`);
+      setNameError(`צריך שם, עד ${DISPLAY_NAME_MAX} תווים.`);
       return;
     }
     if (!changed) return;

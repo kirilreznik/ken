@@ -21,7 +21,7 @@ import { ensureSpace } from "@/lib/names/space";
 import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
 
-const OFFLINE_SAVE_MESSAGE = "אין חיבור לאינטרנט. השמירה צריכה חיבור.";
+const OFFLINE_SAVE_MESSAGE = "אין חיבור לאינטרנט. אפשר לשמור שוב כשהחיבור יחזור.";
 const ADULTS_ONLY = "השירות מיועד מגיל 18 ומעלה.";
 const MISSING_HINT = "אפשר להתחיל אחרי שממלאים שם ומאשרים את שני הסעיפים הראשונים.";
 
@@ -161,7 +161,7 @@ export default function Onboarding() {
             onChange={(e) => update({ displayName: e.target.value })}
             aria-invalid={nameInvalid || undefined}
             aria-describedby="display-name-hint"
-            className="h-14 w-full rounded-lg border border-line bg-surface px-4 text-start text-card-title text-ink placeholder:text-faint aria-invalid:border-urgent"
+            className="h-14 w-full rounded-md border border-line bg-surface px-4 text-start text-card-title text-ink placeholder:text-faint aria-invalid:border-urgent"
           />
           <p id="display-name-hint" className="text-caption text-ink-soft">
             {nameInvalid ? <strong className="font-bold text-urgent">צריך שם, עד 40 תווים. </strong> : null}

@@ -79,7 +79,7 @@ export default function Intro() {
 
         <div className="flex flex-col gap-2">
           <h1 className="m-0 text-display text-ink">שם אחד בכל פעם</h1>
-          <p className="m-0 text-intro text-ink-soft">עוברים על שמות שניתנו לתינוקות בישראל, שומרים את מה שמדבר אליכם ומדלגים על השאר.</p>
+          <p className="m-0 text-intro text-ink-soft">עוברים על שמות שניתנו לתינוקות בישראל, שומרים את מה שמדבר אל הלב ומדלגים על השאר.</p>
         </div>
 
         <ul className="m-0 flex list-none flex-col gap-3 p-0">
@@ -103,7 +103,7 @@ export default function Intro() {
             <b className={strong}>הבחירות נשארות פרטיות.</b>{" "}
             {isShared
               ? "הבחירה נעשית בנפרד, בכל טלפון. שם ששניכם שמרתם יופיע בהתאמות, ועל דילוגים אף אחד לא יודע."
-              : "אף אחד לא רואה מה שמרתם ועל מה דילגתם."}
+              : "מה ששומרים ועל מה שמדלגים נשאר פרטי."}
           </Point>
           <Point
             icon={

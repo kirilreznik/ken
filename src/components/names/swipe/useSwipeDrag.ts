@@ -71,6 +71,17 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decisi
     observer.current.observe(node);
   }, []);
   useEffect(() => () => observer.current?.disconnect(), []);
+  // Leaving the window mid-press never sends a pointerup: drop the press and put the card back.
+  useEffect(() => {
+    const reset = () => {
+      const node = el.current;
+      const pressed = drag.current;
+      drag.current = null;
+      if (node && pressed?.mode) paint(node, "");
+    };
+    window.addEventListener("blur", reset);
+    return () => window.removeEventListener("blur", reset);
+  }, []);
 
   const snapBack = () => {
     const node = el.current;
@@ -101,7 +112,9 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decisi
   };
 
   const onPointerDown = (e: PointerEvent<HTMLElement>) => {
-    if (disabled || busy.current || e.button > 0 || drag.current) return;
+    // A press that never became a drag (it left the card before capture) is replaced, so the
+    // card can't get stuck with a dead pending press that blocks the buttons and keys.
+    if (disabled || busy.current || e.button > 0 || drag.current?.mode) return;
     drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), dir: keepDir(), mode: null, dx: 0, dy: 0 };
   };
 
@@ -140,10 +153,16 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decisi
     if (drag.current?.id === e.pointerId) snapBack();
   };
 
+  // Capture lost without a pointerup (the window lost focus, the OS took the gesture): put the card back.
+  const onLostPointerCapture = (e: PointerEvent<HTMLElement>) => {
+    if (drag.current?.id === e.pointerId) snapBack();
+  };
+
   /** "hidden" leaves the way a skip does. */
   const fly = (decision: Decision) => {
     const node = el.current;
-    if (!node || disabled || busy.current || drag.current) return;
+    if (!node || disabled || busy.current || drag.current?.mode) return;
+    drag.current = null;
     void fling(node, decision === "hidden" ? "skip" : decision, keepDir(), decision);
   };
 
@@ -153,7 +172,7 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decisi
   };
 
   return {
-    card: { ref, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, tabIndex: 0 },
+    card: { ref, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, onLostPointerCapture, tabIndex: 0 },
     fly,
     holdFocus,
     /** A decision is on its way out; ignore further ones until the next card. */

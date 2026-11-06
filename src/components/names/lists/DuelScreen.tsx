@@ -195,7 +195,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
 
         {!ready ? (
           <div aria-busy="true" className="h-[180px] rounded-xl bg-surface shadow-card">
-            <span className="sr-only">טוען</span>
+            <span className="sr-only">בטעינה</span>
           </div>
         ) : !duel || !p ? (
           <div className="flex flex-col items-start gap-2 rounded-lg bg-surface px-4 py-5 shadow-card">

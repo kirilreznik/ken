@@ -47,7 +47,7 @@ describe("hiddenNames", () => {
 });
 
 it("restoredText", () => {
-  expect(restoredText("אלה")).toBe("אלה יחזור לבחירה");
+  expect(restoredText("אלה")).toBe("השם אלה יחזור לבחירה");
 });
 
 describe("listsTab", () => {
@@ -88,8 +88,8 @@ describe("savedRows", () => {
 
 describe("list texts", () => {
   it("says what happened to the name", () => {
-    expect(rowActionText("תמר", "remove")).toBe("תמר הוסר מהרשימה");
-    expect(rowActionText("תמר", "hide")).toBe("תמר הוסתר ולא יוצג יותר");
-    expect(addedText("אוריה")).toBe("אוריה נוסף לרשימה");
+    expect(rowActionText("תמר", "remove")).toBe("השם תמר הוסר מהרשימה");
+    expect(rowActionText("תמר", "hide")).toBe("השם תמר הוסתר ולא יוצג יותר");
+    expect(addedText("אוריה")).toBe("השם אוריה נוסף לרשימה");
   });
 });

@@ -3,7 +3,7 @@
 import { OFFLINE_MESSAGE } from "@/lib/names/authErrors";
 import { useOnline } from "./useMatches";
 
-/** Sign-in screens, offline: "אין חיבור לאינטרנט. הכניסה צריכה חיבור." (FR-W29). The live region stays mounted. */
+/** Sign-in screens, offline: "אין חיבור לאינטרנט. אפשר להיכנס כשהחיבור יחזור." (FR-W29). The live region stays mounted. */
 export default function ConnectionNote() {
   const online = useOnline();
   return (

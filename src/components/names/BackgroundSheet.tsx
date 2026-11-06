@@ -84,6 +84,7 @@ export default function BackgroundSheet() {
     <BottomSheet
       name="background"
       title="רקע למסך"
+      closeInHeader
       headerEnd={
         <IconButton aria-label="סגירה" onClick={() => closeSheet("background")}>
           <Icon size={20}>
@@ -100,7 +101,7 @@ export default function BackgroundSheet() {
             <path d="M8 11V8a4 4 0 0 1 8 0v3" />
           </Icon>
         </span>
-        <span>תמונה משלכם נשמרת רק במכשיר הזה. היא לא עולה לשרת ולא מוצגת למי שבוחר איתכם.</span>
+        <span>תמונה משלי נשמרת רק במכשיר הזה. היא לא עולה לשרת ולא מוצגת לשאר המשתתפים בבחירה.</span>
       </p>
     </BottomSheet>
   );

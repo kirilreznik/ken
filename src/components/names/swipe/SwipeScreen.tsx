@@ -67,6 +67,7 @@ export default function SwipeScreen() {
   const [undoStack, setUndoStack] = useState<readonly UndoEntry[]>([]);
   const [top, setTop] = useState<string | null>(null);
   const [status, setStatus] = useState("");
+  const [next, setNext] = useState<string | null>(null);
   const [entered, setEntered] = useState(false);
 
   useEffect(markAppEntry, []);
@@ -96,6 +97,8 @@ export default function SwipeScreen() {
     setTop(null);
     setEntered(true);
     setStatus(statusText(kind, name));
+    // Focus stays on the button, so screen-reader users hear the next name without going back to the card.
+    setNext(deck?.cards[1]?.stats.name ?? null);
   };
 
   const drag = useSwipeDrag({ onDecide: decide, disabled: !current });
@@ -111,6 +114,7 @@ export default function SwipeScreen() {
     setTop(entry.name);
     setEntered(true);
     setStatus(statusText("undo", entry.name));
+    setNext(null);
   };
 
   const setSex = (sex: SexTag | null) => {
@@ -122,12 +126,12 @@ export default function SwipeScreen() {
   const fly = (kind: Decision) => () => drag.fly(kind);
 
   return (
-    <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto">
+    <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto [@media(max-height:30rem)]:h-auto">
       <SwipeHeader saved={savedCount} filtered={hasSheetFilters(filters)} />
       <main className="flex min-h-0 flex-1 flex-col">
         <QuickChips sex={filters?.sex ?? null} onChange={setSex} />
         <SwipeKeys onKey={(key) => (key === "undo" ? undo() : drag.fly(key))} className="flex min-h-0 flex-1 flex-col">
-          <div className="flex min-h-0 flex-1 flex-col px-5 max-[20rem]:min-h-100 max-[20rem]:px-3">
+          <div className="flex min-h-0 flex-1 flex-col px-5 max-[20rem]:min-h-100 max-[20rem]:px-3 [@media(max-height:30rem)]:min-h-100">
             {deck && current && progress ? (
               <CardStack
                 cards={deck.cards}
@@ -158,7 +162,7 @@ export default function SwipeScreen() {
             disabled={!current}
             describedBy={SWIPE_KEYS_ID}
           />
-          <SwipeFooter canUndo={undoStack.length > 0} onUndo={undo} status={status} describedBy={SWIPE_KEYS_ID} sync={sync} />
+          <SwipeFooter canUndo={undoStack.length > 0} onUndo={undo} status={status} next={next} describedBy={SWIPE_KEYS_ID} sync={sync} />
         </SwipeKeys>
       </main>
       <BackgroundSheet />

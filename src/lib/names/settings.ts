@@ -10,7 +10,7 @@ type UserLike = {
 export const NAME_SAVED_TEXT = "השם נשמר";
 export const OPT_IN_ON_TEXT = "העדכונים הופעלו";
 export const OPT_IN_OFF_TEXT = "העדכונים כובו";
-export const SETTINGS_OFFLINE_TEXT = "אין חיבור לאינטרנט. השמירה צריכה חיבור.";
+export const SETTINGS_OFFLINE_TEXT = "אין חיבור לאינטרנט. אפשר לשמור שוב כשהחיבור יחזור.";
 export const SETTINGS_ERROR_TEXT = "לא הצלחנו לשמור. אפשר לנסות שוב.";
 
 /** How the user signs in (FR-W25): Google, or the email the code goes to. */

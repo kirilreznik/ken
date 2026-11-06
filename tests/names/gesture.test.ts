@@ -45,12 +45,12 @@ describe("dragOutcome", () => {
 
 describe("dragStyle", () => {
   it("shows the keep stamp on the keep side and caps at 1", () => {
-    expect(dragStyle("x", 45, 0, 1)).toMatchObject({ keep: 0.5, skip: 0, love: 0 });
+    expect(dragStyle("x", 50, 0, 1)).toMatchObject({ keep: 0.5, skip: 0, love: 0 });
     expect(dragStyle("x", 200, 0, -1)).toMatchObject({ keep: 0, skip: 1 });
     expect(dragStyle("x", 32, 10, 1).transform).toBe("translate(32px,1.5px) rotate(2deg)");
   });
   it("shows the love stamp going up", () => {
-    expect(dragStyle("up", 0, -45, 1)).toMatchObject({ keep: 0, skip: 0, love: 0.5 });
+    expect(dragStyle("up", 0, -50, 1)).toMatchObject({ keep: 0, skip: 0, love: 0.5 });
   });
 });
 
