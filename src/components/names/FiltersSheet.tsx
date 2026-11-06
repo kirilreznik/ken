@@ -31,13 +31,15 @@ interface Option<T> {
 }
 
 const SEX: Option<SexTag | null>[] = [
-  { value: null, label: "הכול" },
+  { value: null, label: "כל השמות" },
   { value: "בן", label: "בן" },
   { value: "בת", label: "בת" },
   { value: "מתאים לכולם", label: "מתאים לכולם" },
 ];
 
-const BANDS: Option<PopularityBand>[] = [
+// Every group starts with "כל השמות", so clearing a choice never depends on tapping it again.
+const BANDS: Option<PopularityBand | null>[] = [
+  { value: null, label: "כל השמות" },
   { value: "נפוץ", label: "נפוץ" },
   { value: "בינוני", label: "בינוני" },
   { value: "נדיר", label: "נדיר" },
@@ -49,14 +51,15 @@ const arrow = (a: string, word: string) => (
   </>
 );
 
-const TRENDS: Option<TrendWord>[] = [
+const TRENDS: Option<TrendWord | null>[] = [
+  { value: null, label: "כל השמות" },
   { value: "בעלייה", label: arrow("↗", "בעלייה") },
   { value: "יציב", label: arrow("→", "יציב") },
   { value: "בירידה", label: arrow("↘", "בירידה") },
 ];
 
 const ORIGINS: Option<Sector | null>[] = [
-  { value: null, label: "כולם" },
+  { value: null, label: "כל השמות" },
   ...(Object.entries(SECTOR_LABELS) as [Sector, string][]).map(([value, label]) => ({ value, label })),
 ];
 
@@ -70,7 +73,7 @@ const LENGTHS: Option<NameLength | null>[] = [
 // hit area 44 px tall.
 function chipClass(on: boolean): string {
   return [
-    "relative inline-flex min-h-10 items-center gap-1 rounded-pill px-3.5 text-person font-bold",
+    "relative inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-pill px-3.5 text-person font-bold",
     "before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-['']",
     "transition-transform duration-150 motion-safe:active:scale-95",
     on ? "border border-ink bg-ink text-surface" : "border border-line bg-surface text-ink",
@@ -203,7 +206,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
         <button
           type="button"
           onClick={reset}
-          className="min-h-11 rounded-pill px-1 text-person font-bold text-ink-soft underline underline-offset-4"
+          className="min-h-11 min-w-11 rounded-pill px-1 text-person font-bold text-ink-soft underline underline-offset-4"
         >
           איפוס
         </button>
@@ -220,8 +223,8 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       }
     >
       <ChipGroup legend="לבן או לבת" options={SEX} value={draft.sex} onChange={set("sex")} />
-      <ChipGroup legend="כמה נפוץ" options={BANDS} value={draft.popularity} onChange={set("popularity")} toggle />
-      <ChipGroup legend="מגמה" options={TRENDS} value={draft.trend} onChange={set("trend")} toggle />
+      <ChipGroup legend="כמה נפוץ" options={BANDS} value={draft.popularity} onChange={set("popularity")} />
+      <ChipGroup legend="מגמה" options={TRENDS} value={draft.trend} onChange={set("trend")} />
       <ChipGroup legend="נפוץ בקרב" options={ORIGINS} value={draft.origin} onChange={set("origin")} />
 
       <div className="flex flex-col gap-3">

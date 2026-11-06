@@ -90,12 +90,12 @@ export default function SkipButton({ onSkip, onHide, disabled, className, descri
   };
 
   return (
-    <div ref={wrap} className="relative flex">
+    <div ref={wrap} className="relative flex min-w-0">
       <button
         ref={button}
         type="button"
         data-act="skip"
-        aria-label="דילוג, לא בשבילנו"
+        aria-label="דילוג"
         aria-describedby={describedBy}
         aria-disabled={disabled || undefined}
         aria-haspopup="menu"

@@ -162,7 +162,7 @@ export const namesSection = (brand) => `<section class="section" id="names" aria
 <ul class="nd-how">
 <li><span class="ico plain">${svg(ICON.swipe)}</span><span><b>מחליקים את הכרטיס.</b> ימינה לשמירה, שמאלה לדילוג. אפשר גם בכפתורים.</span></li>
 <li><span class="ico">${svg(ICON.heart)}</span><span><b>לב לשם שאוהבים במיוחד.</b> הוא עולה לראש הרשימה.</span></li>
-<li><span class="ico ink">${svg(ICON.people)}</span><span><b>בוחרים לבד או ביחד.</b> כל אחד מחליק אצלו, ושם ששניכם שמרתם מופיע בהתאמות.</span></li>
+<li><span class="ico ink">${svg(ICON.people)}</span><span><b>בוחרים לבד או ביחד.</b> הבחירה נעשית בנפרד, ושם ששניכם שמרתם מופיע בהתאמות.</span></li>
 </ul>
 <div class="nd-list" id="nd-list"><h3>השמות ששמרת</h3><p data-list-empty>עוד לא נשמרו שמות. מה שיישמר יופיע כאן.</p><ol data-list hidden></ol></div>
 <p class="nd-note">10 שמות לדוגמה. באפליקציה יהיו כמעט 20,000 שמות. מספרי הלידות לקוחים מ<a href="${CBS_URL}" target="_blank" rel="noopener">נתוני הלשכה המרכזית לסטטיסטיקה</a> על שמות שניתנו ליילודים בשנים 1949–2024 (הודעה לתקשורת 391/2025), לפי <a href="${CBS_LICENSE_URL}" target="_blank" rel="noopener">תנאי השימוש</a> שלה. ההסברים נכתבו בעזרת בינה מלאכותית ועשויים להכיל טעויות. מה שבוחרים כאן לא נשמר ולא נשלח לשום מקום.<a class="nd-link nd-app" href="/names">לבחירת שם עם שמירה והתאמות</a></p>

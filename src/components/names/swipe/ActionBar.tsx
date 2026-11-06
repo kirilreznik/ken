@@ -3,13 +3,15 @@ import SkipButton from "./SkipButton";
 
 type Act = "keep" | "love" | "skip";
 
-const PRESS = "transition-transform duration-150 motion-safe:active:scale-95";
+const PRESS = "touch-manipulation transition-transform duration-150 motion-safe:active:scale-95";
 const DISABLED = "aria-disabled:opacity-60 aria-disabled:cursor-default motion-safe:aria-disabled:active:scale-100";
-const PILL = `inline-flex h-14 items-center justify-center gap-2 rounded-pill px-5.5 text-intro font-bold ${PRESS} ${DISABLED}`;
+// Three equal pills, each with its word: the heart used to be an unlabeled circle, and people
+// had to remember from the intro that it means "אהבתי מאוד".
+const PILL = `inline-flex h-14 w-full min-w-0 items-center justify-center gap-1.5 rounded-pill px-3 text-intro font-bold whitespace-nowrap max-[22.5rem]:gap-1 max-[22.5rem]:px-2 ${PRESS} ${DISABLED}`;
 
 const CLASS: Record<Act, string> = {
   keep: `names-button-primary bg-ink text-surface ${PILL}`,
-  love: `names-button-peach inline-flex size-14 shrink-0 items-center justify-center rounded-pill ${PRESS} ${DISABLED}`,
+  love: `names-button-peach ${PILL}`,
   skip: `names-glass names-button-glass text-ink ${PILL}`,
 };
 
@@ -51,7 +53,7 @@ type ActionBarProps = {
 
 /**
  * The swipe screen's actions (FR-W10, Main.dc.html / GlassFabric.dc.html): "שמירה" ink pill
- * with a bookmark, "אהבתי מאוד" peach circle with a heart, "דילוג" glass pill with an x, in
+ * with a bookmark, "אהבתי" peach pill with a heart (read as "אהבתי מאוד"), "דילוג" glass pill with an x, in
  * the demo's order. In RTL "שמירה" is the right-most one; the drag direction is read from it.
  */
 export default function ActionBar({ onKeep, onLove, onSkip, onHide, disabled = false, describedBy }: ActionBarProps) {
@@ -60,7 +62,7 @@ export default function ActionBar({ onKeep, onLove, onSkip, onHide, disabled = f
   };
   const common = { type: "button" as const, "aria-disabled": disabled || undefined, "aria-describedby": describedBy };
   return (
-    <div className="flex items-center justify-center gap-5 px-5 pb-3 max-[20rem]:flex-wrap max-[20rem]:gap-2 max-[20rem]:px-3">
+    <div className="mx-auto grid w-full max-w-md grid-cols-3 items-center gap-2.5 px-5 pb-3 max-[22.5rem]:gap-2 max-[22.5rem]:px-3">
       <button {...common} data-act="keep" aria-label={LABEL.keep} className={CLASS.keep} onClick={act(onKeep)}>
         <Icon>
           <path d="M6 4h12v16l-6-4-6 4z" />
@@ -68,9 +70,10 @@ export default function ActionBar({ onKeep, onLove, onSkip, onHide, disabled = f
         שמירה
       </button>
       <button {...common} data-act="love" aria-label={LABEL.love} className={CLASS.love} onClick={act(onLove)}>
-        <Icon size={22}>
+        <Icon>
           <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
         </Icon>
+        אהבתי
       </button>
       <SkipButton onSkip={onSkip} onHide={onHide} disabled={disabled} className={CLASS.skip} describedBy={describedBy}>
         דילוג

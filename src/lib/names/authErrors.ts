@@ -3,7 +3,7 @@ import { reportClientLog } from "./clientLog";
 /** FR-W5: Supabase auth errors in Hebrew; raw English never reaches the screen. */
 export const WRONG_CODE_MESSAGE = "הקוד לא נכון או שפג תוקפו. אפשר לבקש קוד חדש.";
 export const RATE_LIMIT_MESSAGE = "נשלחו יותר מדי קודים. אפשר לנסות שוב בעוד כמה דקות.";
-export const OFFLINE_MESSAGE = "אין חיבור לאינטרנט. הכניסה צריכה חיבור.";
+export const OFFLINE_MESSAGE = "אין חיבור לאינטרנט. אפשר להיכנס כשהחיבור יחזור.";
 export const GENERIC_MESSAGE = "משהו השתבש. אפשר לנסות שוב.";
 
 export type AuthErrorKind = "wrong-code" | "rate-limit" | "signups-closed" | "offline" | "other";

@@ -118,7 +118,7 @@ function Panel({ name }: ReportSheetProps) {
       title={reportTitle(name)}
       footer={
         <Button type="submit" form={FORM_ID} className="w-full" aria-disabled={sending || undefined}>
-          {sending ? "שולח…" : "שליחת דיווח"}
+          {sending ? "שולחים…" : "שליחת דיווח"}
         </Button>
       }
     >

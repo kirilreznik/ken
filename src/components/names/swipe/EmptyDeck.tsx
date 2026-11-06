@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Button, Glass } from "@/components/names/ui";
+import { Button, openSheet, Glass } from "@/components/names/ui";
 
 type EmptyDeckProps = {
   /** "empty-filter": undecided names exist but none match; "all-decided": every name has a vote. */
@@ -48,9 +48,15 @@ export default function EmptyDeck({ state, saved, solo, onReset, takeFocus }: Em
             <h2 id="names-empty-title" className="text-title font-bold text-ink">
               אין שמות שמתאימים לסינון הזה
             </h2>
-            <Button size="md" onClick={onReset}>
-              איפוס סינון
-            </Button>
+            {/* Two ways out: change one filter, or clear them all. */}
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button size="md" onClick={onReset}>
+                איפוס סינון
+              </Button>
+              <Button variant="secondary" size="md" onClick={() => openSheet("filters")}>
+                שינוי הסינון
+              </Button>
+            </div>
           </>
         ) : (
           <>

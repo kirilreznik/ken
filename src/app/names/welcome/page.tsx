@@ -32,7 +32,7 @@ export default function WelcomePage() {
           </div>
         }
         footer={
-          <p className="text-center text-caption text-ink-soft">
+          <p className="names-glass-soft mx-auto w-fit rounded-lg px-4 py-1 text-center text-caption text-ink">
             בהמשך מאשרים את{" "}
             <Link href="/names/terms" className="-my-3 inline-flex min-h-11 items-center font-bold text-ink underline underline-offset-2">
               תנאי השימוש

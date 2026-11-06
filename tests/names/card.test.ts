@@ -108,8 +108,8 @@ describe("sparkEnd", () => {
 
 describe("trendLabel", () => {
   it("names the trend and the first year", () => {
-    expect(trendLabel("יציב")).toBe("מגמה יציב מאז 2000");
-    expect(trendLabel("בעלייה")).toBe("מגמה בעלייה מאז 2000");
+    expect(trendLabel("יציב")).toBe("מספר התינוקות בכל שנה, 2000 עד 2024. בשנים האחרונות: יציב");
+    expect(trendLabel("בעלייה")).toBe("מספר התינוקות בכל שנה, 2000 עד 2024. בשנים האחרונות: בעלייה");
   });
 });
 

@@ -26,16 +26,20 @@ function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
 
 // Board 2/8 header (FR-W10): settings sits where the board has "חזרה" (the swipe screen is
 // the app's root), then the title, background, filters and the "השמות שלי" pill. Below
-// 320 px (200% zoom on a phone) the row wraps instead of squeezing the title.
-export default function SwipeHeader({ saved }: { saved: number }) {
+// 320 px (200% zoom on a phone) the row wraps; under 360 px the title is visually hidden.
+export default function SwipeHeader({ saved, filtered = false }: { saved: number; filtered?: boolean }) {
   return (
-    <header className="flex items-center gap-2 px-5 pt-4 pb-2 max-[20rem]:flex-wrap max-[20rem]:px-3">
+    <header className="flex items-center gap-2 px-5 pt-4 pb-2 max-[20rem]:flex-wrap max-[22.5rem]:px-3">
+      {/* A gear, not a hamburger: the button opens the settings page, not a menu. */}
       <IconButton href="/names/settings" aria-label="הגדרות">
         <Icon>
-          <path d="M4 7h16M4 12h16M4 17h16" />
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
         </Icon>
       </IconButton>
-      <h1 className="m-0 min-w-0 flex-1 text-title max-[20rem]:min-w-max">בחירת שם</h1>
+      {/* Under 360 px the four controls leave no room for the title: it stays for screen readers only. */}
+      <h1 className="m-0 min-w-0 flex-1 text-title whitespace-nowrap max-[22.5rem]:sr-only">בחירת שם</h1>
+      <span aria-hidden="true" className="hidden flex-1 max-[22.5rem]:block" />
       <IconButton aria-label="בחירת רקע" onClick={() => openSheet("background")}>
         <Icon>
           <rect x="3" y="5" width="18" height="14" rx="3" />
@@ -43,10 +47,14 @@ export default function SwipeHeader({ saved }: { saved: number }) {
           <path d="M21 16l-5-5-8 8" />
         </Icon>
       </IconButton>
-      <IconButton aria-label="סינון" onClick={() => openSheet("filters")}>
+      {/* A clay dot (and the label) says sheet filters are on, so a short deck explains itself (NP-UX-004). */}
+      <IconButton aria-label={filtered ? "סינון, פעיל" : "סינון"} onClick={() => openSheet("filters")} className="relative">
         <Icon>
           <path d="M4 6h16M7 12h10M10 18h4" />
         </Icon>
+        {filtered ? (
+          <span aria-hidden="true" className="absolute top-1.5 end-1.5 size-2.5 rounded-full bg-clay ring-2 ring-surface" />
+        ) : null}
       </IconButton>
       <Link
         href="/names/lists"

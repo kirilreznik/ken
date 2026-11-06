@@ -99,6 +99,14 @@
     box-shadow: var(--nest-shadow-glass);
   }
 
+  /* The name card: (and the other reading panels: sign-in, intro) whiter and less saturated than the chrome glass, so the fabric reads as
+   * warm light behind a white card (BRAND.md "white glass") rather than an apricot slab. */
+  .nest-names .names-glass:where(.names-card-glass) {
+    background-color: var(--nest-glass-well-tint);
+    -webkit-backdrop-filter: blur(var(--nest-glass-blur)) saturate(125%);
+    backdrop-filter: blur(var(--nest-glass-blur)) saturate(125%);
+  }
+
   .nest-names .names-glass-soft {
     background-color: var(--nest-glass-soft-tint);
     -webkit-backdrop-filter: var(--nest-glass-soft-filter);
@@ -109,6 +117,13 @@
   /* Secondary pill (board 8 "דילוג"): strong glass, whiter. */
   .nest-names .names-button-glass {
     background-color: var(--nest-white-55);
+  }
+  /* On the photos the strong filter turned "דילוג" more orange than "אהבתי", so it read as
+   * the highlighted choice. A whiter, barely saturated glass keeps it the quiet option. */
+  .nest-names .names-button-glass:where(:not([data-names-bg="none"] *)) {
+    background-color: var(--nest-white-75);
+    -webkit-backdrop-filter: blur(var(--nest-glass-blur)) saturate(110%);
+    backdrop-filter: blur(var(--nest-glass-blur)) saturate(110%);
   }
 
   .nest-names .names-button-primary {

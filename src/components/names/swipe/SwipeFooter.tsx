@@ -3,9 +3,11 @@ type SwipeFooterProps = {
   onUndo: () => void;
   /** The last decision ("זיו נשמר", "דילגת על יעל", "בוטל: נועם"), from src/lib/names/a11y.ts. */
   status: string;
+  /** The name now on top, read after the status for screen readers only. */
+  next?: string | null;
   /** id of the keyboard shortcut hint (SwipeKeys). */
   describedBy?: string;
-  /** "לא מחובר · 3 בחירות ממתינות לסנכרון" (FR-W29), or null. */
+  /** "אין חיבור · 3 בחירות ממתינות לסנכרון" (FR-W29), or null. */
   sync?: string | null;
 };
 
@@ -17,7 +19,7 @@ type SwipeFooterProps = {
  * always rendered (an empty one has no pill) so the first message is announced. The sync
  * line (offline, queued votes) sits under them in its own live region.
  */
-export default function SwipeFooter({ canUndo, onUndo, status, describedBy, sync }: SwipeFooterProps) {
+export default function SwipeFooter({ canUndo, onUndo, status, next = null, describedBy, sync }: SwipeFooterProps) {
   return (
     <div className="flex flex-col gap-1 px-7 pb-4 max-[20rem]:px-3">
       <div className="flex items-center justify-between gap-2.5 max-[20rem]:flex-wrap">
@@ -50,18 +52,19 @@ export default function SwipeFooter({ canUndo, onUndo, status, describedBy, sync
           >
             <path d="M14 7h-5a5 5 0 0 0 0 10h6M14 7l-3-3M14 7l-3 3" />
           </svg>
-          ביטול
+          ביטול בחירה
         </button>
         <span
           role="status"
           aria-live="polite"
           className={[
-            "names-glass-soft max-w-[62%] truncate rounded-pill text-center px-3 py-1.5 text-caption text-ink",
+            "names-glass-soft min-w-0 line-clamp-2 rounded-lg text-center px-3 py-1.5 text-caption text-ink",
             "in-data-[names-bg=none]:border-transparent in-data-[names-bg=none]:bg-transparent in-data-[names-bg=none]:p-0 in-data-[names-bg=none]:text-stone",
             "empty:border-0 empty:bg-transparent empty:p-0",
           ].join(" ")}
         >
           {status}
+          {status && next ? <span className="sr-only">. השם הבא: {next}</span> : null}
         </span>
       </div>
       <p

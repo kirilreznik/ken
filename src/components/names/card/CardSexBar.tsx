@@ -11,7 +11,7 @@ type CardSexBarProps = Pick<CardDerived, "boysShare" | "boysLabel" | "girlsLabel
 export default function CardSexBar({ boysShare, boysLabel, girlsLabel }: CardSexBarProps) {
   const width = `${Math.min(1, Math.max(0, boysShare)) * 100}%`;
   return (
-    <div role="img" aria-label={barLabel({ boysLabel, girlsLabel })} className="mt-auto flex flex-col gap-1.5">
+    <div role="img" aria-label={barLabel({ boysLabel, girlsLabel })} className="flex flex-col gap-1.5">
       <div className="flex justify-between gap-2 text-ref font-bold text-ink">
         <span>בנים {boysLabel}</span>
         <span>בנות {girlsLabel}</span>
