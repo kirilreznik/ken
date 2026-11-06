@@ -13,7 +13,7 @@
         "`xcrun simctl list devices available` shows at least one iPhone with a home indicator (e.g. iPhone 15/16); it boots (`xcrun simctl boot`), `open -a Simulator` shows it, and `xcrun simctl openurl booted http://localhost:3000/names/welcome` loads the welcome page in Mobile Safari with `npm run dev` running; `xcrun simctl io booted screenshot` saves a PNG that you read and that shows the welcome page",
         "`cliclick` is installed (`which cliclick`); one `cliclick` tap on the Simulator window is shown to land (e.g. tapping the welcome email button changes the screen, checked by screenshot)",
         "`scripts/ralph/.env.test.local` has the keys `NAMES_QA_EMAIL_1`..`3` (and the service-role key name used by `rest.mjs`); `node scripts/ralph/qa/names-pwa/login.mjs 1` and `2` succeed (key names only in logs, never values)",
-        "Launch pack check (PRD §3.3): record whether it is on `origin/main` and list its changed files under Codebase Patterns in `progress.txt`; if it isn't on main and `progress.txt` doesn't start with `LAUNCH_PACK=skip`, write `## BLOCKED: merge or drop the launch pack first` and stop",
+        "Launch pack check (PRD §3.3): record whether ken PR #16 is on `origin/main` and list its changed files under Codebase Patterns in `progress.txt`; if it isn't on main and `progress.txt` doesn't start with `LAUNCH_PACK=skip`, write `## BLOCKED: merge or close ken PR #16 (launch pack) first` and stop",
         "If any item fails: write the missing prerequisite at the top of `progress.txt` under `## BLOCKED`, leave `passes: false`, and stop the iteration without starting other stories",
         "No commit in this story"
       ],
@@ -756,7 +756,7 @@
       "acceptanceCriteria": [
         "`src/components/names/detail/NameDetailSheet.tsx`, mounted in `SwipeScreen`, opens for `?sheet=name&n=X` when X is a deck name; header per FR-D7 (name, niqqud, sex tag, '✕' `IconButton` with `aria-label=\"סגירה\"`); body sections are empty placeholders for now",
         "Unknown or missing `n`: the layer is closed by replacing the URL, no error",
-        "Only one layer at a time (PRD §3.3.3): the name sheet doesn't open over another open sheet/dialog, and launch-pack prompts wait until it closes (check the launch pack's prompt code and add the wait there if needed)",
+        "Only one layer at a time (PRD §3.3.3): the name sheet doesn't open over another open sheet/dialog, and a tap on the card while a launch-pack pause replaces it does nothing",
         "Dialog semantics per PRD §3.2.11; the name heading gets focus on open",
         "Opened manually through the URL for checks (no card tap yet)",
         "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",

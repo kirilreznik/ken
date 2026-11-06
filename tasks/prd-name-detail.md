@@ -69,20 +69,28 @@ Made by Kiril or on his behalf with the product-taste and red-team reviews, 2026
 13. **Matches in the sheet:** use the matches already loaded by `useMatches` (`SwipeScreen`, Lists). A matched name shows "התאמה · שניכם שמרתם את השם הזה" in a 2-member space and "התאמה · {n} שמרו את השם הזה" with 3+ members (same wording rules as the Lists "התאמות" tab: read it and reuse its text). Style: ink text on `sand`, a small heart icon; **never green, no confetti**.
 14. **The "i" / "על הנתונים" corner button** on the card stays and keeps opening the about sheet; it's not the detail sheet. The sheet's source section also links to it.
 
-### 3.3 Living with the launch pack (built in parallel)
+### 3.3 Living with the launch pack (ken PR #16)
 
-A parallel piece of work, "name swiper launch pack", also changes the swipe screen and Lists: a "בחרנו שם" moment with a Nest card and session recap, a matches tab with an invite empty state and an invite prompt after the 5th save, a way to leave a shared space, and an in-app survey sheet. It is built directly (not by Ralph) and should be merged to `main` **before** this run starts (§4). This run builds on top of it:
+A parallel piece of work, the "name swiper launch pack" (ken PR #16, branch `claude/project-thread-5xnmem`), also changes the swipe screen and Lists. It must be merged to `main` **before** this run starts (§4). What it adds, as reported by its author:
 
-1. **Read it first.** US-000 records whether the launch pack is on `origin/main` (search `git log origin/main` for "launch pack", "בחרנו שם", "survey") and lists its changed files in `progress.txt` Codebase Patterns. Every story that touches `SwipeScreen`, `ActionBar`, `ListsScreen`, `MatchSheet`, `urlLayer`, `layers` or `track.ts` reads those changes before editing and keeps them working.
-2. **One decision path.** Decisions made in the name sheet go through the same `decide()` / vote-store path as swipes and buttons, so anything the launch pack hangs on votes (save counters, the invite prompt after the 5th save, session recap numbers, the "בחרנו שם" moment) counts sheet decisions too. Don't add a second vote path.
-3. **One layer at a time.** The name sheet, the survey sheet, the invite prompt and the "בחרנו שם" moment are all layers. A launch-pack prompt that would open while the name sheet is open waits until it closes (or until the next card); the name sheet never opens on top of another open layer (a tap on the card while another sheet is open does nothing).
-4. **Matches tab.** The name sheet opens from rows of the launch pack's matches tab; its invite empty state is untouched.
+- **SwipeScreen:** session pauses that render in place of the card, and an inline `SurveyPrompt` that opens `?sheet=survey` only when tapped.
+- **ListsScreen:** the matches tab is always present (`SoloMatches` empty state with an invite), a `ChosenBanner`, `RowMenu` with optional `onChoose` / `onRemove` / `onHide`, and match rows now have a `RowMenu` too. `DuelScreen` gets `onChoose` / `chooseLabel`.
+- **urlLayer `SHEETS`:** adds `decision` (the "בחרנו שם" moment, opened by a tap) and `survey`.
+- **track.ts:** new events and `currentSessionInfo()`. The 5th-save invite prompt, round recap and survey eligibility are derived from the vote store's votes (`updatedAt` since the session start), so votes made from the name sheet count automatically.
+- **prefs:** `invitePromptShown`, `recapSession`, `sessions`, `survey`, `chosen`.
+
+How this run lives with it:
+
+1. **Read it first.** US-000 confirms PR #16 is on `origin/main` (`git log origin/main --oneline | grep -i -E "launch pack|#16"`, or the files `SurveyPrompt`, `SoloMatches`, `ChosenBanner` exist) and lists its changed files under Codebase Patterns in `progress.txt`. Every story that touches `SwipeScreen`, `ActionBar`, `ListsScreen`, `RowMenu`, `DuelScreen`, `urlLayer`, `layers`, `prefs` or `track.ts` reads those changes before editing and keeps them working.
+2. **One vote path.** Decisions in the name sheet go through the same vote store as swipes and buttons (`store.setVote` via the screen's `decide()` for the current card). Never add a second path; then the launch pack's counters, prompts and recap include sheet votes with no extra work.
+3. **One layer at a time.** The name sheet joins `decision` and `survey` in `SHEETS`. The launch pack opens nothing on its own (pauses render in place of the card, the survey and decision sheets open only on a tap), so the only rule needed: the name sheet doesn't open on top of another open sheet or dialog, and a tap on the card while a pause replaces it does nothing.
+4. **Lists.** The name opens from rows of "שמרתי" and of the matches tab; the row's `RowMenu` (with the launch pack's choose/remove/hide actions) keeps its own button and behaviour; `SoloMatches` and `ChosenBanner` are untouched. A name already marked as chosen ("בחרנו שם") still opens its sheet normally.
 5. **Leaving a space.** After leaving a shared space the together badge disappears (it reads current matches and member count, never cached partner data).
-6. **If the launch pack is not on `main` when the run starts,** US-000 writes `## BLOCKED: merge or drop the launch pack first` at the top of `progress.txt` and stops, so the two never edit the same files in parallel. The owner can override by adding `LAUNCH_PACK=skip` to the top of `progress.txt`; then this section is ignored.
+6. **If PR #16 is not on `main` when the run starts,** US-000 writes `## BLOCKED: merge or close ken PR #16 (launch pack) first` at the top of `progress.txt` and stops. The owner can override by putting `LAUNCH_PACK=skip` on the first line of `progress.txt`; then this section is ignored.
 
 ## 4. Before the run (owner)
 
-Nothing new is needed from the owner. The run uses what the last run set up: the Mac build folder (`~/Ken-names`), `.env.local`, `scripts/ralph/.env.test.local` with the QA users, Playwright, Xcode with an iOS Simulator runtime, and `cliclick` (`brew install cliclick`, already used by the pregnancy-manager runs). No backend change is needed by this run: no migration, no new Supabase or Vercel setting. **Merge the launch pack PR first** (§3.3), including any migration it needs. To start: `git pull` in `~/Ken-names`, then `./scripts/ralph/run-name-detail.sh`.
+Nothing new is needed from the owner. The run uses what the last run set up: the Mac build folder (`~/Ken-names`), `.env.local`, `scripts/ralph/.env.test.local` with the QA users, Playwright, Xcode with an iOS Simulator runtime, and `cliclick` (`brew install cliclick`, already used by the pregnancy-manager runs). No backend change is needed by this run: no migration, no new Supabase or Vercel setting. **Merge the launch pack, ken PR #16, first** (§3.3), including any migration it needs. To start: `git pull` in `~/Ken-names`, then `./scripts/ralph/run-name-detail.sh`.
 
 After the run: review `scripts/ralph/qa/name-detail/SUMMARY.md`, spot-check the content files (`data/names/content-src/spot-check-details-*.md`), then open a PR from `ralph/name-detail`.
 
@@ -381,7 +389,7 @@ The full stories with every acceptance criterion are generated below from the sa
 - [ ] `xcrun simctl list devices available` shows at least one iPhone with a home indicator (e.g. iPhone 15/16); it boots (`xcrun simctl boot`), `open -a Simulator` shows it, and `xcrun simctl openurl booted http://localhost:3000/names/welcome` loads the welcome page in Mobile Safari with `npm run dev` running; `xcrun simctl io booted screenshot` saves a PNG that you read and that shows the welcome page
 - [ ] `cliclick` is installed (`which cliclick`); one `cliclick` tap on the Simulator window is shown to land (e.g. tapping the welcome email button changes the screen, checked by screenshot)
 - [ ] `scripts/ralph/.env.test.local` has the keys `NAMES_QA_EMAIL_1`..`3` (and the service-role key name used by `rest.mjs`); `node scripts/ralph/qa/names-pwa/login.mjs 1` and `2` succeed (key names only in logs, never values)
-- [ ] Launch pack check (PRD §3.3): record whether it is on `origin/main` and list its changed files under Codebase Patterns in `progress.txt`; if it isn't on main and `progress.txt` doesn't start with `LAUNCH_PACK=skip`, write `## BLOCKED: merge or drop the launch pack first` and stop
+- [ ] Launch pack check (PRD §3.3): record whether ken PR #16 is on `origin/main` and list its changed files under Codebase Patterns in `progress.txt`; if it isn't on main and `progress.txt` doesn't start with `LAUNCH_PACK=skip`, write `## BLOCKED: merge or close ken PR #16 (launch pack) first` and stop
 - [ ] If any item fails: write the missing prerequisite at the top of `progress.txt` under `## BLOCKED`, leave `passes: false`, and stop the iteration without starting other stories
 - [ ] No commit in this story
 
@@ -904,7 +912,7 @@ The full stories with every acceptance criterion are generated below from the sa
 **Acceptance criteria:**
 - [ ] `src/components/names/detail/NameDetailSheet.tsx`, mounted in `SwipeScreen`, opens for `?sheet=name&n=X` when X is a deck name; header per FR-D7 (name, niqqud, sex tag, '✕' `IconButton` with `aria-label="סגירה"`); body sections are empty placeholders for now
 - [ ] Unknown or missing `n`: the layer is closed by replacing the URL, no error
-- [ ] Only one layer at a time (PRD §3.3.3): the name sheet doesn't open over another open sheet/dialog, and launch-pack prompts wait until it closes (check the launch pack's prompt code and add the wait there if needed)
+- [ ] Only one layer at a time (PRD §3.3.3): the name sheet doesn't open over another open sheet/dialog, and a tap on the card while a launch-pack pause replaces it does nothing
 - [ ] Dialog semantics per PRD §3.2.11; the name heading gets focus on open
 - [ ] Opened manually through the URL for checks (no card tap yet)
 - [ ] Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`
