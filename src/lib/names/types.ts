@@ -22,6 +22,8 @@ export interface NameContent {
   intro: string;
   bible?: { text: string; ref: string };
   people: NamePerson[];
+  /** Theme ids from data/names/name-themes.json, added at build time (see themes.ts). */
+  themes?: string[];
 }
 
 export type SexTag = "בן" | "בת" | "מתאים לכולם";

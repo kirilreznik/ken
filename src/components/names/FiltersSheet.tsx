@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
+import LetterRangeSlider from "@/components/names/LetterRangeSlider";
+import ThemeIcon from "@/components/names/ThemeIcon";
 import { BottomSheet, Button, closeSheet } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
+  RANGE_MAX,
+  RANGE_MIN,
   SECTOR_LABELS,
   applyLabel,
   defaultFilters,
@@ -17,6 +21,7 @@ import {
   type Sector,
 } from "@/lib/names/filters";
 import { getPref, setPref } from "@/lib/names/prefs";
+import { THEME_IDS, THEME_LABELS, type ThemeId } from "@/lib/names/themes";
 import type { Card, PopularityBand, SexTag, TrendWord, Vote } from "@/lib/names/types";
 
 type FiltersSheetProps = {
@@ -117,6 +122,37 @@ function ChipGroup<T>({
   );
 }
 
+/**
+ * "נושאים": several themes can be on at once (a name passes with any of them). "כל השמות"
+ * clears them, and turning the last one off is the same as "כל השמות".
+ */
+function ThemeGroup({ value, onChange }: { value: ThemeId[] | null; onChange: (value: ThemeId[] | null) => void }) {
+  const hintId = useId();
+  const toggle = (id: ThemeId) => {
+    const now = value ?? [];
+    const next = now.includes(id) ? now.filter((t) => t !== id) : [...now, id];
+    onChange(next.length ? THEME_IDS.filter((t) => next.includes(t)) : null);
+  };
+  const chip = (key: string, on: boolean, icon: ThemeId | "all", label: string, onClick: () => void) => (
+    <button key={key} type="button" aria-pressed={on} className={`${chipClass(on)} gap-1.5`} onClick={onClick}>
+      <ThemeIcon theme={icon} />
+      {label}
+    </button>
+  );
+  return (
+    <fieldset className="m-0 min-w-0 border-0 p-0" aria-describedby={hintId}>
+      <legend className="mb-0.5 p-0 text-card-title">נושאים</legend>
+      <p id={hintId} className="mb-2.5 text-caption text-stone">
+        ניתן לבחור כמה נושאים
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {chip("all", value === null, "all", "כל השמות", () => onChange(null))}
+        {THEME_IDS.map((id) => chip(id, value?.includes(id) ?? false, id, THEME_LABELS[id], () => toggle(id)))}
+      </div>
+    </fieldset>
+  );
+}
+
 function Chevron() {
   return (
     <svg
@@ -139,7 +175,8 @@ function Chevron() {
 type Picker = "letter" | "length" | null;
 
 /**
- * "סינון" (board 3, FR-W16): sex, popularity, trend and origin chips, first letter and length
+ * "סינון" (board 3, FR-W16): sex chips, theme chips (several at once), popularity, trend and
+ * origin chips, first letter and length (or a custom letter range)
  * pickers, "שמות שהסתרתי ({n})" and the apply button with the live count. Changes are a draft
  * until "הצגת {n} שמות" saves them to the device pref; closing the sheet another way drops them.
  */
@@ -183,6 +220,11 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
     setPicker(null);
   }
 
+  const customLength = draft.letterRange !== null;
+  function setCustomLength(on: boolean) {
+    setDraft((d) => ({ ...d, length: null, letterRange: on ? { min: RANGE_MIN, max: RANGE_MAX } : null }));
+  }
+
   const tile = (id: Exclude<Picker, null>, label: string, value: string) => (
     <button
       type="button"
@@ -223,6 +265,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       }
     >
       <ChipGroup legend="לבן או לבת" options={SEX} value={draft.sex} onChange={set("sex")} />
+      <ThemeGroup value={draft.themes} onChange={set("themes")} />
       <ChipGroup legend="כמה נפוץ" options={BANDS} value={draft.popularity} onChange={set("popularity")} />
       <ChipGroup legend="מגמה" options={TRENDS} value={draft.trend} onChange={set("trend")} />
       <ChipGroup legend="נפוץ בקרב" options={ORIGINS} value={draft.origin} onChange={set("origin")} />
@@ -230,7 +273,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       <div className="flex flex-col gap-3">
         <div className="grid grid-cols-2 gap-3">
           {tile("letter", "אות ראשונה", letterValue(draft.letter))}
-          {tile("length", "אורך", lengthValue(draft.length))}
+          {tile("length", "אורך", lengthValue(draft.length, draft.letterRange))}
         </div>
         <div id={pickerId} hidden={!picker}>
           {picker === "letter" ? (
@@ -241,7 +284,23 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
               onChange={set("letter")}
             />
           ) : picker === "length" ? (
-            <ChipGroup legend="אורך" options={LENGTHS} value={draft.length} onChange={set("length")} />
+            <div className="flex flex-col gap-3">
+              {customLength ? null : (
+                <ChipGroup legend="אורך" options={LENGTHS} value={draft.length} onChange={set("length")} />
+              )}
+              <label className="flex min-h-11 cursor-pointer items-center gap-2.5 self-start text-person font-bold text-ink">
+                <input
+                  type="checkbox"
+                  checked={customLength}
+                  onChange={(e) => setCustomLength(e.target.checked)}
+                  className="size-6 shrink-0 cursor-pointer accent-ink"
+                />
+                מספר אותיות מותאם אישית
+              </label>
+              {draft.letterRange ? (
+                <LetterRangeSlider value={draft.letterRange} onChange={set("letterRange")} />
+              ) : null}
+            </div>
           ) : null}
         </div>
       </div>
