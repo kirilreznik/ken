@@ -35,6 +35,7 @@ import {
 } from "@/lib/names/settings";
 import { getSupabase } from "@/lib/names/supabase";
 import { showToast } from "@/lib/names/toast";
+import { track } from "@/lib/names/track";
 
 const DELETE_DIALOG = "delete-account";
 
@@ -132,6 +133,7 @@ export default function SettingsScreen() {
     try {
       await saveDisplayName(supabase, space.spaceId, user.id, name.trim());
       setDraft(null);
+      track("display_name_changed");
       setStatus(NAME_SAVED_TEXT);
       showToast(NAME_SAVED_TEXT);
     } catch (err) {
@@ -157,6 +159,7 @@ export default function SettingsScreen() {
       const { error } = await supabase.auth.updateUser({ data: optInMetadata(next) });
       if (error) throw error;
       setOptIn(null);
+      track("opt_in_changed", { opt_in: next });
       setStatus(next ? OPT_IN_ON_TEXT : OPT_IN_OFF_TEXT);
     } catch (err) {
       reportClientLog({ area: "settings", message: "opt-in save failed", name: err instanceof Error ? err.name : undefined });
@@ -170,6 +173,7 @@ export default function SettingsScreen() {
   async function doSignOut() {
     if (signingOut) return;
     setSigningOut(true);
+    track("signed_out");
     try {
       await signOut();
       router.replace(WELCOME_PATH);

@@ -9,6 +9,7 @@ import { OFFLINE_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErr
 import { withJoin } from "@/lib/names/join";
 import { GOOGLE_FAILED_MESSAGE, oauthRedirectTo } from "@/lib/names/routing";
 import { getSupabase } from "@/lib/names/supabase";
+import { track } from "@/lib/names/track";
 
 export const EMAIL_SIGN_IN_PATH = "/names/sign-in/email";
 
@@ -21,6 +22,7 @@ export default function WelcomeActions({ joinCode }: { joinCode?: string | null 
 
   function fail(err: unknown) {
     setBusy(false);
+    track("signin_failed", { method: "google", step: "oauth" });
     const { kind, message } = handleAuthError("sign-in-google", err);
     if (message === null) {
       // A full load: ClosedNotice reads ?closed=1 once, on mount.
@@ -41,6 +43,7 @@ export default function WelcomeActions({ joinCode }: { joinCode?: string | null 
     }
     setBusy(true);
     setError(null);
+    track("signin_started", { method: "google" });
     try {
       const { error: err } = await supabase.auth.signInWithOAuth({
         provider: "google",

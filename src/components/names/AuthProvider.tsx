@@ -5,6 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { clearLocalData } from "@/lib/names/auth";
 import { openPrefs } from "@/lib/names/prefs";
 import { AUTH_STORAGE_KEY, getSupabase } from "@/lib/names/supabase";
+import { setTrackToken } from "@/lib/names/track";
 
 interface AuthState {
   session: Session | null;
@@ -50,6 +51,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setExpired(false);
       }
       if (next) openPrefs(next.user.id);
+      setTrackToken(next?.access_token ?? null);
       setSession(next);
     });
     return () => data.subscription.unsubscribe();

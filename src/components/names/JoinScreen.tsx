@@ -25,6 +25,7 @@ import {
 import { joinWithCode } from "@/lib/names/joinSpace";
 import { getPref } from "@/lib/names/prefs";
 import { ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
+import { track } from "@/lib/names/track";
 
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
 
@@ -86,6 +87,8 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
     void joinWithCode(userId, code, displayName).then((next) => {
       if (!alive) return;
       if (next.kind === "error") void reportClientLog({ area: "join", message: "names_join failed" });
+      if (next.kind === "joined") track("join_completed", { votes_moved: next.votesMoved });
+      else if (next.kind !== "already") track("join_failed", { reason: next.kind });
       setResult({ key, outcome: next });
     });
     return () => {

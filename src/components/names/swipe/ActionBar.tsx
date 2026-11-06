@@ -62,7 +62,7 @@ export default function ActionBar({ onKeep, onLove, onSkip, onHide, disabled = f
   };
   const common = { type: "button" as const, "aria-disabled": disabled || undefined, "aria-describedby": describedBy };
   return (
-    <div className="mx-auto grid w-full max-w-md grid-cols-3 items-center gap-2.5 px-5 pb-3 max-[22.5rem]:gap-2 max-[22.5rem]:px-3">
+    <div data-clarity-unmask="true" className="mx-auto grid w-full max-w-md grid-cols-3 items-center gap-2.5 px-5 pb-3 max-[22.5rem]:gap-2 max-[22.5rem]:px-3">
       <button {...common} data-act="keep" aria-label={LABEL.keep} className={CLASS.keep} onClick={act(onKeep)}>
         <Icon>
           <path d="M6 4h12v16l-6-4-6 4z" />

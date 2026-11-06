@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
@@ -20,6 +20,7 @@ import { defaultFilters, hasSheetFilters, withSex } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
 import { matchToShow, withSeen } from "@/lib/names/matches";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
+import { track } from "@/lib/names/track";
 import type { SexTag, Vote } from "@/lib/names/types";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
@@ -30,6 +31,12 @@ import SwipeFooter from "./SwipeFooter";
 import SwipeHeader from "./SwipeHeader";
 import SwipeKeys, { SWIPE_KEYS_ID } from "./SwipeKeys";
 import { dragClass, useSwipeDrag } from "./useSwipeDrag";
+
+/** The sex filter as an ASCII token for analytics (the tags themselves are Hebrew). */
+const SEX_TOKEN: Record<SexTag, string> = { "בן": "boy", "בת": "girl", "מתאים לכולם": "unisex" };
+
+/** How the next decision was made: a drag ends in "swipe"; buttons and keys say so first. */
+type DecideMethod = "swipe" | "button" | "key";
 
 /**
  * A pref as a JSON string, so useSyncExternalStore gets a stable snapshot (getPref returns a
@@ -87,10 +94,32 @@ export default function SwipeScreen() {
   );
   const progress = deck && cards && filters ? deckProgress(cards, votes, filters, deck.cards.length) : null;
   const current = deck?.cards[0] ?? null;
+  const method = useRef<DecideMethod>("swipe");
+
+  // The deck ran out (all decided) or the filters left nothing: once each time it happens.
+  const deckState = deck?.state ?? null;
+  useEffect(() => {
+    if (deckState === "all-decided") track("deck_exhausted", { votes: votes.size });
+    else if (deckState === "empty-filter" && filters) {
+      track("filter_empty", {
+        sex: filters.sex ? SEX_TOKEN[filters.sex] : "all",
+        popularity: filters.popularity !== null,
+        trend: filters.trend !== null,
+        letter: filters.letter !== null,
+        length: filters.length !== null,
+        origin: filters.origin !== null,
+      });
+    }
+    // Only the change of state counts, not every vote or filter object.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deckState]);
 
   const decide = (kind: Decision) => {
     if (!store || !current) return;
     const name = current.stats.name;
+    if (votes.size === 0) track("first_vote");
+    track("vote", { vote: kind, method: method.current, shared: space.isShared, position: progress?.position ?? null });
+    method.current = "swipe";
     const next = applyVote({ votes, undo: undoStack }, name, kind);
     setUndoStack(next.state.undo);
     store.setVote(name, kind);
@@ -107,6 +136,7 @@ export default function SwipeScreen() {
     if (!store || drag.busy()) return;
     const { state: next, entry } = undoVote({ votes, undo: undoStack });
     if (!entry) return;
+    track("vote_undone");
     drag.holdFocus();
     setUndoStack(next.undo);
     if (entry.previous) store.setVote(entry.name, entry.previous);
@@ -119,18 +149,28 @@ export default function SwipeScreen() {
 
   const setSex = (sex: SexTag | null) => {
     if (userId && filters) setPref(userId, "filters", withSex(filters, sex));
+    track("filter_sex", { sex: sex ? SEX_TOKEN[sex] : "all" });
   };
   const resetFilters = () => {
     if (userId) setPref(userId, "filters", defaultFilters());
+    track("filters_reset");
   };
-  const fly = (kind: Decision) => () => drag.fly(kind);
+  const fly = (kind: Decision) => () => {
+    method.current = "button";
+    drag.fly(kind);
+  };
 
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto [@media(max-height:30rem)]:h-auto">
       <SwipeHeader saved={savedCount} filtered={hasSheetFilters(filters)} />
       <main className="flex min-h-0 flex-1 flex-col">
         <QuickChips sex={filters?.sex ?? null} onChange={setSex} />
-        <SwipeKeys onKey={(key) => (key === "undo" ? undo() : drag.fly(key))} className="flex min-h-0 flex-1 flex-col">
+        <SwipeKeys
+          onKey={(key) => {
+            if (key === "undo") return undo();
+            method.current = "key";
+            drag.fly(key);
+          }} className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 flex-col px-5 max-[20rem]:min-h-100 max-[20rem]:px-3 [@media(max-height:30rem)]:min-h-100">
             {deck && current && progress ? (
               <CardStack

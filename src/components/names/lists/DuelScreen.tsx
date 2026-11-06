@@ -23,6 +23,7 @@ import { rowMeta, rowMetaText } from "@/lib/names/lists";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 import { showToast } from "@/lib/names/toast";
 import type { NameStats } from "@/lib/names/types";
+import { track } from "@/lib/names/track";
 
 function Icon({ size = 20, children, className }: { size?: number; children: ReactNode; className?: string }) {
   return (
@@ -104,6 +105,8 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
     if (!duel) return;
     const next = pick(duel, name);
     save(next);
+    if (duel.picks === 0) track("duel_started", { from: source, size: duel.names.length });
+    if (isDone(next)) track("duel_completed", { from: source, size: next.names.length, picks: next.picks });
     setStatus(duelAnnouncement(next));
     if (isDone(next)) requestAnimationFrame(() => resultRef.current?.focus());
   };

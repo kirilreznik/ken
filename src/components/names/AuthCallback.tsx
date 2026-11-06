@@ -3,15 +3,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import AuthLayout from "@/components/names/auth/AuthLayout";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import { authErrorKind, reportAuthError, urlAuthError } from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
 import { getPref } from "@/lib/names/prefs";
-import { GOOGLE_FAILED_MESSAGE, nextRoute } from "@/lib/names/routing";
+import { GOOGLE_FAILED_MESSAGE, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { useAuth } from "./AuthProvider";
+import { track } from "@/lib/names/track";
 
 const noSubscribe = () => () => {};
 const readUrlError = () => urlAuthError(window.location.search, window.location.hash);
@@ -35,16 +36,22 @@ export default function AuthCallback() {
   const join = usePendingJoin();
   const urlError = useSyncExternalStore(noSubscribe, readError, serverError);
   const failed = urlError !== null || (!loading && !session);
+  const tracked = useRef(false);
 
   // FR-W5: closed sign-ups go to welcome with the waitlist notice; anything unexpected is reported
   // by its code only. The screen itself only ever shows the Hebrew failure.
   useEffect(() => {
     if (urlError === "signups-closed") router.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));
     else if (urlError === "other") reportAuthError("sign-in-google-callback", readUrlError());
+    if (urlError) track("signin_failed", { method: "google", step: urlError === "signups-closed" ? "closed" : "callback" });
   }, [urlError, join, router]);
 
   useEffect(() => {
     if (urlError || loading || !user) return;
+    if (!tracked.current) {
+      tracked.current = true;
+      track("signin_completed", { method: "google", new_user: !hasAcceptedTerms(user) });
+    }
     router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
   }, [urlError, loading, user, join, router]);
 

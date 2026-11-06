@@ -12,6 +12,7 @@ import { showToast } from "@/lib/names/toast";
 import fabric from "../../../public/landing/names-fabric.webp";
 import notebook from "../../../public/landing/names-notebook.webp";
 import nursery from "../../../public/landing/names-nursery.webp";
+import { track } from "@/lib/names/track";
 
 interface Option {
   id: Background;
@@ -123,6 +124,7 @@ function BackgroundOptions() {
     if (!userId) return;
     if (id === "own" && !hasOwn) return;
     setPref(userId, "background", id);
+    track("background_changed", { background: id });
   }
 
   function choosePhoto() {

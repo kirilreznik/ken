@@ -22,6 +22,7 @@ import {
   type Invite,
 } from "@/lib/names/invite";
 import { showToast } from "@/lib/names/toast";
+import { track } from "@/lib/names/track";
 
 type Loaded = { key: string; invite: Invite | null; error: boolean };
 
@@ -111,6 +112,7 @@ export default function InviteScreen() {
     }
     setCopyFailed(!copied);
     if (copied) {
+      track("invite_shared", { method: "copy" });
       setStatus(COPIED_TEXT);
       showToast(COPIED_TEXT);
     }
@@ -121,6 +123,7 @@ export default function InviteScreen() {
     if (typeof navigator.share === "function") {
       try {
         await navigator.share({ title: SHARE_TITLE, text: SHARE_TEXT, url });
+        track("invite_shared", { method: "share" });
         return;
       } catch (err) {
         // Closing the share sheet isn't an error; anything else falls back to copying.

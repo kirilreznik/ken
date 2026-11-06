@@ -19,6 +19,7 @@ import type { NameStats } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
 import DuelScreen from "./DuelScreen";
 import RowMenu from "./RowMenu";
+import { track } from "@/lib/names/track";
 
 const LISTS_PATH = "/names/lists";
 
@@ -46,6 +47,7 @@ export default function ListsScreen() {
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const tab = listsTab(params.get("tab"), space.isShared);
+  useEffect(() => track("lists_tab", { tab }), [tab]);
   const rows = useMemo(() => savedRows(state?.votes ?? new Map()), [state?.votes]);
   const ready = !!(store && state?.ready);
 
