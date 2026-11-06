@@ -99,3 +99,17 @@ export async function loadContent(): Promise<Map<string, NameContent>> {
   const manifest = await loadManifest();
   return parseContent(await fetchJson<RawContentFile>(manifest.content));
 }
+
+let detailsPromise: Promise<Map<string, NameDetail>> | null = null;
+
+/** Stories and similar names, keyed by name; fetched once per page load, a failed load is retried next call. */
+export function loadDetails(): Promise<Map<string, NameDetail>> {
+  detailsPromise ??= loadManifest()
+    .then((manifest) => fetchJson<RawDetailsFile>(manifest.details))
+    .then(parseDetails)
+    .catch((err: unknown) => {
+      detailsPromise = null;
+      throw err;
+    });
+  return detailsPromise;
+}
