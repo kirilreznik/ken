@@ -6,7 +6,7 @@
 // - precache on install: the app shell pages and every /_next/static file their HTML
 //   references (so a shell page never opened online still runs offline), the offline
 //   fallback page, the hashed data files listed in
-//   /names/data/manifest.json, the background photos, the Heebo fonts and the icons
+//   /names/data/manifest.json (names, content, details), the background photos, the Heebo fonts and the icons
 // - cache-first: /_next/static/*, /_next/image, /landing/*, /names/data/* (hashed),
 //   /names/icons/*, /names/brand/*
 // - network-first with cache fallback: /names* page navigations (an uncached page falls
@@ -16,7 +16,7 @@
 // Bump VERSION when this file's caching rules change; activate deletes every
 // cache that doesn't belong to the current version.
 
-const VERSION = "v2";
+const VERSION = "v3";
 const PREFIX = "nest-names-";
 const SHELL_CACHE = `${PREFIX}shell-${VERSION}`;
 const STATIC_CACHE = `${PREFIX}static-${VERSION}`;
@@ -72,7 +72,7 @@ async function dataFiles() {
   const manifest = await res.clone().json();
   const shell = await caches.open(SHELL_CACHE);
   await shell.put(DATA_MANIFEST, res);
-  return [manifest.names, manifest.content]
+  return [manifest.names, manifest.content, manifest.details]
     .filter((file) => typeof file === "string" && file)
     .map((file) => `/names/data/${file}`);
 }
