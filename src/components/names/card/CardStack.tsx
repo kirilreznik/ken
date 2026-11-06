@@ -9,38 +9,23 @@ type CardStackProps = Omit<ComponentProps<typeof NameCard>, "card"> & {
   enter?: boolean;
 };
 
-const back =
-  "names-glass-soft pointer-events-none absolute flex items-end justify-center rounded-xl text-ink-soft";
+const back = "names-glass-soft pointer-events-none absolute rounded-xl";
 
 /**
  * The current card with the next two peeking out under it (Main.dc.html, GlassFabric.dc.html,
- * the demo's .nd-back): the nearer one at +2°, 12 px in and 22 px below, the farther one at
- * −3°, 24 px in and 44 px below, each showing its name in its own visible strip (the boards'
- * 14/28 px strips are shorter than a line, so the names overlapped behind the glass). They're decoration
- * (aria-hidden); the current card is a NameCard keyed by name, so a new one mounts with the
- * demo's enter animation (a fade with reduced motion).
+ * the demo's .nd-back): thin edges only, the nearer one at +1°, 12 px in and 6 px below, the
+ * farther one at −1.5°, 24 px in and 12 px below. They used to show the next names in 22/44 px
+ * strips, which crowded the action buttons. They're decoration (aria-hidden); the current card
+ * is a NameCard keyed by name, so a new one mounts with the demo's enter animation (a fade with
+ * reduced motion).
  */
 export default function CardStack({ cards, enter = false, className = "", ...cardProps }: CardStackProps) {
   const [card, next, after] = cards;
   if (!card) return null;
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col pb-11">
-      {after && (
-        <div
-          aria-hidden="true"
-          className={`${back} names-back-far inset-x-6 top-7 bottom-0 -rotate-3 pb-1 text-peek leading-none in-data-[names-bg=none]:text-faint`}
-        >
-          {after.stats.name}
-        </div>
-      )}
-      {next && (
-        <div
-          aria-hidden="true"
-          className={`${back} names-back-near inset-x-3 top-3.5 bottom-5.5 rotate-2 pb-1.5 text-card-title leading-none font-extrabold in-data-[names-bg=none]:text-mist`}
-        >
-          {next.stats.name}
-        </div>
-      )}
+    <div className="relative flex min-h-0 flex-1 flex-col pb-3">
+      {after && <div aria-hidden="true" className={`${back} names-back-far inset-x-6 top-6 bottom-0 -rotate-[1.5deg]`} />}
+      {next && <div aria-hidden="true" className={`${back} names-back-near inset-x-3 top-3 bottom-1.5 rotate-1`} />}
       <NameCard
         key={card.stats.name}
         card={card}

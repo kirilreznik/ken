@@ -16,11 +16,13 @@ import {
   lengthValue,
   letterOptions,
   letterValue,
+  sexToken,
   type Filters,
   type NameLength,
   type Sector,
 } from "@/lib/names/filters";
 import { getPref, setPref } from "@/lib/names/prefs";
+import { track } from "@/lib/names/track";
 import { THEME_IDS, THEME_LABELS, type ThemeId } from "@/lib/names/themes";
 import type { Card, PopularityBand, SexTag, TrendWord, Vote } from "@/lib/names/types";
 
@@ -211,7 +213,10 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   const hidden = hiddenCount(votes);
 
   function apply() {
-    if (userId) setPref(userId, "filters", draft);
+    if (userId) {
+      if (getPref(userId, "filters").sex !== draft.sex) track("filter_sex", { sex: sexToken(draft.sex) });
+      setPref(userId, "filters", draft);
+    }
     closeSheet("filters");
   }
 

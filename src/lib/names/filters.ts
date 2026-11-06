@@ -61,10 +61,14 @@ export function isDefault(filters: Filters): boolean {
   return (Object.keys(DEFAULT_FILTERS) as (keyof Filters)[]).every((k) => filters[k] === null);
 }
 
-/** Filters set in the sheet beyond the sex chips (which show on the swipe screen already). */
-export function hasSheetFilters(filters: Filters | null): boolean {
-  if (!filters) return false;
-  return (Object.keys(DEFAULT_FILTERS) as (keyof Filters)[]).some((k) => k !== "sex" && filters[k] !== null);
+/** Any filter is set (the filter button shows a dot then). */
+export function hasFilters(filters: Filters | null): boolean {
+  return !!filters && !isDefault(filters);
+}
+
+/** The sex filter as an ASCII token for analytics (the tags themselves are Hebrew). */
+export function sexToken(sex: SexTag | null): string {
+  return sex === "בן" ? "boy" : sex === "בת" ? "girl" : sex === "מתאים לכולם" ? "unisex" : "all";
 }
 
 /** The fields of a card the filters read. */
@@ -111,19 +115,6 @@ export function count(cards: Iterable<FilterableCard>, filters: Filters): number
   let n = 0;
   for (const card of cards) if (matches(card, filters)) n++;
   return n;
-}
-
-/** The swipe screen's quick chips (PRD 3.2.14): each sets only the sex filter. */
-export const QUICK_CHIPS: readonly { label: string; sex: SexTag | null }[] = [
-  { label: "כל השמות", sex: null },
-  { label: "מתאים לכולם", sex: "מתאים לכולם" },
-  { label: "בת", sex: "בת" },
-  { label: "בן", sex: "בן" },
-];
-
-/** Filters with the sex group set from a quick chip; the other groups stay. */
-export function withSex(filters: Filters, sex: SexTag | null): Filters {
-  return { ...filters, sex };
 }
 
 /** Board 3's first-letter picker: the first letters of the given names, in alphabet order. */
