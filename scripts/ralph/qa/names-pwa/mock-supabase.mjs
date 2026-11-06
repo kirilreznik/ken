@@ -11,7 +11,7 @@ const PORT = Number(process.argv[2] ?? 54329);
 export const USER_ID = "00000000-0000-4000-8000-000000000001";
 const PARTNER_ID = "00000000-0000-4000-8000-000000000002";
 const SPACE_ID = "00000000-0000-4000-8000-0000000000aa";
-const partner = process.env.MOCK_PARTNER === "1";
+let partner = process.env.MOCK_PARTNER === "1";
 
 function b64url(value) {
   return Buffer.from(JSON.stringify(value)).toString("base64url");
@@ -122,6 +122,12 @@ const server = createServer(async (req, res) => {
     return send(res, 200, [{ code: "K7M2Q9", expires_at: new Date(Date.now() + 7 * 864e5).toISOString() }]);
   }
   if (path === "/rest/v1/rpc/name_matches") return send(res, 200, matches());
+  if (path === "/rest/v1/rpc/names_leave") {
+    if (!partner) return send(res, 400, { message: "not_shared" });
+    partner = false;
+    return send(res, 200, SPACE_ID);
+  }
+  if (path === "/rest/v1/rpc/names_survey") return send(res, 200, true);
   if (path.startsWith("/rest/v1/rpc/")) return send(res, 200, null);
 
   if (path === "/rest/v1/space_members") {

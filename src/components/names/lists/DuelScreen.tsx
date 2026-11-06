@@ -62,6 +62,9 @@ type DuelScreenProps = {
   customNames: ReadonlySet<string>;
   onSource: (source: DuelSource) => void;
   onBack: (source: DuelSource) => void;
+  /** "בחרנו בשם X" on the finished ranking (the decision moment). */
+  onChoose: (name: string, from: DuelSource, rank: number) => void;
+  chooseLabel: (name: string) => string;
 };
 
 /**
@@ -69,7 +72,7 @@ type DuelScreenProps = {
  * with 2+ matches) until a ranked top 5. Every pick is saved to the duelState pref, so
  * "עצירה" or a reload resumes where it stopped.
  */
-export default function DuelScreen({ userId, from, ready, savedNames, matchNames, names, customNames, onSource, onBack }: DuelScreenProps) {
+export default function DuelScreen({ userId, from, ready, savedNames, matchNames, names, customNames, onSource, onBack, onChoose, chooseLabel }: DuelScreenProps) {
   const saved = useSavedDuel(userId);
   const [seed, setSeed] = useState(randomSeed);
   // The duel in play once a pick is made: it keeps going even if the list changes meanwhile.
@@ -325,7 +328,10 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                   </ol>
                 </div>
                 <div className="mt-auto flex flex-col items-stretch gap-2">
-                  <Button onClick={restart}>דו־קרב חדש</Button>
+                  {top[0] ? <Button onClick={() => onChoose(top[0], source, 1)}>{chooseLabel(top[0])}</Button> : null}
+                  <Button variant="secondary" onClick={restart}>
+                    דו־קרב חדש
+                  </Button>
                   <Button variant="link" onClick={() => onBack(source)}>
                     חזרה לרשימה
                   </Button>

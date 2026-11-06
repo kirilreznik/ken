@@ -51,13 +51,12 @@ it("restoredText", () => {
 });
 
 describe("listsTab", () => {
-  it("defaults to saved and shows matches only when shared", () => {
-    expect(listsTab(null, false)).toBe("saved");
-    expect(listsTab("saved", true)).toBe("saved");
-    expect(listsTab("matches", true)).toBe("matches");
-    expect(listsTab("matches", false)).toBe("saved");
-    expect(listsTab("duel", false)).toBe("duel");
-    expect(listsTab("other", true)).toBe("saved");
+  it("defaults to saved and always has matches", () => {
+    expect(listsTab(null)).toBe("saved");
+    expect(listsTab("saved")).toBe("saved");
+    expect(listsTab("matches")).toBe("matches");
+    expect(listsTab("duel")).toBe("duel");
+    expect(listsTab("other")).toBe("saved");
   });
 });
 

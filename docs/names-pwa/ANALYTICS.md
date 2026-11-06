@@ -57,9 +57,25 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
 | `install_prompt` | install offer used | `mode`, `outcome` |
 | `opt_in_changed`, `display_name_changed`, `signed_out` | settings | `opt_in` |
 | `account_deleted` | written by the database | |
+| `invite_prompt` | "choose together" prompt after the 5th save, or the solo matches tab | `placement` (fifth_save, matches_tab), `action` (shown, invite, later) |
+| `recap_shown` / `recap_cta` | round recap after 30 decisions in a session | `votes`, `saves` / `action` (continue, list) |
+| `nest_card_shown` / `nest_card_tap` | the Nest app card (recap, decision, deck end) | `placement`, `opted_in` / `action` (opt_in, learn) |
+| `decision_made` / `decision_cleared` | "בחרנו שם" | `from` (duel, saved, matches), `shared`, `custom`, `rank` / `from` |
+| `space_left` / `space_leave_failed` | leaving a shared space in settings | `members` / `reason` |
+| `survey_prompt` / `survey_submitted` | the beta survey | `action` / closed answers as tokens (`disappointed`, `stage`, `nest_app`), `audience`/`useful` as answered-or-not, `votes`, `sessions` |
 
-Not tracked yet because the feature doesn't exist: the Nest card tap and "בחרנו שם"
-(`nest_card_tap`, `decision_made` in the review). Add them with the features.
+Nest card tap rate = `nest_card_tap` (action opt_in) ÷ `nest_card_shown` where `opted_in` is false;
+compare it with the onboarding opt-in rate (review §8, kill-assumption 3).
+
+## Beta survey
+
+The survey (Sean Ellis question, two open questions, pregnancy stage, interest in the Nest app)
+is offered on the swipe screen from the user's 2nd session once they made 50+ decisions, as a
+slim prompt above the card that opens a sheet. Answers go to `analytics.names_survey` through
+`names_survey()` (migration `0011_names_leave_survey.sql`, one row per user, open answers capped
+at 500 characters, deleted with the account). Read it with `select * from analytics.names_survey_pmf;`
+(share of "very disappointed", overall and by stage). Until 0011 is applied the closed answers
+still arrive in `survey_submitted` events; the open answers are lost.
 
 ## Reading the numbers
 

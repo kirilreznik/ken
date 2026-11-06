@@ -43,10 +43,13 @@ export function restoredText(name: string): string {
 /** The segments of "השמות שלי" (`?tab=`). */
 export type ListsTab = "saved" | "matches" | "duel";
 
-/** The tab to show for `?tab=`: "התאמות" exists only in a shared space; anything else is "שמרתי". */
-export function listsTab(param: string | null, shared: boolean): ListsTab {
+/**
+ * The tab to show for `?tab=`; anything unknown is "שמרתי". "התאמות" shows in a solo space too,
+ * where it invites someone to choose together (product review step 5).
+ */
+export function listsTab(param: string | null): ListsTab {
   if (param === "duel") return "duel";
-  if (param === "matches" && shared) return "matches";
+  if (param === "matches") return "matches";
   return "saved";
 }
 

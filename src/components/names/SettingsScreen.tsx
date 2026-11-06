@@ -20,6 +20,7 @@ import { hasAppEntry } from "@/lib/names/appHistory";
 import { APP_PATH, WELCOME_PATH } from "@/lib/names/auth";
 import { isOffline } from "@/lib/names/authErrors";
 import { INSTALL_TITLE } from "@/lib/names/install";
+import { LEAVE_DIALOG, LEAVE_DONE, LEAVE_FAILED, LEAVE_OFFLINE, LEAVE_TITLE, afterLeave, leaveBody, leaveSpace } from "@/lib/names/leave";
 import { reportClientLog } from "@/lib/names/clientLog";
 import { DISPLAY_NAME_MAX, isValidDisplayName, suggestedDisplayName } from "@/lib/names/onboarding";
 import {
@@ -103,6 +104,9 @@ export default function SettingsScreen() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [status, setStatus] = useState("");
+  const [leaving, setLeaving] = useState(false);
+  const [leaveError, setLeaveError] = useState<string | null>(null);
+  const others = space.members.filter((m) => m.userId !== user?.id).map((m) => m.displayName);
 
   const name = draft ?? savedName;
   const changed = name.trim() !== savedName;
@@ -179,6 +183,36 @@ export default function SettingsScreen() {
       router.replace(WELCOME_PATH);
     } finally {
       setSigningOut(false);
+    }
+  }
+
+  async function confirmLeave() {
+    const supabase = getSupabase();
+    if (!supabase || !user || leaving) return;
+    setLeaving(true);
+    setLeaveError(null);
+    try {
+      const members = space.members.length;
+      const result = await leaveSpace(supabase);
+      if (result.kind === "offline") {
+        setLeaveError(LEAVE_OFFLINE);
+        return;
+      }
+      if (result.kind === "error") {
+        track("space_leave_failed", { reason: result.reason });
+        reportClientLog({ area: "settings", message: `leave failed: ${result.reason}` });
+        setLeaveError(LEAVE_FAILED);
+        return;
+      }
+      // "not-shared": the others had already gone; the refresh shows the solo space either way.
+      if (result.kind === "left") track("space_left", { members });
+      afterLeave(user.id);
+      await space.refresh();
+      closeDialog(LEAVE_DIALOG);
+      setStatus(LEAVE_DONE);
+      showToast(LEAVE_DONE);
+    } finally {
+      setLeaving(false);
     }
   }
 
@@ -310,6 +344,21 @@ export default function SettingsScreen() {
         <Section title="בחירה ביחד">
           <ul className={card}>
             <LinkRow href="/names/invite">הזמנת מישהו לבחור ביחד</LinkRow>
+            {space.isShared ? (
+              <li className={row}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLeaveError(null);
+                    openDialog(LEAVE_DIALOG);
+                  }}
+                  className={`${rowAction} flex-col items-start! gap-0.5!`}
+                >
+                  <span>יציאה מהבחירה המשותפת</span>
+                  <span className="text-caption font-normal text-stone">השמות ששמרת יישארו אצלך</span>
+                </button>
+              </li>
+            ) : null}
           </ul>
         </Section>
 
@@ -352,6 +401,19 @@ export default function SettingsScreen() {
       </main>
 
       <InstallSheet />
+      <Dialog name={LEAVE_DIALOG} title={LEAVE_TITLE} description={leaveBody(others)}>
+        {leaveError ? (
+          <p role="alert" className="m-0 text-caption font-bold text-urgent">
+            {leaveError}
+          </p>
+        ) : null}
+        <Button onClick={() => void confirmLeave()} aria-disabled={leaving} aria-busy={leaving} className="aria-disabled:opacity-60">
+          {leaving ? "יוצאים…" : "יציאה מהבחירה המשותפת"}
+        </Button>
+        <Button variant="secondary" data-autofocus="" onClick={() => closeDialog(LEAVE_DIALOG)}>
+          ביטול
+        </Button>
+      </Dialog>
       <Dialog name={DELETE_DIALOG} title={DELETE_TITLE} description={DELETE_BODY}>
         {deleteError ? (
           <p role="alert" className="m-0 text-caption font-bold text-urgent">
