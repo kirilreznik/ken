@@ -99,6 +99,14 @@
     box-shadow: var(--nest-shadow-glass);
   }
 
+  /* The name card: (and the other reading panels: sign-in, intro) whiter and less saturated than the chrome glass, so the fabric reads as
+   * warm light behind a white card (BRAND.md "white glass") rather than an apricot slab. */
+  .nest-names .names-glass:where(.names-card-glass) {
+    background-color: var(--nest-glass-well-tint);
+    -webkit-backdrop-filter: blur(var(--nest-glass-blur)) saturate(125%);
+    backdrop-filter: blur(var(--nest-glass-blur)) saturate(125%);
+  }
+
   .nest-names .names-glass-soft {
     background-color: var(--nest-glass-soft-tint);
     -webkit-backdrop-filter: var(--nest-glass-soft-filter);

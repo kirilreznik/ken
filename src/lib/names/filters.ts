@@ -44,6 +44,12 @@ export function isDefault(filters: Filters): boolean {
   return (Object.keys(DEFAULT_FILTERS) as (keyof Filters)[]).every((k) => filters[k] === null);
 }
 
+/** Filters set in the sheet beyond the sex chips (which show on the swipe screen already). */
+export function hasSheetFilters(filters: Filters | null): boolean {
+  if (!filters) return false;
+  return (Object.keys(DEFAULT_FILTERS) as (keyof Filters)[]).some((k) => k !== "sex" && filters[k] !== null);
+}
+
 /** The fields of a card the filters read. */
 export interface FilterableCard {
   stats: Pick<NameStats, "name" | "s">;

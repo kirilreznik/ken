@@ -22,7 +22,7 @@ import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
 
 const OFFLINE_SAVE_MESSAGE = "אין חיבור לאינטרנט. השמירה צריכה חיבור.";
-const ADULTS_ONLY = "השירות מיועד לבני 18 ומעלה.";
+const ADULTS_ONLY = "השירות מיועד מגיל 18 ומעלה.";
 const MISSING_HINT = "אפשר להתחיל אחרי שממלאים שם ומאשרים את שני הסעיפים הראשונים.";
 
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
@@ -142,7 +142,7 @@ export default function Onboarding() {
   const termsInvalid = tried && !form.termsAccepted;
 
   return (
-    <AuthLayout eyebrow="בחירת שם" title="רגע לפני שמתחילים" lead="כמה פרטים, ואפשר לבחור." hero={wordmark}>
+    <AuthLayout title="רגע לפני שמתחילים" lead="כמה פרטים, ואפשר לבחור." hero={wordmark}>
       <form noValidate onSubmit={submit} className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="display-name" className="text-card-title font-bold text-ink">

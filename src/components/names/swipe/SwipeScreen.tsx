@@ -16,7 +16,7 @@ import { useVotes } from "@/components/names/useVotes";
 import { statusText } from "@/lib/names/a11y";
 import { markAppEntry } from "@/lib/names/appHistory";
 import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
-import { defaultFilters, withSex } from "@/lib/names/filters";
+import { defaultFilters, hasSheetFilters, withSex } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
 import { matchToShow, withSeen } from "@/lib/names/matches";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
@@ -123,7 +123,7 @@ export default function SwipeScreen() {
 
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto">
-      <SwipeHeader saved={savedCount} />
+      <SwipeHeader saved={savedCount} filtered={hasSheetFilters(filters)} />
       <main className="flex min-h-0 flex-1 flex-col">
         <QuickChips sex={filters?.sex ?? null} onChange={setSex} />
         <SwipeKeys onKey={(key) => (key === "undo" ? undo() : drag.fly(key))} className="flex min-h-0 flex-1 flex-col">

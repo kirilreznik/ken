@@ -4,7 +4,7 @@ export const ACCOUNT_PATH = "/api/names/account";
 export const GOODBYE_PATH = "/names/goodbye";
 
 export const DELETE_TITLE = "למחוק את החשבון?";
-export const DELETE_BODY = "מחיקת החשבון תמחק את כל הבחירות שלך. אם יש מרחב משותף, הוא נשאר אצל מי שהוזמן/ה.";
+export const DELETE_BODY = "מחיקת החשבון תמחק את כל הבחירות שלך. בחירה משותפת ממשיכה בלעדיך, עם הבחירות של שאר המשתתפים.";
 export const DELETED_TITLE = "החשבון נמחק";
 export const DELETED_LEAD = "כל הבחירות שלך נמחקו מהשרת ומהמכשיר הזה.";
 export const DELETE_ERROR_TEXT = "לא הצלחנו למחוק את החשבון. אפשר לנסות שוב.";

@@ -1,4 +1,4 @@
-import { countTile, sparkEnd, trendLabel } from "@/lib/names/card";
+import { TREND_RANGE, countTile, sparkEnd, trendLabel } from "@/lib/names/card";
 import { SPARK_VIEWBOX } from "@/lib/names/popularity";
 import type { CardDerived, NameStats } from "@/lib/names/types";
 
@@ -9,7 +9,8 @@ const label = "text-tag text-ink-soft in-data-[names-bg=none]:text-stone";
 
 /**
  * The two number tiles (E16 FR-5, FR-5a): births in the latest year with the popularity
- * band, and the 2000–2024 sparkline with its arrow and word. A name with no recent years
+ * band, and the 2000–2024 sparkline with its arrow and word. The word reads only the last few
+ * years, so the caption names the chart's range and the word says "לאחרונה". A name with no recent years
  * shows the all-time count and no trend tile, so the trend never shows as a shape alone.
  * Sizes from Main.dc.html (canvas wells) and GlassFabric.dc.html (glass wells).
  */
@@ -28,7 +29,9 @@ export default function CardStats({ stats, band, trend, spark }: CardStatsProps)
       </div>
       {showTrend && (
         <div className={`${tile} gap-1`}>
-          <span className={label}>מגמה מאז 2000</span>
+          <span className={label}>
+            <bdi dir="ltr">{TREND_RANGE}</bdi>
+          </span>
           <svg
             width="132"
             height="28"
@@ -51,7 +54,7 @@ export default function CardStats({ stats, band, trend, spark }: CardStatsProps)
           </svg>
           <span className="flex items-center gap-1 text-ref font-bold text-ink">
             <span aria-hidden="true">{trend.arrow}</span>
-            <span>{trend.word}</span>
+            <span>{trend.word} לאחרונה</span>
           </span>
         </div>
       )}

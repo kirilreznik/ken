@@ -5,7 +5,7 @@ type SwipeFooterProps = {
   status: string;
   /** id of the keyboard shortcut hint (SwipeKeys). */
   describedBy?: string;
-  /** "לא מחובר · 3 בחירות ממתינות לסנכרון" (FR-W29), or null. */
+  /** "אין חיבור · 3 בחירות ממתינות לסנכרון" (FR-W29), or null. */
   sync?: string | null;
 };
 
@@ -56,7 +56,7 @@ export default function SwipeFooter({ canUndo, onUndo, status, describedBy, sync
           role="status"
           aria-live="polite"
           className={[
-            "names-glass-soft max-w-[62%] truncate rounded-pill text-center px-3 py-1.5 text-caption text-ink",
+            "names-glass-soft min-w-0 line-clamp-2 rounded-lg text-center px-3 py-1.5 text-caption text-ink",
             "in-data-[names-bg=none]:border-transparent in-data-[names-bg=none]:bg-transparent in-data-[names-bg=none]:p-0 in-data-[names-bg=none]:text-stone",
             "empty:border-0 empty:bg-transparent empty:p-0",
           ].join(" ")}

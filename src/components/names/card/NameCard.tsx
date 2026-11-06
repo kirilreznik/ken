@@ -32,7 +32,7 @@ export default function NameCard({ card, position, total, surname, footer, class
   return (
     <article
       aria-label={cardLabel(card)}
-      className={`names-glass relative flex flex-col gap-3 overflow-y-auto overscroll-contain rounded-xl p-5 ${className}`}
+      className={`names-glass names-card-glass relative flex flex-col gap-3 overflow-y-auto overscroll-contain rounded-xl p-5 ${className}`}
       {...rest}
     >
       <CardHeader
@@ -42,10 +42,11 @@ export default function NameCard({ card, position, total, surname, footer, class
         position={position}
         total={total}
         surname={surname}
-      />
-      {content.intro.trim() && <p className="text-intro text-center break-words text-ink">{content.intro}</p>}
-      <CardBible bible={content.bible} />
-      <CardPeople people={content.people} />
+      >
+        {content.intro.trim() && <p className="text-intro text-center break-words text-ink">{content.intro}</p>}
+        <CardBible bible={content.bible} />
+        <CardPeople people={content.people} />
+      </CardHeader>
       <CardSexBar {...derived} />
       <CardStats stats={stats} {...derived} />
       {footer}
