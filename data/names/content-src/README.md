@@ -8,6 +8,8 @@
 | `batch-NNN.json` | Drafted cards (niqqud, intro, Bible reference), most popular names first | Rendered from `scripts/names-content/drafts/batch-NNN.py` |
 | `people.json` | Known people per name, from Wikidata only | `scripts/names-content/fetch-people.mjs` |
 | `people-exclude.json` | People the owner flagged (QIDs); never shown | Owner |
+| `themes.json` | Theme lists for the "נושאים" filter (one list per theme; `unisex` is computed from CBS) | AI draft, owner review |
+| `THEMES.md` | Every theme's names and the names with none, for review | `scripts/names-content/build-themes.mjs` |
 | `REPORT.md` | Build report: counts, held names, dropped Bible references | Build script |
 | `spot-check-NNN.md` | Random cards from a batch for the owner to check | `scripts/names-content/spot-check.mjs` |
 
@@ -18,6 +20,7 @@ python3 scripts/names-content/drafts/batch-001.py      # render a drafted batch 
 node scripts/names-content/fetch-people.mjs --only 1    # Wikidata people (needs query.wikidata.org)
 node scripts/names-content/build-content.mjs            # check Bible refs, build name-content.json
 node scripts/names-content/spot-check.mjs 1             # sample for the owner
+node scripts/names-content/build-themes.mjs             # check theme lists, build ../name-themes.json + THEMES.md
 ```
 
 ## Checks in the build

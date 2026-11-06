@@ -1,0 +1,751 @@
+{
+ "_about": "Theme tags per name. Built by scripts/names-content/build-themes.mjs from content-src/themes.json; do not edit by hand.",
+ "names": {
+  "אריאל": [
+   "strength",
+   "bible",
+   "animals"
+  ],
+  "יוסף": [
+   "bible"
+  ],
+  "אורי": [
+   "fire",
+   "bible"
+  ],
+  "דוד": [
+   "bible"
+  ],
+  "לביא": [
+   "strength",
+   "animals"
+  ],
+  "אביגיל": [
+   "bible",
+   "joy"
+  ],
+  "עומר": [
+   "nature"
+  ],
+  "איילה": [
+   "animals"
+  ],
+  "רפאל": [
+   "bible",
+   "international"
+  ],
+  "אדם": [
+   "land",
+   "bible",
+   "international"
+  ],
+  "מרים": [
+   "bible",
+   "international"
+  ],
+  "ארי": [
+   "strength",
+   "animals"
+  ],
+  "שרה": [
+   "bible"
+  ],
+  "אליה": [
+   "bible"
+  ],
+  "משה": [
+   "water",
+   "bible"
+  ],
+  "נועם": [
+   "joy"
+  ],
+  "יהודה": [
+   "israel",
+   "bible"
+  ],
+  "מאיה": [
+   "international"
+  ],
+  "תמר": [
+   "israel",
+   "bible",
+   "nature"
+  ],
+  "אברהם": [
+   "bible"
+  ],
+  "אסתר": [
+   "fire",
+   "bible"
+  ],
+  "ישראל": [
+   "israel",
+   "strength",
+   "bible"
+  ],
+  "איתן": [
+   "strength",
+   "bible"
+  ],
+  "דניאל": [
+   "bible",
+   "international"
+  ],
+  "ליבי": [
+   "joy"
+  ],
+  "יעל": [
+   "bible",
+   "animals"
+  ],
+  "נועה": [
+   "bible",
+   "international"
+  ],
+  "מיכאל": [
+   "bible",
+   "international"
+  ],
+  "יהונתן": [
+   "bible"
+  ],
+  "חנה": [
+   "bible"
+  ],
+  "הלל": [
+   "poetry",
+   "bible"
+  ],
+  "יעקב": [
+   "bible"
+  ],
+  "שמעון": [
+   "bible"
+  ],
+  "יצחק": [
+   "bible",
+   "joy"
+  ],
+  "אוריה": [
+   "fire",
+   "bible"
+  ],
+  "שמואל": [
+   "bible"
+  ],
+  "אלה": [
+   "israel",
+   "nature"
+  ],
+  "אדל": [
+   "international"
+  ],
+  "אימרי": [
+   "poetry",
+   "special"
+  ],
+  "איתי": [
+   "bible"
+  ],
+  "גפן": [
+   "israel",
+   "nature"
+  ],
+  "רבקה": [
+   "bible"
+  ],
+  "רחל": [
+   "bible",
+   "animals"
+  ],
+  "אהרון": [
+   "bible"
+  ],
+  "עלמה": [
+   "international"
+  ],
+  "שלמה": [
+   "bible"
+  ],
+  "טליה": [
+   "water"
+  ],
+  "נאיה": [
+   "beauty"
+  ],
+  "אור": [
+   "fire"
+  ],
+  "רות": [
+   "bible",
+   "joy"
+  ],
+  "שירה": [
+   "poetry"
+  ],
+  "יונתן": [
+   "bible"
+  ],
+  "מיכל": [
+   "bible"
+  ],
+  "נויה": [
+   "beauty"
+  ],
+  "יהלי": [
+   "fire"
+  ],
+  "גאיה": [
+   "special",
+   "land"
+  ],
+  "ארבל": [
+   "israel",
+   "special",
+   "land"
+  ],
+  "נטע": [
+   "nature"
+  ],
+  "מאיר": [
+   "fire"
+  ],
+  "נעמי": [
+   "bible",
+   "joy"
+  ],
+  "רוני": [
+   "poetry",
+   "joy"
+  ],
+  "לאה": [
+   "bible"
+  ],
+  "יאיר": [
+   "fire",
+   "bible"
+  ],
+  "ליאם": [
+   "international"
+  ],
+  "מרדכי": [
+   "bible"
+  ],
+  "ליאן": [
+   "joy"
+  ],
+  "הודיה": [
+   "joy"
+  ],
+  "מלכה": [
+   "bible"
+  ],
+  "אביב": [
+   "nature"
+  ],
+  "בנימין": [
+   "bible",
+   "international"
+  ],
+  "אליהו": [
+   "bible"
+  ],
+  "עמנואל": [
+   "bible"
+  ],
+  "אמה": [
+   "international"
+  ],
+  "יובל": [
+   "poetry",
+   "water",
+   "bible"
+  ],
+  "מנחם": [
+   "joy"
+  ],
+  "איתמר": [
+   "bible",
+   "nature"
+  ],
+  "שחר": [
+   "fire"
+  ],
+  "אגם": [
+   "water"
+  ],
+  "ישי": [
+   "bible"
+  ],
+  "נגה": [
+   "fire"
+  ],
+  "ריף": [
+   "special",
+   "water",
+   "international"
+  ],
+  "הדסה": [
+   "bible",
+   "nature"
+  ],
+  "בניה": [
+   "bible"
+  ],
+  "עידו": [
+   "bible"
+  ],
+  "אלמה": [
+   "international"
+  ],
+  "תהילה": [
+   "poetry"
+  ],
+  "שילה": [
+   "israel",
+   "bible"
+  ],
+  "מעיין": [
+   "water"
+  ],
+  "הראל": [
+   "land"
+  ],
+  "עמית": [
+   "joy"
+  ],
+  "עילאי": [
+   "special"
+  ],
+  "אמיר": [
+   "nature"
+  ],
+  "ליב": [
+   "international"
+  ],
+  "אלישבע": [
+   "bible"
+  ],
+  "לין": [
+   "joy"
+  ],
+  "אבישג": [
+   "special",
+   "bible"
+  ],
+  "שקד": [
+   "nature"
+  ],
+  "עדי": [
+   "beauty"
+  ],
+  "נתנאל": [
+   "bible"
+  ],
+  "אפרת": [
+   "israel",
+   "land",
+   "bible"
+  ],
+  "נבו": [
+   "special",
+   "land",
+   "bible"
+  ],
+  "נוה": [
+   "land",
+   "beauty"
+  ],
+  "רני": [
+   "poetry",
+   "joy"
+  ],
+  "טוהר": [
+   "special"
+  ],
+  "דבורה": [
+   "bible",
+   "animals"
+  ],
+  "נתן": [
+   "bible"
+  ],
+  "ניב": [
+   "poetry"
+  ],
+  "הללי": [
+   "poetry",
+   "special"
+  ],
+  "אלון": [
+   "strength",
+   "nature"
+  ],
+  "עדן": [
+   "bible"
+  ],
+  "ניתאי": [
+   "special"
+  ],
+  "כרם": [
+   "land",
+   "nature"
+  ],
+  "אבראהים": [
+   "bible"
+  ],
+  "נעמה": [
+   "bible",
+   "joy"
+  ],
+  "עוז": [
+   "strength"
+  ],
+  "צבי": [
+   "animals"
+  ],
+  "הדר": [
+   "beauty"
+  ],
+  "בן": [
+   "international"
+  ],
+  "הילה": [
+   "fire"
+  ],
+  "נהוראי": [
+   "fire",
+   "special"
+  ],
+  "בר": [
+   "land",
+   "nature"
+  ],
+  "ראם": [
+   "special",
+   "strength",
+   "animals"
+  ],
+  "גיא": [
+   "land"
+  ],
+  "מאור": [
+   "fire"
+  ],
+  "זיו": [
+   "fire"
+  ],
+  "אריאה": [
+   "poetry",
+   "international"
+  ],
+  "הדס": [
+   "nature"
+  ],
+  "גבריאל": [
+   "strength",
+   "bible",
+   "international"
+  ],
+  "כרמל": [
+   "israel",
+   "land",
+   "bible"
+  ],
+  "מלאכי": [
+   "bible"
+  ],
+  "אמילי": [
+   "international"
+  ],
+  "מסק": [
+   "special"
+  ],
+  "נור": [
+   "fire"
+  ],
+  "אוריאל": [
+   "fire",
+   "bible"
+  ],
+  "נריה": [
+   "fire",
+   "bible"
+  ],
+  "תהל": [
+   "poetry",
+   "special"
+  ],
+  "אריה": [
+   "strength",
+   "animals"
+  ],
+  "ים": [
+   "water"
+  ],
+  "שלום": [
+   "joy"
+  ],
+  "נחמה": [
+   "joy"
+  ],
+  "מאורי": [
+   "fire"
+  ],
+  "עופרי": [
+   "animals"
+  ],
+  "שאם": [
+   "special",
+   "land"
+  ],
+  "ברכה": [
+   "joy"
+  ],
+  "אביטל": [
+   "water",
+   "bible"
+  ],
+  "מריה": [
+   "international"
+  ],
+  "מילא": [
+   "joy",
+   "international"
+  ],
+  "יהושע": [
+   "bible"
+  ],
+  "זיין": [
+   "beauty"
+  ],
+  "ידידיה": [
+   "bible",
+   "joy"
+  ],
+  "אלחנן": [
+   "bible"
+  ],
+  "צפורה": [
+   "bible",
+   "animals"
+  ],
+  "נחמן": [
+   "joy"
+  ],
+  "יגל": [
+   "joy"
+  ],
+  "תום": [
+   "international"
+  ],
+  "אופיר": [
+   "special",
+   "land",
+   "bible"
+  ],
+  "אן": [
+   "international"
+  ],
+  "ניל": [
+   "water",
+   "international"
+  ],
+  "רון": [
+   "poetry",
+   "joy"
+  ],
+  "דן": [
+   "bible"
+  ],
+  "יסכה": [
+   "special",
+   "bible"
+  ],
+  "עומרי": [
+   "bible",
+   "nature"
+  ],
+  "יהב": [
+   "special"
+  ],
+  "שוהם": [
+   "special",
+   "beauty"
+  ],
+  "אביה": [
+   "bible"
+  ],
+  "ריאן": [
+   "water"
+  ],
+  "יאר": [
+   "fire",
+   "special"
+  ],
+  "שמס": [
+   "fire",
+   "special"
+  ],
+  "ירדן": [
+   "israel",
+   "water",
+   "bible"
+  ],
+  "לוי": [
+   "bible"
+  ],
+  "ליאו": [
+   "strength",
+   "animals",
+   "international"
+  ],
+  "עברי": [
+   "israel"
+  ],
+  "אביתר": [
+   "bible"
+  ],
+  "זוהר": [
+   "fire"
+  ],
+  "ליבא": [
+   "joy"
+  ],
+  "חוה": [
+   "bible"
+  ],
+  "סול": [
+   "fire",
+   "special",
+   "international"
+  ],
+  "אודיה": [
+   "joy"
+  ],
+  "כפיר": [
+   "strength",
+   "animals"
+  ],
+  "שולמית": [
+   "bible"
+  ],
+  "סהר": [
+   "fire",
+   "special"
+  ],
+  "אביאל": [
+   "bible"
+  ],
+  "שיר": [
+   "poetry"
+  ],
+  "מילה": [
+   "poetry",
+   "joy",
+   "international"
+  ],
+  "שושנה": [
+   "nature"
+  ],
+  "רותם": [
+   "nature"
+  ],
+  "אליעזר": [
+   "bible"
+  ],
+  "איה": [
+   "animals"
+  ],
+  "דין": [
+   "international"
+  ],
+  "פנחס": [
+   "bible"
+  ],
+  "שיינא": [
+   "beauty"
+  ],
+  "רוי": [
+   "international"
+  ],
+  "יסמין": [
+   "nature"
+  ],
+  "אמיליה": [
+   "international"
+  ],
+  "מוריה": [
+   "israel",
+   "land",
+   "bible"
+  ],
+  "יולי": [
+   "international"
+  ],
+  "אלרואי": [
+   "special"
+  ],
+  "כרמי": [
+   "land",
+   "nature"
+  ],
+  "נדב": [
+   "bible"
+  ],
+  "גלי": [
+   "water"
+  ],
+  "ברוך": [
+   "bible"
+  ],
+  "גל": [
+   "water"
+  ],
+  "שמחה": [
+   "joy"
+  ],
+  "נפתלי": [
+   "strength",
+   "bible"
+  ],
+  "פלג": [
+   "special",
+   "water",
+   "bible"
+  ],
+  "בתיה": [
+   "bible"
+  ],
+  "טל": [
+   "water"
+  ],
+  "אמונה": [
+   "joy"
+  ],
+  "אלעזר": [
+   "bible"
+  ],
+  "מילאן": [
+   "joy",
+   "international"
+  ],
+  "מאסה": [
+   "beauty"
+  ],
+  "אליאב": [
+   "bible"
+  ],
+  "עמיחי": [
+   "israel"
+  ],
+  "אוסיד": [
+   "strength",
+   "animals"
+  ],
+  "זינה": [
+   "beauty"
+  ]
+ }
+}

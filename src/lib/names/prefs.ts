@@ -1,5 +1,6 @@
 import { deserialize as deserializeDuel, type DuelState } from "./duel";
-import { SECTOR_LABELS, defaultFilters, type Filters, type NameLength, type Sector } from "./filters";
+import { SECTOR_LABELS, clampRange, defaultFilters, type Filters, type NameLength, type Sector } from "./filters";
+import { isThemeId } from "./themes";
 import type { SpaceMember } from "./space";
 import type { PopularityBand, SexTag, TrendWord } from "./types";
 
@@ -52,6 +53,15 @@ function readFilters(raw: unknown): Filters {
   out.letter = typeof r.letter === "string" && /^\p{L}$/u.test(r.letter) ? r.letter : null;
   out.length = oneOf(LENGTHS)(r.length);
   out.origin = oneOf(SECTORS)(r.origin);
+  if (Array.isArray(r.themes)) {
+    const themes = [...new Set(r.themes.filter(isThemeId))];
+    out.themes = themes.length ? themes : null;
+  }
+  const range = r.letterRange as Record<string, unknown> | null | undefined;
+  if (range && Number.isFinite(range.min) && Number.isFinite(range.max)) {
+    out.letterRange = clampRange(range.min as number, range.max as number);
+    out.length = null;
+  }
   return out;
 }
 
