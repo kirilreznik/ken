@@ -1,0 +1,49 @@
+<!doctype html>
+<!-- Calibration page for sim.mjs (SIMULATOR.md). Served by `node sim.mjs serve-calib`. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>sim calib</title>
+<style>
+  body { margin: 0; font: 16px -apple-system, sans-serif; }
+  #info { padding: 12px; font-size: 18px; }
+  #tapbox { margin: 12px; height: 88px; background: #ddd; display: grid; place-items: center; }
+  #strip { margin: 12px 0; overflow-x: auto; white-space: nowrap; background: #eef; }
+  #strip span { display: inline-block; width: 120px; height: 80px; line-height: 80px;
+    text-align: center; border-inline-end: 2px solid #99c; }
+  #drag { margin: 12px; height: 120px; background: #fed; touch-action: none;
+    display: grid; place-items: center; }
+</style>
+</head>
+<body>
+<div id="info"></div>
+<div id="tapbox">tap here</div>
+<div id="strip"></div>
+<div id="drag">drag here (touch-action: none)</div>
+<script>
+  const strip = document.getElementById("strip");
+  for (let i = 0; i < 20; i++) strip.insertAdjacentHTML("beforeend", `<span>${i}</span>`);
+  const s = { taps: 0, lastTap: "-", moves: 0, dx: 0, type: "-" };
+  let x0 = 0;
+  const show = () => {
+    const r = (id) => document.getElementById(id).getBoundingClientRect();
+    const f = (b) => `${Math.round(b.left)},${Math.round(b.top)} ${Math.round(b.width)}x${Math.round(b.height)}`;
+    document.getElementById("info").innerHTML =
+      `inner ${innerWidth}x${innerHeight} dpr ${devicePixelRatio}<br>` +
+      `tapbox ${f(r("tapbox"))} taps ${s.taps} at ${s.lastTap}<br>` +
+      `strip ${f(r("strip"))} scrollLeft ${Math.round(strip.scrollLeft)}<br>` +
+      `drag ${f(r("drag"))} ${s.type} moves ${s.moves} dx ${Math.round(s.dx)}`;
+  };
+  document.getElementById("tapbox").addEventListener("click", (e) => {
+    s.taps++; s.lastTap = `${Math.round(e.clientX)},${Math.round(e.clientY)}`; show();
+  });
+  const drag = document.getElementById("drag");
+  drag.addEventListener("pointerdown", (e) => { s.type = e.pointerType; s.moves = 0; s.dx = 0; x0 = e.clientX; show(); });
+  drag.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "touch") { s.moves++; s.dx = e.clientX - x0; show(); } });
+  strip.addEventListener("scroll", show);
+  addEventListener("resize", show);
+  show();
+</script>
+</body>
+</html>
