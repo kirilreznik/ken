@@ -66,3 +66,5 @@ supabase/functions/*/dist/
 !/public/names/data/.gitkeep
 .cache/
 __pycache__/
+/scripts/ralph/qa/name-detail/shots/
+/scripts/ralph/qa/name-detail/.auth/
