@@ -8,6 +8,7 @@ export const LAST_YEAR = 2024;
 export interface DataManifest {
   names: string;
   content: string;
+  details: string;
   builtAt: string;
 }
 
@@ -29,7 +30,12 @@ export interface RawDetailsFile {
 }
 
 export const DATA_BASE = "/names/data/";
-const FALLBACK: DataManifest = { names: "names.json", content: "content.json", builtAt: "" };
+const FALLBACK: DataManifest = {
+  names: "names.json",
+  content: "content.json",
+  details: "details.json",
+  builtAt: "",
+};
 
 export function parseNames(raw: RawNamesFile): Map<string, NameStats> {
   if (raw.firstTrendYear !== FIRST_TREND_YEAR || raw.lastYear !== LAST_YEAR) {

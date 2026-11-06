@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
       },
       // Names data files carry a content hash (scripts/build-names-data.mjs); manifest.json doesn't.
       {
-        source: "/names/data/:file((?:names|content)\\.[0-9a-f]{12}\\.json)",
+        source: "/names/data/:file((?:names|content|details)\\.[0-9a-f]{12}\\.json)",
         headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
     ];

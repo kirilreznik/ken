@@ -14,13 +14,20 @@ async function cacheControlFor(path: string): Promise<string | undefined> {
 
 describe("names data caching headers", () => {
   it("caches the hashed data files forever", async () => {
-    for (const file of ["names.7f66a50409b5.json", "content.11038fa6aa76.json"]) {
+    for (const file of ["names.7f66a50409b5.json", "content.11038fa6aa76.json", "details.0123456789ab.json"]) {
       expect(await cacheControlFor(`/names/data/${file}`)).toBe("public, max-age=31536000, immutable");
     }
   });
 
   it("leaves the manifest and unhashed files to revalidate", async () => {
-    for (const file of ["manifest.json", "names.json", "content.json", "names.abc.json"]) {
+    for (const file of [
+      "manifest.json",
+      "names.json",
+      "content.json",
+      "details.json",
+      "names.abc.json",
+      "details.abc.json",
+    ]) {
       expect(await cacheControlFor(`/names/data/${file}`)).toBeUndefined();
     }
   });
