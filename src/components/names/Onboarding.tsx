@@ -20,6 +20,7 @@ import { ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routin
 import { ensureSpace } from "@/lib/names/space";
 import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
+import { track } from "@/lib/names/track";
 
 const OFFLINE_SAVE_MESSAGE = "אין חיבור לאינטרנט. אפשר לשמור שוב כשהחיבור יחזור.";
 const ADULTS_ONLY = "השירות מיועד מגיל 18 ומעלה.";
@@ -125,6 +126,7 @@ export default function Onboarding() {
         fail("onboarding-space", err);
         return;
       }
+      track("onboarding_completed", { opt_in: form.updatesOptIn, joining: !!join });
       const next = nextRoute({ user_metadata: metadata }, { introSeen: getPref(user.id, "introSeen") }, join);
       router.replace(next === ONBOARDING_PATH ? "/names" : next);
     } catch (err) {

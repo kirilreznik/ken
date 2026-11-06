@@ -46,7 +46,7 @@ describe("legal drafts", () => {
 
   it("privacy names every processor, the device-only data, retention and the contact", () => {
     const text = legalTexts(privacy).join("\n");
-    for (const word of ["Supabase", "פרנקפורט", "Vercel", "Resend", "Google", "Cloudflare Turnstile"]) expect(text).toContain(word);
+    for (const word of ["Supabase", "פרנקפורט", "Vercel", "Resend", "Google", "Cloudflare Turnstile", "Microsoft Clarity"]) expect(text).toContain(word);
     for (const word of ["שם המשפחה", "תמונת רקע", "המסננים", "עד שהחשבון נמחק", "18", "לא נמכר", "ייעוץ רפואי"]) {
       expect(text).toContain(word);
     }

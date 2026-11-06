@@ -157,6 +157,7 @@ Vercel → project `ken` → Settings → Environment Variables. As of 2026-11-0
 | `PREGNANCY_OPERATOR_NAME` | **new** (not in Vercel yet as of 2026-11-04): the legal name of whoever runs the service (Kiril, as an individual) | no |
 | `PREGNANCY_CONTACT_EMAIL` | **new**: the monitored address for privacy and deletion requests | no |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | leave unset until step 11 | no |
+| `NEXT_PUBLIC_CLARITY_PROJECT_ID` | Production only: the Clarity project id (see [ANALYTICS.md](ANALYTICS.md)); leave unset elsewhere | no |
 
 Google and Resend secrets are **not** Vercel variables. They live only in the Supabase dashboard.
 
@@ -228,6 +229,11 @@ On a real iPhone (Safari) and a real Android phone (Chrome), at `https://nestjou
 3. **Install:** iPhone: Share → "הוספה למסך הבית"; Android: the install button. The icon is the peach Nest mark, the app opens full screen at the swipe screen.
 4. **Partner:** send an invite link to a second phone, join, keep the same name on both: it shows up as a match within a minute.
 5. **Delete account** from settings on a test account: it disappears from Supabase → Authentication → Users.
+
+## 14. Analytics and Clarity (after the analytics PR)
+
+See [ANALYTICS.md](ANALYTICS.md): apply migration 0010, add yourself to `analytics.internal_users`,
+create the Clarity project and set `NEXT_PUBLIC_CLARITY_PROJECT_ID` in Vercel (Production).
 
 ## Accounts summary
 

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import NamesAnalytics from "@/components/names/analytics/NamesAnalytics";
 import AuthProvider from "@/components/names/AuthProvider";
 import Unconfigured from "@/components/names/Unconfigured";
 import { InstallWatcher } from "@/components/names/pwa/Install";
@@ -25,10 +26,15 @@ export const viewport: Viewport = {
 
 export default function NamesLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="nest-names min-h-dvh">
+    // data-clarity-mask: Clarity recordings show every text and image of the app as a block
+    // (src/lib/names/clarity.ts).
+    <div className="nest-names min-h-dvh" data-clarity-mask="true">
       {isConfigured() ? (
         <>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <NamesAnalytics />
+          </AuthProvider>
           <ToastRegion />
           <RegisterWorker />
           <InstallWatcher />

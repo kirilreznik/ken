@@ -4,6 +4,7 @@ import { Suspense, useState, type FormEvent } from "react";
 import { BottomSheet, Button, closeSheet } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { CUSTOM_NAME_MAX, validateCustomName } from "@/lib/names/custom";
+import { track } from "@/lib/names/track";
 
 type AddNameSheetProps = {
   /** The data names (names.json); null while loading. */
@@ -48,6 +49,7 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
     }
     closeSheet("add-name");
     onAdd(result.name, !result.isDataName);
+    track("custom_name_added", { in_data: result.isDataName });
   };
 
   return (

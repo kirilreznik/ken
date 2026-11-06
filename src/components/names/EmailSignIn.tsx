@@ -13,10 +13,11 @@ import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import { INVALID_EMAIL_MESSAGE, OFFLINE_MESSAGE, handleAuthError, isOffline, isValidEmail } from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
 import { getPref } from "@/lib/names/prefs";
-import { nextRoute } from "@/lib/names/routing";
+import { hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
 import ConnectionNote from "./ConnectionNote";
+import { track } from "@/lib/names/track";
 
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
 
@@ -47,6 +48,7 @@ export default function EmailSignIn() {
   }, [loading, user, join, router]);
 
   function fail(area: string, err: unknown): void {
+    track("signin_failed", { method: "email", step: area.endsWith("verify") ? "verify" : "send" });
     const { message } = handleAuthError(area, err);
     if (message === null) {
       router.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));
@@ -74,6 +76,7 @@ export default function EmailSignIn() {
         return false;
       }
       setSentAt(Date.now());
+      track("signin_code_sent", { resend: step === "code" });
       return true;
     } catch (err) {
       fail("sign-in-email-send", err);
@@ -94,6 +97,7 @@ export default function EmailSignIn() {
       setError(INVALID_EMAIL_MESSAGE);
       return;
     }
+    track("signin_started", { method: "email" });
     if (await sendCode()) {
       setCode("");
       setStep("code");
@@ -110,9 +114,10 @@ export default function EmailSignIn() {
     setBusy(true);
     setError(null);
     try {
-      const { error: err } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: "email" });
+      const { data, error: err } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: "email" });
       // On success the auth listener sets the user and the effect above routes on.
       if (err) fail("sign-in-email-verify", err);
+      else track("signin_completed", { method: "email", new_user: !hasAcceptedTerms(data.user) });
     } catch (err) {
       fail("sign-in-email-verify", err);
     } finally {

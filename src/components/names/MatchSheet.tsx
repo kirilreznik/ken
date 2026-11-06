@@ -11,6 +11,7 @@ import { useNameStats } from "@/components/names/useCards";
 import { matchSheetLine, type Match } from "@/lib/names/matches";
 import { countLine } from "@/lib/names/popularity";
 import type { Card } from "@/lib/names/types";
+import { track } from "@/lib/names/track";
 
 export const MATCHES_LIST_PATH = "/names/lists?tab=matches";
 
@@ -76,13 +77,23 @@ function MatchPanel({ match, cards, onSeen }: { match: Match; cards: readonly Ca
   const panel = useRef<HTMLElement>(null);
   const lineId = useId();
 
-  const close = () => {
+  const close = (action: "continue" | "close") => {
+    track("match_cta", { action });
     onSeen();
     closeSheet("match");
   };
-  const onKeyDown = useModal(panel, close);
+  const onKeyDown = useModal(panel, () => close("close"));
+
+  // Once per panel (it is keyed by the name), even when the matches are read again.
+  const tracked = useRef(false);
+  useEffect(() => {
+    if (tracked.current) return;
+    tracked.current = true;
+    track("match_shown", { kept_by: match.keptByCount, loved_by: match.lovedByCount });
+  }, [match]);
 
   const toList = () => {
+    track("match_cta", { action: "list" });
     onSeen();
     // Replaces the sheet's history entry, so Back from the list returns to the swipe screen.
     router.replace(MATCHES_LIST_PATH);
@@ -105,7 +116,7 @@ function MatchPanel({ match, cards, onSeen }: { match: Match; cards: readonly Ca
           onKeyDown={onKeyDown}
           className="names-sheet-in flex min-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col gap-6 px-5 pt-14 pb-8 text-ink outline-none"
         >
-          <IconButton aria-label="סגירה" onClick={close} className="self-end">
+          <IconButton aria-label="סגירה" onClick={() => close("close")} className="self-end">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
@@ -129,7 +140,7 @@ function MatchPanel({ match, cards, onSeen }: { match: Match; cards: readonly Ca
             <Button onClick={toList}>
               לרשימת ההתאמות
             </Button>
-            <Button variant="secondary" onClick={close} className="h-13! text-card-title">
+            <Button variant="secondary" onClick={() => close("continue")} className="h-13! text-card-title">
               להמשיך לבחור
             </Button>
           </div>

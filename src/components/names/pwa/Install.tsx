@@ -15,6 +15,7 @@ import {
   type InstallMode,
 } from "@/lib/names/install";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
+import { track } from "@/lib/names/track";
 
 /**
  * The install entry's mode (null when there is nothing to offer, e.g. already installed)
@@ -23,8 +24,15 @@ import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 export function useInstall(): { mode: InstallMode; start: () => Promise<boolean> } {
   const { mode } = useSyncExternalStore(subscribeInstall, getInstallState, getServerInstallState);
   const start = async () => {
-    if (mode === "prompt") return promptInstall();
-    if (mode === "ios") openSheet("install");
+    if (mode === "prompt") {
+      const accepted = await promptInstall();
+      track("install_prompt", { mode, outcome: accepted ? "accepted" : "dismissed" });
+      return accepted;
+    }
+    if (mode === "ios") {
+      openSheet("install");
+      track("install_prompt", { mode, outcome: "steps" });
+    }
     return false;
   };
   return { mode, start };

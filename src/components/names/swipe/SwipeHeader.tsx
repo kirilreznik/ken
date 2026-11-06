@@ -29,7 +29,7 @@ function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
 // 320 px (200% zoom on a phone) the row wraps; under 360 px the title is visually hidden.
 export default function SwipeHeader({ saved, filtered = false }: { saved: number; filtered?: boolean }) {
   return (
-    <header className="flex items-center gap-2 px-5 pt-4 pb-2 max-[20rem]:flex-wrap max-[22.5rem]:px-3">
+    <header data-clarity-unmask="true" className="flex items-center gap-2 px-5 pt-4 pb-2 max-[20rem]:flex-wrap max-[22.5rem]:px-3">
       {/* A gear, not a hamburger: the button opens the settings page, not a menu. */}
       <IconButton href="/names/settings" aria-label="הגדרות">
         <Icon>

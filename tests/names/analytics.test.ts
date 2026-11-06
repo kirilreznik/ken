@@ -12,6 +12,18 @@ describe("scrubAnalyticsUrl", () => {
     );
   });
 
+  it("keeps the allowlisted source and tab parameters", () => {
+    expect(scrubAnalyticsUrl(`${O}/names?source=pwa`)).toBe(`${O}/names?source=pwa`);
+    expect(scrubAnalyticsUrl(`${O}/names/lists?tab=matches&from=saved`)).toBe(`${O}/names/lists?tab=matches`);
+    expect(scrubAnalyticsUrl(`${O}/names?join=ABC&source=pwa#x`)).toBe(`${O}/names?source=pwa`);
+  });
+
+  it("drops allowlisted parameters whose value isn't a short token", () => {
+    expect(scrubAnalyticsUrl(`${O}/names?source=${encodeURIComponent("me@x.com")}`)).toBe(`${O}/names`);
+    expect(scrubAnalyticsUrl(`${O}/names/lists?tab=${encodeURIComponent("זיו")}`)).toBe(`${O}/names/lists`);
+    expect(scrubAnalyticsUrl(`${O}/names?source=${"a".repeat(33)}`)).toBe(`${O}/names`);
+  });
+
   it("removes the invite code from /names/join/{code}", () => {
     expect(scrubAnalyticsUrl(`${O}/names/join/ABC123`)).toBe(`${O}/names/join`);
     expect(scrubAnalyticsUrl(`${O}/names/join/ABC123?x=1`)).toBe(`${O}/names/join`);

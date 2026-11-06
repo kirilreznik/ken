@@ -15,6 +15,7 @@ import {
   reportTitle,
   validateReport,
 } from "@/lib/names/report";
+import { track } from "@/lib/names/track";
 
 type ReportSheetProps = {
   /** The card the report is about; null on /names/about, where the name is an optional field. */
@@ -83,6 +84,7 @@ function Panel({ name }: ReportSheetProps) {
       setSendError(isOffline() ? REPORT_OFFLINE : REPORT_FAILED);
       return;
     }
+    track("report_sent");
     setSent(true);
   };
 

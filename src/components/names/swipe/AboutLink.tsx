@@ -1,6 +1,7 @@
 "use client";
 
 import { openSheet } from "@/components/names/ui";
+import { track } from "@/lib/names/track";
 
 /**
  * "על הנתונים" at the end of the current card (FR-W30): opens ?sheet=about, where the report
@@ -10,7 +11,10 @@ export default function AboutLink() {
   return (
     <button
       type="button"
-      onClick={() => openSheet("about")}
+      onClick={() => {
+        openSheet("about");
+        track("about_opened");
+      }}
       className="-mb-2 inline-flex min-h-11 items-center gap-1.5 self-center rounded-pill px-2 text-caption font-bold text-ink-soft underline underline-offset-2"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" className="flex-none">
