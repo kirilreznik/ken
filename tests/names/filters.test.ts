@@ -14,8 +14,8 @@ import {
   letterValue,
   matches,
   nameLength,
-  QUICK_CHIPS,
-  withSex,
+  hasFilters,
+  sexToken,
   type FilterableCard,
   type Filters,
 } from "@/lib/names/filters";
@@ -114,17 +114,16 @@ describe("length and first letter", () => {
   });
 });
 
-describe("quick chips", () => {
-  it("lists the four chips in board order", () => {
-    expect(QUICK_CHIPS.map((c) => c.label)).toEqual(["כל השמות", "מתאים לכולם", "בת", "בן"]);
-    expect(QUICK_CHIPS.map((c) => c.sex)).toEqual([null, "מתאים לכולם", "בת", "בן"]);
+describe("filter state", () => {
+  it("hasFilters is true once any group is set, sex included", () => {
+    expect(hasFilters(null)).toBe(false);
+    expect(hasFilters(defaultFilters())).toBe(false);
+    expect(hasFilters({ ...defaultFilters(), sex: "בת" })).toBe(true);
+    expect(hasFilters({ ...defaultFilters(), letter: "א" })).toBe(true);
   });
 
-  it("withSex changes only the sex group", () => {
-    const filters = { ...defaultFilters(), popularity: "נדיר" as const, letter: "א" };
-    expect(withSex(filters, "בת")).toEqual({ ...filters, sex: "בת" });
-    expect(withSex({ ...filters, sex: "בן" }, null)).toEqual(filters);
-    expect(filters.sex).toBeNull();
+  it("sexToken gives ASCII tokens for analytics", () => {
+    expect(["בן", "בת", "מתאים לכולם", null].map((s) => sexToken(s as never))).toEqual(["boy", "girl", "unisex", "all"]);
   });
 });
 

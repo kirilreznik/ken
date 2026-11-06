@@ -16,24 +16,20 @@ import { useVotes } from "@/components/names/useVotes";
 import { statusText } from "@/lib/names/a11y";
 import { markAppEntry } from "@/lib/names/appHistory";
 import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
-import { defaultFilters, hasSheetFilters, withSex } from "@/lib/names/filters";
+import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
 import { matchToShow, withSeen } from "@/lib/names/matches";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 import { track } from "@/lib/names/track";
-import type { SexTag, Vote } from "@/lib/names/types";
+import type { Vote } from "@/lib/names/types";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
 import AboutLink from "./AboutLink";
 import EmptyDeck from "./EmptyDeck";
-import QuickChips from "./QuickChips";
 import SwipeFooter from "./SwipeFooter";
 import SwipeHeader from "./SwipeHeader";
 import SwipeKeys, { SWIPE_KEYS_ID } from "./SwipeKeys";
 import { dragClass, useSwipeDrag } from "./useSwipeDrag";
-
-/** The sex filter as an ASCII token for analytics (the tags themselves are Hebrew). */
-const SEX_TOKEN: Record<SexTag, string> = { "בן": "boy", "בת": "girl", "מתאים לכולם": "unisex" };
 
 /** How the next decision was made: a drag ends in "swipe"; buttons and keys say so first. */
 type DecideMethod = "swipe" | "button" | "key";
@@ -102,7 +98,7 @@ export default function SwipeScreen() {
     if (deckState === "all-decided") track("deck_exhausted", { votes: votes.size });
     else if (deckState === "empty-filter" && filters) {
       track("filter_empty", {
-        sex: filters.sex ? SEX_TOKEN[filters.sex] : "all",
+        sex: sexToken(filters.sex),
         popularity: filters.popularity !== null,
         trend: filters.trend !== null,
         letter: filters.letter !== null,
@@ -147,10 +143,6 @@ export default function SwipeScreen() {
     setNext(null);
   };
 
-  const setSex = (sex: SexTag | null) => {
-    if (userId && filters) setPref(userId, "filters", withSex(filters, sex));
-    track("filter_sex", { sex: sex ? SEX_TOKEN[sex] : "all" });
-  };
   const resetFilters = () => {
     if (userId) setPref(userId, "filters", defaultFilters());
     track("filters_reset");
@@ -162,16 +154,15 @@ export default function SwipeScreen() {
 
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto [@media(max-height:30rem)]:h-auto">
-      <SwipeHeader saved={savedCount} filtered={hasSheetFilters(filters)} />
+      <SwipeHeader saved={savedCount} filtered={hasFilters(filters)} />
       <main className="flex min-h-0 flex-1 flex-col">
-        <QuickChips sex={filters?.sex ?? null} onChange={setSex} />
         <SwipeKeys
           onKey={(key) => {
             if (key === "undo") return undo();
             method.current = "key";
             drag.fly(key);
           }} className="flex min-h-0 flex-1 flex-col">
-          <div className="flex min-h-0 flex-1 flex-col px-5 max-[20rem]:min-h-100 max-[20rem]:px-3 [@media(max-height:30rem)]:min-h-100">
+          <div className="flex min-h-0 flex-1 flex-col px-5 pt-1 max-[20rem]:min-h-100 max-[20rem]:px-3 [@media(max-height:30rem)]:min-h-100">
             {deck && current && progress ? (
               <CardStack
                 cards={deck.cards}
@@ -181,7 +172,7 @@ export default function SwipeScreen() {
                 surname={surname}
                 className={`min-h-0 ${dragClass}`}
                 aria-describedby={SWIPE_KEYS_ID}
-                footer={<AboutLink />}
+                corner={<AboutLink />}
                 {...drag.card}
               />
             ) : deck && deck.state !== "ok" ? (
@@ -201,8 +192,10 @@ export default function SwipeScreen() {
             onHide={fly("hidden")}
             disabled={!current}
             describedBy={SWIPE_KEYS_ID}
+            onUndo={undo}
+            canUndo={undoStack.length > 0}
           />
-          <SwipeFooter canUndo={undoStack.length > 0} onUndo={undo} status={status} next={next} describedBy={SWIPE_KEYS_ID} sync={sync} />
+          <SwipeFooter status={status} next={next} sync={sync} />
         </SwipeKeys>
       </main>
       <BackgroundSheet />
