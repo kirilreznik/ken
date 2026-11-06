@@ -1,0 +1,366 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head><body><title>Name Card Detail View</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;800&display=swap">
+<style>
+/* Layout: one reading column of notes, with phone mocks set in a wrapping strip where the idea is visual. */
+:root{
+  --ink:#1F1B1E; --ink-soft:#4A4149; --stone:#6E655F; --mist:#8B8690; --line:#E6DDD6;
+  --canvas:#F4F2F1; --surface:#FFFFFF; --sand:#F1EBE6; --peach:#FFCFA8; --peach-soft:#FFE2C9; --peach-pale:#FFF6EE;
+  --clay:#C97A3E; --clay-deep:#8A5225;
+  --page:#F4F2F1; --text:#1F1B1E; --muted:#6E655F; --panel:#FFFFFF; --rule:#E6DDD6; --pick:#FFE2C9; --pick-text:#8A5225;
+  --font:"Heebo",system-ui,"Noto Sans Hebrew",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--page:#191618;--text:#F1ECEA;--muted:#B5ACA6;--panel:#242023;--rule:#3A3437;--pick:#3B2A1E;--pick-text:#FFCFA8;color-scheme:dark}}
+:root[data-theme="dark"]{--page:#191618;--text:#F1ECEA;--muted:#B5ACA6;--panel:#242023;--rule:#3A3437;--pick:#3B2A1E;--pick-text:#FFCFA8;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--text);font-family:var(--font);font-weight:500;font-size:16px;line-height:1.6;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:48px}
+.col{max-width:68ch}
+h1{font-size:34px;line-height:1.15;font-weight:800;margin:0;text-wrap:balance;letter-spacing:-.5px}
+h2{font-size:22px;line-height:1.3;font-weight:800;margin:0 0 12px;text-wrap:balance}
+h3{font-size:17px;font-weight:800;margin:0 0 6px}
+p{margin:0 0 10px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.lede{font-size:18px;color:var(--muted);margin-top:10px}
+.rec{background:var(--pick);color:var(--text);border-radius:22px;padding:22px 24px}
+.rec strong{color:var(--pick-text)}
+.rec ul{margin:8px 0 0;padding-inline-start:20px}
+ul{margin:0;padding-inline-start:20px} li{margin-bottom:6px}
+.finds{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.find{background:var(--panel);border:1px solid var(--rule);border-radius:18px;padding:18px}
+.find .k{font-size:13px;font-weight:800;color:var(--pick-text);margin-bottom:4px}
+.find p{font-size:15px;margin:0}
+code{font-size:.88em;background:var(--panel);border:1px solid var(--rule);border-radius:6px;padding:0 5px}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px}
+.opt{display:flex;flex-direction:column;gap:12px;min-width:0}
+.opt .tag{align-self:flex-start;font-size:12px;font-weight:800;border-radius:999px;padding:2px 10px;background:var(--panel);border:1px solid var(--rule);color:var(--muted)}
+.opt .tag.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.opt h3{margin:0}
+.pc{font-size:14.5px}
+.pc b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl{overflow-x:auto;background:var(--panel);border:1px solid var(--rule);border-radius:18px}
+th,td{text-align:start;padding:12px 16px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.he{font-family:var(--font);direction:rtl;unicode-bidi:isolate}
+.qs{counter-reset:q;list-style:none;padding:0;display:flex;flex-direction:column;gap:12px}
+.qs li{counter-increment:q;background:var(--panel);border:1px solid var(--rule);border-radius:16px;padding:14px 18px 14px 52px;position:relative;margin:0}
+.qs li::before{content:counter(q);position:absolute;left:16px;top:14px;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center}
+.qs li .my{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+
+/* ---------- Phone mocks (always light: they show the app, which has no dark theme yet) ---------- */
+.strip{display:flex;flex-wrap:wrap;gap:28px;justify-content:center}
+.fig{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.fig figcaption{font-size:13px;color:var(--muted);text-align:center;max-width:270px}
+.phone{width:270px;max-width:100%;height:560px;border-radius:38px;background:#2a2528;padding:9px;flex:none;box-shadow:0 20px 50px rgba(31,27,30,.18)}
+.screen{position:relative;width:100%;height:100%;border-radius:30px;overflow:hidden;direction:rtl;font-family:var(--font);color:var(--ink);
+  background:radial-gradient(120% 70% at 85% 10%,#ffd9b8 0%,transparent 60%),radial-gradient(90% 60% at 10% 85%,#f3c9a4 0%,transparent 60%),linear-gradient(160deg,#e9d7c8,#cdb4a3)}
+.screen.small{height:440px}
+.phone.small{height:440px;width:220px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 6px;font-size:11px;font-weight:800;color:var(--ink)}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:rgba(255,255,255,.55);padding:3px 9px;font-size:10.5px;font-weight:700;color:var(--ink-soft)}
+.glass{background:rgba(255,255,255,.62);backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);border:1px solid rgba(255,255,255,.7);box-shadow:0 10px 30px rgba(31,27,30,.12)}
+.card{position:absolute;inset:44px 16px 92px;border-radius:22px;padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
+.back1,.back2{position:absolute;border-radius:22px;background:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.5)}
+.back1{inset:52px 26px 78px;transform:rotate(2deg)} .back2{inset:60px 38px 66px;transform:rotate(-3deg)}
+.nm{font-size:40px;font-weight:800;line-height:1}
+.nq{font-size:13px;color:var(--ink-soft);font-weight:700}
+.sx{font-size:10px;font-weight:800;border-radius:999px;padding:2px 8px;background:var(--ink);color:#fff}
+.intro{font-size:12.5px;line-height:1.45;color:var(--ink)}
+.chips{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+.chip{font-size:10px;font-weight:700;border-radius:999px;padding:2px 8px;background:rgba(255,255,255,.7);border:1px solid var(--line);color:var(--ink-soft)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;margin-top:auto}
+.tile{background:rgba(255,255,255,.65);border-radius:12px;padding:7px 8px;text-align:start}
+.tile .l{font-size:9px;color:var(--ink-soft);font-weight:700}
+.tile .v{font-size:17px;font-weight:800;line-height:1.1}
+.tile .s{font-size:9px;color:var(--ink-soft)}
+.more{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:var(--ink);border-radius:999px;padding:6px 12px;background:rgba(255,255,255,.8);border:1px solid var(--line)}
+.actions{position:absolute;left:0;right:0;bottom:22px;display:flex;justify-content:center;gap:14px;align-items:center}
+.act{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:9.5px;font-weight:800;color:var(--ink)}
+.act.big{width:56px;height:56px;background:var(--ink);color:#fff}
+.tapdot{position:absolute;width:44px;height:44px;border-radius:50%;border:2px solid var(--clay);background:rgba(201,122,62,.18)}
+.tapdot::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid rgba(201,122,62,.35)}
+.scrim{position:absolute;inset:0;background:rgba(31,27,30,.28)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:26px 26px 0 0;background:rgba(255,255,255,.9);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);padding:8px 16px 16px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.handle{width:40px;height:5px;border-radius:9px;background:var(--faint,#B5ACA6);margin:0 auto 2px}
+.shead{display:flex;align-items:center;gap:10px}
+.shead .nm{font-size:30px}
+.close{margin-inline-start:auto;width:30px;height:30px;border-radius:50%;background:var(--sand);display:grid;place-items:center;font-size:14px;color:var(--ink-soft)}
+.sec{display:flex;flex-direction:column;gap:3px;text-align:start}
+.sec .h{font-size:10px;font-weight:800;color:var(--stone);letter-spacing:.02em}
+.sec .t{font-size:12px;line-height:1.45}
+.verse{font-size:12.5px;line-height:1.5;background:var(--peach-pale);border-radius:12px;padding:8px 10px}
+.verse .r{display:block;font-size:10px;color:var(--clay-deep);font-weight:700;margin-top:2px}
+.ppl{display:flex;flex-direction:column;gap:4px}
+.ppl div{font-size:11.5px;background:var(--sand);border-radius:10px;padding:5px 9px}
+.ppl b{font-weight:800}
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px}
+.bar{display:flex;height:12px;border-radius:9px;overflow:hidden;font-size:0}
+.bar i{display:block;height:100%}
+.legend{display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:var(--ink-soft);margin-top:3px}
+.facts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.facts div{background:var(--sand);border-radius:10px;padding:6px 7px}
+.facts .v{font-size:14px;font-weight:800;line-height:1.1}
+.facts .l{font-size:9px;color:var(--ink-soft)}
+.dock{display:flex;gap:6px}
+.dock span{flex:1;text-align:center;border-radius:999px;padding:8px 0;font-size:11px;font-weight:800;border:1px solid var(--line);background:var(--surface)}
+.dock span.p{background:var(--ink);color:#fff;border-color:var(--ink)}
+.mini{font-size:9.5px;color:var(--stone)}
+.page{position:absolute;inset:0;background:var(--canvas);padding:12px 16px;display:flex;flex-direction:column;gap:10px;text-align:start}
+.crumb{font-size:11px;font-weight:800;display:flex;align-items:center;gap:6px}
+.url{font-size:9px;color:var(--mist);direction:ltr;text-align:center;background:rgba(255,255,255,.7);border-radius:8px;padding:3px 0;margin:8px 16px 0}
+.fake{height:9px;border-radius:5px;background:var(--line)}
+.flip{position:absolute;inset:30px 10px 20px;border-radius:24px;padding:14px;display:flex;flex-direction:column;gap:9px;text-align:start}
+@media (prefers-reduced-motion:no-preference){.tapdot::after{animation:ring 1.8s ease-out infinite}@keyframes ring{from{transform:scale(.7);opacity:1}to{transform:scale(1.3);opacity:0}}}
+</style>
+
+<div class="wrap">
+
+<header class="col">
+  <div class="eyebrow">Name swiper · brainstorm, nothing built yet</div>
+  <h1>Tap a name card to open its full story</h1>
+  <p class="lede">Options for a detail view on nestjourney.app/names, how it lives next to swiping, what goes in it, and the questions to settle before building.</p>
+</header>
+
+<section class="rec col">
+  <h2>My recommendation</h2>
+  <p><strong>A tap on the card opens a glass bottom sheet with the name's full details.</strong> It opens at about 70% height so the deck stays visible behind it, pulls up to full screen, and closes with a drag down, the ✕ or the phone's Back. The three decision buttons stay at the bottom of the sheet, so a person can decide right from the details.</p>
+  <ul>
+    <li>Build the sheet's content as one shared piece, so the public per-name pages from the SEO research can reuse it later with no second design.</li>
+    <li>Make the swipe card shorter at the same time: name, niqqud, one line of meaning and the two number tiles. The long parts (verse, people, full chart) move into the sheet. This also fixes a hidden problem today, below.</li>
+    <li>Saved names on the Lists screen open the same sheet, so the details are there when partners talk it over.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="col">What the code and data tell us</h2>
+  <div class="finds">
+    <div class="find"><div class="k">A tap is free to use</div><p>The swipe only starts after the finger moves 8 px (<code>gesture.ts</code>). A press that lifts without moving does nothing today, so "tap opens details" can't be confused with a swipe. I'd add a small allowance (under 10 px, under 400 ms) so a shaky tap still counts.</p></div>
+    <div class="find"><div class="k">Long cards lose swipe-up on phones</div><p>When a card's content is taller than the card, it scrolls inside itself and the "אהבתי מאוד" swipe-up is turned off for touch. Moving the long sections into the sheet keeps every card short, so swipe-up works on all of them.</p></div>
+    <div class="find"><div class="k">The content is thin for now</div><p>Of the 1,295 cards, intros average about 30 characters, 425 have a checked Bible verse, and only 5 have known people (the Wikidata fetch hasn't run yet). The sheet's real value on day one is the numbers. It gets richer as content arrives.</p></div>
+    <div class="find"><div class="k">Numbers we can show honestly</div><p>Births per year 2000–2024, all-time boys and girls, and the communities a name is common in. The boys/girls split exists only as an all-time total, not per year, so the sheet can't show "more girls lately" without new data.</p></div>
+    <div class="find"><div class="k">Sheets already live in the URL</div><p>Filters, about and report already open as <code>?sheet=…</code>, and Back closes them. The detail sheet fits that pattern as <code>?sheet=name&amp;name=אריאל</code>, which also gives each name a link that can be shared later.</p></div>
+    <div class="find"><div class="k">Overlap with the design thread</div><p>The swipe-screen declutter (no filter chips, thinner card edges, small undo and "i" buttons) is now merged to main. The detail view will be built on top of that version.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2 class="col">Three ways to open the details</h2>
+  <div class="options">
+
+    <div class="opt">
+      <span class="tag on">Chosen</span>
+      <div class="fig">
+        <div class="phone small"><div class="screen small">
+          <div class="back2"></div><div class="back1"></div>
+          <div class="card glass" style="inset:36px 14px 80px"><div class="nm" style="font-size:30px">אריאל</div></div>
+          <div class="scrim"></div>
+          <div class="sheet" style="height:72%"><div class="handle"></div>
+            <div class="shead"><div class="nm" style="font-size:22px">אריאל</div><div class="close">✕</div></div>
+            <div class="fake" style="width:90%"></div><div class="fake" style="width:70%"></div>
+            <div class="chart" style="height:58px"></div><div class="fake" style="width:80%"></div>
+            <div class="dock" style="margin-top:auto"><span>דילוג</span><span>אהבתי מאוד</span><span class="p">שמירה</span></div>
+          </div>
+        </div></div>
+      </div>
+      <h3>A. Bottom sheet over the deck</h3>
+      <div class="pc"><b>Good</b>Keeps the deck in view, so it feels like a peek, not a trip. Reuses the existing <code>BottomSheet</code>, Back button and analytics patterns. Easy to decide from inside it.
+      <b>Watch</b>Dragging the sheet down must not fight scrolling inside it: the sheet only closes on a drag down when its content is already at the top.</div>
+    </div>
+
+    <div class="opt">
+      <span class="tag">Option</span>
+      <div class="fig">
+        <div class="phone small"><div class="screen small">
+          <div class="flip glass">
+            <div class="nm" style="font-size:26px;text-align:center">אריאל</div>
+            <div class="fake" style="width:90%"></div><div class="fake" style="width:60%"></div>
+            <div class="chart" style="height:58px"></div>
+            <div class="fake" style="width:80%"></div><div class="fake" style="width:50%"></div>
+            <div class="mini" style="text-align:center;margin-top:auto">הקלף מתרחב למסך מלא</div>
+          </div>
+        </div></div>
+      </div>
+      <h3>B. The card grows to full screen</h3>
+      <div class="pc"><b>Good</b>The most delightful version: the card you're holding opens up, like turning it over.
+      <b>Watch</b>Inside the open card, a sideways drag is ambiguous: is it a swipe or a scroll? Harder animation, harder for screen readers, and it would collide most with the design thread's layout work.</div>
+    </div>
+
+    <div class="opt">
+      <span class="tag">Option</span>
+      <div class="fig">
+        <div class="phone small"><div class="screen small" style="background:var(--canvas)">
+          <div class="url">nestjourney.app/names/אריאל</div>
+          <div class="page" style="top:30px">
+            <div class="crumb">→ חזרה לשמות</div>
+            <div class="nm" style="font-size:30px">אריאל</div>
+            <div class="fake" style="width:90%"></div><div class="fake" style="width:70%"></div>
+            <div class="chart" style="height:70px"></div><div class="fake" style="width:80%"></div>
+          </div>
+        </div></div>
+      </div>
+      <h3>C. A full page per name</h3>
+      <div class="pc"><b>Good</b>One page serves the app and Google (the SEO plan's per-name pages). Easy to share as a link.
+      <b>Watch</b>Leaving the deck for a page feels heavy mid-swiping. The public page also needs a version for people who aren't signed in. Better as a second step that reuses A's content.</div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <h2 class="col">The recommended sheet, with a real card</h2>
+  <p class="col" style="color:var(--muted)">Real data for אריאל from the CBS file and the checked card content. Layout is a sketch for discussion, not a final design.</p>
+  <div class="strip">
+
+    <figure class="fig">
+      <div class="phone"><div class="screen">
+        <div class="top"><span>nest</span><span class="pill">12 שמורים</span></div>
+        <div class="back2"></div><div class="back1"></div>
+        <div class="card glass">
+          <div class="sx">מתאים לכולם</div>
+          <div class="nm">אריאל</div>
+          <div class="nq">אֲרִיאֵל</div>
+          <div class="intro">אריה של אל. אחד השמות הנפוצים בישראל היום.</div>
+          <div class="chips"><span class="chip">מהתנ״ך</span><span class="chip">2 אנשים מוכרים</span></div>
+          <div class="tiles">
+            <div class="tile"><div class="l">ב־2024</div><div class="v"><bdi dir="ltr">2,099</bdi></div><div class="s">תינוקות · נפוץ</div></div>
+            <div class="tile"><div class="l"><bdi dir="ltr">2000–2024</bdi></div><svg id="spark" width="100%" height="24" viewBox="0 0 100 24" style="direction:ltr"></svg><div class="s" style="font-weight:800;color:var(--ink)">↑ בעלייה לאחרונה</div></div>
+          </div>
+          <span class="more">לכל הפרטים ›</span>
+        </div>
+        <div class="tapdot" style="top:150px;left:100px"></div>
+        <div class="actions"><div class="act glass">דילוג</div><div class="act big">שמירה</div><div class="act glass">אהבתי</div></div>
+      </div></div>
+      <figcaption>1. The shorter card. Chips hint that more is inside; a tap anywhere, or "לכל הפרטים", opens the sheet.</figcaption>
+    </figure>
+
+    <figure class="fig">
+      <div class="phone"><div class="screen">
+        <div class="top"><span>nest</span><span class="pill">12 שמורים</span></div>
+        <div class="back2"></div><div class="back1"></div>
+        <div class="card glass"><div class="nm">אריאל</div></div>
+        <div class="scrim"></div>
+        <div class="sheet" style="height:74%">
+          <div class="handle"></div>
+          <div class="shead"><div><div class="nm">אריאל</div><div class="nq">אֲרִיאֵל · מתאים לכולם</div></div><div class="close" aria-label="סגירה">✕</div></div>
+          <div class="sec"><div class="h">מה השם אומר</div><div class="t">אריה של אל. אחד השמות הנפוצים בישראל היום.</div></div>
+          <div class="sec"><div class="h">מהתנ״ך</div><div class="verse">"הוֹי אֲרִיאֵל אֲרִיאֵל קִרְיַת חָנָה דָוִד". בספר ישעיהו זה כינוי לירושלים.<span class="r">ישעיהו כט, א</span></div></div>
+          <div class="sec"><div class="h">אנשים מוכרים בשם הזה</div><div class="ppl"><div><b>אריאל זילבר</b> · זמר ויוצר</div><div><b>אריאל זאבי</b> · ג׳ודוקא, מדליית ארד באולימפיאדת אתונה 2004</div></div></div>
+          <div class="dock" style="margin-top:auto"><span>דילוג</span><span>אהבתי מאוד</span><span class="p">שמירה</span></div>
+        </div>
+      </div></div>
+      <figcaption>2. Sheet open at ~70%. The story first: meaning, the checked verse, known people. Decision buttons stay pinned at the bottom.</figcaption>
+    </figure>
+
+    <figure class="fig">
+      <div class="phone"><div class="screen">
+        <div class="sheet" style="height:100%;border-radius:0;padding-top:14px">
+          <div class="shead"><div class="nm" style="font-size:24px">אריאל</div><div class="close">✕</div></div>
+          <div class="sec"><div class="h">כמה תינוקות קיבלו את השם בכל שנה</div>
+            <div class="chart"><svg id="chart" width="100%" viewBox="0 0 220 96" style="direction:ltr;display:block"></svg></div>
+            <div class="mini">ב־2024: <bdi dir="ltr">2,099</bdi> תינוקות, השם השני הנפוץ בשנה זו (בנים ובנות יחד)</div>
+          </div>
+          <div class="sec"><div class="h">בנים ובנות, מאז 1949</div>
+            <div class="bar"><i style="width:77%;background:var(--ink)"></i><i style="width:23%;background:var(--clay)"></i></div>
+            <div class="legend"><span>בנים 77%</span><span>בנות 23%</span></div>
+          </div>
+          <div class="facts">
+            <div><div class="v"><bdi dir="ltr">48,793</bdi></div><div class="l">תינוקות מאז 1949</div></div>
+            <div><div class="v">#2</div><div class="l">בדירוג 2024</div></div>
+            <div><div class="v">פי 3.3</div><div class="l">לעומת 2000</div></div>
+          </div>
+          <div class="mini">מקור: הלשכה המרכזית לסטטיסטיקה · על הנתונים</div>
+          <div class="dock" style="margin-top:auto"><span>דיווח על טעות</span></div>
+        </div>
+      </div></div>
+      <figcaption>3. Pulled up to full screen: the numbers. Full chart with the 2024 value, the boys/girls split, rank, and the CBS source.</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section>
+  <h2 class="col">How it lives next to swiping</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Gesture</th><th>On the swipe card</th><th>Inside the sheet</th></tr></thead>
+    <tbody>
+      <tr><td>Tap (lift within 10 px and 400 ms)</td><td>Opens the sheet</td><td>Normal taps on links and buttons</td></tr>
+      <tr><td>Drag sideways</td><td>Swipe keep or skip, as today</td><td>Nothing. No swiping inside the sheet, so the chart and text never fly away by accident</td></tr>
+      <tr><td>Drag up</td><td>"אהבתי מאוד", now on every card since cards no longer scroll</td><td>Scrolls the content, or grows the sheet to full screen</td></tr>
+      <tr><td>Drag down</td><td>Nothing</td><td>Closes the sheet when its content is at the top; otherwise scrolls</td></tr>
+      <tr><td>Keyboard</td><td>Enter or Space on the focused card opens it; arrows still decide</td><td>Esc closes and returns focus to the card</td></tr>
+      <tr><td>Back button</td><td>Leaves the screen, as today</td><td>Closes the sheet (<code>?sheet=name</code>)</td></tr>
+    </tbody>
+  </table></div>
+  <p class="col" style="margin-top:12px;color:var(--muted)">Deciding from the sheet closes it, then the card flies off the same way as with the buttons, so the motion still tells people what happened. Analytics: a new <code>detail_opened</code> event (from tap, button or list) and votes made from the sheet tagged as <code>method: "detail"</code>, so we can see whether the details change decisions.</p>
+</section>
+
+<section>
+  <h2 class="col">Added to the first version (Kiril, 6 Nov)</h2>
+  <div class="strip" style="margin-bottom:20px">
+    <figure class="fig">
+      <div class="phone"><div class="screen">
+        <div class="sheet" style="height:100%;border-radius:0;padding-top:14px">
+          <div class="shead"><div class="nm" style="font-size:24px">אריאל</div><div class="close">✕</div></div>
+          <div class="sec"><div class="h">עם שם המשפחה</div><div style="font-size:22px;font-weight:800;text-align:center;background:var(--peach-pale);border-radius:12px;padding:10px 0">אריאל כהן</div><div class="mini">שם המשפחה מההגדרות (דוגמה)</div></div>
+          <div class="sec"><div class="h">הסיפור של השם</div><div class="t">[פסקה קצרה על מקור השם והשימוש בו לאורך השנים. עדיין לא נכתב: תיכתב בתהליך התוכן ותיבדק על ידך בדגימה.]</div></div>
+          <div class="sec"><div class="h">שמות קרובים</div><div class="chips" style="justify-content:flex-start"><span class="chip" style="font-size:11px;padding:4px 10px">אריאלה</span><span class="chip" style="font-size:11px;padding:4px 10px">אראל</span><span class="chip" style="font-size:11px;padding:4px 10px">ארי</span></div><div class="mini">רשימה לדוגמה, תיבדק לפני שיוצג</div></div>
+          <div class="sec"><div class="h">ביחד</div><div class="ppl"><div><b>התאמה</b> · שניכם שמרתם את השם הזה</div></div><div class="mini">מופיע רק כששניכם שמרתם</div></div>
+          <div class="dock" style="margin-top:auto"><span>דילוג</span><span>אהבתי מאוד</span><span class="p">שמירה</span></div>
+        </div>
+      </div></div>
+      <figcaption>4. The added sections, at the top of the sheet. The surname, story and similar names shown are placeholders.</figcaption>
+    </figure>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Section</th><th>How it works</th><th>What it needs</th></tr></thead>
+    <tbody>
+      <tr><td><b>Say it with the surname</b></td><td>The name with the surname saved in settings, in large type. If no surname is saved, a short link to add one.</td><td>Code only. The surname setting already exists.</td></tr>
+      <tr><td><b>A longer story</b></td><td>A short paragraph (3 to 5 sentences) on where the name comes from and how it has been used, under the one-line intro.</td><td>New writing for all 1,295 cards, done by the content pipeline in batches like the intros: Claude drafts, Bible quotes are checked against the Tanakh, you spot-check a sample. No invented facts: names with an unclear origin get no story.</td></tr>
+      <tr><td><b>Similar names</b></td><td>Other forms and spellings of the same name (girl/boy forms, short forms, other spellings). Tapping one opens its own details, with a back step.</td><td>A new list per name. Spelling variants can be found by code; forms like אריאל → אריאלה need a drafted and checked list. Only names in the deck are shown.</td></tr>
+      <tr><td><b>Your partner's choice</b></td><td>In a shared space, the sheet shows "התאמה" only when both of you saved or loved the name. A partner's skip, hide or lone save is never shown, the same rule as matches today.</td><td>Code only. The votes and matches are already loaded on the swipe screen.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="col" style="margin-top:12px;color:var(--muted)">Still left for later: the public per-name page and sharing.</p>
+</section>
+
+<section class="col">
+  <h2>Decisions</h2>
+  <p style="color:var(--muted)">Kiril chose the sheet. The rest were decided on 6 Nov with the product-taste and strategy red-team checks, against the product review's "three things to get right": the card is true, the match moment, helping people decide.</p>
+  <ol class="qs">
+    <li><b>How it opens: the bottom sheet (A).</b><span class="my">Decided by Kiril.</span></li>
+    <li><b>Partner's choice: shown only as a match, when both of you saved the name.</b><span class="my">Changed from my first pick. Showing a partner's lone save or skip, even after you decide, breaks the promise that only mutual saves are ever seen. A match badge keeps that promise and adds a small match moment inside the sheet.</span></li>
+    <li><b>Similar names: every form, each marked boy, girl or for everyone.</b><span class="my">Only names that have a card in the deck, and the section hides when the list is empty. The list is checked before it ships, like the rest of the card.</span></li>
+    <li><b>Shorter swipe card: yes.</b><span class="my">Swiping stays fast and swipe-up works on every card. Watch: if fewer than 1 in 10 people ever open the sheet, the chips on the card need to hint more clearly.</span></li>
+    <li><b>Deciding in the sheet: yes, with the same three buttons.</b><span class="my">Reading the details is when people are most ready to decide, so the choice should be right there.</span></li>
+    <li><b>Lists screen opens the same sheet: yes.</b><span class="my">Saved names are where people narrow down, which is the weakest part today.</span></li>
+    <li><b>"Common among": left out of the sheet for now.</b><span class="my">Changed from my first pick. A line like "common among Muslims" on a name can read as labelling people and is easy to screenshot out of context. People who want this already have the origin filter. It can come back later in carefully reviewed wording.</span></li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var y=[637,765,749,743,802,838,986,1027,1119,1174,1348,1402,1565,1567,1857,1888,1870,1979,2003,1952,1883,2044,2077,1829,2099];
+  var max=2200;
+  function pts(w,h,pad){return y.map(function(v,i){return [(pad+i*(w-2*pad)/(y.length-1)).toFixed(1),(h-pad-v/max*(h-2*pad)).toFixed(1)]})}
+  var s=document.getElementById('spark');
+  if(s){var p=pts(100,24,3);s.innerHTML='<polyline points="'+p.map(function(a){return a.join(',')}).join(' ')+'" fill="none" stroke="#1F1B1E" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+p[p.length-1][0]+'" cy="'+p[p.length-1][1]+'" r="2.6" fill="#C97A3E"/>';}
+  var c=document.getElementById('chart');
+  if(c){
+    var W=220,H=96,L=26,R=8,T=8,B=16,out='';
+    function X(i){return L+i*(W-L-R)/(y.length-1)} function Y(v){return T+(1-v/max)*(H-T-B)}
+    [0,1000,2000].forEach(function(g){out+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(g)+'" y2="'+Y(g)+'" stroke="#E6DDD6" stroke-width="1"/><text x="'+(L-4)+'" y="'+(Y(g)+3)+'" font-size="7" text-anchor="end" fill="#6E655F" font-family="Heebo,sans-serif">'+(g?g.toLocaleString('en-US'):'0')+'</text>'});
+    var line=y.map(function(v,i){return X(i).toFixed(1)+','+Y(v).toFixed(1)}).join(' ');
+    out+='<polygon points="'+X(0)+','+Y(0)+' '+line+' '+X(y.length-1)+','+Y(0)+'" fill="#FFE2C9" opacity=".7"/>';
+    out+='<polyline points="'+line+'" fill="none" stroke="#1F1B1E" stroke-width="1.8" stroke-linejoin="round"/>';
+    out+='<circle cx="'+X(y.length-1)+'" cy="'+Y(y[y.length-1])+'" r="3" fill="#C97A3E"/>';
+    [[0,'2000'],[12,'2012'],[24,'2024']].forEach(function(t){out+='<text x="'+X(t[0])+'" y="'+(H-4)+'" font-size="7" text-anchor="'+(t[0]===0?'start':t[0]===24?'end':'middle')+'" fill="#6E655F" font-family="Heebo,sans-serif">'+t[1]+'</text>'});
+    c.innerHTML=out;
+  }
+})();
+</script>
+</body></html>
