@@ -21,8 +21,8 @@ import { ensureSpace } from "@/lib/names/space";
 import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
 
-const OFFLINE_SAVE_MESSAGE = "אין חיבור לאינטרנט. השמירה צריכה חיבור.";
-const ADULTS_ONLY = "השירות מיועד לבני 18 ומעלה.";
+const OFFLINE_SAVE_MESSAGE = "אין חיבור לאינטרנט. אפשר לשמור שוב כשהחיבור יחזור.";
+const ADULTS_ONLY = "השירות מיועד מגיל 18 ומעלה.";
 const MISSING_HINT = "אפשר להתחיל אחרי שממלאים שם ומאשרים את שני הסעיפים הראשונים.";
 
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
@@ -142,7 +142,7 @@ export default function Onboarding() {
   const termsInvalid = tried && !form.termsAccepted;
 
   return (
-    <AuthLayout eyebrow="בחירת שם" title="רגע לפני שמתחילים" lead="כמה פרטים, ואפשר לבחור." hero={wordmark}>
+    <AuthLayout title="רגע לפני שמתחילים" lead="כמה פרטים, ואפשר לבחור." hero={wordmark}>
       <form noValidate onSubmit={submit} className="flex flex-col gap-5">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="display-name" className="text-card-title font-bold text-ink">
@@ -161,7 +161,7 @@ export default function Onboarding() {
             onChange={(e) => update({ displayName: e.target.value })}
             aria-invalid={nameInvalid || undefined}
             aria-describedby="display-name-hint"
-            className="h-14 w-full rounded-lg border border-line bg-surface px-4 text-start text-card-title text-ink placeholder:text-faint aria-invalid:border-urgent"
+            className="h-14 w-full rounded-md border border-line bg-surface px-4 text-start text-card-title text-ink placeholder:text-faint aria-invalid:border-urgent"
           />
           <p id="display-name-hint" className="text-caption text-ink-soft">
             {nameInvalid ? <strong className="font-bold text-urgent">צריך שם, עד 40 תווים. </strong> : null}

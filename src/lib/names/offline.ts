@@ -1,11 +1,11 @@
-// FR-W29: the swipe footer's sync line. Offline it always shows ("לא מחובר", plus the
+// FR-W29: the swipe footer's sync line. Offline it always shows ("אין חיבור", plus the
 // queued count); online it only shows when queued votes are stuck, so a normal flush
 // (a few hundred ms after each swipe) doesn't flash it.
 
 /** How long queued votes wait online before the footer mentions them. */
 export const SYNC_STUCK_MS = 5000;
 
-export const OFFLINE_TEXT = "לא מחובר";
+export const OFFLINE_TEXT = "אין חיבור";
 
 /** "בחירה אחת ממתינה לסנכרון" / "3 בחירות ממתינות לסנכרון". */
 export function pendingText(pending: number): string {

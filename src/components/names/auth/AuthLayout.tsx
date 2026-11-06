@@ -3,8 +3,6 @@ import Link from "next/link";
 import fabric from "../../../../public/landing/names-fabric.webp";
 
 interface AuthLayoutProps {
-  /** Small clay line above the title, as board 1 ("בחירת שם"). */
-  eyebrow?: string;
   title: string;
   lead?: React.ReactNode;
   /** Optional round back link in the top start corner. */
@@ -21,7 +19,7 @@ interface AuthLayoutProps {
  * full-bleed with the demo's top scrim, a centered column of max 480 px, and a strong
  * glass panel holding the title and the form (board 1's layout on board 8's glass).
  */
-export default function AuthLayout({ eyebrow, title, lead, backHref, hero, footer, children }: AuthLayoutProps) {
+export default function AuthLayout({ title, lead, backHref, hero, footer, children }: AuthLayoutProps) {
   return (
     <div className="relative isolate min-h-dvh overflow-hidden">
       <Image
@@ -51,9 +49,8 @@ export default function AuthLayout({ eyebrow, title, lead, backHref, hero, foote
 
         {hero}
 
-        <section aria-labelledby="auth-title" className="names-glass flex flex-col gap-6 rounded-xl p-6">
+        <section aria-labelledby="auth-title" className="names-glass names-card-glass flex flex-col gap-6 rounded-xl p-6">
           <div className="flex flex-col gap-2">
-            {eyebrow ? <span className="text-caption font-bold text-clay-deep">{eyebrow}</span> : null}
             <h1 id="auth-title" className="text-display">
               {title}
             </h1>

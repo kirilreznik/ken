@@ -20,7 +20,7 @@ function Icon({ children }: { children: ReactNode }) {
 
 function Point({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   return (
-    <li className="names-glass flex items-start gap-3 rounded-md p-3 in-data-[names-bg=none]:shadow-none">
+    <li className="names-glass names-card-glass flex items-start gap-3 rounded-md p-3 in-data-[names-bg=none]:shadow-none">
       <span aria-hidden="true" className="names-well flex size-9 flex-none items-center justify-center rounded-sm text-ink in-data-[names-bg=none]:bg-sand">
         {icon}
       </span>
@@ -59,7 +59,7 @@ export default function Intro() {
           e.preventDefault();
           finish(true);
         }}
-        className="flex flex-1 flex-col gap-6 px-5 pt-14 pb-8"
+        className="flex flex-1 flex-col gap-6 px-5 pt-14"
       >
         <IconButton aria-label="סגירה" onClick={() => finish(false)} className="self-end">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -78,9 +78,8 @@ export default function Intro() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-caption font-bold text-clay-deep">בחירת שם</span>
           <h1 className="m-0 text-display text-ink">שם אחד בכל פעם</h1>
-          <p className="m-0 text-intro text-ink-soft">עוברים על שמות שניתנו לתינוקות בישראל, שומרים את מה שמדבר אליכם ומדלגים על השאר.</p>
+          <p className="m-0 text-intro text-ink-soft">עוברים על שמות שניתנו לתינוקות בישראל, שומרים את מה שמדבר אל הלב ומדלגים על השאר.</p>
         </div>
 
         <ul className="m-0 flex list-none flex-col gap-3 p-0">
@@ -103,8 +102,8 @@ export default function Intro() {
           >
             <b className={strong}>הבחירות נשארות פרטיות.</b>{" "}
             {isShared
-              ? "כל אחד בוחר לבד. שם ששניכם שמרתם יופיע בהתאמות, ועל דילוגים אף אחד לא יודע."
-              : "אף אחד לא רואה מה שמרתם ועל מה דילגתם."}
+              ? "הבחירה נעשית בנפרד, בכל טלפון. שם ששניכם שמרתם יופיע בהתאמות, ועל דילוגים אף אחד לא יודע."
+              : "מה ששומרים ועל מה שמדלגים נשאר פרטי."}
           </Point>
           <Point
             icon={
@@ -117,7 +116,7 @@ export default function Intro() {
           </Point>
         </ul>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="names-glass names-card-glass flex flex-col gap-1.5 rounded-md p-3 in-data-[names-bg=none]:p-0 in-data-[names-bg=none]:shadow-none">
           <label htmlFor="surname" className="text-person font-bold text-ink">
             שם משפחה, לא חובה
           </label>
@@ -139,9 +138,12 @@ export default function Intro() {
           </span>
         </div>
 
-        <Button type="submit" className="mt-auto w-full">
-          התחלת בחירה
-        </Button>
+        {/* Sticky so the main action is in view on a short screen (NP-UX-002). */}
+        <div className="sticky bottom-0 -mx-5 mt-auto bg-linear-to-t from-(--nest-canvas) from-40% to-transparent px-5 pt-6 pb-[max(16px,env(safe-area-inset-bottom))]">
+          <Button type="submit" className="w-full">
+            התחלת בחירה
+          </Button>
+        </div>
       </form>
     </main>
   );

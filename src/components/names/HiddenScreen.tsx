@@ -73,7 +73,7 @@ export default function HiddenScreen() {
 
         {!ready ? (
           <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-            <span className="sr-only">טוען</span>
+            <span className="sr-only">בטעינה</span>
           </div>
         ) : hidden.length === 0 ? (
           <p className="m-0 rounded-lg bg-surface px-4 py-6 text-center text-card-title text-ink-soft shadow-card">אין שמות מוסתרים</p>

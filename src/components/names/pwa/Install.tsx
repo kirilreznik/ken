@@ -66,6 +66,7 @@ export function InstallSheet() {
     <BottomSheet
       name="install"
       title={INSTALL_TITLE}
+      closeInHeader
       headerEnd={
         <IconButton aria-label="סגירה" onClick={() => closeSheet("install")}>
           <Icon>

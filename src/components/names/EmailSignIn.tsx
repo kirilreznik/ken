@@ -140,7 +140,7 @@ export default function EmailSignIn() {
 
   if (step === "email") {
     return (
-      <AuthLayout eyebrow="בחירת שם" title="כניסה עם קוד במייל" lead="נשלח קוד בן 6 ספרות לכתובת שלך." backHref={backHref} hero={wordmark}>
+      <AuthLayout title="כניסה עם קוד במייל" lead="נשלח קוד בן 6 ספרות לכתובת שלך." backHref={backHref} hero={wordmark}>
         <form noValidate onSubmit={submitEmail} className="flex flex-col gap-4">
           <ConnectionNote />
           <div className="flex flex-col gap-1.5">
@@ -181,7 +181,6 @@ export default function EmailSignIn() {
 
   return (
     <AuthLayout
-      eyebrow="בחירת שם"
       title="מה הקוד?"
       lead={
         <>

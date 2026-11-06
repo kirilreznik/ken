@@ -13,7 +13,7 @@ export function AuthSkeleton() {
   return (
     <div role="status" aria-busy="true" className="flex min-h-dvh items-center justify-center bg-canvas p-6">
       <div aria-hidden="true" className="aspect-[3/4] w-full max-w-sm rounded-lg bg-surface/60 shadow-card" />
-      <span className="sr-only">טוען</span>
+      <span className="sr-only">בטעינה</span>
     </div>
   );
 }

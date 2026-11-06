@@ -18,8 +18,8 @@ export const FLING_PX_PER_MS = 0.6;
 /** Holding "דילוג" this long opens the hide menu (US-046); moving more than the slop cancels. */
 export const LONG_PRESS_MS = 500;
 export const LONG_PRESS_SLOP_PX = 10;
-/** The stamps are fully visible at 90 px. */
-export const STAMP_PX = 90;
+/** The stamps are fully visible where a release starts to count (DECIDE_PX), never before. */
+export const STAMP_PX = DECIDE_PX;
 
 /** How a drag that hasn't started yet goes on: a mode, "cancel" (scrolling down), or null (wait). */
 export function dragStart(dx: number, dy: number): DragMode | "cancel" | null {

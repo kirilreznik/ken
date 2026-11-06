@@ -40,7 +40,8 @@ export default function LegalScreen({ doc, draft, contacts }: { doc: LegalDoc; d
 
         <article className="flex flex-col gap-5 rounded-lg bg-surface p-5 shadow-card">
           <p className="m-0 text-caption text-stone">
-            גרסה <bdi dir="ltr">{doc.version}</bdi> · עודכן ב־{doc.updated}
+            {/* The raw version id stays in user_metadata; people only need the date (NP-UX-009). */}
+            עודכן ב־{doc.updated}
           </p>
           <p className="m-0 text-body text-ink">
             <Text text={doc.intro} contacts={contacts} />

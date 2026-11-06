@@ -11,7 +11,7 @@ export function glassClass(variant: GlassVariant = "strong"): string {
 }
 
 // Pressed state: scale 0.95, never under reduced motion.
-const PRESS = "transition-transform duration-150 motion-safe:active:scale-95";
+const PRESS = "touch-manipulation transition-transform duration-150 motion-safe:active:scale-95";
 const DISABLED = "disabled:opacity-60 aria-disabled:opacity-60";
 
 const SIZE: Record<ButtonSize, string> = {
@@ -49,11 +49,11 @@ export function iconButtonClass(): string {
   return ["names-glass-soft inline-flex size-11 shrink-0 items-center justify-center rounded-pill text-ink", PRESS, DISABLED].join(" ");
 }
 
-// The pill is 29 px tall like the board; ::before stretches the hit area to 45 px.
+// The pill is 29 px tall like the board; ::before stretches the hit area to 45 px tall and 8 px wider.
 export function chipClass(selected: boolean): string {
   return [
-    "relative inline-flex items-center rounded-pill px-3 py-1.5 text-caption font-bold",
-    "before:absolute before:inset-x-0 before:-inset-y-2 before:content-['']",
+    "relative inline-flex items-center justify-center rounded-pill px-3 py-1.5 text-caption font-bold",
+    "before:absolute before:-inset-x-1 before:-inset-y-2 before:content-['']",
     selected ? "border border-ink bg-ink text-surface" : "names-glass-soft names-chip-off text-ink in-data-[names-bg=none]:text-ink-soft",
     PRESS,
     DISABLED,

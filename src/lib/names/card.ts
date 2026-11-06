@@ -1,4 +1,4 @@
-import { FIRST_TREND_YEAR } from "@/lib/names/data";
+import { FIRST_TREND_YEAR, LAST_YEAR } from "@/lib/names/data";
 import {
   countLine,
   latestCount,
@@ -84,6 +84,9 @@ export function sparkEnd(spark: string | null): { x: number; y: number } | null 
 }
 
 /** The sparkline's label for screen readers, "מגמה יציב מאז 2000" (as in Main.dc.html). */
+/** The trend tile's caption: the years the sparkline covers (the word only reads the last few). */
+export const TREND_RANGE = `${FIRST_TREND_YEAR}–${LAST_YEAR}`;
+
 export function trendLabel(word: TrendWord): string {
-  return `מגמה ${word} מאז ${FIRST_TREND_YEAR}`;
+  return `מספר התינוקות בכל שנה, ${FIRST_TREND_YEAR} עד ${LAST_YEAR}. בשנים האחרונות: ${word}`;
 }

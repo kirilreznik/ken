@@ -12,6 +12,8 @@ type BottomSheetProps = {
   title: string;
   /** Next to the title on the end side, e.g. "איפוס". */
   headerEnd?: ReactNode;
+  /** headerEnd holds its own "סגירה" button: the handle then leaves the Tab order (NP-UX-010). */
+  closeInHeader?: boolean;
   /** Stays below the scrolling content, e.g. the apply button. */
   footer?: ReactNode;
   children: ReactNode;
@@ -43,7 +45,7 @@ function SheetGate(props: BottomSheetProps) {
   return createPortal(<SheetPanel {...props} />, host);
 }
 
-function SheetPanel({ name, title, headerEnd, footer, children }: BottomSheetProps) {
+function SheetPanel({ name, title, headerEnd, closeInHeader = false, footer, children }: BottomSheetProps) {
   const panel = useRef<HTMLElement>(null);
   const drag = useRef<{ startY: number; dy: number; moved: boolean } | null>(null);
   const [offset, setOffset] = useState(0);
@@ -97,6 +99,7 @@ function SheetPanel({ name, title, headerEnd, footer, children }: BottomSheetPro
         <button
           type="button"
           aria-label="סגירה"
+          tabIndex={closeInHeader ? -1 : undefined}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerEnd}
