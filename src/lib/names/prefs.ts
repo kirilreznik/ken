@@ -21,6 +21,16 @@ export interface Prefs {
   installHintDismissed: boolean;
   /** The last space loaded online, so the app still opens offline (FR-W29). */
   lastSpace: { spaceId: string; members: SpaceMember[] } | null;
+  /** The one-time "choose together" prompt after the 5th save was shown (launch.ts). */
+  invitePromptShown: boolean;
+  /** The analytics session the round recap was last shown in (once per session). */
+  recapSession: string | null;
+  /** Sessions this user had on this device: the last session id and how many. */
+  sessions: { last: string | null; count: number };
+  /** The beta survey: answered, or turned down from the prompt. */
+  survey: "done" | "dismissed" | null;
+  /** The name marked "בחרנו", per space (device only). */
+  chosen: { spaceId: string; name: string } | null;
 }
 
 export type PrefKey = keyof Prefs;
@@ -92,6 +102,20 @@ const readers: { [K in PrefKey]: (raw: unknown) => Prefs[K] } = {
   duelState: (v) => (v == null ? null : deserializeDuel(JSON.stringify(v))),
   installHintDismissed: bool,
   lastSpace: readLastSpace,
+  invitePromptShown: bool,
+  recapSession: (v) => (typeof v === "string" && v ? v : null),
+  sessions: (v) => {
+    const r = (typeof v === "object" && v !== null ? v : {}) as Record<string, unknown>;
+    const count = typeof r.count === "number" && Number.isInteger(r.count) && r.count > 0 ? r.count : 0;
+    return { last: typeof r.last === "string" && r.last ? r.last : null, count };
+  },
+  survey: (v) => (v === "done" || v === "dismissed" ? v : null),
+  chosen: (v) => {
+    const r = (typeof v === "object" && v !== null ? v : {}) as Record<string, unknown>;
+    return typeof r.spaceId === "string" && r.spaceId && typeof r.name === "string" && r.name
+      ? { spaceId: r.spaceId, name: r.name }
+      : null;
+  },
 };
 
 export function defaultPref<K extends PrefKey>(key: K): Prefs[K] {

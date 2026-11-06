@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import NestCard from "@/components/names/NestCard";
 import { Button, openSheet, Glass } from "@/components/names/ui";
 
 type EmptyDeckProps = {
@@ -87,6 +88,7 @@ export default function EmptyDeck({ state, saved, solo, onReset, takeFocus }: Em
                 להזמין מישהו לבחור ביחד
               </Button>
             )}
+            <NestCard placement="deck_end" />
           </>
         )}
       </Glass>

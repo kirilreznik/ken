@@ -5,8 +5,11 @@ import { iconButtonClass } from "@/components/names/ui/classes";
 
 type RowMenuProps = {
   name: string;
-  onRemove: () => void;
-  onHide: () => void;
+  /** "בחרנו בשם הזה" (the decision moment); its label says solo or together. */
+  onChoose?: () => void;
+  chooseLabel?: string;
+  onRemove?: () => void;
+  onHide?: () => void;
 };
 
 const ITEM =
@@ -25,7 +28,7 @@ function Icon({ children }: { children: React.ReactNode }) {
  * skip menu: focus goes to the first item, arrows move, Escape returns focus, Tab or a tap
  * outside close it.
  */
-export default function RowMenu({ name, onRemove, onHide }: RowMenuProps) {
+export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide }: RowMenuProps) {
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
@@ -96,12 +99,23 @@ export default function RowMenu({ name, onRemove, onHide }: RowMenuProps) {
           onKeyDown={onMenuKeyDown}
           className="names-glass names-toast-in absolute end-0 top-full z-10 mt-1.5 flex flex-col rounded-md bg-surface p-1.5"
         >
-          <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onRemove)}>
-            <Icon>
-              <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-            </Icon>
-            הסרה מהרשימה
-          </button>
+          {onChoose ? (
+            <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onChoose)}>
+              <Icon>
+                <path d="M5 12.5l4.5 4.5L19 7.5" />
+              </Icon>
+              {chooseLabel ?? "זה השם שבחרנו"}
+            </button>
+          ) : null}
+          {onRemove ? (
+            <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onRemove)}>
+              <Icon>
+                <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+              </Icon>
+              הסרה מהרשימה
+            </button>
+          ) : null}
+          {onHide ? (
           <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onHide)}>
             <Icon>
               <path d="M3 3l18 18" />
@@ -110,6 +124,7 @@ export default function RowMenu({ name, onRemove, onHide }: RowMenuProps) {
             </Icon>
             לא להציג יותר
           </button>
+          ) : null}
         </div>
       ) : null}
     </div>

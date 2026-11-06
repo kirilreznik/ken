@@ -4,7 +4,7 @@
 
 export type LayerParam = "sheet" | "dialog";
 
-export const SHEETS = ["filters", "background", "about", "match", "report", "install", "add-name"] as const;
+export const SHEETS = ["filters", "background", "about", "match", "report", "install", "add-name", "decision", "survey"] as const;
 export type SheetName = (typeof SHEETS)[number];
 
 /** The history.state key that marks an entry pushed by opening a layer. */

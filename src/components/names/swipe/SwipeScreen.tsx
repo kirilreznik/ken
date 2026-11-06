@@ -8,6 +8,7 @@ import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
 import FiltersSheet from "@/components/names/FiltersSheet";
 import MatchSheet from "@/components/names/MatchSheet";
+import SurveySheet from "@/components/names/SurveySheet";
 import { useCards } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useMatches, useSeenMatches } from "@/components/names/useMatches";
@@ -19,17 +20,22 @@ import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
 import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
 import { matchToShow, withSeen } from "@/lib/names/matches";
+import { RECAP_VOTES, countSession, pauseToShow, sessionTotals, surveyDue, type Pause } from "@/lib/names/launch";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
-import { track } from "@/lib/names/track";
+import { currentSessionInfo, track } from "@/lib/names/track";
 import type { Vote } from "@/lib/names/types";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
 import AboutLink from "./AboutLink";
 import EmptyDeck from "./EmptyDeck";
+import PausePanel from "./PausePanel";
+import SurveyPrompt from "./SurveyPrompt";
 import SwipeFooter from "./SwipeFooter";
 import SwipeHeader from "./SwipeHeader";
 import SwipeKeys, { SWIPE_KEYS_ID } from "./SwipeKeys";
 import { dragClass, useSwipeDrag } from "./useSwipeDrag";
+
+const NO_TOTALS = { votes: 0, saves: 0, names: [] as string[] };
 
 /** How the next decision was made: a drag ends in "swipe"; buttons and keys say so first. */
 type DecideMethod = "swipe" | "button" | "key";
@@ -38,7 +44,10 @@ type DecideMethod = "swipe" | "button" | "key";
  * A pref as a JSON string, so useSyncExternalStore gets a stable snapshot (getPref returns a
  * new object on every call).
  */
-function usePrefJson(userId: string | null, key: "filters" | "surname"): string | null {
+function usePrefJson(
+  userId: string | null,
+  key: "filters" | "surname" | "sessions" | "survey" | "invitePromptShown" | "recapSession",
+): string | null {
   return useSyncExternalStore(
     subscribePrefs,
     () => (userId ? JSON.stringify(getPref(userId, key)) : null),
@@ -66,6 +75,10 @@ export default function SwipeScreen() {
   const surnameJson = usePrefJson(userId, "surname");
   const filters = useMemo(() => (userId && filtersJson ? getPref(userId, "filters") : null), [userId, filtersJson]);
   const surname = surnameJson ? (JSON.parse(surnameJson) as string) : "";
+  const sessionsJson = usePrefJson(userId, "sessions");
+  const surveyJson = usePrefJson(userId, "survey");
+  const sessionCount = sessionsJson ? (JSON.parse(sessionsJson) as { count: number }).count : 0;
+  const surveyState = surveyJson ? (JSON.parse(surveyJson) as "done" | "dismissed" | null) : null;
 
   const [undoStack, setUndoStack] = useState<readonly UndoEntry[]>([]);
   const [top, setTop] = useState<string | null>(null);
@@ -75,6 +88,23 @@ export default function SwipeScreen() {
 
   useEffect(markAppEntry, []);
 
+  // The analytics session (renewed after 30 minutes away): read again whenever the votes change.
+  const storedVotes = state?.votes ?? null;
+  const session = useMemo(() => (storedVotes ? currentSessionInfo() : null), [storedVotes]);
+  const sessionId = session?.id ?? null;
+  useEffect(() => {
+    if (!userId || !sessionId) return;
+    const prev = getPref(userId, "sessions");
+    if (prev.last !== sessionId) setPref(userId, "sessions", countSession(prev, sessionId));
+  }, [userId, sessionId]);
+  const totals = useMemo(
+    () => (storedVotes && session ? sessionTotals(storedVotes, session.startedAt) : NO_TOTALS),
+    [storedVotes, session],
+  );
+  const invitePromptShown = usePrefJson(userId, "invitePromptShown") === "true";
+  const recapJson = usePrefJson(userId, "recapSession");
+  const recapSession = recapJson ? (JSON.parse(recapJson) as string | null) : null;
+
   const votes = useMemo(() => {
     const map = new Map<string, Vote>();
     for (const [name, v] of state?.votes ?? []) map.set(name, v.vote);
@@ -83,13 +113,30 @@ export default function SwipeScreen() {
   const savedCount = useMemo(() => [...votes.values()].filter(isSaved).length, [votes]);
   const saved = useMemo(() => savedInOrder((cards ?? []).map((c) => c.stats.name), votes), [cards, votes]);
 
+  const solo = !space.loading && !space.error && space.members.length === 1;
+  // A pause comes only after a decision in this visit (`entered`), never on opening the app,
+  // and stays until it is answered (endPause writes the prefs that turn it off).
+  const pause: Pause | null =
+    userId && entered
+      ? pauseToShow({ solo, savedCount, invitePromptShown, sessionId, sessionVotes: totals.votes, recapSession })
+      : null;
+  const endPause = () => {
+    if (!userId) return;
+    if (pause === "invite") setPref(userId, "invitePromptShown", true);
+    // The recap isn't stacked right after the invite prompt: one pause is enough for this session.
+    if (sessionId && totals.votes >= RECAP_VOTES) setPref(userId, "recapSession", sessionId);
+    else if (pause === "recap" && sessionId) setPref(userId, "recapSession", sessionId);
+  };
+  const showSurvey = !!userId && !pause && surveyDue(sessionCount, votes.size, surveyState);
+
   const ready = !!(cards && filters && userId && store && state?.ready);
   const deck = useMemo(
     () => (ready ? buildDeck(cards, votes, filters, hashSeed(userId), { top }) : null),
     [ready, cards, votes, filters, userId, top],
   );
   const progress = deck && cards && filters ? deckProgress(cards, votes, filters, deck.cards.length) : null;
-  const current = deck?.cards[0] ?? null;
+  // While paused nothing can be decided: the panel stands where the card was.
+  const current = pause ? null : (deck?.cards[0] ?? null);
   const method = useRef<DecideMethod>("swipe");
 
   // The deck ran out (all decided) or the filters left nothing: once each time it happens.
@@ -130,6 +177,7 @@ export default function SwipeScreen() {
 
   const undo = () => {
     if (!store || drag.busy()) return;
+    if (pause) return;
     const { state: next, entry } = undoVote({ votes, undo: undoStack });
     if (!entry) return;
     track("vote_undone");
@@ -156,14 +204,18 @@ export default function SwipeScreen() {
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto [@media(max-height:30rem)]:h-auto">
       <SwipeHeader saved={savedCount} filtered={hasFilters(filters)} />
       <main className="flex min-h-0 flex-1 flex-col">
+        {showSurvey ? <SurveyPrompt onDismiss={() => userId && setPref(userId, "survey", "dismissed")} /> : null}
         <SwipeKeys
           onKey={(key) => {
             if (key === "undo") return undo();
+            if (!current) return;
             method.current = "key";
             drag.fly(key);
           }} className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 flex-col px-5 pt-1 max-[20rem]:min-h-100 max-[20rem]:px-3 [@media(max-height:30rem)]:min-h-100">
-            {deck && current && progress ? (
+            {pause ? (
+              <PausePanel key={pause} pause={pause} totals={totals} onContinue={endPause} />
+            ) : deck && current && progress ? (
               <CardStack
                 cards={deck.cards}
                 enter={entered}
@@ -193,7 +245,7 @@ export default function SwipeScreen() {
             disabled={!current}
             describedBy={SWIPE_KEYS_ID}
             onUndo={undo}
-            canUndo={undoStack.length > 0}
+            canUndo={undoStack.length > 0 && !pause}
           />
           <SwipeFooter status={status} next={next} sync={sync} />
         </SwipeKeys>
@@ -202,6 +254,7 @@ export default function SwipeScreen() {
       <AboutSheet hasName={!!current} />
       <ReportSheet name={current?.stats.name ?? null} />
       <FiltersSheet userId={userId} cards={cards} votes={votes} />
+      <SurveySheet votes={votes.size} sessions={sessionCount} onDone={() => userId && setPref(userId, "survey", "done")} />
       <MatchSheet
         match={newMatch}
         ready={!!matches?.ready}

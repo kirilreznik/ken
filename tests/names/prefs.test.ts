@@ -46,6 +46,11 @@ describe("defaults", () => {
     expect(getPref(U, "duelState")).toBeNull();
     expect(getPref(U, "installHintDismissed")).toBe(false);
     expect(getPref(U, "lastSpace")).toBeNull();
+    expect(getPref(U, "invitePromptShown")).toBe(false);
+    expect(getPref(U, "recapSession")).toBeNull();
+    expect(getPref(U, "sessions")).toEqual({ last: null, count: 0 });
+    expect(getPref(U, "survey")).toBeNull();
+    expect(getPref(U, "chosen")).toBeNull();
     expect(defaultPref("background")).toBe("fabric");
   });
 
@@ -198,5 +203,18 @@ describe("subscribePrefs", () => {
     stop();
     setPref("u", "background", "fabric");
     expect(calls).toHaveBeenCalledTimes(3);
+  });
+});
+
+describe("launch pack prefs", () => {
+  it("keep valid values and drop broken ones", () => {
+    setPref(U, "chosen", { spaceId: "s1", name: "נועה" });
+    expect(getPref(U, "chosen")).toEqual({ spaceId: "s1", name: "נועה" });
+    localStorage.setItem(prefKey(U, "chosen"), JSON.stringify({ spaceId: "", name: "x" }));
+    expect(getPref(U, "chosen")).toBeNull();
+    localStorage.setItem(prefKey(U, "sessions"), JSON.stringify({ last: "a", count: -3 }));
+    expect(getPref(U, "sessions")).toEqual({ last: "a", count: 0 });
+    localStorage.setItem(prefKey(U, "survey"), JSON.stringify("maybe"));
+    expect(getPref(U, "survey")).toBeNull();
   });
 });

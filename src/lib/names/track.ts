@@ -47,6 +47,17 @@ export const NAMES_EVENTS = {
   opt_in_changed: "The launch-updates switch changed in settings. {opt_in}",
   display_name_changed: "The display name was changed in settings.",
   signed_out: "Signed out from settings.",
+  invite_prompt: "The 'choose together' prompt (after the 5th save, or the solo matches tab). {placement: 'fifth_save' | 'matches_tab', action: 'shown' | 'invite' | 'later'}",
+  recap_shown: "The round recap after 30 votes in a session. {votes, saves}",
+  recap_cta: "A way out of the recap. {action: 'continue' | 'list'}",
+  nest_card_shown: "The Nest app card was shown. {placement: 'recap' | 'decision' | 'deck_end', opted_in}",
+  nest_card_tap: "The Nest app card was used. {placement, action: 'opt_in' | 'learn'}",
+  decision_made: "A name was marked as chosen (בחרנו שם). {from: 'duel' | 'saved' | 'matches', shared, custom, rank}",
+  decision_cleared: "The chosen name was taken back. {from: 'sheet' | 'lists'}",
+  space_left: "Left a shared space from settings. {members}",
+  space_leave_failed: "Leaving a shared space failed. {reason}",
+  survey_prompt: "The beta survey prompt on the swipe screen. {action: 'shown' | 'open' | 'dismiss'}",
+  survey_submitted: "The beta survey was sent; the closed answers ride along. {disappointed, stage, nest_app, audience, useful, sessions, votes}",
   // account_deleted is written by the database when an account goes (its own events go with it).
 } as const;
 
@@ -187,6 +198,21 @@ function currentSession(now: number): SessionState {
   }
   session.lastAt = now;
   return session;
+}
+
+/**
+ * The current session (started now if there is none), whether or not analytics is on, for
+ * features that count per session (the round recap, the survey's "2nd session").
+ */
+export function currentSessionInfo(): { id: string; startedAt: number } | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const s = currentSession(Date.now());
+    saveSession();
+    return { id: s.id, startedAt: s.startedAt };
+  } catch {
+    return null;
+  }
 }
 
 let token: string | null = null;

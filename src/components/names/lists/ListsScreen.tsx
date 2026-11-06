@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
+import DecisionSheet from "@/components/names/DecisionSheet";
 import { Button, IconButton, openSheet } from "@/components/names/ui";
+import { useChosen } from "@/components/names/useChosen";
 import { useNameStats } from "@/components/names/useCards";
 import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
 import { InstallHint, InstallSheet } from "@/components/names/pwa/Install";
@@ -19,6 +21,7 @@ import type { NameStats } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
 import DuelScreen from "./DuelScreen";
 import RowMenu from "./RowMenu";
+import { decideLabel } from "@/lib/names/launch";
 import { track } from "@/lib/names/track";
 
 const LISTS_PATH = "/names/lists";
@@ -46,16 +49,16 @@ export default function ListsScreen() {
   const [status, setStatus] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const tab = listsTab(params.get("tab"), space.isShared);
+  const tab = listsTab(params.get("tab"));
+  const { chosen, choose, clear } = useChosen(user?.id ?? null, space.spaceId, space.isShared);
+  const decision = <DecisionSheet name={chosen} shared={space.isShared} onClear={() => clear("sheet")} />;
   useEffect(() => track("lists_tab", { tab }), [tab]);
   const rows = useMemo(() => savedRows(state?.votes ?? new Map()), [state?.votes]);
   const ready = !!(store && state?.ready);
 
   const tabs: { id: ListsTab; label: string }[] = [
     { id: "saved", label: ready ? `שמרתי · ${rows.length}` : "שמרתי" },
-    ...(space.isShared
-      ? [{ id: "matches" as const, label: matches?.ready && matches.fetchedAt !== null ? `התאמות · ${matches.matches.length}` : "התאמות" }]
-      : []),
+    { id: "matches", label: space.isShared && matches?.ready && matches.fetchedAt !== null ? `התאמות · ${matches.matches.length}` : "התאמות" },
     { id: "duel", label: "דו־קרב" },
   ];
 
@@ -97,6 +100,7 @@ export default function ListsScreen() {
 
   if (tab === "duel") {
     return (
+      <>
       <DuelScreen
         userId={user?.id ?? null}
         from={params.get("from")}
@@ -107,7 +111,11 @@ export default function ListsScreen() {
         customNames={customNames}
         onSource={(source) => router.replace(`${LISTS_PATH}?tab=duel&from=${source}`, { scroll: false })}
         onBack={(source) => selectTab(source === "matches" && space.isShared ? "matches" : "saved")}
+        chooseLabel={(name) => decideLabel(space.isShared, name)}
+        onChoose={(name, _source, rank) => choose(name, "duel", { custom: customNames.has(name), rank })}
       />
+      {decision}
+      </>
     );
   }
 
@@ -144,6 +152,8 @@ export default function ListsScreen() {
             הוספת שם
           </Button>
         </header>
+
+        {chosen ? <ChosenBanner name={chosen} shared={space.isShared} onOpen={() => openSheet("decision")} onClear={() => clear("lists")} /> : null}
 
         {ready ? <InstallHint userId={user?.id ?? null} voteCount={state?.votes.size ?? 0} /> : null}
 
@@ -182,9 +192,24 @@ export default function ListsScreen() {
                 setStatus(rowActionText(name, action));
               }}
               headingRef={headingRef}
+              chooseLabel={(name) => decideLabel(space.isShared, name)}
+              onChoose={(row) => choose(row.name, "saved", { custom: row.custom })}
             />
+          ) : space.loading ? (
+            <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
+              <span className="sr-only">בטעינה</span>
+            </div>
+          ) : !space.isShared ? (
+            <SoloMatches />
           ) : (
-            <MatchesPanel userId={user?.id ?? null} state={matches} memberCount={space.members.length} names={names} />
+            <MatchesPanel
+              userId={user?.id ?? null}
+              state={matches}
+              memberCount={space.members.length}
+              names={names}
+              chooseLabel={(name) => decideLabel(space.isShared, name)}
+              onChoose={(name) => choose(name, "matches")}
+            />
           )}
         </section>
 
@@ -193,16 +218,22 @@ export default function ListsScreen() {
         </p>
       </main>
       <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
+      {decision}
       <InstallSheet />
     </div>
   );
 }
 
-type MatchesPanelProps = {
+type ChooseProps = {
+  chooseLabel: (name: string) => string;
+};
+
+type MatchesPanelProps = ChooseProps & {
   userId: string | null;
   state: MatchesState | null;
   memberCount: number;
   names: Map<string, NameStats> | null;
+  onChoose: (name: string) => void;
 };
 
 /**
@@ -210,7 +241,7 @@ type MatchesPanelProps = {
  * "{n} שמרו" from 3 up, a heart when someone loved it (never who), the last update time
  * while offline. Nothing about anyone's skips.
  */
-function MatchesPanel({ userId, state, memberCount, names }: MatchesPanelProps) {
+function MatchesPanel({ userId, state, memberCount, names, chooseLabel, onChoose }: MatchesPanelProps) {
   const online = useOnline();
   // The day to compare the last update with; the screen isn't open across midnight for long.
   const [openedAt] = useState(() => Date.now());
@@ -236,19 +267,20 @@ function MatchesPanel({ userId, state, memberCount, names }: MatchesPanelProps) 
     <>
       {intro}
       {updated}
-      <MatchRows userId={userId} matches={state.matches} memberCount={memberCount} names={names} />
+      <MatchRows userId={userId} matches={state.matches} memberCount={memberCount} names={names} chooseLabel={chooseLabel} onChoose={onChoose} />
     </>
   );
 }
 
-type MatchRowsProps = {
+type MatchRowsProps = ChooseProps & {
   userId: string | null;
   matches: readonly Match[];
   memberCount: number;
   names: Map<string, NameStats> | null;
+  onChoose: (name: string) => void;
 };
 
-function MatchRows({ userId, matches, memberCount, names }: MatchRowsProps) {
+function MatchRows({ userId, matches, memberCount, names, chooseLabel, onChoose }: MatchRowsProps) {
   const { seen, setSeen } = useSeenMatches(userId);
   // "חדש" marks matches this device hadn't shown before the list opened (or that came in since).
   const [seenAtOpen] = useState(() => new Set(seen));
@@ -289,7 +321,7 @@ function MatchRows({ userId, matches, memberCount, names }: MatchRowsProps) {
           const meta = rowMeta(names?.get(match.name));
           const kept = keptByText(match);
           return (
-            <li key={match.name} className="flex items-center gap-3 border-b border-line px-4 py-3.5 last:border-b-0">
+            <li key={match.name} className="flex items-center gap-3 border-b border-line py-3.5 ps-4 pe-2 last:border-b-0">
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                   <span className="text-row-name break-words">{match.name}</span>
@@ -321,6 +353,7 @@ function MatchRows({ userId, matches, memberCount, names }: MatchRowsProps) {
                 ) : null}
               </div>
               {kept ? <span className="flex-none text-caption font-bold text-ink-soft">{kept}</span> : null}
+              <RowMenu name={match.name} onChoose={() => onChoose(match.name)} chooseLabel={chooseLabel(match.name)} />
             </li>
           );
         })}
@@ -354,7 +387,8 @@ function DuelLink({ title, from }: { title: string; from: "saved" | "matches" })
   );
 }
 
-type SavedPanelProps = {
+type SavedPanelProps = ChooseProps & {
+  onChoose: (row: SavedRow) => void;
   ready: boolean;
   rows: SavedRow[];
   names: Map<string, NameStats> | null;
@@ -363,7 +397,7 @@ type SavedPanelProps = {
 };
 
 /** "שמרתי": loved first with "אהבתי מאוד", each row with sex tag, count, trend and its menu. */
-function SavedPanel({ ready, rows, names, onAction, headingRef }: SavedPanelProps) {
+function SavedPanel({ ready, rows, names, onAction, headingRef, chooseLabel, onChoose }: SavedPanelProps) {
   const listRef = useRef<HTMLUListElement>(null);
   const focusAfter = useRef<number | null>(null);
 
@@ -435,6 +469,8 @@ function SavedPanel({ ready, rows, names, onAction, headingRef }: SavedPanelProp
               </div>
               <RowMenu
                 name={row.name}
+                chooseLabel={chooseLabel(row.name)}
+                onChoose={() => onChoose(row)}
                 onRemove={() => {
                   focusAfter.current = i;
                   onAction(row.name, "remove");
@@ -450,5 +486,47 @@ function SavedPanel({ ready, rows, names, onAction, headingRef }: SavedPanelProp
       </ul>
       {rows.length >= 2 ? <DuelLink title="דו־קרב בין השמות ששמרתי" from="saved" /> : null}
     </>
+  );
+}
+
+/**
+ * "התאמות" in a solo space (product review step 5): what a match is, and the invite. The
+ * matches loop is the product's peak, so a solo user sees it here instead of a missing tab.
+ */
+function SoloMatches() {
+  useEffect(() => track("invite_prompt", { placement: "matches_tab", action: "shown" }), []);
+  return (
+    <div className="flex flex-col items-center gap-3 rounded-lg bg-surface px-5 py-7 text-center shadow-card">
+      <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-full bg-peach-soft text-clay-deep">
+        <Icon size={24}>
+          <circle cx="9" cy="8" r="3.5" />
+          <path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6" />
+        </Icon>
+      </span>
+      <h2 className="m-0 text-card-title text-ink">בוחרים ביחד?</h2>
+      <p className="m-0 text-person text-ink-soft">
+        אפשר להזמין את מי שבוחר איתך. כל אחד בוחר בטלפון שלו, ושם ששניכם שמרתם יופיע כאן כהתאמה.
+      </p>
+      <p className="m-0 text-caption text-stone">על מה כל אחד דילג נשאר פרטי. השמות ששמרת עוברים איתך.</p>
+      <Button size="md" href="/names/invite" onClick={() => track("invite_prompt", { placement: "matches_tab", action: "invite" })}>
+        הזמנה לבחירה משותפת
+      </Button>
+    </div>
+  );
+}
+
+/** The chosen name at the top of "השמות שלי"; opens the decision moment again, or takes it back. */
+function ChosenBanner({ name, shared, onOpen, onClear }: { name: string; shared: boolean; onOpen: () => void; onClear: () => void }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg bg-peach-soft py-2 ps-4 pe-2 text-ink">
+      <span aria-hidden="true" className="size-2.5 flex-none rounded-full bg-clay" />
+      <button type="button" onClick={onOpen} className="flex min-h-11 min-w-0 flex-1 flex-col items-start justify-center text-start">
+        <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
+        <span className="text-row-name break-words">{name}</span>
+      </button>
+      <Button variant="link" onClick={onClear} aria-label={`ביטול הבחירה בשם ${name}`} className="text-person!">
+        ביטול
+      </Button>
+    </div>
   );
 }
