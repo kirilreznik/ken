@@ -1,0 +1,1540 @@
+{
+ "_about": "Batch 4 (E16b): the next 270 names given in 2024, drafted by Claude for owner spot-checks.",
+ "names": {
+  "וטן": {
+   "niqqud": "וַטַן",
+   "intro": "וטן בערבית היא מולדת. שם שניתן לבנים ולבנות."
+  },
+  "תומאס": {
+   "niqqud": "תּוֹמַאס",
+   "intro": "תומאס, שם שמקורו בארמית, 'תאום'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "ג'ילאן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "אלכסנדר": {
+   "niqqud": "אָלֶכְּסַנְדֶּר",
+   "intro": "אלכסנדר, שם יווני שפירושו 'מגן על בני האדם'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "ספיר": {
+   "niqqud": "סַפִּיר",
+   "intro": "ספיר, אבן יקרה כחולה.",
+   "bible": {
+    "quote": "נפך ספיר ויהלם",
+    "book": "Exodus",
+    "ch": 28,
+    "v": 18
+   },
+   "themes": [
+    "beauty"
+   ]
+  },
+  "שירי": {
+   "niqqud": "שִׁירִי",
+   "intro": "שירי, 'השיר שלי'.",
+   "themes": [
+    "poetry"
+   ]
+  },
+  "נאור": {
+   "niqqud": "נָאוֹר",
+   "intro": "נאור, מואר ובהיר.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "מנאל": {
+   "niqqud": "מַנַאל",
+   "intro": "מנאל בערבית היא משאלה שהתגשמה."
+  },
+  "מאהר": {
+   "niqqud": "מַאהֶר",
+   "intro": "מאהר בערבית הוא מיומן ומוכשר."
+  },
+  "בכר": {
+   "niqqud": "בַּכְּר",
+   "intro": "בכר, שם ערבי עתיק. בעברית בכר הוא גמל צעיר.",
+   "bible": {
+    "quote": "בלע ובכר וידיעאל",
+    "book": "I Chronicles",
+    "ch": 7,
+    "v": 6
+   }
+  },
+  "אפיק": {
+   "niqqud": "אָפִיק",
+   "intro": "אפיק הוא ערוץ שבו זורמים מים.",
+   "bible": {
+    "quote": "כאיל תערג על אפיקי מים",
+    "book": "Psalms",
+    "ch": 42,
+    "v": 2
+   },
+   "themes": [
+    "water"
+   ]
+  },
+  "רואד": {
+   "niqqud": "רֻוַּאד",
+   "intro": "רואד בערבית הם חלוצים, מי שמובילים ראשונים."
+  },
+  "אמלי": {
+   "niqqud": "אֶמֶלִי",
+   "intro": "אמלי, שם אירופי שמקורו בשם הרומי אמיליה.",
+   "themes": [
+    "international"
+   ]
+  },
+  "גיטי": {
+   "niqqud": "גִּיטִי",
+   "intro": "גיטי, צורת חיבה של גיטל: 'טובה'."
+  },
+  "אדיאן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "שובי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "לואן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "וופא": {
+   "niqqud": "וַפָא",
+   "intro": "ופא בערבית היא נאמנות."
+  },
+  "איהאב": {
+   "niqqud": "אִיהַאבּ",
+   "intro": "איהאב בערבית היא מתנה."
+  },
+  "ואיל": {
+   "niqqud": "וַאִיל",
+   "intro": "ואיל, שם ערבי עתיק שפירושו 'מי שמוצא מקלט'."
+  },
+  "גרשון": {
+   "niqqud": "גֵּרְשׁוֹן",
+   "intro": "שם מקראי, שמו של בנו הבכור של לוי.",
+   "bible": {
+    "quote": "ובני לוי גרשון קהת ומררי",
+    "book": "Genesis",
+    "ch": 46,
+    "v": 11
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "נאיף": {
+   "niqqud": "נַאיִף",
+   "intro": "נאיף בערבית הוא נעלה."
+  },
+  "אביגדור": {
+   "niqqud": "אֲבִיגְדוֹר",
+   "intro": "אבי־גדור: אבי הוא המגן שלי."
+  },
+  "איאס": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רוסול": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "נבא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "תאי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "זמזם": {
+   "niqqud": "זַמְזַם",
+   "intro": "זמזם, הבאר הקדושה במכה.",
+   "themes": [
+    "water"
+   ]
+  },
+  "אייסל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ניסים": {
+   "niqqud": "נִסִּים",
+   "intro": "ניסים, פשוטו כמשמעו."
+  },
+  "ציון": {
+   "niqqud": "צִיּוֹן",
+   "intro": "ציון, הר ציון וכינוי לירושלים.",
+   "bible": {
+    "quote": "רני בת ציון",
+    "book": "Zephaniah",
+    "ch": 3,
+    "v": 14
+   },
+   "themes": [
+    "israel"
+   ]
+  },
+  "לירן": {
+   "niqqud": "לִירָן",
+   "intro": "לי־רן: יש לי שיר ושמחה.",
+   "themes": [
+    "joy"
+   ]
+  },
+  "אשרף": {
+   "niqqud": "אַשְׁרַף",
+   "intro": "אשרף בערבית הוא הנכבד ביותר."
+  },
+  "סלאם": {
+   "niqqud": "סַלַאם",
+   "intro": "סלאם בערבית הוא שלום. שם שניתן לבנים ולבנות.",
+   "themes": [
+    "joy"
+   ]
+  },
+  "האדי": {
+   "niqqud": "הַאדִי",
+   "intro": "האדי בערבית הוא שקט ורגוע."
+  },
+  "ליאון": {
+   "niqqud": "לֵיאוֹן",
+   "intro": "ליאון, שם יווני שפירושו 'אריה'.",
+   "themes": [
+    "international",
+    "animals",
+    "strength"
+   ]
+  },
+  "דארין": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "האשם": {
+   "niqqud": "הַאשֶׁם",
+   "intro": "האשם, שם ערבי עתיק, שמו של סבו של אבי הנביא מוחמד."
+  },
+  "זיידאן": {
+   "niqqud": "זֵיידַאן",
+   "intro": "זיידאן בערבית הוא גדילה ושפע."
+  },
+  "חרות": {
+   "niqqud": "חֵרוּת",
+   "intro": "חירות, פשוטו כמשמעו.",
+   "bible": {
+    "quote": "חרות על הלחת",
+    "book": "Exodus",
+    "ch": 32,
+    "v": 16
+   },
+   "themes": [
+    "special"
+   ]
+  },
+  "ג'זל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "שילי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "סאני": {
+   "niqqud": "סַאנִי",
+   "intro": "סאני באנגלית הוא שטוף שמש. שם שניתן לבנים ולבנות.",
+   "themes": [
+    "fire",
+    "international"
+   ]
+  },
+  "ריחאן": {
+   "niqqud": "רֵיחַאן",
+   "intro": "ריחאן בערבית הוא בזיליקום, צמח ריחני.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "גוליא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "תיאה": {
+   "niqqud": "תֵּיאָה",
+   "intro": "תיאה, שם יווני שמקורו במילה 'אלה'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "מתין": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "מיאור": {
+   "niqqud": "מִיאוֹר",
+   "intro": "מי־אור: מי שמביא אור.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "אוהד": {
+   "niqqud": "אוֹהַד",
+   "intro": "אוהד, מי שאוהב ותומך."
+  },
+  "עביר": {
+   "niqqud": "עַבִּיר",
+   "intro": "עביר בערבית הוא ניחוח של פרחים.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "אביעד": {
+   "niqqud": "אֲבִיעַד",
+   "intro": "אבי־עד: אבי לעד."
+  },
+  "עיסאם": {
+   "niqqud": "עִסַאם",
+   "intro": "עיסאם בערבית הוא הגנה ושמירה."
+  },
+  "מינה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ג'ואן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "אביאור": {
+   "niqqud": "אֲבִיאוֹר",
+   "intro": "אבי־אור: אבי הוא אור.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "לשם": {
+   "niqqud": "לֶשֶׁם",
+   "intro": "לשם, אחת מאבני החושן.",
+   "bible": {
+    "quote": "לשם שבו ואחלמה",
+    "book": "Exodus",
+    "ch": 28,
+    "v": 19
+   },
+   "themes": [
+    "beauty"
+   ]
+  },
+  "אוליבר": {
+   "niqqud": "אוֹלִיבֶר",
+   "intro": "אוליבר, שם אירופי שמקובל לקשר לעץ הזית.",
+   "themes": [
+    "international"
+   ]
+  },
+  "שי-אל": {
+   "niqqud": "שַׁי־אֵל",
+   "intro": "שי־אל: מתנה מאלוהים."
+  },
+  "באר": {
+   "niqqud": "בְּאֵר",
+   "intro": "באר מים.",
+   "bible": {
+    "quote": "ויחפרו עבדי יצחק בנחל וימצאו שם באר מים חיים",
+    "book": "Genesis",
+    "ch": 26,
+    "v": 19
+   },
+   "themes": [
+    "water"
+   ]
+  },
+  "תמיר": {
+   "niqqud": "תָּמִיר",
+   "intro": "תמיר הוא גבוה וזקוף."
+  },
+  "ראמי": {
+   "niqqud": "רַאמִי",
+   "intro": "ראמי בערבית הוא קשת, מי שיורה בקשת."
+  },
+  "הדיל": {
+   "niqqud": "הַדִיל",
+   "intro": "הדיל בערבית הוא המית היונה.",
+   "themes": [
+    "animals"
+   ]
+  },
+  "גליה": {
+   "niqqud": "גַּלְיָה",
+   "intro": "גלי־יה: הגלים של ה׳.",
+   "themes": [
+    "water"
+   ]
+  },
+  "אסראא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "נאדיה": {
+   "niqqud": "נַאדְיָה",
+   "intro": "נאדיה, שם שמקורו ברוסית, 'תקווה'. בערבית נאדיה היא טל.",
+   "themes": [
+    "international"
+   ]
+  },
+  "שחף": {
+   "niqqud": "שַׁחַף",
+   "intro": "שחף, עוף ים. שם שניתן לבנים ולבנות.",
+   "themes": [
+    "animals",
+    "water"
+   ]
+  },
+  "היית'ם": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רביד": {
+   "niqqud": "רָבִיד",
+   "intro": "רביד הוא שרשרת, תכשיט לצוואר. שם שניתן לבנים ולבנות.",
+   "bible": {
+    "quote": "ורביד על גרונך",
+    "book": "Ezekiel",
+    "ch": 16,
+    "v": 11
+   },
+   "themes": [
+    "beauty"
+   ]
+  },
+  "עוביידה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "חביב": {
+   "niqqud": "חַבִּיבּ",
+   "intro": "חביב, אהוב, בעברית ובערבית.",
+   "themes": [
+    "joy"
+   ]
+  },
+  "נימר": {
+   "niqqud": "נִמְר",
+   "intro": "נימר בערבית הוא נמר.",
+   "themes": [
+    "animals",
+    "strength"
+   ]
+  },
+  "לורין": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "מתנאל": {
+   "niqqud": "מַתַּנְאֵל",
+   "intro": "מתנ־אל: מתנה מאלוהים."
+  },
+  "שרבל": {
+   "niqqud": "שַׁרְבֶּל",
+   "intro": "שרבל, שמו של הקדוש המרוני שרבל מלבנון."
+  },
+  "פייסל": {
+   "niqqud": "פֵיסַל",
+   "intro": "פייסל בערבית הוא מי ששופט ומכריע."
+  },
+  "ראשד": {
+   "niqqud": "רַאשֶׁד",
+   "intro": "ראשד בערבית הוא נבון ובוגר."
+  },
+  "ענאל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "דגן": {
+   "niqqud": "דָּגָן",
+   "intro": "דגן, תבואה.",
+   "bible": {
+    "quote": "ורב דגן ותירש",
+    "book": "Genesis",
+    "ch": 27,
+    "v": 28
+   },
+   "themes": [
+    "nature"
+   ]
+  },
+  "לרין": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "דוריה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רסלאן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "מיראן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "גית": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "עופר": {
+   "niqqud": "עֹפֶר",
+   "intro": "עופר, צבי צעיר.",
+   "bible": {
+    "quote": "דומה דודי לצבי או לעפר האילים",
+    "book": "Song of Songs",
+    "ch": 2,
+    "v": 9
+   },
+   "themes": [
+    "animals"
+   ]
+  },
+  "דיאנה": {
+   "niqqud": "דִּיאָנָה",
+   "intro": "דיאנה, אלת הירח והציד במיתולוגיה הרומית.",
+   "themes": [
+    "international"
+   ]
+  },
+  "היבא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "אריאלה": {
+   "niqqud": "אֲרִיאֵלָה",
+   "intro": "אריאלה, הצורה הנשית של אריאל: אריה של אל.",
+   "themes": [
+    "strength"
+   ]
+  },
+  "גד": {
+   "niqqud": "גָּד",
+   "intro": "גד, מלשון מזל טוב בעברית המקראית.",
+   "bible": {
+    "quote": "ותאמר לאה בא גד ותקרא את שמו גד",
+    "book": "Genesis",
+    "ch": 30,
+    "v": 11
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "סגא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "מועתז": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ג'ורג'": {
+   "niqqud": "גּ'וֹרְג'",
+   "intro": "ג'ורג', שם יווני שפירושו 'עובד אדמה'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "קים": {
+   "niqqud": "קִים",
+   "intro": "קים, שם שמשמש בשפות רבות, בעברית גם 'קיים'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "פריד": {
+   "niqqud": "פַרִיד",
+   "intro": "פריד בערבית הוא יחיד ומיוחד."
+  },
+  "ודיע": {
+   "niqqud": "וַדִיע",
+   "intro": "ודיע בערבית הוא שקט ועדין."
+  },
+  "חאתם": {
+   "niqqud": "חַאתֶם",
+   "intro": "חאתם, שם ערבי עתיק. חאתם א־טאאי נודע בשירה הערבית בנדיבותו."
+  },
+  "פרומה": {
+   "niqqud": "פְרוּמָה",
+   "intro": "פרומה, שם יידי שפירושו 'אדוקה' או 'צדקת'."
+  },
+  "מירנא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ארקאן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "לאנה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "מאס": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "סוף": {
+   "niqqud": "סוּף",
+   "intro": "סוף, כמו ים סוף. שם שניתן לבנים ולבנות.",
+   "themes": [
+    "water"
+   ]
+  },
+  "טוב": {
+   "niqqud": "טוֹב",
+   "intro": "טוב, פשוטו כמשמעו."
+  },
+  "לאור": {
+   "niqqud": "לָאוֹר",
+   "intro": "לאור, אל האור.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "אסמא": {
+   "niqqud": "אַסְמָא",
+   "intro": "אסמא בערבית היא 'הנעלה'."
+  },
+  "טארק": {
+   "niqqud": "טַארֶק",
+   "intro": "טארק בערבית הוא כוכב השחר, מי שדופק בלילה.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "יקיר": {
+   "niqqud": "יַקִּיר",
+   "intro": "יקיר, אהוב ויקר.",
+   "themes": [
+    "joy"
+   ]
+  },
+  "מואמן": {
+   "niqqud": "מֻאְמֶן",
+   "intro": "מואמן בערבית הוא מאמין."
+  },
+  "מייקל": {
+   "niqqud": "מַייקְל",
+   "intro": "מייקל, הצורה האנגלית של מיכאל.",
+   "themes": [
+    "international"
+   ]
+  },
+  "בסמה": {
+   "niqqud": "בַּסְמָה",
+   "intro": "בסמה בערבית היא חיוך."
+  },
+  "עודה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "תלין": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "כאיד": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רדא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ג'נה": {
+   "niqqud": "גַּ'נָּה",
+   "intro": "ג'נה בערבית היא גן, וגם גן העדן.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "אסינאת": {
+   "niqqud": "אָסִינַאת",
+   "intro": "אסנת, אשתו של יוסף במצרים, בכתיב ערבי."
+  },
+  "אילאן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "הילני": {
+   "niqqud": "הֶלֶנִי",
+   "intro": "הילני, כתיב אחר של הלני, כשמה של הלני המלכה."
+  },
+  "אילנה": {
+   "niqqud": "אִילָנָה",
+   "intro": "אילנה, מלשון אילן, עץ.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "עליזה": {
+   "niqqud": "עֲלִיזָה",
+   "intro": "עליזה היא שמחה.",
+   "themes": [
+    "joy"
+   ]
+  },
+  "שלי": {
+   "niqqud": "שֶׁלִּי",
+   "intro": "שלי, פשוטו כמשמעו."
+  },
+  "נסרין": {
+   "niqqud": "נַסְרִין",
+   "intro": "נסרין בפרסית היא ורד בר לבן.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "אסלאם": {
+   "hold": "Religious name; owner to decide how to describe it."
+  },
+  "דועאא": {
+   "niqqud": "דֻּעָאא",
+   "intro": "דועאא בערבית היא תפילה."
+  },
+  "הנא": {
+   "niqqud": "הַנָא",
+   "intro": "הנא בערבית היא אושר.",
+   "themes": [
+    "joy"
+   ]
+  },
+  "רעיה": {
+   "niqqud": "רַעְיָה",
+   "intro": "רעיה, חברה ואהובה.",
+   "bible": {
+    "quote": "הנך יפה רעיתי",
+    "book": "Song of Songs",
+    "ch": 1,
+    "v": 15
+   },
+   "themes": [
+    "joy"
+   ]
+  },
+  "דאוד": {
+   "niqqud": "דַּאוּד",
+   "intro": "דאוד הוא דוד בערבית.",
+   "bible": {
+    "figure": "דוד, הרועה מבית לחם שנמשח למלך על ישראל.",
+    "book": "I Samuel",
+    "ch": 16,
+    "match": "דוד"
+   }
+  },
+  "בושרא": {
+   "niqqud": "בֻּשְׁרָא",
+   "intro": "בושרא בערבית היא בשורה טובה."
+  },
+  "סארי": {
+   "niqqud": "סַארִי",
+   "intro": "סארי בערבית הוא מי שנוסע בלילה."
+  },
+  "מנדל": {
+   "niqqud": "מֶנְדְּל",
+   "intro": "מנדל, שם יידי, צורה של מנחם."
+  },
+  "לישי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "עהד": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "איתם": {
+   "niqqud": "אֵיתָם",
+   "intro": "איתם, מקום חנייה של בני ישראל במדבר.",
+   "bible": {
+    "quote": "ויחנו באתם בקצה המדבר",
+    "book": "Exodus",
+    "ch": 13,
+    "v": 20
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "שטערנא": {
+   "niqqud": "שְׁטֶערְנָא",
+   "intro": "שטערנא, שם יידי שפירושו 'כוכב'.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "אסא": {
+   "niqqud": "אָסָא",
+   "intro": "שם מקראי, שמו של אחד ממלכי יהודה.",
+   "bible": {
+    "quote": "וימלך אסא בנו תחתיו",
+    "book": "I Kings",
+    "ch": 15,
+    "v": 8
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "אייסר": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "פרידא": {
+   "niqqud": "פְרִידָא",
+   "intro": "פרידא, שם יידי וגרמני שפירושו 'שלום' ו'שמחה'.",
+   "themes": [
+    "joy"
+   ]
+  },
+  "האג'ר": {
+   "niqqud": "הַאגַ'ר",
+   "intro": "האג'ר היא הגר בערבית, אמו של ישמעאל."
+  },
+  "תרתיל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רוסל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "יאסמינה": {
+   "niqqud": "יַאסְמִינָה",
+   "intro": "יאסמינה, צורה של יסמין, פרח לבן וריחני.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "ארגמן": {
+   "niqqud": "אַרְגָּמָן",
+   "intro": "ארגמן, צבע אדום־סגול עמוק.",
+   "bible": {
+    "quote": "ואת הארגמן ואת תולעת השני",
+    "book": "Exodus",
+    "ch": 28,
+    "v": 5
+   },
+   "themes": [
+    "special"
+   ]
+  },
+  "ראקאן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "לירון": {
+   "niqqud": "לִירוֹן",
+   "intro": "לי־רון: יש לי שיר ושמחה. שם שניתן לבנים ולבנות.",
+   "themes": [
+    "joy"
+   ]
+  },
+  "מור": {
+   "niqqud": "מוֹר",
+   "intro": "מור, בושם עתיק. שם שניתן לבנים ולבנות.",
+   "bible": {
+    "quote": "מר ואהלות עם כל ראשי בשמים",
+    "book": "Song of Songs",
+    "ch": 4,
+    "v": 14
+   },
+   "themes": [
+    "nature"
+   ]
+  },
+  "פאדי": {
+   "niqqud": "פַאדִי",
+   "intro": "פאדי בערבית הוא מי שמקריב למען אחרים."
+  },
+  "חנין": {
+   "niqqud": "חַנִין",
+   "intro": "חנין בערבית היא געגוע."
+  },
+  "שירין": {
+   "niqqud": "שִׁירִין",
+   "intro": "שירין בפרסית היא מתוקה.",
+   "themes": [
+    "international"
+   ]
+  },
+  "מרגלית": {
+   "niqqud": "מַרְגָּלִית",
+   "intro": "מרגלית היא פנינה.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "מנשה": {
+   "niqqud": "מְנַשֶּׁה",
+   "intro": "מנשה, מלשון שכחה.",
+   "bible": {
+    "quote": "ויקרא יוסף את שם הבכור מנשה",
+    "book": "Genesis",
+    "ch": 41,
+    "v": 51
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "תאמר": {
+   "niqqud": "תַּאמֶר",
+   "intro": "תאמר בערבית הוא מי שנושא תמרים, שופע פרי."
+  },
+  "עמרם": {
+   "niqqud": "עַמְרָם",
+   "intro": "עמ־רם: העם רם. אביו של משה.",
+   "bible": {
+    "quote": "ושם אשת עמרם יוכבד",
+    "book": "Numbers",
+    "ch": 26,
+    "v": 59
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "שימאא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "מתתיהו": {
+   "niqqud": "מַתִּתְיָהוּ",
+   "intro": "מתת־יהו: מתנה מה׳."
+  },
+  "גסאן": {
+   "niqqud": "גַּסַאן",
+   "intro": "גסאן, שם ערבי עתיק, שמו של שבט ערבי קדום."
+  },
+  "למיס": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "יקותיאל": {
+   "niqqud": "יְקוּתִיאֵל",
+   "intro": "שם מקראי עתיק, מבני שבט יהודה.",
+   "bible": {
+    "quote": "ואת יקותיאל אבי זנוח",
+    "book": "I Chronicles",
+    "ch": 4,
+    "v": 18
+   }
+  },
+  "מואייד": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "טהר": {
+   "niqqud": "טֹהַר",
+   "intro": "טוהר הוא ניקיון ותמימות."
+  },
+  "פסח": {
+   "niqqud": "פֶּסַח",
+   "intro": "פסח, החג.",
+   "bible": {
+    "quote": "זבח פסח הוא ליהוה",
+    "book": "Exodus",
+    "ch": 12,
+    "v": 27
+   }
+  },
+  "לורי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "מינדל": {
+   "niqqud": "מִינְדְּל",
+   "intro": "מינדל, שם יידי."
+  },
+  "פייגי": {
+   "niqqud": "פֵייגִי",
+   "intro": "פייגי, שם יידי, צורת חיבה של פייגא."
+  },
+  "איילין": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "אלתר": {
+   "niqqud": "אַלְתֶּר",
+   "intro": "אלתר, שם יידי שפירושו 'זקן', שניתן כאיחול לאריכות ימים."
+  },
+  "מירן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רעד": {
+   "niqqud": "רַעְד",
+   "intro": "רעד בערבית הוא רעם.",
+   "themes": [
+    "strength"
+   ]
+  },
+  "נורסין": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "טאי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ריו": {
+   "niqqud": "רִיוֹ",
+   "intro": "ריו בספרדית ובפורטוגזית הוא נהר.",
+   "themes": [
+    "water",
+    "international"
+   ]
+  },
+  "שבות": {
+   "niqqud": "שְׁבוּת",
+   "intro": "שבות היא שיבה וחזרה הביתה.",
+   "bible": {
+    "quote": "ושב יהוה אלהיך את שבותך",
+    "book": "Deuteronomy",
+    "ch": 30,
+    "v": 3
+   }
+  },
+  "עטיל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "מלודי": {
+   "niqqud": "מֶלוֹדִי",
+   "intro": "מלודי באנגלית היא מנגינה.",
+   "themes": [
+    "poetry",
+    "international"
+   ]
+  },
+  "גמר": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "טנא": {
+   "niqqud": "טֶנֶא",
+   "intro": "טנא הוא סל ביכורים.",
+   "bible": {
+    "quote": "ושמת בטנא",
+    "book": "Deuteronomy",
+    "ch": 26,
+    "v": 2
+   },
+   "themes": [
+    "nature"
+   ]
+  },
+  "תיה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "גאית'": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "זהבה": {
+   "niqqud": "זְהָבָה",
+   "intro": "זהבה, מלשון זהב.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "ליאורה": {
+   "niqqud": "לִיאוֹרָה",
+   "intro": "לי־אורה: יש לי אור.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "אסנת": {
+   "niqqud": "אָסְנַת",
+   "intro": "שם מקראי, שמה של אשת יוסף במצרים.",
+   "bible": {
+    "quote": "את אסנת בת פוטי פרע",
+    "book": "Genesis",
+    "ch": 41,
+    "v": 45
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "אמג'ד": {
+   "niqqud": "אַמְגַ'ד",
+   "intro": "אמג'ד בערבית הוא המפואר ביותר."
+  },
+  "רואה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "חמד": {
+   "niqqud": "חֶמֶד",
+   "intro": "חמד הוא יופי ונעימות.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "שגב": {
+   "niqqud": "שֶׂגֶב",
+   "intro": "שגב הוא גובה ונשגבות."
+  },
+  "אלדר": {
+   "niqqud": "אֶלְדָּר",
+   "intro": "אל־דר: אלוהים שוכן."
+  },
+  "דאניה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ג'לאל": {
+   "niqqud": "גַּ'לַאל",
+   "intro": "ג'לאל בערבית הוא הדר ורוממות."
+  },
+  "זכריה": {
+   "niqqud": "זְכַרְיָה",
+   "intro": "זכר־יה: ה׳ זכר.",
+   "bible": {
+    "quote": "זכריה בן ברכיה בן עדו הנביא",
+    "book": "Zechariah",
+    "ch": 1,
+    "v": 1
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "מאזן": {
+   "niqqud": "מַאזֶן",
+   "intro": "מאזן, שם ערבי עתיק שמקובל לקשר לענני גשם."
+  },
+  "עיד": {
+   "niqqud": "עִיד",
+   "intro": "עיד בערבית הוא חג."
+  },
+  "עווד": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "אליסף": {
+   "niqqud": "אֶלְיָסָף",
+   "intro": "אלי־יסף: אלוהים יוסיף.",
+   "bible": {
+    "quote": "לגד אליסף בן דעואל",
+    "book": "Numbers",
+    "ch": 1,
+    "v": 14
+   }
+  },
+  "טובי": {
+   "niqqud": "טוֹבִי",
+   "intro": "טובי, 'הטוב שלי'."
+  },
+  "ליר": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "תחיה": {
+   "niqqud": "תְּחִיָּה",
+   "intro": "תחייה היא חזרה לחיים."
+  },
+  "אלינוי": {
+   "niqqud": "אֵלִינוֹי",
+   "intro": "אלי־נוי: היופי של אלוהיי.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "שיינה": {
+   "niqqud": "שֵׁיינָה",
+   "intro": "שיינה, שם יידי שפירושו 'יפה'.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "מושקא": {
+   "niqqud": "מוּשְׁקָא",
+   "intro": "מושקא, שם יידי, מלשון מושק, בושם ריחני."
+  },
+  "רינאד": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "הארון": {
+   "niqqud": "הַארוּן",
+   "intro": "הארון הוא אהרן בערבית.",
+   "bible": {
+    "quote": "הלא אהרן אחיך הלוי",
+    "book": "Exodus",
+    "ch": 4,
+    "v": 14
+   }
+  },
+  "אריאנה": {
+   "niqqud": "אֲרִיאַנָה",
+   "intro": "אריאנה, שם שמקורו ביוונית, 'טהורה מאוד'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "תמה": {
+   "niqqud": "תַּמָּה",
+   "intro": "תמה היא שלמה וטהורה.",
+   "bible": {
+    "quote": "יונתי תמתי",
+    "book": "Song of Songs",
+    "ch": 5,
+    "v": 2
+   }
+  },
+  "סביל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "עלקא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "לביאה": {
+   "niqqud": "לְבִיאָה",
+   "intro": "לביאה היא נקבת האריה.",
+   "bible": {
+    "quote": "מה אמך לביא",
+    "book": "Ezekiel",
+    "ch": 19,
+    "v": 2
+   },
+   "themes": [
+    "animals",
+    "strength"
+   ]
+  },
+  "קיילא": {
+   "niqqud": "קֵיילָא",
+   "intro": "קיילא, שם יידי."
+  },
+  "נחל": {
+   "niqqud": "נַחַל",
+   "intro": "נחל, פשוטו כמשמעו. שם שניתן לבנים ולבנות.",
+   "bible": {
+    "quote": "כנחל איתן",
+    "book": "Amos",
+    "ch": 5,
+    "v": 24
+   },
+   "themes": [
+    "water"
+   ]
+  },
+  "אלענוד": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רוסלין": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ניבר": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "נטלי": {
+   "niqqud": "נָטָלִי",
+   "intro": "נטלי, שם שמקורו בלטינית, 'יום הולדת'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "מרק": {
+   "niqqud": "מַרְק",
+   "intro": "מרק, שם רומי עתיק.",
+   "themes": [
+    "international"
+   ]
+  },
+  "גדעון": {
+   "niqqud": "גִּדְעוֹן",
+   "intro": "שם מקראי, שמו של אחד השופטים.",
+   "bible": {
+    "quote": "וגדעון בנו חבט חטים בגת",
+    "book": "Judges",
+    "ch": 6,
+    "v": 11
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "נורה": {
+   "niqqud": "נוּרָה",
+   "intro": "נורה בערבית היא אור. גם שם אירי, קיצור של הונורה.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "ליהיא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "נואל": {
+   "niqqud": "נוֹאֵל",
+   "intro": "נואל בצרפתית הוא חג המולד. שם שניתן לבנים ולבנות.",
+   "themes": [
+    "international"
+   ]
+  },
+  "סחר": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "גאולה": {
+   "niqqud": "גְּאֻלָּה",
+   "intro": "גאולה היא הצלה ושחרור.",
+   "bible": {
+    "quote": "גאלה תתנו לארץ",
+    "book": "Leviticus",
+    "ch": 25,
+    "v": 24
+   }
+  },
+  "גבריאלה": {
+   "niqqud": "גַּבְרִיאֵלָה",
+   "intro": "גבריאלה, הצורה הנשית של גבריאל.",
+   "themes": [
+    "international"
+   ]
+  },
+  "אמיל": {
+   "niqqud": "אֶמִיל",
+   "intro": "אמיל, שם שמקורו בשם הרומי אמיליוס.",
+   "themes": [
+    "international"
+   ]
+  },
+  "חנניה": {
+   "niqqud": "חֲנַנְיָה",
+   "intro": "חנני־יה: ה׳ חנן.",
+   "bible": {
+    "quote": "ויהי בהם מבני יהודה דניאל חנניה מישאל ועזריה",
+    "book": "Daniel",
+    "ch": 1,
+    "v": 6
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "פז": {
+   "niqqud": "פָּז",
+   "intro": "פז הוא זהב טהור. שם שניתן לבנים ולבנות.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "פאיז": {
+   "niqqud": "פַאִיז",
+   "intro": "פאיז בערבית הוא מנצח."
+  },
+  "ניזאר": {
+   "niqqud": "נִזַאר",
+   "intro": "ניזאר, שם ערבי עתיק."
+  },
+  "אילי": {
+   "niqqud": "אֵילִי",
+   "intro": "אילי, 'האל שלי'."
+  },
+  "תייסיר": {
+   "niqqud": "תַּיְסִיר",
+   "intro": "תייסיר בערבית הוא הקלה."
+  },
+  "חננאל": {
+   "niqqud": "חֲנַנְאֵל",
+   "intro": "חננ־אל: אלוהים חנן.",
+   "bible": {
+    "quote": "ממגדל חננאל",
+    "book": "Jeremiah",
+    "ch": 31,
+    "v": 38
+   }
+  },
+  "מועתסם": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "טאהא": {
+   "niqqud": "טַאהַא",
+   "intro": "טאהא, שמה של סורה, פרק בקוראן."
+  },
+  "גינא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "זלמן": {
+   "niqqud": "זַלְמָן",
+   "intro": "זלמן, צורה יידית של שלמה."
+  },
+  "יומנא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "עמיאל": {
+   "niqqud": "עַמִּיאֵל",
+   "intro": "עמי־אל: אלוהים הוא העם שלי.",
+   "bible": {
+    "quote": "למטה דן עמיאל בן גמלי",
+    "book": "Numbers",
+    "ch": 13,
+    "v": 12
+   }
+  },
+  "נבאא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "כיאן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "אנדי": {
+   "niqqud": "אַנְדִּי",
+   "intro": "אנדי, צורת חיבה של אנדרו, שם יווני שפירושו 'אמיץ'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "שריי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "לוקאס": {
+   "niqqud": "לוּקַאס",
+   "intro": "לוקאס, שם לטיני עתיק.",
+   "themes": [
+    "international"
+   ]
+  },
+  "סיאל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "נצר": {
+   "niqqud": "נֵצֶר",
+   "intro": "נצר הוא ענף צעיר.",
+   "bible": {
+    "quote": "ונצר משרשיו יפרה",
+    "book": "Isaiah",
+    "ch": 11,
+    "v": 1
+   },
+   "themes": [
+    "nature"
+   ]
+  },
+  "אדים": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "יאקין": {
+   "niqqud": "יַאקִין",
+   "intro": "יאקין בערבית היא ודאות וביטחון."
+  },
+  "אשחר": {
+   "niqqud": "אֲשַׁחֵר",
+   "intro": "אשחר, שיח בר. גם 'אשחר', אקום עם השחר.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "אולי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "סופיא": {
+   "niqqud": "סוֹפְיָא",
+   "intro": "סופיא ביוונית היא חוכמה.",
+   "themes": [
+    "international"
+   ]
+  },
+  "יאמאן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "לידור": {
+   "niqqud": "לִידוֹר",
+   "intro": "לי־דור: דור שלי."
+  },
+  "רנא": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "פיראס": {
+   "niqqud": "פִרַאס",
+   "intro": "פיראס בערבית היא תבונה וחדות."
+  },
+  "מוהנד": {
+   "niqqud": "מֻהַנַּד",
+   "intro": "מוהנד בערבית היא חרב מפלדה הודית.",
+   "themes": [
+    "strength"
+   ]
+  },
+  "יוני": {
+   "niqqud": "יוֹנִי",
+   "intro": "יוני, 'היונה שלי'. גם צורת חיבה של יונתן.",
+   "themes": [
+    "animals"
+   ]
+  },
+  "רמזי": {
+   "niqqud": "רַמְזִי",
+   "intro": "רמזי בערבית הוא סמלי, מלשון רמז."
+  },
+  "רנים": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ריתאג'": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "אלירז": {
+   "niqqud": "אֱלִירָז",
+   "intro": "אלי־רז: לאלוהיי יש סוד."
+  },
+  "נוריאל": {
+   "niqqud": "נוּרִיאֵל",
+   "intro": "נורי־אל: אלוהים הוא האור שלי.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "עטיה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רימון": {
+   "niqqud": "רִמּוֹן",
+   "intro": "רימון, הפרי. שם שניתן לבנים ולבנות.",
+   "bible": {
+    "quote": "ארץ חטה ושערה וגפן ותאנה ורמון",
+    "book": "Deuteronomy",
+    "ch": 8,
+    "v": 8
+   },
+   "themes": [
+    "nature",
+    "israel"
+   ]
+  },
+  "נעומי": {
+   "niqqud": "נָעוֹמִי",
+   "intro": "נעומי, כתיב של נעמי בשפות אירופה.",
+   "themes": [
+    "international"
+   ]
+  },
+  "צוף": {
+   "niqqud": "צוּף",
+   "intro": "צוף, הנוזל המתוק בפרחים. שם שניתן לבנים ולבנות.",
+   "bible": {
+    "quote": "ומתוקים מדבש ונפת צופים",
+    "book": "Psalms",
+    "ch": 19,
+    "v": 11
+   },
+   "themes": [
+    "nature"
+   ]
+  },
+  "זיסל": {
+   "niqqud": "זִיסְל",
+   "intro": "זיסל, שם יידי שפירושו 'מתוקה'."
+  },
+  "מלאני": {
+   "niqqud": "מֶלַאנִי",
+   "intro": "מלאני, שם יווני שפירושו 'כהה'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "ליבה": {
+   "niqqud": "לִיבָּה",
+   "intro": "ליבה, שם יידי שפירושו 'אהובה'."
+  },
+  "גנאת": {
+   "niqqud": "גַּנַּאת",
+   "intro": "גנאת בערבית הם גנים.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "עטל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "סדן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "דון": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "אשל": {
+   "niqqud": "אֵשֶׁל",
+   "intro": "אשל, עץ מדבר.",
+   "bible": {
+    "quote": "ויטע אשל בבאר שבע",
+    "book": "Genesis",
+    "ch": 21,
+    "v": 33
+   },
+   "themes": [
+    "nature"
+   ]
+  },
+  "אלאן": {
+   "niqqud": "אָלַאן",
+   "intro": "אלאן, שם אירופי עתיק.",
+   "themes": [
+    "international"
+   ]
+  },
+  "לילאס": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "גיית": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  }
+ }
+}
