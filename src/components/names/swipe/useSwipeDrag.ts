@@ -154,8 +154,11 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decisi
   };
 
   // Capture lost without a pointerup (the window lost focus, the OS took the gesture): put the card back.
+  // Only the card's own capture counts: on touch the browser first captures the pointer to the inner
+  // element under the finger, and moving that capture to the card fires a bubbling lostpointercapture
+  // from the child right as the drag starts.
   const onLostPointerCapture = (e: PointerEvent<HTMLElement>) => {
-    if (drag.current?.id === e.pointerId) snapBack();
+    if (e.target === e.currentTarget && drag.current?.id === e.pointerId) snapBack();
   };
 
   /** "hidden" leaves the way a skip does. */
