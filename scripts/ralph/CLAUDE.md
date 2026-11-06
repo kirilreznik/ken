@@ -1,26 +1,26 @@
 # Ralph Agent Instructions
 
-You are an autonomous coding agent working on `kirilreznik/ken`: the Nest landing page (Next.js 16, React 19, Tailwind 4) and, in this run, the name swiper PWA at `/names`.
+You are an autonomous coding agent working on `kirilreznik/ken`: the Nest landing page (Next.js 16, React 19, Tailwind 4) and, in this run, the name detail sheet of the name swiper PWA at `/names`.
 
-## Current Run: name swiper PWA, build + 3 QA cycles
+## Current Run: name detail sheet, build + content + 3 QA cycles in mobile browsers
 
-This run executes `tasks/prd-names-pwa.md` via `scripts/ralph/prd.json` (installed from `scripts/ralph/prd-names-pwa.json` by `scripts/ralph/run-names-pwa.sh`). **Read `tasks/prd-names-pwa.md` first, every iteration**: §3 (decisions, don't reopen them), §8 (rules for every story), §10 (browser check) and, for QA stories, §11. The product spec for cards, deck, lists and duel is `docs/names-pwa/E16-name-swipe-spec.md`; read the sections your story cites. Accounts and settings are the owner's (`docs/names-pwa/SETUP.md`); never change them.
+This run executes `tasks/prd-name-detail.md` via `scripts/ralph/prd.json` (installed from `scripts/ralph/prd-name-detail.json` by `scripts/ralph/run-name-detail.sh`). **Read `tasks/prd-name-detail.md` first, every iteration**: §3 (decisions, don't reopen them, including §3.3 on the launch pack), §5 (design system and the components to reuse, for every UI story), §6 (content rules, for content stories), §8 (rules for every story), §10 (mobile browser check) and, for QA stories, §11. The previous run's PRD `tasks/prd-names-pwa.md` and the spec `docs/names-pwa/E16-name-swipe-spec.md` describe everything already built; read the parts your story touches. Accounts and settings are the owner's (`docs/names-pwa/SETUP.md`); never change them.
 
-**Branch:** `ralph/names-pwa`, from `origin/main`. Never commit to or push `main`.
+**Branch:** `ralph/name-detail`, from `origin/main`. Never commit to or push `main`.
 
-**Design source of truth:** `docs/names-pwa/design/screens/*.png` (how it looks) and `docs/names-pwa/design/source/*.dc.html` (exact sizes, colors, radii, copy), the brand in `docs/names-pwa/brand/`, and the landing demo `src/lib/pregnancy-names-demo.mjs` for interactions. There is no claude.ai access here; don't try to open canvas or artifact links.
+**Design source of truth:** the app's tokens (`src/styles/nest-tokens.css`) and components (`src/components/names/ui/`, `card/`, `swipe/`) for every value and building block; boards `docs/names-pwa/design/screens/12-detail-card.png` … `15-detail-extras.png` (source `docs/names-pwa/design/source/NameDetail.dc.html`) for layout, order and copy of the new sheet; the older boards 1–11 for everything else. Boards 12–15 are brainstorm sketches: where their colors or sizes differ from the tokens, the tokens win; their placeholder surname, story and similar names never ship. There is no claude.ai access here; don't try to open canvas or artifact links.
 
-**Backend:** the Supabase project in `.env.local` ("Nest (EU)", `hkoumskvmkqqnwhnizbq`). Migrations 0001–0009 are applied by the owner. Never apply SQL, change auth settings or deploy functions. A needed backend change goes into `docs/names-pwa/backend-requests.md` and the dependent part is marked blocked in the story notes.
+**Backend:** the Supabase project in `.env.local` ("Nest (EU)"). This run needs no backend change. Never apply SQL, change auth settings or deploy functions.
 
-**Secrets:** `.env.local` and `scripts/ralph/.env.test.local` are gitignored. Never print, log or commit their values, OTPs, tokens or phone numbers. Refer to them by key name only.
+**Secrets:** `.env.local` and `scripts/ralph/.env.test.local` are gitignored. Never print, log or commit their values, codes, tokens or phone numbers. Refer to them by key name only.
 
-**Dependencies and lockfile:** install with `npm ci`, never a bare `npm install`. On this Mac (npm 11) `npm install` drops the `@esbuild/*` platform entries (linux-x64 included) from `package-lock.json`, and Vercel's Linux build needs them. When a story adds a dependency (`npm install -D <pkg>`), check `git diff package-lock.json | grep '^-.*"node_modules/@esbuild/'` is empty before committing; if entries were removed, restore them (`git checkout package-lock.json`, then add the package with `npm install -D <pkg> --os=linux --cpu=x64 --os=darwin --cpu=arm64`, or hand-restore the removed blocks) so the diff only adds what the story needs. Never commit lockfile changes a story didn't ask for. Next 16's dev server writes `AGENTS.md` and `CLAUDE.md` into the repo root; they are gitignored, never commit them.
+**Dependencies and lockfile:** install with `npm ci`, never a bare `npm install`. On this Mac (npm 11) `npm install` drops the `@esbuild/*` platform entries from `package-lock.json`, and Vercel's Linux build needs them. This run should add no dependency; Playwright's WebKit browser is installed with `npx playwright install webkit` (no lockfile change). Next 16's dev server writes `AGENTS.md` and `CLAUDE.md` into the repo root; they are gitignored, never commit them.
 
-**Commits:** build stories (US-001…US-074) commit once each when done, if their criteria say so. QA stories (`US-QA{N}-{X}`) never commit and never fix; they only write to `scripts/ralph/qa/names-pwa/` and `progress.txt`. `US-FIX{N}` commits once per cycle. `US-FINAL` makes one docs commit and pushes the branch. Never `git stash`, `git clean`, `git checkout .` or `git reset --hard`: uncommitted QA records must survive between iterations.
+**Commits:** build and content stories (US-001…US-074) commit once each when their criteria say so. QA stories (`US-QA{N}-{X}`) never commit and never fix; they only write to `scripts/ralph/qa/name-detail/` and `progress.txt`. `US-FIX{N}` commits once per cycle. `US-FINAL` makes one docs commit and pushes the branch. Never `git stash`, `git clean`, `git checkout .` or `git reset --hard`: uncommitted QA records must survive between iterations.
 
-**QA loop (hard cap of 3):** QA cycle N (12 stories, A–L, run in full every cycle) → `US-FIX{N}`. A FIX story whose cycle found zero `open` bugs marks every remaining QA/FIX story `passes: true` with "skipped: QA clean after cycle N" and lets `US-FINAL` run. `US-FIX3` is the last fix pass. `US-FINAL` reports the true state and never rounds up.
+**QA loop (hard cap of 3):** QA cycle N (17 stories, A–Q, run in full every cycle, in real mobile browsers) → `US-FIX{N}`. A FIX story whose cycle found zero `open` bugs marks every remaining QA/FIX story `passes: true` with "skipped: QA clean after cycle N" and lets `US-FINAL` run. `US-FIX3` is the last fix pass. `US-FINAL` reports the true state and never rounds up.
 
-**US-000 runs first and gates everything.** If it can't pass, it writes the missing prerequisites at the top of `progress.txt` and stops. Don't start other stories.
+**US-000 runs first and gates everything.** If it can't pass (a browser, the Simulator, `cliclick`, the QA users, or the launch pack not merged), it writes the missing prerequisite at the top of `progress.txt` and stops. Don't start other stories.
 
 ## Your Task
 
@@ -28,7 +28,7 @@ This run executes `tasks/prd-names-pwa.md` via `scripts/ralph/prd.json` (install
 2. Read the progress log at `scripts/ralph/progress.txt` (check the Codebase Patterns section first)
 3. Check you're on the branch from PRD `branchName`. If not, check it out or create it from `origin/main`.
 4. Pick the **highest priority** user story where `passes: false` (lowest `priority` number)
-5. Implement that single user story, following `tasks/prd-names-pwa.md` §8
+5. Implement that single user story, following `tasks/prd-name-detail.md` §8
 6. Run the checks: `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build`
 7. For UI stories, do the browser check (below) until it matches
 8. If checks pass, commit as the story's criteria say (short imperative subject, e.g. `feat(names): add the duel`)
@@ -39,17 +39,17 @@ This run executes `tasks/prd-names-pwa.md` via `scripts/ralph/prd.json` (install
 
 Before using a Next.js API, read the matching guide in `node_modules/next/dist/docs/` if it exists, otherwise https://nextjs.org/docs (version 16). For Supabase auth, read the `@supabase/supabase-js` / `@supabase/auth-js` source in `node_modules` or https://supabase.com/docs. Heed deprecation notices.
 
-## Browser check (required for UI stories)
+## Mobile browser check (required for UI stories)
 
-The full recipe is `tasks/prd-names-pwa.md` §10. In short:
+The full recipe is `tasks/prd-name-detail.md` §10. In short, every UI story is checked in three mobile browsers:
 
 1. `curl -s -o /dev/null -w '%{http_code}' localhost:3000/names/welcome`; if it doesn't answer, start `nohup npm run dev > /tmp/names-dev.log 2>&1 &` and wait for it. Service worker and QA stories use a production build on port 3100.
-2. Signed-in pages: `node scripts/ralph/qa/names-pwa/login.mjs 1` writes a storageState; pass `--state 1` to `shot.mjs`.
-3. `node scripts/ralph/qa/names-pwa/shot.mjs /names out.png --state 1` (390 × 844, he-IL, Asia/Jerusalem). Read the PNG and compare it with the board PNG and its `.dc.html`.
-4. Script interactions with Playwright (`page.mouse`, `page.touchscreen`, `page.keyboard`, `setInputFiles`, `context.setOffline`, `page.emulateMedia`).
+2. Playwright WebKit as an iPhone 15 and Chromium as a Pixel 7, both with touch and a signed-in QA user: `scripts/ralph/qa/name-detail/mobile.mjs` (US-001). Taps with the touchscreen, drags with its touch `drag()` helper.
+3. Mobile Safari in the iOS Simulator: `scripts/ralph/qa/name-detail/sim.mjs` and the notes in `SIMULATOR.md` (US-002).
+4. Save screenshots to `scripts/ralph/qa/name-detail/shots/`, read each PNG and compare it with the board PNG, its `.dc.html` and the tokens (PRD §5).
 5. Fix and repeat until it matches. Not "close enough". Deliberate differences go in the story's `notes`.
 
-A frontend story is not complete until this loop finds a clean match. If Playwright can't run, write that in `progress.txt` as a blocker; never skip the check.
+A frontend story is not complete until this loop finds a clean match in all three. If a browser or the Simulator can't run, write that in `progress.txt` as a blocker; never skip the check.
 
 ## Progress Report Format
 
