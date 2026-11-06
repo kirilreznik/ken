@@ -1,5 +1,5 @@
 {
- "_about": "Theme tags for the name swiper's 'נושאים' filter. Edit the lists here, then run node scripts/names-content/build-themes.mjs. Drafted with AI help from each card's intro; owner review pending. A name can be in several themes. 'unisex' is computed from the CBS boy/girl split and has no list.",
+ "_about": "Theme tags for the name swiper's 'נושאים' filter. Edit the lists here, then run node scripts/names-content/build-themes.mjs. Drafted with AI help from each card's intro; owner confirmed the theme definitions 2026-11-06; name lists still open to owner edits. A name can be in several themes. 'unisex' is computed from the CBS boy/girl split and has no list.",
  "themes": [
   {
    "id": "israel",
@@ -80,7 +80,7 @@
   {
    "id": "special",
    "label": "מיוחדים",
-   "rule": "שמות פחות שגרתיים: מילה או מקום שהפכו לשם, או צליל נדיר. הגדרה זמנית, לאישור.",
+   "rule": "שמות פחות שגרתיים: מילה או מקום שהפכו לשם, או צליל נדיר.",
    "names": [
     "ריף",
     "סול",
