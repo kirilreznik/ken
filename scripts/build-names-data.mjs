@@ -5,7 +5,7 @@
 // they can be cached forever, plus manifest.json pointing at them (read by
 // src/lib/names/data.ts). Hashed files from earlier builds are removed.
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -13,6 +13,21 @@ const HASHED = /^(names|content)\.[0-9a-f]+\.json$/;
 
 function minified(file) {
   return JSON.stringify(JSON.parse(readFileSync(file, "utf8")));
+}
+
+/**
+ * The card content with each name's theme tags (name-themes.json, when present) added as
+ * `themes`, so the app loads one file.
+ */
+function contentWithThemes(srcDir) {
+  const content = JSON.parse(readFileSync(resolve(srcDir, "name-content.json"), "utf8"));
+  const themesFile = resolve(srcDir, "name-themes.json");
+  if (!existsSync(themesFile)) return JSON.stringify(content);
+  const themes = JSON.parse(readFileSync(themesFile, "utf8")).names;
+  for (const [name, ids] of Object.entries(themes)) {
+    if (content.names[name]) content.names[name].themes = ids;
+  }
+  return JSON.stringify(content);
 }
 
 function hashed(prefix, body) {
@@ -27,7 +42,7 @@ function hashed(prefix, body) {
 export function buildNamesData({ srcDir, outDir, now = new Date() }) {
   const files = {
     names: minified(resolve(srcDir, "names.json")),
-    content: minified(resolve(srcDir, "name-content.json")),
+    content: contentWithThemes(srcDir),
   };
   const manifest = {
     names: hashed("names", files.names),

@@ -1,3 +1,4 @@
+import { hasAnyTheme, type ThemeId } from "./themes";
 import type { CardDerived, NameStats, PopularityBand, SexTag, TrendWord } from "./types";
 
 export type NameLength = "קצר" | "ארוך";
@@ -17,6 +18,16 @@ export const SHORT_MAX = 3;
 /** This many letters or more is "ארוך". */
 export const LONG_MIN = 5;
 
+/** A custom number of letters, both ends included. */
+export interface LetterRange {
+  min: number;
+  max: number;
+}
+
+/** The custom range slider's ends. The top end means "this many or more". */
+export const RANGE_MIN = 2;
+export const RANGE_MAX = 7;
+
 /** E16 FR-10. `null` in a group means "all" (the default). */
 export interface Filters {
   sex: SexTag | null;
@@ -25,6 +36,10 @@ export interface Filters {
   letter: string | null;
   length: NameLength | null;
   origin: Sector | null;
+  /** Any of these themes; never an empty list (that is `null`). */
+  themes: ThemeId[] | null;
+  /** "מספר אותיות מותאם": when set, `length` is null. */
+  letterRange: LetterRange | null;
 }
 
 export const DEFAULT_FILTERS: Readonly<Filters> = Object.freeze({
@@ -34,6 +49,8 @@ export const DEFAULT_FILTERS: Readonly<Filters> = Object.freeze({
   letter: null,
   length: null,
   origin: null,
+  themes: null,
+  letterRange: null,
 });
 
 export function defaultFilters(): Filters {
@@ -54,6 +71,7 @@ export function hasSheetFilters(filters: Filters | null): boolean {
 export interface FilterableCard {
   stats: Pick<NameStats, "name" | "s">;
   derived: Pick<CardDerived, "sexTag" | "band" | "trend">;
+  content?: { themes?: readonly string[] };
 }
 
 /** Letters only: niqqud, geresh, gershayim, apostrophes, hyphens and spaces don't count. */
@@ -80,6 +98,12 @@ export function matches(card: FilterableCard, filters: Filters): boolean {
   if (filters.letter !== null && firstLetter(stats.name) !== filters.letter) return false;
   if (filters.length !== null && nameLength(stats.name) !== filters.length) return false;
   if (filters.origin !== null && !stats.s.includes(filters.origin)) return false;
+  if (filters.themes !== null && !hasAnyTheme(card, filters.themes)) return false;
+  if (filters.letterRange !== null) {
+    const n = letters(stats.name).length;
+    const { min, max } = filters.letterRange;
+    if (n < min || (max < RANGE_MAX && n > max)) return false;
+  }
   return true;
 }
 
@@ -117,8 +141,25 @@ export function letterValue(letter: string | null): string {
   return letter ?? "כל האותיות";
 }
 
-export function lengthValue(length: NameLength | null): string {
+export function lengthValue(length: NameLength | null, range: LetterRange | null = null): string {
+  if (range) return rangeValue(range);
   return length === "קצר" ? "קצר, עד 3 אותיות" : length === "ארוך" ? "ארוך, 5 אותיות ומעלה" : "קצר וארוך";
+}
+
+/** "בין 3 ל־5 אותיות", "4 אותיות", "5 אותיות ומעלה" for the custom range. */
+export function rangeValue({ min, max }: LetterRange): string {
+  const open = max >= RANGE_MAX;
+  if (min <= RANGE_MIN && open) return "כל האורכים";
+  if (open) return `${min} אותיות ומעלה`;
+  if (min === max) return `${min} אותיות`;
+  return `בין ${min} ל־${max} אותיות`;
+}
+
+/** Clamps a range to the slider's ends and keeps min ≤ max. */
+export function clampRange(min: number, max: number): LetterRange {
+  const lo = Math.max(RANGE_MIN, Math.min(RANGE_MAX, Math.round(min)));
+  const hi = Math.max(RANGE_MIN, Math.min(RANGE_MAX, Math.round(max)));
+  return lo <= hi ? { min: lo, max: hi } : { min: hi, max: lo };
 }
 
 /** The filters sheet's apply button (FR-W16). */
