@@ -26,6 +26,14 @@ export interface NameContent {
   themes?: string[];
 }
 
+/** Details shown in the name sheet (data/names/name-details.json), loaded lazily. */
+export interface NameDetail {
+  /** A short story about the name; null when none was written. */
+  story: string | null;
+  /** Other forms of the same name, deck names only, most given in 2024 first. */
+  similar: string[];
+}
+
 export type SexTag = "בן" | "בת" | "מתאים לכולם";
 export type PopularityBand = "נפוץ" | "בינוני" | "נדיר";
 export type TrendWord = "בעלייה" | "בירידה" | "יציב";

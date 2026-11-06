@@ -1,4 +1,4 @@
-import type { NameContent, NameStats } from "./types";
+import type { NameContent, NameDetail, NameStats } from "./types";
 
 /** First and last year in each NameStats.y array. */
 export const FIRST_TREND_YEAR = 2000;
@@ -22,6 +22,12 @@ export interface RawContentFile {
   names: Record<string, NameContent>;
 }
 
+/** name-details.json as stored; entries are checked by parseDetails, not trusted. */
+export interface RawDetailsFile {
+  _about?: string;
+  names?: Record<string, unknown>;
+}
+
 export const DATA_BASE = "/names/data/";
 const FALLBACK: DataManifest = { names: "names.json", content: "content.json", builtAt: "" };
 
@@ -38,6 +44,22 @@ export function parseNames(raw: RawNamesFile): Map<string, NameStats> {
 
 export function parseContent(raw: RawContentFile): Map<string, NameContent> {
   return new Map(Object.entries(raw.names));
+}
+
+/** Details keyed by name; drops entries that aren't objects and fills missing fields. */
+export function parseDetails(raw: RawDetailsFile): Map<string, NameDetail> {
+  const map = new Map<string, NameDetail>();
+  const names = raw && typeof raw === "object" ? raw.names : undefined;
+  if (!names || typeof names !== "object") return map;
+  for (const [name, entry] of Object.entries(names)) {
+    if (name === "_about" || !entry || typeof entry !== "object" || Array.isArray(entry)) continue;
+    const { story, similar } = entry as { story?: unknown; similar?: unknown };
+    map.set(name, {
+      story: typeof story === "string" ? story : null,
+      similar: Array.isArray(similar) ? similar.filter((s): s is string => typeof s === "string") : [],
+    });
+  }
+  return map;
 }
 
 /** Names that have a content entry, in file order. */
