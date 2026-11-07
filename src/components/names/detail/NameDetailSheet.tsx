@@ -11,6 +11,7 @@ import { rank2024, rankMap, togetherFor } from "@/lib/names/detail";
 import type { Match } from "@/lib/names/matches";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import type { Card } from "@/lib/names/types";
+import FactsSection from "./FactsSection";
 import MeaningSection from "./MeaningSection";
 import NumbersSection from "./NumbersSection";
 import SexSection from "./SexSection";
@@ -75,6 +76,7 @@ function NameGate({ cards, surname, matches, memberCount }: Props) {
         <TogetherSection together={togetherFor(card.stats.name, matches, memberCount)} />
         <NumbersSection stats={card.stats} rank={rank} />
         <SexSection {...card.derived} />
+        <FactsSection stats={card.stats} rank={rank} />
       </div>
     </BottomSheet>
   );

@@ -9,6 +9,7 @@ import {
   chartLabel,
   chartModel,
   compare2000,
+  factTiles,
   niceStep,
   rank2024,
   rankMap,
@@ -109,6 +110,28 @@ describe("allTimeBirths", () => {
     expect(allTimeBirths(stats("אריאל"))).toBe("48,793");
     expect(allTimeBirths(stats("מוחמד"))).toBe("130,529");
     expect(allTimeBirths({ m: 3, f: 4 })).toBe("7");
+  });
+});
+
+describe("factTiles", () => {
+  it("shows all three facts for אריאל like board 14", () => {
+    expect(factTiles(stats("אריאל"), 2)).toEqual([
+      { key: "all-time", value: "48,793", label: "תינוקות מאז 1949" },
+      { key: "rank", value: "#2", label: "בדירוג 2024" },
+      { key: "compare", value: "פי 3.3", label: "לעומת 2000" },
+    ]);
+  });
+
+  it("splits the falling and steady comparisons", () => {
+    expect(factTiles({ m: 1, f: 1, y: years(100, 70) }, 9)[2]).toEqual({ key: "compare", value: "30% פחות", label: "לעומת 2000" });
+    expect(factTiles({ m: 1, f: 1, y: years(100, 100) }, 9)[2]).toEqual({ key: "compare", value: "בערך כמו", label: "בשנת 2000" });
+  });
+
+  it("leaves out the facts that don't apply", () => {
+    expect(factTiles({ m: 5, f: 0, y: years(100, 0) }, null).map((t) => t.key)).toEqual(["all-time"]);
+    expect(factTiles(stats("אינה"), null).map((t) => t.key)).toEqual(["all-time"]);
+    expect(factTiles({ m: 5, f: 0, y: years(10, 30) }, 400).map((t) => t.key)).toEqual(["all-time", "rank"]);
+    expect(factTiles({ m: 5, f: 0, y: years(10, 30) }, 1234)[1].value).toBe("#1,234");
   });
 });
 

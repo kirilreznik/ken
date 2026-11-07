@@ -64,6 +64,30 @@ export function allTimeBirths({ m, f }: Pick<NameStats, "m" | "f">): string {
   return fmt.format(m + f);
 }
 
+export interface FactTile {
+  key: "all-time" | "rank" | "compare";
+  value: string;
+  label: string;
+}
+
+/**
+ * FR-D15 (board 14): all-time births, the 2024 rank and the 2000 comparison as value + label
+ * tiles. A fact that doesn't apply is left out. Value and label read as one phrase
+ * ("פי 3.3 לעומת 2000", "בערך כמו בשנת 2000").
+ */
+export function factTiles(stats: Pick<NameStats, "m" | "f" | "y">, rank: number | null): FactTile[] {
+  const tiles: FactTile[] = [{ key: "all-time", value: allTimeBirths(stats), label: ALL_TIME_LABEL }];
+  if (rank !== null) tiles.push({ key: "rank", value: `#${fmt.format(rank)}`, label: `בדירוג ${LAST_YEAR}` });
+  const compare = compare2000(stats);
+  if (compare?.kind === "same") {
+    tiles.push({ key: "compare", value: "בערך כמו", label: `בשנת ${FIRST_TREND_YEAR}` });
+  } else if (compare) {
+    const value = compare.text.slice(0, compare.text.indexOf(" מבשנת"));
+    tiles.push({ key: "compare", value, label: `לעומת ${FIRST_TREND_YEAR}` });
+  }
+  return tiles;
+}
+
 const YEARS = LAST_YEAR - FIRST_TREND_YEAR + 1;
 /** Years labelled under the chart (PRD §3.2.9). */
 export const CHART_X_YEARS = [FIRST_TREND_YEAR, 2012, LAST_YEAR] as const;

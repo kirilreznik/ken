@@ -28,7 +28,7 @@ export default function NumbersSection({ stats, rank }: { stats: Pick<NameStats,
   );
 }
 
-/** Wraps each run of digits (with its separators and "#") in an LTR bdi. */
-function Numbers({ text }: { text: string }) {
-  return text.split(/(#?\d[\d,]*)/u).map((part, i) => (i % 2 ? <bdi key={i} dir="ltr">{part}</bdi> : part));
+/** Wraps each run of digits (with its separators, "#" and "%") in an LTR bdi. */
+export function Numbers({ text }: { text: string }) {
+  return text.split(/(#?\d[\d,.]*%?)/u).map((part, i) => (i % 2 ? <bdi key={i} dir="ltr">{part}</bdi> : part));
 }
