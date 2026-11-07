@@ -20,7 +20,7 @@ import { markAppEntry } from "@/lib/names/appHistory";
 import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
 import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
-import { matchToShow, withSeen } from "@/lib/names/matches";
+import { matchToShow, withSeen, type Match } from "@/lib/names/matches";
 import { RECAP_VOTES, countSession, pauseToShow, sessionTotals, surveyDue, type Pause } from "@/lib/names/launch";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 import { currentSessionInfo, track } from "@/lib/names/track";
@@ -36,6 +36,7 @@ import SwipeHeader from "./SwipeHeader";
 import SwipeKeys, { SWIPE_KEYS_ID } from "./SwipeKeys";
 import { dragClass, useSwipeDrag } from "./useSwipeDrag";
 
+const NO_MATCHES: readonly Match[] = [];
 const NO_TOTALS = { votes: 0, saves: 0, names: [] as string[] };
 
 /** How the next decision was made: a drag ends in "swipe"; buttons and keys say so first. */
@@ -255,7 +256,12 @@ export default function SwipeScreen() {
       <AboutSheet hasName={!!current} />
       <ReportSheet name={current?.stats.name ?? null} />
       <FiltersSheet userId={userId} cards={cards} votes={votes} />
-      <NameDetailSheet cards={cards} surname={surname} />
+      <NameDetailSheet
+        cards={cards}
+        surname={surname}
+        matches={matches?.matches ?? NO_MATCHES}
+        memberCount={space.members.length}
+      />
       <SurveySheet votes={votes.size} sessions={sessionCount} onDone={() => userId && setPref(userId, "survey", "done")} />
       <MatchSheet
         match={newMatch}
