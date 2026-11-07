@@ -1,0 +1,2114 @@
+{
+  "project": "Nest name swiper (ken repo, /names)",
+  "branchName": "ralph/name-polish",
+  "description": "Design polish run for the whole name swiper: audit every screen through the design skills in .claude/skills (impeccable, ui-ux-pro-max, design-critique, design-review, accessibility, interaction, microcopy, break-ui, motion, mobile-native, design system, journeys), triage into one ranked backlog, fix up to 50 small items one per story with before/after screenshots, re-score, then 3 QA cycles in real mobile browsers. Refine, never redesign. Spec: tasks/prd-name-polish.md",
+  "userStories": [
+    {
+      "id": "US-000",
+      "title": "Gate: branch, browsers, Simulator, QA users and skills folder",
+      "description": "As the run, I need every tool working before any other story, so nothing is marked done without a real mobile check.",
+      "acceptanceCriteria": [
+        "On branch `ralph/name-polish`; `git log --oneline -1` and `git merge-base --is-ancestor 5a400a4 HEAD` (the detail run is included) recorded in `progress.txt`; record whether ken PR #17 is merged into `origin/main`",
+        "`npm ci` done; `npx playwright install chromium webkit` done or already installed; `node scripts/ralph/qa/name-detail/mobile.mjs webkit /names/welcome gate-webkit` and the same for chromium save screenshots that you read",
+        "`xcrun simctl list devices available` shows an iPhone with a home indicator; it boots, `open -a Simulator` shows it, `xcrun simctl openurl booted http://localhost:3000/names/welcome` loads in Mobile Safari with `npm run dev` running; a screenshot shows the welcome page; one `cliclick` tap is shown to land",
+        "`scripts/ralph/.env.test.local` has `NAMES_QA_EMAIL_1`..`3`; `node scripts/ralph/qa/names-pwa/login.mjs 1` and `2` succeed (key names only in logs, never values)",
+        "`.claude/skills/` exists with the 30 skills listed in PRD §5 (each has a `SKILL.md`) plus `shared/`; the list is written under Codebase Patterns in `progress.txt`",
+        "If any item fails: write the missing prerequisite at the top of `progress.txt` under `## BLOCKED`, leave `passes: false`, and stop without starting other stories",
+        "No commit in this story"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-001",
+      "title": "Polish run records and shots folder for the helpers",
+      "description": "As the audits and QA, I need this run's record files and a screenshots folder, reusing the detail run's mobile helpers.",
+      "acceptanceCriteria": [
+        "`scripts/ralph/qa/name-detail/mobile.mjs` and `sim.mjs` take an optional shots folder (an option or `QA_SHOTS_DIR` env), defaulting to their current folder so the detail run's scripts still work",
+        "Creates `scripts/ralph/qa/name-polish/` with `findings/`, `scores.md`, `backlog.md`, `owner-decisions.md`, `polish-log.md`, `bugs.md`, `ux-insights.md`, each with the headers and fields from PRD §7",
+        "Adds `scripts/ralph/qa/name-polish/shots/` and `scripts/ralph/qa/name-polish/.auth/` to `.gitignore`",
+        "Self-test: `QA_SHOTS_DIR=scripts/ralph/qa/name-polish/shots node scripts/ralph/qa/name-detail/mobile.mjs webkit /names us001` writes into the new folder",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `chore(names): records for the polish run`"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Skills smoke test",
+      "description": "As the audits, I need to know each skill can be read and its tools run here, so audit stories don't stall on a broken skill.",
+      "acceptanceCriteria": [
+        "Reads the `SKILL.md` of every skill in PRD §5 (front matter and the first section only) and writes a table in `progress.txt` Codebase Patterns: skill, what it needs (files, scripts, services), any step this run must skip (§3.3.3)",
+        "Runs `.claude/skills/impeccable/scripts/impeccable context --target src/app/names` from the repo root; writes whether it worked, and if not, that the 'Launcher unavailable' path will be used",
+        "Runs `python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"mobile swipe app hebrew rtl\" --domain ux` (or the closest documented domain) and writes whether it worked",
+        "Confirms every `.claude/skills/...` path quoted inside `design`, `design-review` and `creative` resolves to a file (`shared/…`); writes any that don't",
+        "No code change; no commit"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "PRODUCT.md and DESIGN.md for the name swiper",
+      "description": "As every design skill, I need the product and design context written down once, so audits judge the app against what was decided and not against generic taste.",
+      "acceptanceCriteria": [
+        "Follows impeccable `reference/init.md` (PRODUCT.md) and `reference/document.md` (DESIGN.md) without asking questions (§3.3.2), from `docs/names-pwa/brand/BRAND.md`, `docs/names-pwa/brand/tokens.json`, `src/styles/nest-tokens.css`, `docs/names-pwa/README.md`, the boards and `tasks/prd-names-pwa.md` §3 and `tasks/prd-name-detail.md` §3",
+        "`PRODUCT.md` (repo root): who it's for (gender-neutral, whoever manages the pregnancy, solo or shared), what a visit is for, the modes from §3.3.5, the owner decisions as constraints, Hebrew-only and RTL, privacy rules; the landing page marked out of scope",
+        "`DESIGN.md` (repo root): tokens by name with their roles, type scale, glass panels, backgrounds, components in `src/components/names/ui/` and when to use each, motion as it is today, accessibility rules; it describes what exists and decides nothing new",
+        "Every value in DESIGN.md is a token name or quoted from tokens.json; no new value",
+        "Committed once: `docs(names): product and design context for the polish run`"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Performance baseline",
+      "description": "As the budget in §3.1.8, I need the starting numbers measured on the production build.",
+      "acceptanceCriteria": [
+        "`npm run build`; record the first-load JS of `/names`, `/names/lists`, `/names/welcome` (gzipped, the same method as the detail run's `shots/us072-size.mjs` if it exists, else from the build output) in `scores.md` under 'Baseline performance'",
+        "On the production build (port 3100), Chromium Pixel 7: CLS during 5 swipes, and tap to sheet visible for 3 opens, recorded the same way",
+        "No code change; commits only the records: `docs(names): performance baseline for the polish run`"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Baseline screenshots: Entry",
+      "description": "As the before-and-after comparison, I need screenshots of entry as it is before any polish.",
+      "acceptanceCriteria": [
+        "Screenshots of every screen and state of group 1 (PRD §6) in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari, saved to `scripts/ralph/qa/name-polish/shots/baseline/G1/` (gitignored), named `<screen>-<state>-<browser>.png`",
+        "Also 375 × 667 and 320 px width in WebKit for each screen of G1",
+        "An inventory in `scores.md` under 'Screens G1': each screen and state with its screenshot names, so audits and QA use the same list",
+        "No code change; commits only `scores.md`: `docs(names): baseline inventory G1`"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Baseline screenshots: Deck",
+      "description": "As the before-and-after comparison, I need screenshots of deck as it is before any polish.",
+      "acceptanceCriteria": [
+        "Screenshots of every screen, sheet and state of group 2 (PRD §6), the card and detail sheet on all four backgrounds plus an own photo in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari, saved to `scripts/ralph/qa/name-polish/shots/baseline/G2/` (gitignored), named `<screen>-<state>-<browser>.png`",
+        "Also 375 × 667 and 320 px width in WebKit for each screen of G2",
+        "An inventory in `scores.md` under 'Screens G2': each screen and state with its screenshot names, so audits and QA use the same list",
+        "No code change; commits only `scores.md`: `docs(names): baseline inventory G2`"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Baseline screenshots: Lists and settings",
+      "description": "As the before-and-after comparison, I need screenshots of lists and settings as it is before any polish.",
+      "acceptanceCriteria": [
+        "Screenshots of every screen and state of group 3 (PRD §6) in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari, saved to `scripts/ralph/qa/name-polish/shots/baseline/G3/` (gitignored), named `<screen>-<state>-<browser>.png`",
+        "Also 375 × 667 and 320 px width in WebKit for each screen of G3",
+        "An inventory in `scores.md` under 'Screens G3': each screen and state with its screenshot names, so audits and QA use the same list",
+        "No code change; commits only `scores.md`: `docs(names): baseline inventory G3`"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-IMP-C-G1",
+      "title": "Audit G1 Entry: impeccable critique",
+      "description": "As the owner, I want the entry screens reviewed through the impeccable critique lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `impeccable`: `SKILL.md`, `reference/critique.md`, and `reference/operate.md` (Persuade for the welcome screen: `reference/mode-persuade.md`); follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G1 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/IMP-C-G1/`",
+        "Scores every screen with the critique heuristics and writes them as the baseline table in `scores.md` (screen × heuristic, plus the total)",
+        "Writes `scripts/ralph/qa/name-polish/findings/IMP-C-G1.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): IMP-C audit G1`"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-IMP-C-G2",
+      "title": "Audit G2 Deck: impeccable critique",
+      "description": "As the owner, I want the deck screens reviewed through the impeccable critique lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `impeccable`: `SKILL.md`, `reference/critique.md`, and `reference/operate.md` (Persuade for the welcome screen: `reference/mode-persuade.md`); follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G2 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/IMP-C-G2/`",
+        "Scores every screen with the critique heuristics and writes them as the baseline table in `scores.md` (screen × heuristic, plus the total)",
+        "Writes `scripts/ralph/qa/name-polish/findings/IMP-C-G2.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): IMP-C audit G2`"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-IMP-C-G3",
+      "title": "Audit G3 Lists and settings: impeccable critique",
+      "description": "As the owner, I want the lists and settings screens reviewed through the impeccable critique lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `impeccable`: `SKILL.md`, `reference/critique.md`, and `reference/operate.md` (Persuade for the welcome screen: `reference/mode-persuade.md`); follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G3 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/IMP-C-G3/`",
+        "Scores every screen with the critique heuristics and writes them as the baseline table in `scores.md` (screen × heuristic, plus the total)",
+        "Writes `scripts/ralph/qa/name-polish/findings/IMP-C-G3.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): IMP-C audit G3`"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-IMP-A-G1",
+      "title": "Audit G1 Entry: impeccable technical audit",
+      "description": "As the owner, I want the entry screens reviewed through the impeccable technical audit lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `impeccable`: `reference/audit.md`, `reference/craft-floor.md`, `reference/polish.md`, `reference/harden.md`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G1 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/IMP-A-G1/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/IMP-A-G1.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): IMP-A audit G1`"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-IMP-A-G2",
+      "title": "Audit G2 Deck: impeccable technical audit",
+      "description": "As the owner, I want the deck screens reviewed through the impeccable technical audit lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `impeccable`: `reference/audit.md`, `reference/craft-floor.md`, `reference/polish.md`, `reference/harden.md`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G2 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/IMP-A-G2/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/IMP-A-G2.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): IMP-A audit G2`"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-IMP-A-G3",
+      "title": "Audit G3 Lists and settings: impeccable technical audit",
+      "description": "As the owner, I want the lists and settings screens reviewed through the impeccable technical audit lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `impeccable`: `reference/audit.md`, `reference/craft-floor.md`, `reference/polish.md`, `reference/harden.md`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G3 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/IMP-A-G3/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/IMP-A-G3.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): IMP-A audit G3`"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-PRO-G1",
+      "title": "Audit G1 Entry: ui-ux-pro-max checklist",
+      "description": "As the owner, I want the entry screens reviewed through the ui-ux-pro-max checklist lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `ui-ux-pro-max`: `SKILL.md` (its rules and pre-delivery checklist), the `references/` files it routes mobile and RTL work to, and `scripts/search.py` for the rules it cites; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G1 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/PRO-G1/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/PRO-G1.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): PRO audit G1`"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-PRO-G2",
+      "title": "Audit G2 Deck: ui-ux-pro-max checklist",
+      "description": "As the owner, I want the deck screens reviewed through the ui-ux-pro-max checklist lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `ui-ux-pro-max`: `SKILL.md` (its rules and pre-delivery checklist), the `references/` files it routes mobile and RTL work to, and `scripts/search.py` for the rules it cites; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G2 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/PRO-G2/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/PRO-G2.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): PRO audit G2`"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-PRO-G3",
+      "title": "Audit G3 Lists and settings: ui-ux-pro-max checklist",
+      "description": "As the owner, I want the lists and settings screens reviewed through the ui-ux-pro-max checklist lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `ui-ux-pro-max`: `SKILL.md` (its rules and pre-delivery checklist), the `references/` files it routes mobile and RTL work to, and `scripts/search.py` for the rules it cites; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G3 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/PRO-G3/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/PRO-G3.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): PRO audit G3`"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-CRIT-G1",
+      "title": "Audit G1 Entry: design critique",
+      "description": "As the owner, I want the entry screens reviewed through the design critique lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `design-critique` (`SKILL.md` and its `references/`) and `design-critique-quick`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G1 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/CRIT-G1/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/CRIT-G1.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): CRIT audit G1`"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-CRIT-G2",
+      "title": "Audit G2 Deck: design critique",
+      "description": "As the owner, I want the deck screens reviewed through the design critique lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `design-critique` (`SKILL.md` and its `references/`) and `design-critique-quick`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G2 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/CRIT-G2/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/CRIT-G2.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): CRIT audit G2`"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-CRIT-G3",
+      "title": "Audit G3 Lists and settings: design critique",
+      "description": "As the owner, I want the lists and settings screens reviewed through the design critique lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `design-critique` (`SKILL.md` and its `references/`) and `design-critique-quick`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G3 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/CRIT-G3/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/CRIT-G3.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): CRIT audit G3`"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-ELEV-G1",
+      "title": "Audit G1 Entry: visual quality and elevation",
+      "description": "As the owner, I want the entry screens reviewed through the visual quality and elevation lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `design-review`, `design-elevation` (and its references), `frontend-design`, `product-taste`, plus `.claude/skills/shared/knowledge/visual-quality.md` and `typography.md`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G1 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/ELEV-G1/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/ELEV-G1.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): ELEV audit G1`"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-ELEV-G2",
+      "title": "Audit G2 Deck: visual quality and elevation",
+      "description": "As the owner, I want the deck screens reviewed through the visual quality and elevation lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `design-review`, `design-elevation` (and its references), `frontend-design`, `product-taste`, plus `.claude/skills/shared/knowledge/visual-quality.md` and `typography.md`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G2 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/ELEV-G2/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/ELEV-G2.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): ELEV audit G2`"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-ELEV-G3",
+      "title": "Audit G3 Lists and settings: visual quality and elevation",
+      "description": "As the owner, I want the lists and settings screens reviewed through the visual quality and elevation lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `design-review`, `design-elevation` (and its references), `frontend-design`, `product-taste`, plus `.claude/skills/shared/knowledge/visual-quality.md` and `typography.md`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G3 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/ELEV-G3/`",
+        "Writes `scripts/ralph/qa/name-polish/findings/ELEV-G3.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): ELEV audit G3`"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-A11Y-G1",
+      "title": "Audit G1 Entry: accessibility",
+      "description": "As the owner, I want the entry screens reviewed through the accessibility lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `accessibility-audit` (and its references) and `accessibility-review`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G1 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/A11Y-G1/`",
+        "Runs axe (`@axe-core/playwright` via `mobile.mjs` `axe(page)`) on every screen and sheet of the group and checks contrast of every text style on each background",
+        "Writes `scripts/ralph/qa/name-polish/findings/A11Y-G1.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): A11Y audit G1`"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-A11Y-G2",
+      "title": "Audit G2 Deck: accessibility",
+      "description": "As the owner, I want the deck screens reviewed through the accessibility lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `accessibility-audit` (and its references) and `accessibility-review`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G2 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/A11Y-G2/`",
+        "Runs axe (`@axe-core/playwright` via `mobile.mjs` `axe(page)`) on every screen and sheet of the group and checks contrast of every text style on each background",
+        "Writes `scripts/ralph/qa/name-polish/findings/A11Y-G2.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): A11Y audit G2`"
+      ],
+      "priority": 25,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-A11Y-G3",
+      "title": "Audit G3 Lists and settings: accessibility",
+      "description": "As the owner, I want the lists and settings screens reviewed through the accessibility lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `accessibility-audit` (and its references) and `accessibility-review`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G3 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/A11Y-G3/`",
+        "Runs axe (`@axe-core/playwright` via `mobile.mjs` `axe(page)`) on every screen and sheet of the group and checks contrast of every text style on each background",
+        "Writes `scripts/ralph/qa/name-polish/findings/A11Y-G3.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): A11Y audit G3`"
+      ],
+      "priority": 26,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-INT-G1",
+      "title": "Audit G1 Entry: interaction",
+      "description": "As the owner, I want the entry screens reviewed through the interaction lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `interaction-design` (and its references), `apple-design`, `emil-design-eng`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G1 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/INT-G1/`",
+        "Checks gestures, pressed/disabled/loading states, sheet physics and feedback in all three browsers, not only WebKit",
+        "Writes `scripts/ralph/qa/name-polish/findings/INT-G1.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): INT audit G1`"
+      ],
+      "priority": 27,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-INT-G2",
+      "title": "Audit G2 Deck: interaction",
+      "description": "As the owner, I want the deck screens reviewed through the interaction lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `interaction-design` (and its references), `apple-design`, `emil-design-eng`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G2 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/INT-G2/`",
+        "Checks gestures, pressed/disabled/loading states, sheet physics and feedback in all three browsers, not only WebKit",
+        "Writes `scripts/ralph/qa/name-polish/findings/INT-G2.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): INT audit G2`"
+      ],
+      "priority": 28,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-INT-G3",
+      "title": "Audit G3 Lists and settings: interaction",
+      "description": "As the owner, I want the lists and settings screens reviewed through the interaction lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `interaction-design` (and its references), `apple-design`, `emil-design-eng`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G3 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/INT-G3/`",
+        "Checks gestures, pressed/disabled/loading states, sheet physics and feedback in all three browsers, not only WebKit",
+        "Writes `scripts/ralph/qa/name-polish/findings/INT-G3.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): INT audit G3`"
+      ],
+      "priority": 29,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-COPY-G1",
+      "title": "Audit G1 Entry: microcopy",
+      "description": "As the owner, I want the entry screens reviewed through the microcopy lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `ux-writing` (and its references) and `ux-copy`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G1 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/COPY-G1/`",
+        "Lists every visible string of the group in the findings file (from the code) and reviews each; legal text and name content are out of scope (§3.1.5)",
+        "Writes `scripts/ralph/qa/name-polish/findings/COPY-G1.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): COPY audit G1`"
+      ],
+      "priority": 30,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-COPY-G2",
+      "title": "Audit G2 Deck: microcopy",
+      "description": "As the owner, I want the deck screens reviewed through the microcopy lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `ux-writing` (and its references) and `ux-copy`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G2 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/COPY-G2/`",
+        "Lists every visible string of the group in the findings file (from the code) and reviews each; legal text and name content are out of scope (§3.1.5)",
+        "Writes `scripts/ralph/qa/name-polish/findings/COPY-G2.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): COPY audit G2`"
+      ],
+      "priority": 31,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-COPY-G3",
+      "title": "Audit G3 Lists and settings: microcopy",
+      "description": "As the owner, I want the lists and settings screens reviewed through the microcopy lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `ux-writing` (and its references) and `ux-copy`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G3 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/COPY-G3/`",
+        "Lists every visible string of the group in the findings file (from the code) and reviews each; legal text and name content are out of scope (§3.1.5)",
+        "Writes `scripts/ralph/qa/name-polish/findings/COPY-G3.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): COPY audit G3`"
+      ],
+      "priority": 32,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-BREAK-G1",
+      "title": "Audit G1 Entry: worst-case data",
+      "description": "As the owner, I want the entry screens reviewed through the worst-case data lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `break-ui`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G1 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/BREAK-G1/`",
+        "Uses real worst cases, never committed to the app: the longest deck names, a 30-character surname, a long display name, 0 and 999+ saves and matches, an empty deck, slow network (Playwright throttling) and a failed request",
+        "Writes `scripts/ralph/qa/name-polish/findings/BREAK-G1.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): BREAK audit G1`"
+      ],
+      "priority": 33,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-BREAK-G2",
+      "title": "Audit G2 Deck: worst-case data",
+      "description": "As the owner, I want the deck screens reviewed through the worst-case data lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `break-ui`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G2 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/BREAK-G2/`",
+        "Uses real worst cases, never committed to the app: the longest deck names, a 30-character surname, a long display name, 0 and 999+ saves and matches, an empty deck, slow network (Playwright throttling) and a failed request",
+        "Writes `scripts/ralph/qa/name-polish/findings/BREAK-G2.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): BREAK audit G2`"
+      ],
+      "priority": 34,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-BREAK-G3",
+      "title": "Audit G3 Lists and settings: worst-case data",
+      "description": "As the owner, I want the lists and settings screens reviewed through the worst-case data lens, so the backlog holds every real problem with a reason.",
+      "acceptanceCriteria": [
+        "Reads `break-ui`; follows the skill's review method on the group's screens from PRD §6 and the baseline inventory in `scores.md`",
+        "Opens every screen and state of G3 in WebKit iPhone 15 (and the other two browsers where the PRD §10.2 says so) on the dev server; screenshots in `scripts/ralph/qa/name-polish/shots/audit/BREAK-G3/`",
+        "Uses real worst cases, never committed to the app: the longest deck names, a 30-character surname, a long display name, 0 and 999+ saves and matches, an empty deck, slow network (Playwright throttling) and a failed request",
+        "Writes `scripts/ralph/qa/name-polish/findings/BREAK-G3.md` with one entry per finding in the PRD §7 format (rule cited from the skill, severity, effort, proposed change, guardrail); a group with no findings says so and lists what was checked",
+        "Findings that need the owner are marked `owner` with the §3.2 reason; nothing is fixed in this story",
+        "No code change; commits only the findings: `docs(names): BREAK audit G3`"
+      ],
+      "priority": 35,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-MOT-G2",
+      "title": "Audit Deck: motion",
+      "description": "As the owner, I want every animation in the deck, the card, the detail sheet and every sheet over the deck reviewed, and the places where motion would help found.",
+      "acceptanceCriteria": [
+        "Reads `find-animation-opportunities`, `review-animations`, `animation-performance`, `animation-vocabulary`, `improve-animations`, `remove-animations` and `animate` (SKILL.md each)",
+        "Lists every animation and transition in the deck, the card, the detail sheet and every sheet over the deck from the code (file, property, duration, easing, reduced-motion behaviour) in the findings file",
+        "Watches each at normal speed and with reduced motion in WebKit and the Simulator; records frame drops in Chromium performance traces for the sheet open, a swipe fling and a toast",
+        "Writes `scripts/ralph/qa/name-polish/findings/MOT-G2.md` (PRD §7 format); suggestions respect §3.1.6 and §3.1.7",
+        "No code change; commits only the findings: `docs(names): motion audit G2`"
+      ],
+      "priority": 36,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-MOT-G13",
+      "title": "Audit Entry, lists and settings: motion",
+      "description": "As the owner, I want every animation in groups 1 and 3 reviewed, and the places where motion would help found.",
+      "acceptanceCriteria": [
+        "Reads `find-animation-opportunities`, `review-animations`, `animation-performance`, `animation-vocabulary`, `improve-animations`, `remove-animations` and `animate` (SKILL.md each)",
+        "Lists every animation and transition in groups 1 and 3 from the code (file, property, duration, easing, reduced-motion behaviour) in the findings file",
+        "Watches each at normal speed and with reduced motion in WebKit and the Simulator; records frame drops in Chromium performance traces for the sheet open, a swipe fling and a toast",
+        "Writes `scripts/ralph/qa/name-polish/findings/MOT-G13.md` (PRD §7 format); suggestions respect §3.1.6 and §3.1.7",
+        "No code change; commits only the findings: `docs(names): motion audit G13`"
+      ],
+      "priority": 37,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-NATIVE",
+      "title": "Audit the whole app: feels native on a phone",
+      "description": "As the owner, I want the small web-on-phone tells found everywhere: tap flashes, sticky hover, 100vh, input zoom, overscroll, safe areas.",
+      "acceptanceCriteria": [
+        "Reads `mobile-native` (SKILL.md and its files)",
+        "Checks every item of the skill on every route of PRD §6 in the Simulator and WebKit iPhone, including the installed-PWA view (Simulator: Add to Home Screen) for safe areas and status bar",
+        "Writes `scripts/ralph/qa/name-polish/findings/NATIVE-ALL.md` (PRD §7 format)",
+        "No code change; commits only the findings: `docs(names): native-feel audit`"
+      ],
+      "priority": 38,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-DS",
+      "title": "Audit the whole app: design system consistency",
+      "description": "As the owner, I want one-off styles, near-duplicate components and missing variants found across all names code.",
+      "acceptanceCriteria": [
+        "Reads `design-systems` (and its references), `design-system` and `design` (with `.claude/skills/shared/maturity-detection.md`)",
+        "Code scan of `src/components/names/**` and `src/app/names/**`: repeated class strings that should be a shared class or component, buttons or chips not built on `Button`/`Chip`, spacing values off the rhythm, type styles used outside their role in DESIGN.md, icons drawn in more than one way",
+        "Writes `scripts/ralph/qa/name-polish/findings/DS-ALL.md` (PRD §7 format) with file and line for each",
+        "No code change; commits only the findings: `docs(names): design system audit`"
+      ],
+      "priority": 39,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-A-JRN",
+      "title": "Audit the journeys",
+      "description": "As the owner, I want friction found across whole flows, which screen audits miss.",
+      "acceptanceCriteria": [
+        "Reads `journey-mapping` (and its references) and `ux-strategy` (and its references)",
+        "Walks three journeys end to end in the Simulator and WebKit with QA users: (1) first visit to first save (reset user 3), (2) invite a partner to the first match (users 1 and 2), (3) a return visit to 'בחרנו שם' (user 1); screenshots per step",
+        "Writes `scripts/ralph/qa/name-polish/findings/JRN-ALL.md`: a short map per journey (steps, what the person sees, where it slows or confuses) and findings in the PRD §7 format; anything that would change a flow is `owner`",
+        "No code change; commits only the findings: `docs(names): journey audit`"
+      ],
+      "priority": 40,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-T1",
+      "title": "Triage: merge and dedupe the findings",
+      "description": "As the polish stories, I need one list where each problem appears once, with every lens that found it.",
+      "acceptanceCriteria": [
+        "Reads every file in `scripts/ralph/qa/name-polish/findings/` and the earlier ideas (`scripts/ralph/qa/names-pwa/ux-insights.md`, `scripts/ralph/qa/name-detail/ux-insights.md`, §3.3.9)",
+        "Merges findings that describe the same problem into one item and keeps the list of finding IDs it came from; the highest severity among them wins",
+        "Checks each item against §3.1 and §3.2 again; owner items go to `owner-decisions.md` as `OD-` entries with evidence, options and a recommendation",
+        "Writes the merged polish items to `scripts/ralph/qa/name-polish/backlog.md` with ids `NP-001` on (not yet ordered or assigned to slots), and the totals (findings read, items, owner items) at the top",
+        "No code change; commits only the records: `docs(names): polish triage, merge`"
+      ],
+      "priority": 41,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-T2",
+      "title": "Triage: rank, split and assign slots",
+      "description": "As the polish stories, I need the backlog ordered and every item small enough for one iteration.",
+      "acceptanceCriteria": [
+        "Splits every `L` item into `S`/`M` items (or moves it to `owner-decisions.md` if it can't be split); every remaining item has files, a one-line change and a 'how to verify'",
+        "Orders the backlog by §3.3.8; groups items in the same component next to each other",
+        "Assigns the first 50 items to slots `US-P01`…`US-P50` (up to three `XS` items in the same component may share a slot); the rest are `next-run`",
+        "Writes at the top of `backlog.md`: counts per severity, per group and per lens, and the number in slots vs `next-run`",
+        "No code change; commits only the records: `docs(names): polish backlog`"
+      ],
+      "priority": 42,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P01",
+      "title": "Polish slot 01",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P01` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P01/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 43,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P02",
+      "title": "Polish slot 02",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P02` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P02/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 44,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P03",
+      "title": "Polish slot 03",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P03` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P03/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 45,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P04",
+      "title": "Polish slot 04",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P04` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P04/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 46,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P05",
+      "title": "Polish slot 05",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P05` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P05/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 47,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P06",
+      "title": "Polish slot 06",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P06` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P06/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 48,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P07",
+      "title": "Polish slot 07",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P07` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P07/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 49,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P08",
+      "title": "Polish slot 08",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P08` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P08/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 50,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P09",
+      "title": "Polish slot 09",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P09` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P09/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 51,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P10",
+      "title": "Polish slot 10",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P10` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P10/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 52,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P11",
+      "title": "Polish slot 11",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P11` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P11/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 53,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P12",
+      "title": "Polish slot 12",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P12` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P12/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 54,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P13",
+      "title": "Polish slot 13",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P13` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P13/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 55,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P14",
+      "title": "Polish slot 14",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P14` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P14/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 56,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P15",
+      "title": "Polish slot 15",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P15` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P15/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 57,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P16",
+      "title": "Polish slot 16",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P16` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P16/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 58,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P17",
+      "title": "Polish slot 17",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P17` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P17/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 59,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P18",
+      "title": "Polish slot 18",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P18` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P18/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 60,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P19",
+      "title": "Polish slot 19",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P19` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P19/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 61,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P20",
+      "title": "Polish slot 20",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P20` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P20/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 62,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P21",
+      "title": "Polish slot 21",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P21` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P21/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 63,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P22",
+      "title": "Polish slot 22",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P22` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P22/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 64,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P23",
+      "title": "Polish slot 23",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P23` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P23/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 65,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P24",
+      "title": "Polish slot 24",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P24` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P24/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 66,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P25",
+      "title": "Polish slot 25",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P25` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P25/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 67,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P26",
+      "title": "Polish slot 26",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P26` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P26/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 68,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P27",
+      "title": "Polish slot 27",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P27` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P27/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 69,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P28",
+      "title": "Polish slot 28",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P28` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P28/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 70,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P29",
+      "title": "Polish slot 29",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P29` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P29/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 71,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P30",
+      "title": "Polish slot 30",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P30` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P30/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 72,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P31",
+      "title": "Polish slot 31",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P31` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P31/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 73,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P32",
+      "title": "Polish slot 32",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P32` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P32/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 74,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P33",
+      "title": "Polish slot 33",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P33` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P33/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 75,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P34",
+      "title": "Polish slot 34",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P34` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P34/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 76,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P35",
+      "title": "Polish slot 35",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P35` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P35/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 77,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P36",
+      "title": "Polish slot 36",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P36` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P36/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 78,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P37",
+      "title": "Polish slot 37",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P37` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P37/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 79,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P38",
+      "title": "Polish slot 38",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P38` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P38/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 80,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P39",
+      "title": "Polish slot 39",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P39` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P39/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 81,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P40",
+      "title": "Polish slot 40",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P40` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P40/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 82,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P41",
+      "title": "Polish slot 41",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P41` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P41/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 83,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P42",
+      "title": "Polish slot 42",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P42` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P42/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 84,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P43",
+      "title": "Polish slot 43",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P43` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P43/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 85,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P44",
+      "title": "Polish slot 44",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P44` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P44/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 86,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P45",
+      "title": "Polish slot 45",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P45` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P45/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 87,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P46",
+      "title": "Polish slot 46",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P46` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P46/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 88,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P47",
+      "title": "Polish slot 47",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P47` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P47/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 89,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P48",
+      "title": "Polish slot 48",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P48` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P48/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 90,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P49",
+      "title": "Polish slot 49",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P49` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P49/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 91,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-P50",
+      "title": "Polish slot 50",
+      "description": "As the owner, I want the next backlog item fixed, verified in mobile browsers and committed on its own.",
+      "acceptanceCriteria": [
+        "Takes the backlog item(s) assigned to `US-P50` in `scripts/ralph/qa/name-polish/backlog.md`; if the slot is empty or the backlog has no `todo` item left, set `passes: true` with notes 'skipped: backlog empty' and stop (no commit)",
+        "Before editing: reads the skill rule each of the item's findings cites, `DESIGN.md`, and impeccable `reference/craft-floor.md`; saves before screenshots in each browser the item touches",
+        "Makes the change in the shared component when the pattern repeats (PRD §8); stays inside §3.1 (no token value changes, no new feature, no dependency); a new token only through `tokens.json` + `npm run tokens:css`",
+        "Verifies with the item's 'how to verify' in WebKit iPhone 15, Chromium Pixel 7 and Simulator Safari (and 375 × 667 / 320 px for layout items); after screenshots in `scripts/ralph/qa/name-polish/shots/polish/US-P50/`; reads each PNG",
+        "If the change can't be done inside the guardrails, sets the item `dropped` with the reason (or moves it to `owner-decisions.md`), commits nothing, and passes",
+        "Sets the item `done` in `backlog.md` and adds a row to `polish-log.md` (slot, ids, files, before/after paths)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `polish(names): NP-0xx <short title>` (the ids of the item(s) in the slot)"
+      ],
+      "priority": 92,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-R1",
+      "title": "Re-score G1 Entry",
+      "description": "As the owner, I want proof that entry got better and nothing got worse.",
+      "acceptanceCriteria": [
+        "Re-runs impeccable `reference/critique.md` on every screen of G1 with the same method as `US-A-IMP-C-G1`; writes the after table next to the baseline in `scores.md` with the change per screen",
+        "Screenshots of every screen and state of G1 in all three browsers to `scripts/ralph/qa/name-polish/shots/after/G1/`; reads each and compares with `shots/baseline/G1/`",
+        "Any screen that scores lower than its baseline, or any visible regression, is filed in `bugs.md` (it will be handled by QA FIX stories)",
+        "No code change; commits only the records: `docs(names): re-score G1`"
+      ],
+      "priority": 93,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-R2",
+      "title": "Re-score G2 Deck",
+      "description": "As the owner, I want proof that deck got better and nothing got worse.",
+      "acceptanceCriteria": [
+        "Re-runs impeccable `reference/critique.md` on every screen of G2 with the same method as `US-A-IMP-C-G2`; writes the after table next to the baseline in `scores.md` with the change per screen",
+        "Screenshots of every screen and state of G2 in all three browsers to `scripts/ralph/qa/name-polish/shots/after/G2/`; reads each and compares with `shots/baseline/G2/`",
+        "Any screen that scores lower than its baseline, or any visible regression, is filed in `bugs.md` (it will be handled by QA FIX stories)",
+        "No code change; commits only the records: `docs(names): re-score G2`"
+      ],
+      "priority": 94,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-R3",
+      "title": "Re-score G3 Lists and settings",
+      "description": "As the owner, I want proof that lists and settings got better and nothing got worse.",
+      "acceptanceCriteria": [
+        "Re-runs impeccable `reference/critique.md` on every screen of G3 with the same method as `US-A-IMP-C-G3`; writes the after table next to the baseline in `scores.md` with the change per screen",
+        "Screenshots of every screen and state of G3 in all three browsers to `scripts/ralph/qa/name-polish/shots/after/G3/`; reads each and compares with `shots/baseline/G3/`",
+        "Any screen that scores lower than its baseline, or any visible regression, is filed in `bugs.md` (it will be handled by QA FIX stories)",
+        "No code change; commits only the records: `docs(names): re-score G3`"
+      ],
+      "priority": 95,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-D1",
+      "title": "Docs",
+      "description": "As the next person working on the swiper, I want the docs to match what the polish changed.",
+      "acceptanceCriteria": [
+        "Updates `DESIGN.md` for every pattern, token or component variant this run added or changed (from `polish-log.md`)",
+        "Updates `docs/names-pwa/README.md` ('Design tokens' and component notes) where they changed; adds new tokens to the tokens section",
+        "No product decision is written as if the owner made it",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `docs(names): document the polish run`"
+      ],
+      "priority": 96,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-SA",
+      "title": "Self-audit before QA",
+      "description": "As the QA cycles, I want the obvious problems in this run's diff gone first.",
+      "acceptanceCriteria": [
+        "Reviews the full diff of this run (`git diff <US-000 commit>..HEAD -- src`) against §3.1 and §8: no hex, rgb or px font size, no physical left/right, no new dependency, no green, labelled icon buttons, reduced motion for every new animation, no new analytics event",
+        "Re-measures the first-load JS of `/names` and checks it against the US-004 baseline (+3 KB budget); writes both numbers in `scores.md`",
+        "Fixes what it finds (or files it in `bugs.md` if it's large)",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once if anything changed: `fix(names): polish run self-audit`"
+      ],
+      "priority": 97,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA0",
+      "title": "QA setup",
+      "description": "As the QA cycles, I need a clean, known starting state in every browser.",
+      "acceptanceCriteria": [
+        "Production build on port 3100 (`npm run build && npm run start -- -p 3100`), checked by curl",
+        "QA users 1–3 signed in over REST (`login.mjs`), their `name_votes` rows deleted through REST as each user, user 1 onboarded; users 1 and 2 share one space, user 3 solo (write what you did in `progress.txt`)",
+        "Simulator Mobile Safari signed in as user 1 on port 3100 (≤ 2 emails)",
+        "One screenshot per browser of `/names` proves all three work",
+        "No commit"
+      ],
+      "priority": 98,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-A",
+      "title": "QA cycle 1: Entry screens",
+      "description": "As the owner, I want area A (Entry screens) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 A, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area A checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 99,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-B",
+      "title": "QA cycle 1: Swipe screen and card",
+      "description": "As the owner, I want area B (Swipe screen and card) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 B, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area B checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 100,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-C",
+      "title": "QA cycle 1: Detail sheet",
+      "description": "As the owner, I want area C (Detail sheet) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 C, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area C checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 101,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-D",
+      "title": "QA cycle 1: Other sheets",
+      "description": "As the owner, I want area D (Other sheets) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 D, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area D checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 102,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-E",
+      "title": "QA cycle 1: Lists, duel, hidden",
+      "description": "As the owner, I want area E (Lists, duel, hidden) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 E, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area E checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 103,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-F",
+      "title": "QA cycle 1: Settings, legal, account",
+      "description": "As the owner, I want area F (Settings, legal, account) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 F, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area F checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 104,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-G",
+      "title": "QA cycle 1: Accessibility, RTL, design system",
+      "description": "As the owner, I want area G (Accessibility, RTL, design system) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 G, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area G checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 105,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-H",
+      "title": "QA cycle 1: Motion and gestures",
+      "description": "As the owner, I want area H (Motion and gestures) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 H, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area H checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 106,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-I",
+      "title": "QA cycle 1: PWA, offline, performance",
+      "description": "As the owner, I want area I (PWA, offline, performance) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 I, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area I checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 107,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA1-J",
+      "title": "QA cycle 1: Analytics and privacy",
+      "description": "As the owner, I want area J (Analytics and privacy) checked in real mobile browsers in cycle 1, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 J, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area J checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 108,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-FIX1",
+      "title": "Fix the bugs from QA cycle 1",
+      "description": "As the owner, I want every open bug from cycle 1 fixed and verified, or the loop to stop when QA is clean.",
+      "acceptanceCriteria": [
+        "If cycle 1 filed zero `open` bugs: mark every remaining `US-QA*` and `US-FIX*` story `passes: true` with notes 'skipped: QA clean after cycle 1', no commit, and let US-FINAL run",
+        "Otherwise: fix every `open` bug, verify each fix in the browser it failed in (screenshot), set `status: fixed` with a fix note and the cycle",
+        "A bug that can't be fixed without breaking a §3.1 guardrail is set `wontfix-owner` with the reason and added to `owner-decisions.md`",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `fix(names): resolve the {k} bugs found in polish QA cycle 1`"
+      ],
+      "priority": 109,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-A",
+      "title": "QA cycle 2: Entry screens",
+      "description": "As the owner, I want area A (Entry screens) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 A, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area A checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 110,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-B",
+      "title": "QA cycle 2: Swipe screen and card",
+      "description": "As the owner, I want area B (Swipe screen and card) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 B, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area B checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 111,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-C",
+      "title": "QA cycle 2: Detail sheet",
+      "description": "As the owner, I want area C (Detail sheet) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 C, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area C checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 112,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-D",
+      "title": "QA cycle 2: Other sheets",
+      "description": "As the owner, I want area D (Other sheets) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 D, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area D checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 113,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-E",
+      "title": "QA cycle 2: Lists, duel, hidden",
+      "description": "As the owner, I want area E (Lists, duel, hidden) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 E, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area E checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 114,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-F",
+      "title": "QA cycle 2: Settings, legal, account",
+      "description": "As the owner, I want area F (Settings, legal, account) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 F, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area F checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 115,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-G",
+      "title": "QA cycle 2: Accessibility, RTL, design system",
+      "description": "As the owner, I want area G (Accessibility, RTL, design system) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 G, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area G checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 116,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-H",
+      "title": "QA cycle 2: Motion and gestures",
+      "description": "As the owner, I want area H (Motion and gestures) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 H, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area H checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 117,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-I",
+      "title": "QA cycle 2: PWA, offline, performance",
+      "description": "As the owner, I want area I (PWA, offline, performance) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 I, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area I checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 118,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA2-J",
+      "title": "QA cycle 2: Analytics and privacy",
+      "description": "As the owner, I want area J (Analytics and privacy) checked in real mobile browsers in cycle 2, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 J, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area J checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 119,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-FIX2",
+      "title": "Fix the bugs from QA cycle 2",
+      "description": "As the owner, I want every open bug from cycle 2 fixed and verified, or the loop to stop when QA is clean.",
+      "acceptanceCriteria": [
+        "If cycle 2 filed zero `open` bugs: mark every remaining `US-QA*` and `US-FIX*` story `passes: true` with notes 'skipped: QA clean after cycle 2', no commit, and let US-FINAL run",
+        "Otherwise: fix every `open` bug, verify each fix in the browser it failed in (screenshot), set `status: fixed` with a fix note and the cycle",
+        "A bug that can't be fixed without breaking a §3.1 guardrail is set `wontfix-owner` with the reason and added to `owner-decisions.md`",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `fix(names): resolve the {k} bugs found in polish QA cycle 2`"
+      ],
+      "priority": 120,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-A",
+      "title": "QA cycle 3: Entry screens",
+      "description": "As the owner, I want area A (Entry screens) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 A, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area A checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 121,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-B",
+      "title": "QA cycle 3: Swipe screen and card",
+      "description": "As the owner, I want area B (Swipe screen and card) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 B, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area B checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 122,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-C",
+      "title": "QA cycle 3: Detail sheet",
+      "description": "As the owner, I want area C (Detail sheet) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 C, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area C checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 123,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-D",
+      "title": "QA cycle 3: Other sheets",
+      "description": "As the owner, I want area D (Other sheets) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 D, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area D checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 124,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-E",
+      "title": "QA cycle 3: Lists, duel, hidden",
+      "description": "As the owner, I want area E (Lists, duel, hidden) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 E, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area E checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 125,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-F",
+      "title": "QA cycle 3: Settings, legal, account",
+      "description": "As the owner, I want area F (Settings, legal, account) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 F, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area F checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 126,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-G",
+      "title": "QA cycle 3: Accessibility, RTL, design system",
+      "description": "As the owner, I want area G (Accessibility, RTL, design system) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 G, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area G checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 127,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-H",
+      "title": "QA cycle 3: Motion and gestures",
+      "description": "As the owner, I want area H (Motion and gestures) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 H, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area H checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 128,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-I",
+      "title": "QA cycle 3: PWA, offline, performance",
+      "description": "As the owner, I want area I (PWA, offline, performance) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 I, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area I checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 129,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-QA3-J",
+      "title": "QA cycle 3: Analytics and privacy",
+      "description": "As the owner, I want area J (Analytics and privacy) checked in real mobile browsers in cycle 3, so bugs are found before review.",
+      "acceptanceCriteria": [
+        "First checks every `done` backlog item of this area against its 'how to verify' column, then runs every item of PRD §11.2 J, in the browsers it names, on the production build on port 3100",
+        "Each item: pass, or a bug in `scripts/ralph/qa/name-polish/bugs.md` (fields as in `tasks/prd-name-detail.md` §11.1, next free `NP-BUG-` id, screenshot in `shots/`); ideas go to `ux-insights.md`",
+        "Never fixes and never commits; appends a short result to `progress.txt` (items checked, bugs filed)",
+        "Area J checklist run in full, even if it passed in an earlier cycle"
+      ],
+      "priority": 130,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-FIX3",
+      "title": "Fix the bugs from QA cycle 3",
+      "description": "As the owner, I want every open bug from cycle 3 fixed and verified, or the loop to stop when QA is clean.",
+      "acceptanceCriteria": [
+        "If cycle 3 filed zero `open` bugs: mark every remaining `US-QA*` and `US-FIX*` story `passes: true` with notes 'skipped: QA clean after cycle 3', no commit, and let US-FINAL run",
+        "Otherwise: fix every `open` bug, verify each fix in the browser it failed in (screenshot), set `status: fixed` with a fix note and the cycle",
+        "A bug that can't be fixed without breaking a §3.1 guardrail is set `wontfix-owner` with the reason and added to `owner-decisions.md`",
+        "Checks pass: `npm run lint` (0 errors), `npx tsc --noEmit` (typecheck passes), `npm test`, `npm run build`",
+        "Committed once: `fix(names): resolve the {k} bugs found in polish QA cycle 3`",
+        "This is the last fix pass: anything still broken stays `open`"
+      ],
+      "priority": 131,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-FINAL",
+      "title": "Summary and push",
+      "description": "As the owner, I want an honest summary and the branch pushed, so I can review and open a PR.",
+      "acceptanceCriteria": [
+        "Re-checks every bug fixed in the last cycle that ran, in its browser",
+        "`scripts/ralph/qa/name-polish/SUMMARY.md`: stories done; the score table before and after per screen and group; polish items done, dropped and `next-run` (counts and list); the owner decisions with their one-line recommendations; 'clean after cycle N' or 'stopped after 3 cycles, {k} bugs open for the owner's review' with the list; performance before and after; skills that couldn't run and checks that were blocked; never rounds up",
+        "Notes that `shots/` is gitignored and lists the before/after screenshot folders on this Mac",
+        "Committed once: `docs(names): polish run summary`; `git push -u origin ralph/name-polish` (never main)"
+      ],
+      "priority": 132,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

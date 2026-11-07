@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Design skills used by Ralph runs (third-party files, not app code).
+    ".claude/**",
   ]),
 ]);
 
