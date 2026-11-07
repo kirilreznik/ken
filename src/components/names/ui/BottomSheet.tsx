@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useId, useRef, useState, type PointerEvent, type ReactNode } from "react";
+import { Suspense, useId, useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import type { SheetName } from "@/lib/names/urlLayer";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
@@ -38,6 +38,26 @@ const DRAG_CLOSE = DETENT_DRAG;
 const FULL_HEIGHT = "calc(100dvh - env(safe-area-inset-top))";
 // 28 px under the content (board 3), more on phones with a home indicator.
 const SAFE_BOTTOM = "pb-[max(1.75rem,env(safe-area-inset-bottom))]";
+// The pinned footer's height, on <html> while the sheet is open: ToastRegion sits above it, so a
+// toast never covers the sheet's buttons.
+const TOAST_LIFT = "--names-toast-lift";
+
+/** Publishes the footer's height as TOAST_LIFT for as long as it is mounted. */
+function useToastLift(footer: RefObject<HTMLDivElement | null>) {
+  useLayoutEffect(() => {
+    const node = footer.current;
+    if (!node) return;
+    const root = document.documentElement.style;
+    const lift = () => root.setProperty(TOAST_LIFT, `${node.offsetHeight}px`);
+    lift();
+    const observer = new ResizeObserver(lift);
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+      root.removeProperty(TOAST_LIFT);
+    };
+  }, [footer]);
+}
 
 /**
  * Bottom sheet bound to ?sheet= (board 3 chrome): ink scrim, white panel with 30 px top
@@ -63,6 +83,8 @@ function SheetGate(props: BottomSheetProps) {
 /** The panel itself; exported for markup tests. */
 export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, children }: BottomSheetProps) {
   const panel = useRef<HTMLElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
+  useToastLift(footerRef);
   const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean } | null>(null);
   // Down: the panel moves down by `offset` px. Up (tall sheets only): it grows to `height` px.
   const [offset, setOffset] = useState(0);
@@ -156,7 +178,11 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
           )}
           {children}
         </div>
-        {footer ? <div className={`shrink-0 px-5 ${SAFE_BOTTOM}`}>{footer}</div> : null}
+        {footer ? (
+          <div ref={footerRef} className={`shrink-0 px-5 ${SAFE_BOTTOM}`}>
+            {footer}
+          </div>
+        ) : null}
       </section>
     </div>
   );

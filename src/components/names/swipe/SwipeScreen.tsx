@@ -16,7 +16,7 @@ import { useSpace } from "@/components/names/useSpace";
 import { useMatches, useSeenMatches } from "@/components/names/useMatches";
 import { useSyncStatus } from "@/components/names/useSyncStatus";
 import { useVotes } from "@/components/names/useVotes";
-import { statusText } from "@/lib/names/a11y";
+import { sheetVoteText, statusText } from "@/lib/names/a11y";
 import { markAppEntry } from "@/lib/names/appHistory";
 import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
 import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
@@ -24,6 +24,7 @@ import type { Decision } from "@/lib/names/gesture";
 import { matchToShow, withSeen, type Match } from "@/lib/names/matches";
 import { RECAP_VOTES, countSession, pauseToShow, sessionTotals, surveyDue, type Pause } from "@/lib/names/launch";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
+import { showToast } from "@/lib/names/toast";
 import { currentSessionInfo, track } from "@/lib/names/track";
 import type { Vote } from "@/lib/names/types";
 import { isOpenKey } from "@/lib/names/keys";
@@ -219,9 +220,11 @@ export default function SwipeScreen() {
     drag.fly(kind);
   };
   // PRD 3.2.5: on the current card the sheet closes first (Back past its entries, so none is
-  // left behind), then the card leaves as it does for the action buttons.
+  // left behind), then the card leaves as it does for the action buttons. On another name
+  // (reached through similar names) the vote is saved and the sheet stays open.
   const decideInSheet = (name: string, kind: Decision) => {
-    if (!current || name !== current.stats.name || drag.busy()) return;
+    if (!current || name !== current.stats.name) return decideOther(name, kind);
+    if (drag.busy()) return;
     const leave = () =>
       requestAnimationFrame(() => {
         method.current = "detail";
@@ -230,6 +233,21 @@ export default function SwipeScreen() {
     closeSheet(NAME_SHEET);
     if (readName(window.location.search) === null) leave();
     else window.addEventListener("popstate", leave, { once: true });
+  };
+
+  // Same store path as decide(), so the deck, undo and the session counters include it; the
+  // card on top stays. The toast (a live region kept outside the sheet's inert page) says it.
+  const decideOther = (name: string, kind: Decision) => {
+    if (!store || !deckNames.has(name)) return;
+    if (votes.size === 0) track("first_vote");
+    track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null });
+    const next = applyVote({ votes, undo: undoStack }, name, kind);
+    setUndoStack(next.state.undo);
+    store.setVote(name, kind);
+    setEntered(true);
+    setStatus(statusText(kind, name));
+    setNext(null);
+    showToast(sheetVoteText(kind, name));
   };
 
   return (

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
 import contentFile from "./fixtures/name-content-sample.json";
-import { barLabel, cardLabel, savedLabel, statusText } from "@/lib/names/a11y";
+import { barLabel, cardLabel, savedLabel, sheetVoteText, statusText } from "@/lib/names/a11y";
 import { contentNames, parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
 import { countLine, trend } from "@/lib/names/popularity";
 import { sexSplit, sexTag } from "@/lib/names/sex";
@@ -88,6 +88,15 @@ describe("statusText", () => {
     expect(statusText("hidden", name)).toBe(`השם ${name} לא יוצג שוב`);
     expect(statusText("skip", name)).toBe(`דילוג על ${name}`);
     expect(statusText("undo", name)).toBe(`בוטל: ${name}`);
+  });
+});
+
+describe("sheetVoteText", () => {
+  it("names the choice and the name", () => {
+    expect(sheetVoteText("keep", "זיו")).toBe("נשמר: זיו");
+    expect(sheetVoteText("love", "זיו")).toBe("אהבתי מאוד: זיו");
+    expect(sheetVoteText("skip", "זיו")).toBe("דילוג: זיו");
+    expect(sheetVoteText("hidden", "זיו")).toBe("דילוג: זיו");
   });
 });
 

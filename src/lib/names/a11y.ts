@@ -45,6 +45,22 @@ export function statusText(kind: StatusKind, name: string): string {
   }
 }
 
+/**
+ * The toast after a decision in the name sheet on a name that isn't the current card (PRD
+ * 3.2.5): "נשמר: {name}", "אהבתי מאוד: {name}", "דילוג: {name}". A hidden name reads as "דילוג".
+ */
+export function sheetVoteText(kind: Exclude<StatusKind, "undo">, name: string): string {
+  switch (kind) {
+    case "keep":
+      return `נשמר: ${name}`;
+    case "love":
+      return `אהבתי מאוד: ${name}`;
+    case "skip":
+    case "hidden":
+      return `דילוג: ${name}`;
+  }
+}
+
 /** aria-label of the "השמות שלי" pill in the swipe header (FR-W10). */
 export function savedLabel(count: number): string {
   return `השמות שלי: ${count} נשמרו`;
