@@ -131,10 +131,24 @@ describe("public/names/sw.js", () => {
         '<script>self.__next_f.push([1,"I:[\\"/_next/static/chunks/lazy.js\\"]"])</script>',
     });
     await sw.fire("install");
-    const statics = [...(sw.stores.get("nest-names-static-v3")?.keys() ?? [])].map((k) => new URL(k).pathname);
+    const statics = [...(sw.stores.get("nest-names-static-v4")?.keys() ?? [])].map((k) => new URL(k).pathname);
     expect(statics).toEqual(
       expect.arrayContaining(["/_next/static/chunks/a.css", "/_next/static/chunks/intro.js", "/_next/static/chunks/lazy.js"]),
     );
+  });
+
+  it("precaches the chunks a precached script loads on demand, following them", async () => {
+    const sw = loadWorker(undefined, {
+      "/names": '<script src="/_next/static/chunks/swipe.js" async></script>',
+      "/_next/static/chunks/swipe.js": 'e.l(["static/chunks/sheet.js"])',
+      "/_next/static/chunks/sheet.js": '["static/chunks/chart.js","static/chunks/swipe.js"]',
+    });
+    await sw.fire("install");
+    const statics = [...(sw.stores.get("nest-names-static-v4")?.keys() ?? [])].map((k) => new URL(k).pathname);
+    expect(statics).toEqual(
+      expect.arrayContaining(["/_next/static/chunks/swipe.js", "/_next/static/chunks/sheet.js", "/_next/static/chunks/chart.js"]),
+    );
+    expect(sw.fetched.filter((url) => url.endsWith("/swipe.js"))).toHaveLength(1);
   });
 
   it("deletes old names caches on activate and leaves other caches alone", async () => {
@@ -174,7 +188,7 @@ describe("public/names/sw.js", () => {
   it("serves the precached details file cache-first, also offline", async () => {
     const sw = loadWorker();
     await sw.fire("install");
-    const statics = [...(sw.stores.get("nest-names-static-v3")?.keys() ?? [])].map((k) => new URL(k).pathname);
+    const statics = [...(sw.stores.get("nest-names-static-v4")?.keys() ?? [])].map((k) => new URL(k).pathname);
     expect(statics).toContain("/names/data/details.ghi.json");
     sw.fetched.length = 0;
     sw.setOffline(true);

@@ -37,7 +37,7 @@ function openSimilar(name: string) {
   track("detail_opened", { source: "similar" });
 }
 
-interface Props {
+export interface NameDetailSheetProps {
   cards: readonly Card[] | null;
   surname: string | null;
   /** The screen's `useMatches` matches (empty in a space of one) and its member count. */
@@ -54,7 +54,7 @@ interface Props {
  * for a name that has a card in the deck; any other `n` drops the layer by replacing the URL.
  * A direct link becomes a pushed entry over the clean page, so Back and "סגירה" both end there.
  */
-export default function NameDetailSheet(props: Props) {
+export default function NameDetailSheet(props: NameDetailSheetProps) {
   // useSearchParams needs a Suspense boundary on prerendered routes (Next 16).
   return (
     <Suspense fallback={null}>
@@ -63,7 +63,7 @@ export default function NameDetailSheet(props: Props) {
   );
 }
 
-function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Props) {
+function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: NameDetailSheetProps) {
   const params = useSearchParams();
   const open = params.get("sheet") === NAME_SHEET;
   const name = readName(params.toString());

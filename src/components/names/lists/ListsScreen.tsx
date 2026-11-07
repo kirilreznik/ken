@@ -7,7 +7,7 @@ import { useAuth } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
-import NameDetailSheet from "@/components/names/detail/NameDetailSheet";
+import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
 import { Button, IconButton, openNameSheet, openSheet } from "@/components/names/ui";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
@@ -439,6 +439,8 @@ function RowName({ onOpen, children }: { onOpen?: () => void; children: ReactNod
       type="button"
       aria-haspopup="dialog"
       // Safari doesn't focus a tapped button; focus it so the sheet gives focus back to this row.
+      onPointerDown={preloadNameDetail}
+      onFocus={preloadNameDetail}
       onClick={(event) => {
         event.currentTarget.focus({ preventScroll: true });
         onOpen();

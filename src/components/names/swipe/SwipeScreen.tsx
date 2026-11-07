@@ -6,7 +6,7 @@ import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
-import NameDetailSheet from "@/components/names/detail/NameDetailSheet";
+import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
 import FiltersSheet from "@/components/names/FiltersSheet";
 import MatchSheet from "@/components/names/MatchSheet";
 import SurveySheet from "@/components/names/SurveySheet";
@@ -263,6 +263,9 @@ export default function SwipeScreen() {
                 corner={<AboutLink />}
                 onDetails={openDetails("button")}
                 onKeyDown={onCardKeyDown}
+                // A touch or focus on the card may become a tap: start loading the sheet's code.
+                onPointerDownCapture={preloadNameDetail}
+                onFocus={preloadNameDetail}
                 {...drag.card}
               />
             ) : deck && deck.state !== "ok" ? (

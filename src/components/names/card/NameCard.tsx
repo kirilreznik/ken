@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef, ReactNode } from "react";
 import { cardLabel } from "@/lib/names/a11y";
-import { cardHints } from "@/lib/names/detail";
+import { cardHints } from "@/lib/names/cardHints";
 import type { Card } from "@/lib/names/types";
 import { Button } from "../ui/Button";
 import { hintChipClass } from "../ui/classes";

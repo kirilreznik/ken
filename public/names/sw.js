@@ -4,7 +4,8 @@
 //
 // Strategies:
 // - precache on install: the app shell pages and every /_next/static file their HTML
-//   references (so a shell page never opened online still runs offline), the offline
+//   references (so a shell page never opened online still runs offline) and the chunks those
+//   load on demand (the name sheet), the offline
 //   fallback page, the hashed data files listed in
 //   /names/data/manifest.json (names, content, details), the background photos, the Heebo fonts and the icons
 // - cache-first: /_next/static/*, /_next/image, /landing/*, /names/data/* (hashed),
@@ -16,7 +17,7 @@
 // Bump VERSION when this file's caching rules change; activate deletes every
 // cache that doesn't belong to the current version.
 
-const VERSION = "v3";
+const VERSION = "v4";
 const PREFIX = "nest-names-";
 const SHELL_CACHE = `${PREFIX}shell-${VERSION}`;
 const STATIC_CACHE = `${PREFIX}static-${VERSION}`;
@@ -26,6 +27,8 @@ const OFFLINE_PAGE = "/names/offline";
 const SHELL_PAGES = ["/names", "/names/welcome", "/names/lists", "/names/intro", "/names/sign-in/email", OFFLINE_PAGE];
 // Script, style and font URLs in a page's HTML (also inside the escaped RSC payload).
 const STATIC_REF = /\/_next\/static\/[^"'\s\\)]+/g;
+// A chunk loaded on demand isn't in any page's HTML; the script that loads it names it.
+const CHUNK_REF = /static\/chunks\/[\w.~-]+\.(?:js|css)/g;
 const DATA_MANIFEST = "/names/data/manifest.json";
 const STATIC_ASSETS = [
   "/landing/names-fabric.webp",
@@ -63,7 +66,33 @@ async function precacheShell(shell, statics) {
       await shell.put(url, res);
     }),
   );
-  await statics.addAll([...refs]);
+  await precacheStatics(statics, refs);
+}
+
+/** Caches the given /_next/static files and, following their scripts, every chunk they load later. */
+async function precacheStatics(statics, refs) {
+  const seen = new Set(refs);
+  let batch = [...refs];
+  while (batch.length) {
+    const found = [];
+    await Promise.all(
+      batch.map(async (url) => {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`${url} ${res.status}`);
+        if (/\.js($|\?)/.test(url)) {
+          for (const ref of (await res.clone().text()).match(CHUNK_REF) ?? []) {
+            const next = `/_next/${ref}`;
+            if (!seen.has(next)) {
+              seen.add(next);
+              found.push(next);
+            }
+          }
+        }
+        await statics.put(url, res);
+      }),
+    );
+    batch = found;
+  }
 }
 
 async function dataFiles() {

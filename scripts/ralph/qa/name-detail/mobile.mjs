@@ -35,6 +35,7 @@ export async function openMobile({
   offline = false,
   colorScheme = "light",
   skipIntro = true,
+  serviceWorkers = "allow",
 } = {}) {
   if (!ENGINES[engine]) throw new Error(`browser must be webkit or chromium, not ${engine}`);
   const name = device ?? DEFAULT_DEVICE[engine];
@@ -54,6 +55,7 @@ export async function openMobile({
     reducedMotion: reducedMotion ? "reduce" : "no-preference",
     colorScheme,
     storageState,
+    serviceWorkers,
   });
   context.baseURL = `http://localhost:${port}`;
   if (skipIntro && user) {
