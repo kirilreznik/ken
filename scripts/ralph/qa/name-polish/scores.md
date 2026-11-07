@@ -4,8 +4,31 @@ Per screen and heuristic, from impeccable's critique (`.claude/skills/impeccable
 
 ## Baseline (before polish)
 
-| Group | Screen | Heuristic | Score | Notes (finding IDs) |
-|---|---|---|---|---|
+One matrix per group: screens as rows, Nielsen's heuristics H1–H10 as columns (impeccable `reference/critique.md` "Heuristics Scoring Guide", 0–4 each). `n/a` follows the skill's mode-applicability rule (H7/H10 on Persuade surfaces, or a heuristic the screen gives nothing to judge), and the total is renormalized to the applicable maximum; the band reads off the percentage (90 %+ Excellent, 70 %+ Good, 50 %+ Acceptable, 30 %+ Poor). The re-score (US-R1…R3) uses the same rows and columns.
+
+H1 system status · H2 match with the real world · H3 user control and freedom · H4 consistency and standards · H5 error prevention · H6 recognition over recall · H7 flexibility and efficiency · H8 aesthetic and minimalist design · H9 error recovery · H10 help and documentation.
+
+### G1 Entry (US-A-IMP-C-G1, 2026-11-07, at `132b981`; findings `findings/IMP-C-G1.md`)
+
+| Screen (states) | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 | H9 | H10 | Total | Band | Notes (finding IDs) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| welcome (default, closed, expired), Persuade | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 3 | 2 | n/a | 23/32 (72 %) | Good | H9: expired notice gives no reason (-05), Google error looks like body text (-14); H8 kept at 3 but the action is below the fold on short phones (-01, P1); -22 (owner) |
+| sign-in, email step (valid, invalid) | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 30/40 (75 %) | Good | -06 placeholder contrast |
+| sign-in, code step (timer, wrong, resend) | 3 | 3 | 2 | 3 | 3 | 4 | 3 | 3 | 2 | 3 | 29/40 (73 %) | Good | H9: wrong-code advice vs locked resend (-02); H3: Back skips the email step (-17); -16 |
+| auth callback (loading, error) | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 3 | 3 | n/a | 21/28 (75 %) | Good | -20 |
+| onboarding | 3 | 3 | 2 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 29/40 (73 %) | Good | H3: no way out (-10, owner); -13, -19 |
+| intro (top, surname) | 3 | 2 | 3 | 3 | 2 | 3 | 3 | 3 | n/a | 3 | 25/36 (69 %) | Acceptable | H5: X drops the surname (-04); H2: "שניכם" (-03); -08 |
+| join, invited (signed out) | 3 | 2 | 3 | 2 | 3 | 3 | n/a | 3 | 3 | 3 | 25/36 (69 %) | Acceptable | H4: legal line (-07); H2: "שניכם" (-03); -01 |
+| join outcomes (joined, expired, closed) | 3 | 2 | 3 | 3 | n/a | 3 | n/a | 3 | 2 | 2 | 21/32 (66 %) | Acceptable | H9/H10: no one named to ask (-09); H2: "שניכם" (-03); -18 (owner), -19 |
+| invite (link ready, link failed) | 3 | 2 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 29/40 (73 %) | Good | H2: "שניכם" (-03) |
+| offline | 3 | 3 | 3 | 2 | n/a | 3 | n/a | 3 | 3 | n/a | 20/28 (71 %) | Good | H4: off-brand system screen (-11) |
+| goodbye | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 3 | n/a | n/a | 18/24 (75 %) | Good | -19 (no wordmark) |
+| 404 | 2 | 3 | 3 | 2 | n/a | 3 | n/a | 3 | 2 | n/a | 18/28 (64 %) | Acceptable | -11 |
+| unconfigured notice | 1 | 2 | 1 | 2 | n/a | 2 | n/a | 3 | 1 | n/a | 12/28 (43 %) | Poor | -12 (an operator-only state) |
+| **G1 (sum of the rows)** | 36 | 34 | 35 | 35 | 20 | 39 | 15 | 39 | 27 | 20 | **300/432 (69 %)** | **Acceptable** | |
+
+How the scores were made: design-review sub-agent (A) scored each screen from the shots and the source; the parent adjusted H2 to 2 where the "שניכם" copy shows (A listed it as a finding but scored H2 3; the skill's H2 criterion "domain-appropriate language" fails for a third member) and the code step's H3 to 2 for -17. The detector sub-agent (B) found no source issues and one real browser issue (-06); it didn't change a score.
+
 
 ## After (re-score)
 
