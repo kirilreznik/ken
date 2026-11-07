@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { closeNameIn, isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, nameSearch, openNameIn, otherLayerOpen, readName, type LayerWindow } from "@/lib/names/urlLayer";
+import { adoptNameLinkIn, closeNameIn, isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, nameSearch, openNameIn, otherLayerOpen, readName, type LayerWindow } from "@/lib/names/urlLayer";
 
 describe("layerSearch", () => {
   it("adds the sheet param and keeps the rest", () => {
@@ -165,6 +165,31 @@ describe("openNameIn / closeNameIn", () => {
     closeNameIn(w);
     expect(w.index).toBe(0);
     expect(w.location.search).toBe("");
+  });
+
+  it("adopting a direct link: Back and close both land on the clean page", () => {
+    const w = fakeWindow("/names?sheet=name&n=%D7%90");
+    expect(adoptNameLinkIn(w)).toBe(true);
+    expect(w.entries).toHaveLength(2);
+    expect(readName(w.location.search)).toBe("א");
+    w.back();
+    expect(w.location.search).toBe("");
+    w.history.go(1);
+    closeNameIn(w);
+    expect(w.index).toBe(0);
+    expect(w.location.search).toBe("");
+  });
+
+  it("adopting does nothing for a pushed entry, a closed sheet or another layer", () => {
+    const pushed = fakeWindow("/names");
+    openNameIn(pushed, "א");
+    expect(adoptNameLinkIn(pushed)).toBe(false);
+    expect(pushed.entries).toHaveLength(2);
+    for (const url of ["/names", "/names?sheet=filters", "/names?sheet=name&n=%D7%90&dialog=reset"]) {
+      const w = fakeWindow(url);
+      expect(adoptNameLinkIn(w)).toBe(false);
+      expect(w.entries).toHaveLength(1);
+    }
   });
 
   it("a direct link closes by replacing the URL", () => {

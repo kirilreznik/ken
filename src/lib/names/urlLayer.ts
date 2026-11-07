@@ -123,3 +123,16 @@ export function closeNameIn(w: LayerWindow): void {
   if (overLink) w.addEventListener("popstate", () => w.history.replaceState(null, "", nameUrl(w, null)), { once: true });
   w.history.go(-depth);
 }
+
+/**
+ * A direct link to the name sheet (open, no entry of ours) becomes the page without the sheet
+ * plus one pushed name entry, so Back closes the sheet onto a clean page as a tap-open does.
+ * Returns whether it was a direct link (FR-D6, `detail_opened {source: 'link'}`).
+ */
+export function adoptNameLinkIn(w: LayerWindow): boolean {
+  const name = readName(w.location.search);
+  if (name === null || otherLayerOpen(w.location.search) || nameStack(w.history.state).depth > 0) return false;
+  w.history.replaceState(null, "", nameUrl(w, null));
+  w.history.pushState({ [LAYER_STATE_KEY]: layerToken("sheet", NAME_SHEET), [NAME_DEPTH_KEY]: 1, [NAME_LINK_KEY]: false }, "", nameUrl(w, name));
+  return true;
+}

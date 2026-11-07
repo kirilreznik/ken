@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { closeNameIn, isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, NAME_SHEET, openNameIn, type LayerParam, type SheetName } from "@/lib/names/urlLayer";
+import { adoptNameLinkIn, closeNameIn, isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, NAME_SHEET, openNameIn, type LayerParam, type SheetName } from "@/lib/names/urlLayer";
 
 function urlWith(param: LayerParam, value: string | null): string {
   const { pathname, search, hash } = window.location;
@@ -30,6 +30,8 @@ export const openSheet = (name: SheetName) => openLayer("sheet", name);
 export const closeSheet = (name: SheetName) => (name === NAME_SHEET ? closeNameIn(window) : closeLayer("sheet", name));
 /** Opens the name sheet on `name` (?sheet=name&n=…); a second name pushes another entry. */
 export const openNameSheet = (name: string, options?: { replace?: boolean }) => openNameIn(window, name, options);
+/** Turns a direct link to the name sheet into a pushed entry over the clean page; true when it was one. */
+export const adoptNameLink = () => adoptNameLinkIn(window);
 export const openDialog = (name: string) => openLayer("dialog", name);
 export const closeDialog = (name: string) => closeLayer("dialog", name);
 

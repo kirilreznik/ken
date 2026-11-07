@@ -5,7 +5,7 @@ import { Suspense, useEffect, useMemo } from "react";
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
 import DecisionButtons, { type Decision } from "@/components/names/DecisionButtons";
-import { BottomSheet, IconButton, closeSheet, openNameSheet } from "@/components/names/ui";
+import { BottomSheet, IconButton, adoptNameLink, closeSheet, openNameSheet } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useNameDetails } from "@/components/names/useNameDetails";
 import { rank2024, rankMap, similarForDisplay, togetherFor } from "@/lib/names/detail";
@@ -49,6 +49,7 @@ interface Props {
 /**
  * "פרטי השם" (boards 13–15, PRD 3.1.1): the tall sheet for ?sheet=name&n=<name>. It opens only
  * for a name that has a card in the deck; any other `n` drops the layer by replacing the URL.
+ * A direct link becomes a pushed entry over the clean page, so Back and "סגירה" both end there.
  */
 export default function NameDetailSheet(props: Props) {
   // useSearchParams needs a Suspense boundary on prerendered routes (Next 16).
@@ -81,6 +82,12 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Pro
   useEffect(() => {
     if (unknown) closeSheet(NAME_SHEET);
   }, [unknown]);
+
+  // FR-D6: a direct link opens once the deck has the name; Back then closes onto a clean page.
+  const shown = card?.stats.name ?? null;
+  useEffect(() => {
+    if (shown !== null && adoptNameLink()) track("detail_opened", { source: "link" });
+  }, [shown]);
 
   if (!card) return null;
   return (
