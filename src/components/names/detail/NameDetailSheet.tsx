@@ -5,12 +5,13 @@ import { Suspense, useEffect, useMemo } from "react";
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
 import DecisionButtons, { type Decision } from "@/components/names/DecisionButtons";
-import { BottomSheet, IconButton, closeSheet } from "@/components/names/ui";
+import { BottomSheet, IconButton, closeSheet, openNameSheet } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useNameDetails } from "@/components/names/useNameDetails";
 import { rank2024, rankMap, similarForDisplay, togetherFor } from "@/lib/names/detail";
 import { hiddenNames } from "@/lib/names/lists";
 import type { Match } from "@/lib/names/matches";
+import { track } from "@/lib/names/track";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import type { Card, Vote } from "@/lib/names/types";
 import FactsSection from "./FactsSection";
@@ -25,6 +26,13 @@ import TogetherSection from "./TogetherSection";
 const DETENTS = ["70", "full"] as const;
 
 const close = () => closeSheet(NAME_SHEET);
+
+// PRD 3.2.1: a similar name pushes another entry over this one, so Back comes back here.
+function openSimilar(name: string) {
+  openNameSheet(name);
+  track("detail_similar_tap");
+  track("detail_opened", { source: "similar" });
+}
 
 interface Props {
   cards: readonly Card[] | null;
@@ -79,6 +87,7 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Pro
     <BottomSheet
       name={NAME_SHEET}
       detents={DETENTS}
+      contentKey={card.stats.name}
       closeInHeader
       header={(titleId) => <NameHeader card={card} titleId={titleId} />}
       footer={
@@ -98,7 +107,7 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Pro
         <NumbersSection stats={card.stats} rank={rank} />
         <SexSection {...card.derived} />
         <FactsSection stats={card.stats} rank={rank} />
-        <SimilarSection similar={similar} />
+        <SimilarSection similar={similar} onOpen={openSimilar} />
         <SourceSection />
       </div>
     </BottomSheet>

@@ -29,6 +29,11 @@ type BottomSheetProps = SheetHeading & {
    * full height, down from full to 70%, down from 70% closes it.
    */
   detents?: readonly ["70", "full"];
+  /**
+   * The thing the sheet shows, e.g. the name in the name sheet. When it changes while the sheet
+   * stays open, the content scrolls back to the top and focus moves to [data-autofocus] again.
+   */
+  contentKey?: string;
   children: ReactNode;
 };
 
@@ -59,6 +64,17 @@ function useToastLift(footer: RefObject<HTMLDivElement | null>) {
   }, [footer]);
 }
 
+/** A new `key` in an open sheet starts it over: content at the top, focus on [data-autofocus]. */
+function useContentReset(panel: RefObject<HTMLElement | null>, scroller: RefObject<HTMLDivElement | null>, key: string | undefined) {
+  const shown = useRef(key);
+  useLayoutEffect(() => {
+    if (shown.current === key) return;
+    shown.current = key;
+    scroller.current?.scrollTo({ top: 0 });
+    panel.current?.querySelector<HTMLElement>("[data-autofocus]")?.focus({ preventScroll: true });
+  }, [panel, scroller, key]);
+}
+
 /**
  * Bottom sheet bound to ?sheet= (board 3 chrome): ink scrim, white panel with 30 px top
  * corners, drag handle that is also the 44 px "סגירה" button, title row. Escape, Back,
@@ -81,10 +97,12 @@ function SheetGate(props: BottomSheetProps) {
 }
 
 /** The panel itself; exported for markup tests. */
-export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, children }: BottomSheetProps) {
+export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, contentKey, children }: BottomSheetProps) {
   const panel = useRef<HTMLElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
+  const scroller = useRef<HTMLDivElement>(null);
   useToastLift(footerRef);
+  useContentReset(panel, scroller, contentKey);
   const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean } | null>(null);
   // Down: the panel moves down by `offset` px. Up (tall sheets only): it grows to `height` px.
   const [offset, setOffset] = useState(0);
@@ -167,7 +185,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
           <span aria-hidden="true" className="h-1.25 w-10 rounded-pill bg-line" />
         </button>
         {header ? <div className="shrink-0 px-5 pb-3">{header(titleId)}</div> : null}
-        <div className={`flex min-h-0 flex-col gap-5 ${tall ? "flex-1" : ""} overflow-y-auto overscroll-contain px-5 ${footer ? "pb-5" : SAFE_BOTTOM}`}>
+        <div ref={scroller} className={`flex min-h-0 flex-col gap-5 ${tall ? "flex-1" : ""} overflow-y-auto overscroll-contain px-5 ${footer ? "pb-5" : SAFE_BOTTOM}`}>
           {header ? null : (
             <div className="flex min-h-11 items-center justify-between gap-3">
               <h2 id={titleId} className="text-title">
