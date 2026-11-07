@@ -8,6 +8,10 @@ Non-blocking ideas found during QA, IDs `ND-UX-001` on, newest last. Never acted
 | ND-UX-002 | 1 | US-QA1-C | webkit-iphone, sim-safari | name sheet, similar names | Root-sharing names read as "forms of the same name" |
 | ND-UX-003 | 1 | US-QA1-D | sim-safari, webkit-iphone | name sheet, chart | The year label can cover the top tick label; "0 תינוקות" on rare names |
 | ND-UX-004 | 1 | US-QA1-E | webkit-iphone, chromium-pixel, sim-safari | name sheet, similar names | אראל next to אריאל is a form only by a biblical spelling |
+| ND-UX-005 | 1 | US-QA1-J | webkit-iphone | background sheet, "תמונה משלי" | "תמונה משלי" can't be saved where IndexedDB refuses Blobs |
+| ND-UX-006 | 1 | US-QA1-K | sim-safari | /names?sheet=name | On a connection that drops requests (not offline), the deck can stay empty |
+| ND-UX-007 | 1 | US-QA1-L | webkit-iphone, chromium-pixel | /names at 200% zoom | At 200% zoom the page scrolls, but a pan that starts on the card loves it instead |
+| ND-UX-008 | 1 | US-QA1-O | webkit-iphone, chromium-pixel | /names/settings → leave dialog | "יציאה מהבחירה המשותפת" is offered but always fails on the real backend |
 
 <!--
 ### ND-UX-000: idea
