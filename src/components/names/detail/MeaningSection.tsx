@@ -14,7 +14,7 @@ export default function MeaningSection({ intro, story, state }: { intro: string;
     <Section label="מה השם אומר">
       <div className="flex flex-col gap-2" aria-busy={state === "loading" || state === "idle" || undefined}>
         {text ? <p className="text-intro break-words text-ink">{text}</p> : null}
-        {pending ? <DetailsPending state={state} /> : story ? <p className="text-body break-words text-ink">{story}</p> : null}
+        {pending ? <DetailsPending state={state} /> : story ? <p data-detail-section="story" className="text-body break-words text-ink">{story}</p> : null}
       </div>
     </Section>
   );

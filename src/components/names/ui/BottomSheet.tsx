@@ -30,6 +30,8 @@ type BottomSheetProps = SheetHeading & {
    * full height, down from full to 70%, down from 70% closes it.
    */
   detents?: readonly ["70", "full"];
+  /** A tall sheet's handle settled it at a detent (not on a close). */
+  onDetent?: (detent: Detent) => void;
   /**
    * The thing the sheet shows, e.g. the name in the name sheet. When it changes while the sheet
    * stays open, the content scrolls back to the top and focus moves to [data-autofocus] again.
@@ -125,7 +127,7 @@ type PanelProps = BottomSheetProps & {
 };
 
 /** The panel itself; exported for markup tests. */
-export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, contentKey, closing = false, onClosed, children }: PanelProps) {
+export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, onDetent, contentKey, closing = false, onClosed, children }: PanelProps) {
   const panel = useRef<HTMLElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -197,6 +199,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
         setSettles((count) => count + 1);
       }
       setDetent(next);
+      if (tall && moved) onDetent?.(next);
       setOffset(0);
       setHeight(null);
     }

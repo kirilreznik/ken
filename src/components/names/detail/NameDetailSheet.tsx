@@ -9,10 +9,11 @@ import { BottomSheet, IconButton, adoptNameLink, closeSheet, openNameSheet } fro
 import { useNameStats } from "@/components/names/useCards";
 import { useNameDetails } from "@/components/names/useNameDetails";
 import { rank2024, rankMap, similarForDisplay, togetherFor } from "@/lib/names/detail";
+import { createDetailVisits, type DetailSection, type DetailVisits } from "@/lib/names/detailVisit";
 import { hiddenNames } from "@/lib/names/lists";
 import type { Match } from "@/lib/names/matches";
 import { track } from "@/lib/names/track";
-import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
+import { NAME_PARAM, NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import type { Card, Vote } from "@/lib/names/types";
 import FactsSection from "./FactsSection";
 import MeaningSection from "./MeaningSection";
@@ -24,6 +25,8 @@ import SurnameSection from "./SurnameSection";
 import TogetherSection from "./TogetherSection";
 
 const DETENTS = ["70", "full"] as const;
+// Half a section in view counts as seen (sections are shorter than twice the 70% sheet).
+const SEEN_RATIO = 0.5;
 
 const close = () => closeSheet(NAME_SHEET);
 
@@ -87,6 +90,13 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Pro
     if (unknown) closeSheet(NAME_SHEET);
   }, [unknown]);
 
+  // PRD 3.2.10: detail_closed once the URL holds no name; detail_section_seen once per name shown.
+  const [visits] = useState(() => createDetailVisits(track));
+  const lasting = params.has(NAME_PARAM);
+  useEffect(() => visits.update(named?.stats.name ?? null, lasting), [visits, named, lasting]);
+  const [body, setBody] = useState<HTMLDivElement | null>(null);
+  useSectionsSeen(visits, open ? body : null, `${card?.stats.name}|${details.state}|${similar.length}`);
+
   // FR-D6: a direct link opens once the deck has the name; Back then closes onto a clean page.
   const shown = named?.stats.name ?? null;
   useEffect(() => {
@@ -98,6 +108,9 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Pro
     <BottomSheet
       name={NAME_SHEET}
       detents={DETENTS}
+      onDetent={(detent) => {
+        if (detent === "full") visits.full();
+      }}
       contentKey={card.stats.name}
       closeInHeader
       header={(titleId) => <NameHeader card={card} titleId={titleId} />}
@@ -105,7 +118,7 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Pro
         <SheetDecisions vote={votes.get(card.stats.name) ?? null} onDecide={(kind) => onDecide?.(card.stats.name, kind)} />
       }
     >
-      <div data-detail-body className="flex flex-col gap-5">
+      <div ref={setBody} data-detail-body className="flex flex-col gap-5">
         <SurnameSection name={card.stats.name} surname={surname} />
         <MeaningSection
           intro={card.content.intro}
@@ -123,6 +136,29 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Pro
       </div>
     </BottomSheet>
   );
+}
+
+/**
+ * Sends `detail_section_seen` for each [data-detail-section] in `body` once half of it has been
+ * in view (the implicit root clips to the sheet's scroller). `content` changes when sections
+ * can appear: a new name, the details file loading, the similar names.
+ */
+function useSectionsSeen(visits: DetailVisits, body: HTMLElement | null, content: string) {
+  useEffect(() => {
+    if (!body) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting || entry.intersectionRatio < SEEN_RATIO) continue;
+          visits.seen((entry.target as HTMLElement).dataset.detailSection as DetailSection);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: SEEN_RATIO },
+    );
+    body.querySelectorAll("[data-detail-section]").forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, [visits, body, content]);
 }
 
 /**

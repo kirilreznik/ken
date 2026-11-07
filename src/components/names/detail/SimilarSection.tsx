@@ -11,7 +11,7 @@ import Section from "./Section";
 export default function SimilarSection({ similar, onOpen }: { similar: readonly SimilarName[]; onOpen?: (name: string) => void }) {
   if (similar.length === 0) return null;
   return (
-    <Section label="שמות קרובים">
+    <Section label="שמות קרובים" seen="similar">
       <ul className="flex flex-wrap gap-2">
         {similar.map(({ name, sexTag }) => (
           <li key={name}>

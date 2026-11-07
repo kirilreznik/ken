@@ -12,7 +12,7 @@ import YearChart from "./YearChart";
 export default function NumbersSection({ stats, rank }: { stats: Pick<NameStats, "y">; rank: number | null }) {
   const latest = stats.y?.[stats.y.length - 1];
   return (
-    <Section label="כמה תינוקות קיבלו את השם בכל שנה">
+    <Section label="כמה תינוקות קיבלו את השם בכל שנה" seen="numbers">
       <YearChart stats={stats} />
       {latest !== undefined ? (
         <p data-numbers-line className="m-0 text-caption text-stone">
