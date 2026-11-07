@@ -1,16 +1,21 @@
+import Section from "@/components/names/detail/Section";
 import { bibleNote } from "@/lib/names/card";
 import type { NameContent } from "@/lib/names/types";
+
+const LABEL = "מהתנ״ך";
 
 /**
  * "מהתנ״ך" (E16 FR-5a): the verse or figure and its reference on a peach-pale well with a
  * book icon. Solid peach-pale on "ללא רקע" (Main.dc.html), 60% on the photos (GlassFabric.dc.html).
- * Renders nothing when the name has no Bible note.
+ * Renders nothing when the name has no Bible note. In the name sheet (FR-D10) the label sits
+ * above the well, like every other sheet section.
  */
-export default function CardBible({ bible }: { bible: NameContent["bible"] }) {
+export default function CardBible({ bible, inSheet = false }: { bible: NameContent["bible"]; inSheet?: boolean }) {
   const note = bibleNote(bible);
   if (!note) return null;
-  return (
-    <section
+  const Well = inSheet ? "div" : "section";
+  const well = (
+    <Well
       className="flex items-start gap-2.5 rounded-md bg-(--nest-peach-pale-60) px-3 py-2.5 in-data-[names-bg=none]:bg-peach-pale"
     >
       <svg
@@ -29,10 +34,11 @@ export default function CardBible({ bible }: { bible: NameContent["bible"] }) {
         <path d="M4 19V5" />
       </svg>
       <div className="flex min-w-0 flex-col gap-0.5">
-        <h3 className="text-tag text-clay-deep">מהתנ״ך</h3>
+        {inSheet ? null : <h3 className="text-tag text-clay-deep">{LABEL}</h3>}
         <p className="text-quote break-words text-ink">{note.text}</p>
         {note.ref && <p className="text-ref text-ink-soft">{note.ref}</p>}
       </div>
-    </section>
+    </Well>
   );
+  return inSheet ? <Section label={LABEL}>{well}</Section> : well;
 }

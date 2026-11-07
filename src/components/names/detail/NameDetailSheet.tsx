@@ -2,6 +2,8 @@
 
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo } from "react";
+import CardBible from "@/components/names/card/CardBible";
+import CardPeople from "@/components/names/card/CardPeople";
 import { BottomSheet, IconButton, closeSheet } from "@/components/names/ui";
 import { useNameDetails } from "@/components/names/useNameDetails";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
@@ -51,6 +53,8 @@ function NameGate({ cards, surname }: { cards: readonly Card[] | null; surname: 
           story={details.details?.get(card.stats.name)?.story ?? null}
           state={details.state}
         />
+        <CardBible bible={card.content.bible} inSheet />
+        <CardPeople people={card.content.people} inSheet />
       </div>
     </BottomSheet>
   );
