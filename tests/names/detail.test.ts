@@ -121,14 +121,14 @@ describe("chartModel", () => {
     expect(values).toHaveLength(3);
     expect(values[2]).toBeGreaterThanOrEqual(2099);
     expect(values[2]).toBe(values[1] * 2);
-    expect(model.yTicks.map((t) => t.label)).toEqual(["0", "2,000", "4,000"]);
+    expect(model.yTicks.map((t) => t.label)).toEqual(["0", "1,200", "2,400"]);
     expect(model.yTicks[0].y).toBe(base);
     expect(model.yTicks[2].y).toBe(box.pad.top);
   });
 
-  it("uses 1/2/5 × 10^k steps", () => {
+  it("uses whole round steps whose double covers the max", () => {
     expect([1, 2, 3, 10, 11, 99, 100, 101, 2099, 9000, 12000].map(niceStep)).toEqual([
-      1, 1, 2, 5, 10, 50, 50, 100, 2000, 5000, 10000,
+      1, 1, 2, 5, 6, 50, 50, 60, 1200, 5000, 6000,
     ]);
   });
 
@@ -138,7 +138,7 @@ describe("chartModel", () => {
     expect(model.points).toHaveLength(25);
     expect(model.points[0]).toMatchObject({ year: 2000, value: y[0], x: box.pad.start });
     expect(model.last).toMatchObject({ year: 2024, value: 2099, x: box.width - box.pad.end });
-    expect(model.last.y).toBeCloseTo(base - (2099 / 4000) * (base - box.pad.top), 1);
+    expect(model.last.y).toBeCloseTo(base - (2099 / 2400) * (base - box.pad.top), 1);
     expect(model.line.split(" ")).toHaveLength(25);
     expect(model.area.split(" ")).toHaveLength(27);
     expect(model.area.endsWith(`${box.width - box.pad.end},${base} ${box.pad.start},${base}`)).toBe(true);
@@ -162,10 +162,10 @@ describe("chartModel", () => {
     expect(model.nearestYear(Number.NaN)).toBe(2000);
   });
 
-  it("draws a flat series at mid height", () => {
+  it("draws a flat series on the top gridline", () => {
     const model = chartModel(Array<number>(25).fill(50), box)!;
-    expect(model.yTicks.map((t) => t.value)).toEqual([0, 50, 100]);
-    expect(new Set(model.points.map((p) => p.y))).toEqual(new Set([model.yTicks[1].y]));
+    expect(model.yTicks.map((t) => t.value)).toEqual([0, 25, 50]);
+    expect(new Set(model.points.map((p) => p.y))).toEqual(new Set([model.yTicks[2].y]));
   });
 
   it("draws an all-zero series on the 0 line", () => {

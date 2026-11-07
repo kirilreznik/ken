@@ -101,12 +101,15 @@ export interface ChartModel {
 
 const round1 = (n: number) => +n.toFixed(1);
 
-/** The smallest 1/2/5 × 10^k step (at least 1) whose double reaches max. */
+/** Round step multipliers; finer than 1/2/5 so the line fills at least ~80% of the plot (board 14). */
+const NICE = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8];
+
+/** The smallest whole NICE × 10^k step (at least 1) whose double reaches max. */
 export function niceStep(max: number): number {
   const need = Math.max(max / 2, 1);
   let pow = 10 ** Math.floor(Math.log10(need));
   for (;;) {
-    for (const m of [1, 2, 5]) if (m * pow >= need) return m * pow;
+    for (const m of NICE) if (Number.isInteger(m * pow) && m * pow >= need) return m * pow;
     pow *= 10;
   }
 }

@@ -12,7 +12,9 @@ import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import type { Card } from "@/lib/names/types";
 import MeaningSection from "./MeaningSection";
 import SurnameSection from "./SurnameSection";
+import Section from "./Section";
 import TogetherSection from "./TogetherSection";
+import YearChart from "./YearChart";
 
 const DETENTS = ["70", "full"] as const;
 
@@ -67,6 +69,9 @@ function NameGate({ cards, surname, matches, memberCount }: Props) {
         <CardBible bible={card.content.bible} inSheet />
         <CardPeople people={card.content.people} inSheet />
         <TogetherSection together={togetherFor(card.stats.name, matches, memberCount)} />
+        <Section label="כמה תינוקות קיבלו את השם בכל שנה">
+          <YearChart stats={card.stats} />
+        </Section>
       </div>
     </BottomSheet>
   );
