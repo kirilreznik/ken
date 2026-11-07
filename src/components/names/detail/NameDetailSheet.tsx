@@ -7,7 +7,7 @@ import CardPeople from "@/components/names/card/CardPeople";
 import { BottomSheet, IconButton, closeSheet } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useNameDetails } from "@/components/names/useNameDetails";
-import { rank2024, rankMap, togetherFor } from "@/lib/names/detail";
+import { rank2024, rankMap, similarForDisplay, togetherFor } from "@/lib/names/detail";
 import type { Match } from "@/lib/names/matches";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import type { Card } from "@/lib/names/types";
@@ -15,6 +15,7 @@ import FactsSection from "./FactsSection";
 import MeaningSection from "./MeaningSection";
 import NumbersSection from "./NumbersSection";
 import SexSection from "./SexSection";
+import SimilarSection from "./SimilarSection";
 import SurnameSection from "./SurnameSection";
 import TogetherSection from "./TogetherSection";
 
@@ -28,6 +29,8 @@ interface Props {
   /** The screen's `useMatches` matches (empty in a space of one) and its member count. */
   matches: readonly Match[];
   memberCount: number;
+  /** Names the user hid ("לא להציג שוב"): never offered as similar names. */
+  hiddenNames: ReadonlySet<string>;
 }
 
 /**
@@ -43,7 +46,7 @@ export default function NameDetailSheet(props: Props) {
   );
 }
 
-function NameGate({ cards, surname, matches, memberCount }: Props) {
+function NameGate({ cards, surname, matches, memberCount, hiddenNames }: Props) {
   const params = useSearchParams();
   const open = params.get("sheet") === NAME_SHEET;
   const name = readName(params.toString());
@@ -56,6 +59,10 @@ function NameGate({ cards, surname, matches, memberCount }: Props) {
   // The 2024 rank is among every CBS name (already loaded with the deck), not only deck names.
   const { names } = useNameStats();
   const rank = card && names ? rank2024(card.stats.name, rankMap(names)) : null;
+  const similar = useMemo(
+    () => (card && cards ? similarForDisplay(card.stats.name, details.details, cards, hiddenNames) : []),
+    [card, cards, details.details, hiddenNames],
+  );
 
   useEffect(() => {
     if (unknown) closeSheet(NAME_SHEET);
@@ -77,6 +84,7 @@ function NameGate({ cards, surname, matches, memberCount }: Props) {
         <NumbersSection stats={card.stats} rank={rank} />
         <SexSection {...card.derived} />
         <FactsSection stats={card.stats} rank={rank} />
+        <SimilarSection similar={similar} />
       </div>
     </BottomSheet>
   );
