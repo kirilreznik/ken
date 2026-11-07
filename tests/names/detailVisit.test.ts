@@ -21,6 +21,17 @@ describe("createDetailVisits", () => {
     expect(sent).toEqual([["detail_closed", { seconds: 13, full: false }]]);
   });
 
+  it("end() closes a visit the URL never closed (a link off the screen), once", () => {
+    const { sent, visits, at } = setup();
+    visits.end();
+    visits.update("נועם", true);
+    at(3200);
+    visits.end();
+    visits.end();
+    visits.update(null, false);
+    expect(sent).toEqual([["detail_closed", { seconds: 3, full: false }]]);
+  });
+
   it("remembers a drag to full height until the close", () => {
     const { sent, visits, at } = setup();
     visits.update("יעל", true);

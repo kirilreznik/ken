@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
 import DecisionButtons, { type Decision } from "@/components/names/DecisionButtons";
@@ -94,6 +94,15 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Nam
   const [visits] = useState(() => createDetailVisits(track));
   const lasting = params.has(NAME_PARAM);
   useEffect(() => visits.update(named?.stats.name ?? null, lasting), [visits, named, lasting]);
+  // A link to another screen (the surname link) unmounts the sheet with `n` still in the URL:
+  // that ends the visit too. A timer, so Strict Mode's remount (same visit) cancels it.
+  const leaving = useRef<number | null>(null);
+  useEffect(() => {
+    if (leaving.current !== null) window.clearTimeout(leaving.current);
+    return () => {
+      leaving.current = window.setTimeout(() => visits.end(), 0);
+    };
+  }, [visits]);
   const [body, setBody] = useState<HTMLDivElement | null>(null);
   useSectionsSeen(visits, open ? body : null, `${card?.stats.name}|${details.state}|${similar.length}`);
 

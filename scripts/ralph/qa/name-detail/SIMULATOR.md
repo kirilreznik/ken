@@ -125,3 +125,33 @@ Restart with `nohup npx next start -p 3100 > /tmp/names-3100.log 2>&1 &`.
 
 - Safari on :3100 is signed in as QA user 1 (since US-068, `shots/us068-sim-signin.mjs`, 1 email).
 - `node sim.mjs open "http://localhost:3100/names?sheet=name&n=<name>"` opens a sheet straight from a link.
+
+## Notes from US-QA1-H
+
+- Right after `open()` (simctl openurl), Safari's toolbar Back sometimes ignores taps for a while (seen 4 times in a row on the name sheet, then it worked with the same points). If Back "does nothing", wait ~3 s and tap again before calling it an app bug; check the same flow once more from a page that was opened a while ago.
+- Safari's tab keeps its local vote store, so votes written over REST while the deck is open count as this visit's decisions: 41 REST pre-skips brought up the 42-name recap pause ("סיכום הסבב") even though they were backdated. Tap "להמשיך לבחור" (≈253,372) and go on, or write the setup votes before opening the page.
+- Deck bar "דילוג" ≈ (120,749); name-sheet footer: שמירה (325,724), אהבתי (201,724), דילוג (77,724).
+
+## Service worker update in the Simulator (US-QA1-K)
+
+To show "עדכון זמין" in Safari without changing the repo: `pkill -f "next start -p 3100"`, start
+`npx next start -p 3102`, then `node shots/qa1-k-proxy.mjs 3100 3102`. Write `changed` to
+`/tmp/qa1k-mode` and reopen /names: the toast shows; "רענון" ≈ (160,726). Afterwards write `normal`,
+reopen and apply the toast again (Safari back on the real sw.js), stop the proxy and :3102, and
+restart `next start -p 3100`. Mode `offline` (connection resets) is not the same as offline: use a
+stopped server for offline checks (ND-UX-006).
+
+## Sign-in and onboarding without losing user 1 (US-QA1-N)
+
+Open `http://127.0.0.1:3100/names/welcome`: a separate origin with its own storage, so the
+`localhost:3100` session (user 1) stays. Email button (201,745); field (201,418); "שליחת קוד" (201,495);
+code field (201,427). To clear a field: activate the Simulator, then `cliclick -w 150 kp:delete …`
+(no delay = keys lost). Onboarding: name (201,342), 18+ (355,456), terms (355,520), "התחלת בחירה"
+(201,666) with the keyboard closed. Intro: drag (300,700)→(300,120) with 900 ms to reach the surname
+field. `shots/qa1-n-sim.mjs prep|restore` clears and restores user 3's onboarding metadata.
+
+## Area P (US-QA1-P)
+
+- Background sheet options (device pt): ללא רקע (326,326), בדים (201,326), מחברת (76,326), חדר תינוק (326,500), תמונה משלי (201,500); ✕ (42,224). Safari still holds an own photo from an earlier story.
+- Card "על הנתונים" ⓘ (51,172); about sheet "דיווח על טעות בשם הזה" (201,720); report "שליחת דיווח" (201,721). `cliclick t:` types ASCII into the focused textarea.
+- Settings opt-in: the whole row is the switch; tap its centre (201,391). Tapping the knob at the row edge (61,389) became a long press with a text selection and no toggle.

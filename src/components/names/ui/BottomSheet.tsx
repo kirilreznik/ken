@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from "react";
+import { Suspense, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { otherLayerOpen, type SheetName } from "@/lib/names/urlLayer";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
@@ -49,6 +49,10 @@ const SAFE_BOTTOM = "pb-[max(1.75rem,env(safe-area-inset-bottom))]";
 // PRD 3.2.12: a tall sheet slides out in 200 ms (160 ms fade with reduced motion, names.css);
 // it unmounts on animationend, or after this if that never fires.
 const EXIT_MS = 300;
+// PRD 3.2.2: a card tap opens the sheet on pointerup. Quick taps that follow land on the scrim or
+// on the sliding panel's controls before it has slid in (260 ms); for this long after opening,
+// clicks in the layer do nothing (no close, no decision).
+const OPEN_GUARD_MS = 350;
 // A tall sheet settling after a handle drag (new detent or snap back), as the slide-in eases.
 const SETTLE = { duration: 200, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" } as const;
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -146,6 +150,15 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
   // Where the panel was when a tall sheet's handle was let go; the layout effect eases from it.
   const settleFrom = useRef<{ height: number; offset: number } | null>(null);
   const [settles, setSettles] = useState(0);
+  const shownAt = useRef(0);
+  useEffect(() => {
+    if (!closing) shownAt.current = performance.now();
+  }, [closing]);
+  const onClickCapture = (event: MouseEvent) => {
+    if (performance.now() - shownAt.current >= OPEN_GUARD_MS) return;
+    event.stopPropagation();
+    event.preventDefault();
+  };
 
   useLayoutEffect(() => {
     const from = settleFrom.current;
@@ -214,8 +227,14 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
   }
 
   return (
-    <div data-names-layer className={`fixed inset-0 z-40 flex flex-col justify-end ${tall ? "md:justify-center md:px-5" : ""} ${closing ? "pointer-events-none" : ""}`}>
-      <div aria-hidden="true" className={`${closing ? "names-scrim-out" : "names-scrim-in"} absolute inset-0 bg-(--nest-ink-45)`} onClick={closing ? undefined : close} />
+    <div data-names-layer onClickCapture={onClickCapture} className={`fixed inset-0 z-40 flex flex-col justify-end ${tall ? "md:justify-center md:px-5" : ""} ${closing ? "pointer-events-none" : ""}`}>
+      <div
+        aria-hidden="true"
+        className={`${closing ? "names-scrim-out" : "names-scrim-in"} absolute inset-0 bg-(--nest-ink-45)`}
+        // A press on the scrim never takes focus out of the dialog (it only closes it, on click).
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={closing ? undefined : close}
+      />
       <section
         ref={panel}
         role="dialog"

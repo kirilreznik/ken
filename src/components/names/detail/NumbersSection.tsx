@@ -9,11 +9,12 @@ import YearChart from "./YearChart";
  * the name is ranked. Numbers sit in LTR runs like the card. A name with no 2000–2024 years
  * shows only the chart's no-data line.
  */
-export default function NumbersSection({ stats, rank }: { stats: Pick<NameStats, "y">; rank: number | null }) {
+export default function NumbersSection({ stats, rank }: { stats: Pick<NameStats, "name" | "y">; rank: number | null }) {
   const latest = stats.y?.[stats.y.length - 1];
   return (
     <Section label="כמה תינוקות קיבלו את השם בכל שנה" seen="numbers">
-      <YearChart stats={stats} />
+      {/* A new name starts with no year picked (the sheet stays mounted across similar names). */}
+      <YearChart key={stats.name} stats={stats} />
       {latest !== undefined ? (
         <p data-numbers-line className="m-0 text-caption text-stone">
           ב־<bdi dir="ltr">{LAST_YEAR}</bdi>: <Numbers text={babies(latest)} />
