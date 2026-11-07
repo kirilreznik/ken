@@ -10,8 +10,10 @@ import {
   rank2024,
   rankMap,
   rankText,
+  SIMILAR_MAX,
+  similarForDisplay,
 } from "@/lib/names/detail";
-import type { NameStats } from "@/lib/names/types";
+import type { Card, NameDetail, NameStats, SexTag } from "@/lib/names/types";
 
 const names = parseNames(namesFile as RawNamesFile);
 const stats = (name: string) => names.get(name)!;
@@ -198,5 +200,60 @@ describe("chartLabel", () => {
 
   it("says there is no data without years", () => {
     expect(chartLabel(stats("אינה"))).toBe("אין נתונים לשנים 2000–2024");
+  });
+});
+
+describe("similarForDisplay", () => {
+  const card = (name: string, sexTag: SexTag) => ({ stats: { name }, derived: { sexTag } }) as unknown as Card;
+  const cards = [
+    card("אריאל", "מתאים לכולם"),
+    card("אריאלה", "בת"),
+    card("אראל", "בן"),
+    card("ארי", "בן"),
+    card("אריה", "בן"),
+    card("אוריאל", "בן"),
+    card("אריאה", "בת"),
+    card("אורי", "מתאים לכולם"),
+  ];
+  const details = new Map<string, NameDetail>([
+    ["אריאל", { story: null, similar: ["אריאלה", "אראל", "ארי", "לא-בחפיסה", "אריה"] }],
+    ["אורי", { story: null, similar: [] }],
+    ["ארי", { story: null, similar: ["אריאל", "אריאלה", "אראל", "אריה", "אוריאל", "אריאה", "אורי"] }],
+  ]);
+
+  it("keeps the build order and the sex tags", () => {
+    expect(similarForDisplay("אריאל", details, cards, [])).toEqual([
+      { name: "אריאלה", sexTag: "בת" },
+      { name: "אראל", sexTag: "בן" },
+      { name: "ארי", sexTag: "בן" },
+      { name: "אריה", sexTag: "בן" },
+    ]);
+  });
+
+  it("drops a name that isn't in the deck", () => {
+    const shown = similarForDisplay("אריאל", details, cards, []).map((s) => s.name);
+    expect(shown).not.toContain("לא-בחפיסה");
+  });
+
+  it("drops names the user hid (array or set)", () => {
+    expect(similarForDisplay("אריאל", details, cards, ["אראל"]).map((s) => s.name)).toEqual(["אריאלה", "ארי", "אריה"]);
+    expect(similarForDisplay("אריאל", details, new Map(cards.map((c) => [c.stats.name, c])), new Set(["אריאלה", "ארי"])))
+      .toEqual([
+        { name: "אראל", sexTag: "בן" },
+        { name: "אריה", sexTag: "בן" },
+      ]);
+  });
+
+  it("returns [] for an empty list, an unknown name, missing details or everything hidden", () => {
+    expect(similarForDisplay("אורי", details, cards, [])).toEqual([]);
+    expect(similarForDisplay("לא-קיים", details, cards, [])).toEqual([]);
+    expect(similarForDisplay("אריאל", null, cards, [])).toEqual([]);
+    expect(similarForDisplay("אריאל", details, cards, ["אריאלה", "אראל", "ארי", "אריה"])).toEqual([]);
+  });
+
+  it("shows at most SIMILAR_MAX names, and the first ones", () => {
+    const shown = similarForDisplay("ארי", details, cards, []).map((s) => s.name);
+    expect(shown).toHaveLength(SIMILAR_MAX);
+    expect(shown).toEqual(["אריאל", "אריאלה", "אראל", "אריה", "אוריאל", "אריאה"]);
   });
 });

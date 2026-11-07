@@ -1,6 +1,6 @@
 import { FIRST_TREND_YEAR, LAST_YEAR } from "./data";
 import { rankByLastYear } from "./popularity";
-import type { NameStats } from "./types";
+import type { Card, NameDetail, NameStats, SexTag } from "./types";
 
 /** Pure logic for the name detail sheet (tasks/prd-name-detail.md §3.2.8). */
 
@@ -153,4 +153,50 @@ export function chartLabel({ y }: Pick<NameStats, "y">): string {
   const max = Math.max(...y);
   if (max > 0) parts.push(`השיא ב־${FIRST_TREND_YEAR + y.indexOf(max)}`);
   return `${parts.join(". ")}.`;
+}
+
+/** At most this many similar names are shown. */
+export const SIMILAR_MAX = 6;
+
+export interface SimilarName {
+  name: string;
+  sexTag: SexTag;
+}
+
+const cardCache = new WeakMap<readonly Card[], Map<string, Card>>();
+
+function cardIndex(cards: ReadonlyMap<string, Card> | readonly Card[]): ReadonlyMap<string, Card> {
+  if (!Array.isArray(cards)) return cards as ReadonlyMap<string, Card>;
+  const list = cards as readonly Card[];
+  let index = cardCache.get(list);
+  if (!index) {
+    index = new Map(list.map((c) => [c.stats.name, c]));
+    cardCache.set(list, index);
+  }
+  return index;
+}
+
+/**
+ * The similar names the sheet shows for `name`: deck names only, never one the user hid
+ * or the name itself, in the build's order (2024 births), at most SIMILAR_MAX.
+ */
+export function similarForDisplay(
+  name: string,
+  details: ReadonlyMap<string, NameDetail> | null | undefined,
+  cards: ReadonlyMap<string, Card> | readonly Card[],
+  hiddenNames: ReadonlySet<string> | readonly string[],
+): SimilarName[] {
+  const similar = details?.get(name)?.similar;
+  if (!similar?.length) return [];
+  const index = cardIndex(cards);
+  const hidden = Array.isArray(hiddenNames) ? new Set(hiddenNames) : (hiddenNames as ReadonlySet<string>);
+  const out: SimilarName[] = [];
+  for (const other of similar) {
+    if (other === name || hidden.has(other)) continue;
+    const card = index.get(other);
+    if (!card || out.some((s) => s.name === other)) continue;
+    out.push({ name: other, sexTag: card.derived.sexTag });
+    if (out.length === SIMILAR_MAX) break;
+  }
+  return out;
 }
