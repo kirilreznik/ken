@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useId, useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
-import type { SheetName } from "@/lib/names/urlLayer";
+import { otherLayerOpen, type SheetName } from "@/lib/names/urlLayer";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
 import { closeSheet, useLayerOpen } from "./layers";
 import { useModal, usePortalHost } from "./useModal";
@@ -43,6 +44,12 @@ const DRAG_CLOSE = DETENT_DRAG;
 const FULL_HEIGHT = "calc(100dvh - env(safe-area-inset-top))";
 // 28 px under the content (board 3), more on phones with a home indicator.
 const SAFE_BOTTOM = "pb-[max(1.75rem,env(safe-area-inset-bottom))]";
+// PRD 3.2.12: a tall sheet slides out in 200 ms (160 ms fade with reduced motion, names.css);
+// it unmounts on animationend, or after this if that never fires.
+const EXIT_MS = 300;
+// A tall sheet settling after a handle drag (new detent or snap back), as the slide-in eases.
+const SETTLE = { duration: 200, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" } as const;
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 // The pinned footer's height, on <html> while the sheet is open: ToastRegion sits above it, so a
 // toast never covers the sheet's buttons.
 const TOAST_LIFT = "--names-toast-lift";
@@ -91,13 +98,31 @@ export function BottomSheet(props: BottomSheetProps) {
 
 function SheetGate(props: BottomSheetProps) {
   const open = useLayerOpen("sheet", props.name);
+  const search = useSearchParams().toString();
   const host = usePortalHost();
-  if (!open || !host) return null;
-  return createPortal(<SheetPanel {...props} />, host);
+  // A tall sheet stays mounted while it slides out, unless another layer replaces it (no overlap).
+  const [mounted, setMounted] = useState(open);
+  const [closing, setClosing] = useState(false);
+  const onClosed = useCallback(() => setMounted(false), []);
+  if (open && (!mounted || closing)) {
+    setMounted(true);
+    setClosing(false);
+  } else if (!open && mounted && !closing) {
+    if (props.detents && !otherLayerOpen(search)) setClosing(true);
+    else setMounted(false);
+  }
+  if (!mounted || !host) return null;
+  return createPortal(<SheetPanel {...props} closing={closing} onClosed={onClosed} />, host);
 }
 
+type PanelProps = BottomSheetProps & {
+  /** Sliding out after the URL closed it: no longer modal, inert, gone on `onClosed`. */
+  closing?: boolean;
+  onClosed?: () => void;
+};
+
 /** The panel itself; exported for markup tests. */
-export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, contentKey, children }: BottomSheetProps) {
+export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, contentKey, closing = false, onClosed, children }: PanelProps) {
   const panel = useRef<HTMLElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -111,7 +136,33 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
   const tall = Boolean(detents);
   const titleId = useId();
   const close = () => closeSheet(name);
-  const onKeyDown = useModal(panel, close);
+  const onKeyDown = useModal(panel, close, !closing);
+  // Where the panel was when a tall sheet's handle was let go; the layout effect eases from it.
+  const settleFrom = useRef<{ height: number; offset: number } | null>(null);
+  const [settles, setSettles] = useState(0);
+
+  useLayoutEffect(() => {
+    const from = settleFrom.current;
+    const el = panel.current;
+    settleFrom.current = null;
+    if (!from || !el || reducedMotion()) return;
+    const to = el.getBoundingClientRect().height;
+    if (Math.abs(to - from.height) < 1 && from.offset === 0) return;
+    el.animate(
+      [
+        // maxHeight: the 70% detent's max-h would cap the height on the way down from full.
+        { height: `${from.height}px`, maxHeight: "none", transform: `translateY(${from.offset}px)` },
+        { height: `${to}px`, maxHeight: "none", transform: "translateY(0)" },
+      ],
+      SETTLE,
+    );
+  }, [settles]);
+
+  useEffect(() => {
+    if (!closing) return;
+    const timer = window.setTimeout(() => onClosed?.(), EXIT_MS);
+    return () => window.clearTimeout(timer);
+  }, [closing, onClosed]);
 
   function onPointerDown(event: PointerEvent<HTMLButtonElement>) {
     if (event.button !== 0) return;
@@ -136,6 +187,10 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     const next = tall ? detentAfterDrag(detent, dy, DRAG_CLOSE) : dy >= DRAG_CLOSE ? "close" : detent;
     if (next === "close") close();
     else {
+      if (tall && moved && panel.current) {
+        settleFrom.current = { height: panel.current.getBoundingClientRect().height, offset: Math.max(0, dy) };
+        setSettles((count) => count + 1);
+      }
       setDetent(next);
       setOffset(0);
       setHeight(null);
@@ -151,15 +206,19 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
   }
 
   return (
-    <div data-names-layer className="fixed inset-0 z-40 flex flex-col justify-end">
-      <div aria-hidden="true" className="names-scrim-in absolute inset-0 bg-(--nest-ink-45)" onClick={close} />
+    <div data-names-layer className={`fixed inset-0 z-40 flex flex-col justify-end ${closing ? "pointer-events-none" : ""}`}>
+      <div aria-hidden="true" className={`${closing ? "names-scrim-out" : "names-scrim-in"} absolute inset-0 bg-(--nest-ink-45)`} onClick={closing ? undefined : close} />
       <section
         ref={panel}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
+        inert={closing}
         onKeyDown={onKeyDown}
+        onAnimationEnd={(event) => {
+          if (closing && event.target === event.currentTarget) onClosed?.();
+        }}
         data-names-bg="none"
         data-detent={tall ? detent : undefined}
         style={
@@ -169,7 +228,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
               ? { transform: `translateY(${offset}px)` }
               : undefined
         }
-        className={`names-sheet-in relative mx-auto flex w-full max-w-lg flex-col rounded-t-xl bg-surface text-ink outline-none ${heightClass(tall, detent)} ${offset || height !== null ? "" : tall ? "transition-[transform,height] duration-200" : "transition-transform duration-200"}`}
+        className={`${closing ? "names-sheet-out" : "names-sheet-in"} relative mx-auto flex w-full max-w-lg flex-col rounded-t-xl bg-surface text-ink outline-none ${heightClass(tall, detent)} ${offset || height !== null || tall ? "" : "transition-transform duration-200"}`}
       >
         <button
           type="button"

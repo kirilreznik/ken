@@ -32,4 +32,18 @@ describe("BottomSheet heading", () => {
     // The footer stays outside the scrolling body, above the safe-area inset.
     expect(html).toMatch(/<div class="shrink-0 px-5 pb-\[max\(1\.75rem,env\(safe-area-inset-bottom\)\)\]"><button[^>]*>שמירה<\/button><\/div><\/section>/);
   });
+
+  it("slides in while open and out while closing, inert and without taps (PRD 3.2.12)", () => {
+    const open = renderToStaticMarkup(createElement(SheetPanel, { name: "name", title: "x", detents: ["70", "full"] as const, ...body }));
+    expect(open).toContain("names-sheet-in");
+    expect(open).toContain("names-scrim-in");
+    expect(open).not.toContain("inert");
+    const closing = renderToStaticMarkup(
+      createElement(SheetPanel, { name: "name", title: "x", detents: ["70", "full"] as const, closing: true, ...body }),
+    );
+    expect(closing).toContain("names-sheet-out");
+    expect(closing).toContain("names-scrim-out");
+    expect(closing).toContain("pointer-events-none");
+    expect(closing).toMatch(/role="dialog"[^>]*inert=""/);
+  });
 });

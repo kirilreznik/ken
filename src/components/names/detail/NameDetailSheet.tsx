@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
 import DecisionButtons, { type Decision } from "@/components/names/DecisionButtons";
@@ -65,7 +65,11 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Pro
   const open = params.get("sheet") === NAME_SHEET;
   const name = readName(params.toString());
   const byName = useMemo(() => new Map((cards ?? []).map((card) => [card.stats.name, card])), [cards]);
-  const card = name ? (byName.get(name) ?? null) : null;
+  const named = name ? (byName.get(name) ?? null) : null;
+  // PRD 3.2.12: once closed, the sheet keeps showing the last name while it slides out.
+  const [last, setLast] = useState<Card | null>(named);
+  if (named && named !== last) setLast(named);
+  const card = named ?? (open ? null : last);
   // Wait for the cards before deciding the name isn't in the deck.
   const unknown = open && cards !== null && !card;
   // The details file (stories, similar names) loads the first time a sheet opens.
@@ -84,7 +88,7 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Pro
   }, [unknown]);
 
   // FR-D6: a direct link opens once the deck has the name; Back then closes onto a clean page.
-  const shown = card?.stats.name ?? null;
+  const shown = named?.stats.name ?? null;
   useEffect(() => {
     if (shown !== null && adoptNameLink()) track("detail_opened", { source: "link" });
   }, [shown]);

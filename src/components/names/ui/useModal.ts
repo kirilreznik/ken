@@ -24,11 +24,12 @@ let scrollLocks = 0;
  * Modal behaviour for a sheet or dialog panel while it is mounted: everything outside it is
  * inert, the page doesn't scroll, focus moves in ([data-autofocus] or the panel) and goes
  * back to the opener on close. Returns the panel's keydown handler (Escape, Tab wrap).
+ * `active` false (a sheet sliding out) releases all of that while the panel stays mounted.
  */
-export function useModal(panel: RefObject<HTMLElement | null>, onClose: () => void) {
+export function useModal(panel: RefObject<HTMLElement | null>, onClose: () => void, active = true) {
   useEffect(() => {
     const el = panel.current;
-    if (!el) return;
+    if (!el || !active) return;
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const layer = el.closest<HTMLElement>("[data-names-layer]") ?? el;
 
@@ -54,11 +55,11 @@ export function useModal(panel: RefObject<HTMLElement | null>, onClose: () => vo
       if (--scrollLocks === 0) document.documentElement.style.overflow = "";
       if (opener?.isConnected) opener.focus({ preventScroll: true });
     };
-  }, [panel]);
+  }, [panel, active]);
 
   return function onKeyDown(event: KeyboardEvent<HTMLElement>) {
     const el = panel.current;
-    if (!el || stack[stack.length - 1] !== el) return;
+    if (!el || !active || stack[stack.length - 1] !== el) return;
     if (event.key === "Escape") {
       event.preventDefault();
       event.stopPropagation();
