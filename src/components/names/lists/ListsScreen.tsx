@@ -16,7 +16,8 @@ import { InstallHint, InstallSheet } from "@/components/names/pwa/Install";
 import { usePrefJson } from "@/components/names/usePrefJson";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
-import { DETAILS_HINT } from "@/lib/names/a11y";
+import type { Decision } from "@/components/names/DecisionButtons";
+import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
@@ -142,6 +143,31 @@ export default function ListsScreen() {
     );
   }
 
+  // PRD 3.2.6: a choice in the name sheet changes the vote through the store; the sheet stays
+  // open with the new choice pressed, and the toast (outside the sheet's inert page) says it.
+  // "דילוג" on a saved name takes it out of "שמרתי"; the toast's "ביטול" puts the old vote back.
+  const decideInSheet = (name: string, kind: Decision) => {
+    if (!store) return;
+    const previous = state?.votes.get(name);
+    if (previous?.vote === kind) return;
+    track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null });
+    store.setVote(name, kind, previous?.custom ?? false);
+    const message = sheetVoteText(kind, name);
+    setStatus(message);
+    const wasSaved = previous && (previous.vote === "keep" || previous.vote === "love");
+    if (kind === "skip" && wasSaved) {
+      const restore = () => {
+        store.setVote(name, previous.vote, previous.custom);
+        const back = sheetVoteText(previous.vote, name);
+        setStatus(back);
+        showToast(back);
+      };
+      showToast(message, { action: { label: "ביטול", onAction: restore } });
+    } else {
+      showToast(message);
+    }
+  };
+
   const add = (name: string, custom: boolean) => {
     if (!store) return;
     store.setVote(name, "keep", custom);
@@ -249,6 +275,7 @@ export default function ListsScreen() {
         matches={space.isShared ? (matches?.matches ?? NO_MATCHES) : NO_MATCHES}
         memberCount={space.members.length}
         votes={votes}
+        onDecide={decideInSheet}
       />
       {/* The name sheet's source links: both keep `n`, so closing them comes back to it. */}
       <AboutSheet hasName />
