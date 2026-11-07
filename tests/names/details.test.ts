@@ -52,6 +52,7 @@ type Built = {
   drops: string[];
   capped: string[];
   nullStories: { name: string; note: string }[];
+  symmetryFills: number;
   covered: number;
   deckSize: number;
 };
@@ -77,6 +78,8 @@ describe("build-details", () => {
     expect(out.names["a1"].similar).toEqual(["אריאל", "a2", "a3", "a4", "a5", "a6"]);
     expect(out.capped).toEqual(["a1: kept 6 of 7, cut a7"]);
     expect(out.names["a7"].similar).toEqual(["a1"]);
+    expect(out.symmetryFills).toBe(11);
+    expect(report(out, [])).toContain("- 11 similar links added by the symmetry fill");
     expect(Object.keys(out.names)[0]).toBe("אריאל");
   });
 
