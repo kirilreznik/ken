@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, type LayerParam, type SheetName } from "@/lib/names/urlLayer";
+import { closeNameIn, isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, NAME_SHEET, openNameIn, type LayerParam, type SheetName } from "@/lib/names/urlLayer";
 
 function urlWith(param: LayerParam, value: string | null): string {
   const { pathname, search, hash } = window.location;
@@ -26,7 +26,10 @@ function closeLayer(param: LayerParam, name: string) {
 }
 
 export const openSheet = (name: SheetName) => openLayer("sheet", name);
-export const closeSheet = (name: SheetName) => closeLayer("sheet", name);
+/** Closes ?sheet=name; the name sheet also drops `n` and every name entry it pushed. */
+export const closeSheet = (name: SheetName) => (name === NAME_SHEET ? closeNameIn(window) : closeLayer("sheet", name));
+/** Opens the name sheet on `name` (?sheet=name&n=…); a second name pushes another entry. */
+export const openNameSheet = (name: string, options?: { replace?: boolean }) => openNameIn(window, name, options);
 export const openDialog = (name: string) => openLayer("dialog", name);
 export const closeDialog = (name: string) => closeLayer("dialog", name);
 
