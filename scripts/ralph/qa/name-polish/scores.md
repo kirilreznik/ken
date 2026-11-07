@@ -79,3 +79,63 @@ Baseline inventory of group 1 (Entry, PRD §6), taken by US-005 on 2026-11-07 be
 - `welcome-*`: below the fold in WebKit 393 × 659 (email button and legal line need a scroll); fits on Pixel 7. In Safari the bottom toolbar covers the legal line until scrolled.
 - `signin-code-wrong`: the resend line drops below the card's fold at 375 and 320.
 - `offline`, `404`, `unconfigured`: plain canvas, no background photo or glass, unlike the other entry screens.
+
+## Screens G2
+
+Baseline inventory of group 2 (Deck, PRD §6), taken by US-006 on 2026-11-07 before any polish, at `b1e8771` (no app code change since the detail run). Audits and QA use this list of screens and states and these names.
+
+**Where:** `scripts/ralph/qa/name-polish/shots/baseline/G2/` (gitignored), named `<screen>-<state>-<browser>.png`. Browsers as in G1: `webkit` (iPhone 15, 393 × 659), `chromium` (Pixel 7, 412 × 839), `webkit375` (375 × 667), `webkit320` (320 × 568), `sim` (Mobile Safari, iPhone 17 Pro). No G2 page is taller than its viewport, so there are no `-full` shots.
+
+**How (re-run for the after shots):**
+- Playwright, production build :3100, QA user 1: `QA_SHOTS_DIR=scripts/ralph/qa/name-polish/shots node scripts/ralph/qa/name-polish/shots/us006-g2.mjs [webkit|chromium|webkit375|webkit320] [--only backgrounds,actions,ends,pauses,detail,sheets]`. Every backend call the deck makes is mocked: `names_space` (a fixed space id), `space_members` (solo, or a pair with "עומר"), `name_votes` (GET a list made for the state; writes echoed, never sent), `name_matches`, `names_track` / `client_log` / `names_survey`. Device prefs are set per state (background, surname, filters, seen matches, `invitePromptShown`, `sessions`, `survey`, `chosen`). Some states limit the deck to 2 names by rewriting `content.*.json`.
+- Simulator: `QA_SHOTS_DIR=… node scripts/ralph/qa/name-polish/shots/us006-sim.mjs <bg <name> [full 291] | url <shot> <path> | tap x y | drag … | shot <name>>` on `http://localhost:3100` with QA user 1 and the real backend, so only states that need no write. Safari holds the surname "רזניק" and an own photo from earlier runs; the run ends on "בדים", as it was.
+
+| Screen | State | How it's reached | Shots (`-<browser>.png`) | Browsers |
+|---|---|---|---|---|
+| `/names` deck | card + peeking cards, each background | background pref `none` / `fabric` / `notebook` / `nursery`; own photo uploaded through the background sheet | `deck-bg-none`, `deck-bg-fabric`, `deck-bg-notebook`, `deck-bg-nursery`, `deck-bg-own` | all 5 (`deck-bg-own-webkit*`: see gaps) |
+| `/names` deck | drag held towards skip / save (swipe label) | touch pointerdown + moves, no pointerup, 32 % of the card width | `deck-drag-start`, `deck-drag-end` | Playwright 4 |
+| `/names` deck | after a decision (status line, undo on, position 2) | "שמירה" (Safari: "דילוג") | `deck-after-vote` | all 5 |
+| `/names` deck | after undo | "ביטול ההחלטה האחרונה" | `deck-after-undo` | all 5 |
+| `/names` deck | skip long-press menu ("דילוג ולא להציג שוב") | touch pointerdown held 900 ms on "דילוג" | `deck-skip-menu` | Playwright 4 |
+| `/names` deck | offline, a decision waiting to sync (status footer) | `setOffline` + "שמירה" | `deck-offline-pending` | Playwright 4 |
+| `/names` deck | surname set (card line) | surname pref "כהן-לוינסון" (Safari: "רזניק") | `deck-surname` | all 5 |
+| `/names` deck | filtered (header dot, 518 names) | filters sheet → "בת" → "הצגת 518 שמות" | `deck-filtered` | Playwright 4 |
+| `/names` deck | empty filter result | 2-name deck of girls' names, filter "בן" | `deck-empty-filter` | Playwright 4 |
+| `/names` deck | deck end, solo (saved list + invite link) | 2-name deck: save one, skip one | `deck-end-solo` | Playwright 4 |
+| `/names` deck | deck end, shared (no invite link) | same, pair space | `deck-end-shared` | Playwright 4 |
+| `/names` deck | deck end, nothing saved | 2-name deck, both skipped | `deck-end-none-saved` | Playwright 4 |
+| `/names` deck | pause: invite prompt after the 5th save | 4 saves, `invitePromptShown` false, save one more | `deck-pause-invite` | Playwright 4 |
+| `/names` deck | pause: round recap (30 decisions) | 29 votes in this session (8 saved), one more | `deck-pause-recap` | Playwright 4 |
+| `/names` deck | survey prompt above the card | 60 votes, `sessions.count` 3, `survey` null | `deck-survey-prompt` | Playwright 4 |
+| name sheet | 70 % height, each background | card tap | `detail-70-bg-none` … `detail-70-bg-own` | all 5 |
+| name sheet | full height | handle dragged up 300 px (Safari: (201,291) → (201,60)) | `detail-full-bg-none`, `detail-full-bg-fabric` | all 5 |
+| name sheet | surname line ("עם שם המשפחה") | surname pref + card tap | `detail-surname` | Playwright 4 (Safari's `detail-70-bg-*` show it too) |
+| name sheet | similar names section | scrolled into view (Safari: full + 3 drags) | `detail-similar-section` | all 5 |
+| name sheet | a similar name opened (גבריאלה) | tap on its chip | `detail-similar-opened` | all 5 |
+| toast | vote on a similar name in the sheet ("נשמר: גבריאלה") | "שמירה" in the sheet on the similar name | `toast-sheet-vote` | Playwright 4 |
+| name sheet | together badge ("התאמה · שניכם שמרתם…") | pair space, match on נועם (seen), `?sheet=name&n=נועם`, full | `detail-together` | Playwright 4 |
+| name sheet | details loading (skeleton lines) | `details.*.json` never answers | `detail-loading` | Playwright 4 |
+| name sheet | details offline line | `details.*.json` aborted | `detail-offline` | Playwright 4 |
+| filters sheet | default | `?sheet=filters` | `filters-default` | all 5 |
+| filters sheet | a chip chosen ("בת", count 518) | tap | `filters-selected` | all 5 |
+| filters sheet | scrolled to the end (popularity, trend, origin, length, letter, hidden) | sheet body scrolled | `filters-scrolled` | Playwright 4 |
+| background sheet | default (בדים chosen) | `?sheet=background` | `background-default` | all 5 |
+| background sheet + toast | own photo saved ("התמונה נשמרה במכשיר הזה.") | file input with `name-detail/shots/qa-own-bg.jpg` | `background-own-saved` | Playwright 4 (WebKit: error toast, see gaps) |
+| about sheet | default | `?sheet=about` | `about-default` | all 5 |
+| report sheet | default (about the top card) | `?sheet=report` (Safari focuses the field: keyboard bar) | `report-default` | all 5 |
+| survey sheet | default | `?sheet=survey` | `survey-default` | all 5 |
+| match sheet | new match (נועם) | pair space, `name_matches` → נועם, not seen | `match-default` | Playwright 4 |
+| decision sheet ("בחרנו שם", over lists) | solo ("בחרתי שם") / shared ("בחרנו שם") | `chosen` pref = נועם, `/names/lists?sheet=decision` | `decision-solo`, `decision-shared` | Playwright 4 |
+
+45 states: 45 shots each in webkit, chromium, webkit375 and webkit320; 23 in sim. 203 PNGs.
+
+**Gaps (with reasons):**
+- Simulator Safari (22 states not shot): it runs against the real backend and Safari can't route Supabase, so states that need made-up votes, a pair space, a match, a chosen name, offline or a blocked data file (`deck-drag-*` too: cliclick can't hold a drag for a screenshot) are Playwright only. The one write it did (an accidental "דילוג" on גבריאל, kept as `deck-after-vote-sim`) was undone with "ביטול" right away; after a reload גבריאל is card 1 of 1295 again.
+- Own photo in Playwright WebKit: the upload fails ("אי אפשר לפתוח את התמונה הזו…", the WebKit-driver limit found in the detail run, `name-detail/shots/qa1-j-idb.mjs`), so `background-own-saved-webkit*` show the error toast and `deck-bg-own-webkit*` / `detail-70-bg-own-webkit*` show the fabric fallback. The own photo is real in Chromium and in Safari.
+
+**Seen while taking them** (for the audits to judge; not findings yet):
+- `webkit320`: the header drops the "בחירת שם" title and the action bar drops its icons (narrow-screen rules); the recap panel cuts the Nest card at the bottom (the panel scrolls).
+- `deck-end-solo`: "לשמות שלי" is a small pill in the solo state and a full button in the shared one (the invite link sits under it).
+- `report-default-sim`: the textarea takes focus on open, so the keyboard bar covers the lower sheet in Safari.
+- `detail-similar-section-sim`: a drag over the year chart leaves its tooltip on.
+- Pause, end and empty panels repeat the Nest app card (`deck-end-*`, `deck-pause-recap`, `decision-*`).
