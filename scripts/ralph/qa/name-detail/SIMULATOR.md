@@ -114,3 +114,14 @@ the sheet's ✕ is (42, 288). Choosing doesn't close the sheet.
 ## screenshot() and folders
 
 `screenshot("baseline/x")` drops the folder (it uses the basename); move the file afterwards.
+
+## Offline in Simulator Safari (US-068)
+
+The Simulator shares the Mac's network and has no offline switch. To test the service worker, stop
+the production server (`pkill -f "next start -p 3100"`); Safari's requests to localhost:3100 then
+fail and the worker serves pages and data from its cache. Supabase stays reachable, so the vote
+outbox can't be checked this way; check queue-and-flush in Playwright (`context.setOffline`).
+Restart with `nohup npx next start -p 3100 > /tmp/names-3100.log 2>&1 &`.
+
+- Safari on :3100 is signed in as QA user 1 (since US-068, `shots/us068-sim-signin.mjs`, 1 email).
+- `node sim.mjs open "http://localhost:3100/names?sheet=name&n=<name>"` opens a sheet straight from a link.
