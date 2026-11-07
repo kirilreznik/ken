@@ -5,16 +5,16 @@ import { Suspense, useEffect, useMemo } from "react";
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
 import { BottomSheet, IconButton, closeSheet } from "@/components/names/ui";
+import { useNameStats } from "@/components/names/useCards";
 import { useNameDetails } from "@/components/names/useNameDetails";
-import { togetherFor } from "@/lib/names/detail";
+import { rank2024, rankMap, togetherFor } from "@/lib/names/detail";
 import type { Match } from "@/lib/names/matches";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import type { Card } from "@/lib/names/types";
 import MeaningSection from "./MeaningSection";
+import NumbersSection from "./NumbersSection";
 import SurnameSection from "./SurnameSection";
-import Section from "./Section";
 import TogetherSection from "./TogetherSection";
-import YearChart from "./YearChart";
 
 const DETENTS = ["70", "full"] as const;
 
@@ -51,6 +51,9 @@ function NameGate({ cards, surname, matches, memberCount }: Props) {
   const unknown = open && cards !== null && !card;
   // The details file (stories, similar names) loads the first time a sheet opens.
   const details = useNameDetails({ enabled: open && card !== null });
+  // The 2024 rank is among every CBS name (already loaded with the deck), not only deck names.
+  const { names } = useNameStats();
+  const rank = card && names ? rank2024(card.stats.name, rankMap(names)) : null;
 
   useEffect(() => {
     if (unknown) closeSheet(NAME_SHEET);
@@ -69,9 +72,7 @@ function NameGate({ cards, surname, matches, memberCount }: Props) {
         <CardBible bible={card.content.bible} inSheet />
         <CardPeople people={card.content.people} inSheet />
         <TogetherSection together={togetherFor(card.stats.name, matches, memberCount)} />
-        <Section label="כמה תינוקות קיבלו את השם בכל שנה">
-          <YearChart stats={card.stats} />
-        </Section>
+        <NumbersSection stats={card.stats} rank={rank} />
       </div>
     </BottomSheet>
   );
