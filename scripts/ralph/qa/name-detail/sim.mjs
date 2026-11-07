@@ -14,13 +14,16 @@
 // window's first AXGroup, read with osascript before every gesture, so a moved or resized
 // window still maps right). Gestures use cliclick dd:/dm:/du: (`m:` never reaches the app as a
 // touch move). Never type a secret through the CLI: import type() and pass a variable.
+// Screenshots go to ./shots/ unless QA_SHOTS_DIR names another folder (relative to the cwd).
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync } from "node:fs";
 import { createServer } from "node:http";
-import { basename } from "node:path";
+import { basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const SHOTS = fileURLToPath(new URL("./shots/", import.meta.url));
+export const SHOTS = process.env.QA_SHOTS_DIR
+  ? `${resolve(process.env.QA_SHOTS_DIR)}/`
+  : fileURLToPath(new URL("./shots/", import.meta.url));
 export const DEFAULT_DEVICE = "iPhone 17 Pro";
 
 // Device screen size in points; screenshot() refreshes it from the PNG (pixels / 3).
@@ -53,7 +56,7 @@ export async function open(url, waitMs = 2500) {
   await sleep(waitMs);
 }
 
-/** Saves shots/<name>.png and returns its path. */
+/** Saves SHOTS/<name>.png and returns its path. */
 export async function screenshot(name) {
   mkdirSync(SHOTS, { recursive: true });
   const file = `${SHOTS}${basename(name).replace(/\.png$/, "")}.png`;
