@@ -4,13 +4,15 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo } from "react";
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
+import DecisionButtons from "@/components/names/DecisionButtons";
 import { BottomSheet, IconButton, closeSheet } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useNameDetails } from "@/components/names/useNameDetails";
 import { rank2024, rankMap, similarForDisplay, togetherFor } from "@/lib/names/detail";
+import { hiddenNames } from "@/lib/names/lists";
 import type { Match } from "@/lib/names/matches";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
-import type { Card } from "@/lib/names/types";
+import type { Card, Vote } from "@/lib/names/types";
 import FactsSection from "./FactsSection";
 import MeaningSection from "./MeaningSection";
 import NumbersSection from "./NumbersSection";
@@ -30,8 +32,8 @@ interface Props {
   /** The screen's `useMatches` matches (empty in a space of one) and its member count. */
   matches: readonly Match[];
   memberCount: number;
-  /** Names the user hid ("לא להציג שוב"): never offered as similar names. */
-  hiddenNames: ReadonlySet<string>;
+  /** The user's votes: the pinned buttons show the name's own as pressed; hidden names are never offered as similar names. */
+  votes: ReadonlyMap<string, Vote>;
 }
 
 /**
@@ -47,7 +49,7 @@ export default function NameDetailSheet(props: Props) {
   );
 }
 
-function NameGate({ cards, surname, matches, memberCount, hiddenNames }: Props) {
+function NameGate({ cards, surname, matches, memberCount, votes }: Props) {
   const params = useSearchParams();
   const open = params.get("sheet") === NAME_SHEET;
   const name = readName(params.toString());
@@ -60,9 +62,10 @@ function NameGate({ cards, surname, matches, memberCount, hiddenNames }: Props) 
   // The 2024 rank is among every CBS name (already loaded with the deck), not only deck names.
   const { names } = useNameStats();
   const rank = card && names ? rank2024(card.stats.name, rankMap(names)) : null;
+  const hidden = useMemo(() => new Set(hiddenNames(votes)), [votes]);
   const similar = useMemo(
-    () => (card && cards ? similarForDisplay(card.stats.name, details.details, cards, hiddenNames) : []),
-    [card, cards, details.details, hiddenNames],
+    () => (card && cards ? similarForDisplay(card.stats.name, details.details, cards, hidden) : []),
+    [card, cards, details.details, hidden],
   );
 
   useEffect(() => {
@@ -71,7 +74,13 @@ function NameGate({ cards, surname, matches, memberCount, hiddenNames }: Props) 
 
   if (!card) return null;
   return (
-    <BottomSheet name={NAME_SHEET} detents={DETENTS} closeInHeader header={(titleId) => <NameHeader card={card} titleId={titleId} />}>
+    <BottomSheet
+      name={NAME_SHEET}
+      detents={DETENTS}
+      closeInHeader
+      header={(titleId) => <NameHeader card={card} titleId={titleId} />}
+      footer={<SheetDecisions vote={votes.get(card.stats.name) ?? null} />}
+    >
       <div data-detail-body className="flex flex-col gap-5">
         <SurnameSection name={card.stats.name} surname={surname} />
         <MeaningSection
@@ -89,6 +98,19 @@ function NameGate({ cards, surname, matches, memberCount, hiddenNames }: Props) 
         <SourceSection />
       </div>
     </BottomSheet>
+  );
+}
+
+/**
+ * FR-D18: the swipe screen's three buttons pinned under the scrolling content (the footer sits
+ * outside the scroller, so it never covers the last section), the name's vote shown as pressed.
+ * Display only for now: deciding from the sheet is wired in US-060/061/067.
+ */
+function SheetDecisions({ vote }: { vote: Vote | null }) {
+  return (
+    <div data-clarity-unmask="true" className="grid grid-cols-3 gap-2 pt-3 max-[22.5rem]:gap-1.5">
+      <DecisionButtons onDecide={() => {}} pressed={vote} />
+    </div>
   );
 }
 

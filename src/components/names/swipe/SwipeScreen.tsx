@@ -113,7 +113,6 @@ export default function SwipeScreen() {
     return map;
   }, [state?.votes]);
   const deckNames = useMemo(() => new Set((cards ?? []).map((c) => c.stats.name)), [cards]);
-  const hiddenNames = useMemo(() => new Set([...votes].filter(([, v]) => v === "hidden").map(([name]) => name)), [votes]);
   const savedCount = useMemo(() => [...votes.values()].filter(isSaved).length, [votes]);
   const saved = useMemo(() => savedInOrder((cards ?? []).map((c) => c.stats.name), votes), [cards, votes]);
 
@@ -263,7 +262,7 @@ export default function SwipeScreen() {
         surname={surname}
         matches={matches?.matches ?? NO_MATCHES}
         memberCount={space.members.length}
-        hiddenNames={hiddenNames}
+        votes={votes}
       />
       <SurveySheet votes={votes.size} sessions={sessionCount} onDone={() => userId && setPref(userId, "survey", "done")} />
       <MatchSheet
