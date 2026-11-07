@@ -53,6 +53,11 @@ const EXIT_MS = 300;
 // on the sliding panel's controls before it has slid in (260 ms); for this long after opening,
 // clicks in the layer do nothing (no close, no decision).
 const OPEN_GUARD_MS = 350;
+// Mobile Safari turns a quick double tap on the card into a word selection in the sheet that just
+// opened under the second tap (ND-BUG-007). Text in the layer can't be selected until the taps that
+// opened it stop: this long after opening, or after the last press in the layer during it. A
+// selection made in it meanwhile is dropped when the guard ends.
+const SELECT_GUARD_MS = 600;
 // A tall sheet settling after a handle drag (new detent or snap back), as the slide-in eases.
 const SETTLE = { duration: 200, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" } as const;
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -151,9 +156,24 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
   const settleFrom = useRef<{ height: number; offset: number } | null>(null);
   const [settles, setSettles] = useState(0);
   const shownAt = useRef(0);
+  const layer = useRef<HTMLDivElement>(null);
+  const [selectGuard, setSelectGuard] = useState(true);
+  const selectTimer = useRef(0);
   useEffect(() => {
     if (!closing) shownAt.current = performance.now();
   }, [closing]);
+  const armSelectGuard = useCallback(() => {
+    window.clearTimeout(selectTimer.current);
+    selectTimer.current = window.setTimeout(() => {
+      setSelectGuard(false);
+      const selection = window.getSelection();
+      if (selection?.anchorNode && layer.current?.contains(selection.anchorNode)) selection.removeAllRanges();
+    }, SELECT_GUARD_MS);
+  }, []);
+  useEffect(() => {
+    armSelectGuard();
+    return () => window.clearTimeout(selectTimer.current);
+  }, [armSelectGuard]);
   const onClickCapture = (event: MouseEvent) => {
     if (performance.now() - shownAt.current >= OPEN_GUARD_MS) return;
     event.stopPropagation();
@@ -227,7 +247,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
   }
 
   return (
-    <div data-names-layer onClickCapture={onClickCapture} className={`fixed inset-0 z-40 flex flex-col justify-end ${tall ? "md:justify-center md:px-5" : ""} ${closing ? "pointer-events-none" : ""}`}>
+    <div ref={layer} data-names-layer onClickCapture={onClickCapture} onPointerDownCapture={selectGuard ? armSelectGuard : undefined} className={`fixed inset-0 z-40 flex flex-col justify-end ${tall ? "md:justify-center md:px-5" : ""} ${closing ? "pointer-events-none" : ""} ${selectGuard ? "select-none [-webkit-touch-callout:none]" : ""}`}>
       <div
         aria-hidden="true"
         className={`${closing ? "names-scrim-out" : "names-scrim-in"} absolute inset-0 bg-(--nest-ink-45)`}

@@ -46,4 +46,9 @@ describe("BottomSheet heading", () => {
     expect(closing).toContain("pointer-events-none");
     expect(closing).toMatch(/role="dialog"[^>]*inert=""/);
   });
+
+  it("opens with its text unselectable, so a quick double tap doesn't select a word in it (ND-BUG-007)", () => {
+    const html = renderToStaticMarkup(createElement(SheetPanel, { name: "name", title: "x", ...body }));
+    expect(html).toMatch(/data-names-layer[^>]*class="[^"]*select-none \[-webkit-touch-callout:none\]/);
+  });
 });

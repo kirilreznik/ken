@@ -12,6 +12,7 @@ Browser: `webkit-iphone` · `chromium-pixel` · `sim-safari` · `desktop`. Statu
 | ND-BUG-004 | 1 | US-QA1-H | chromium-pixel | /names (swipe deck) | fixed | Intermittent: undo after a "דילוג" from the name sheet cleared the vote but left the next card on top (1 of ~30 tries) |
 | ND-BUG-005 | 1 | US-QA1-M | chromium-pixel (Clarity loaded by hand; webkit-iphone same code path) | /names, name sheet | fixed | Clarity records the sheet URL `?sheet=name&n=<name>`, so every opened baby name reaches Clarity |
 | ND-BUG-006 | 1 | US-QA1-M | chromium-pixel, webkit-iphone | /names, name sheet → surname link | fixed | Leaving the sheet through "להוסיף שם משפחה" sends no `detail_closed` (the visit never ends) |
+| ND-BUG-007 | 2 | US-QA2-A | sim-safari | /names (swipe deck) → name sheet | fixed | A quick double tap on the card opens the sheet and Safari selects a word in the surname box, with its Copy menu over the sheet |
 
 <!--
 ### ND-BUG-000: summary
@@ -92,3 +93,14 @@ Browser: `webkit-iphone` · `chromium-pixel` · `sim-safari` · `desktop`. Statu
 - **Status:** fixed
 - **Fix note:** The sheet ends its visit when it unmounts with the name still in the URL (`DetailVisits.end()`, run from an unmount timer so Strict Mode's remount doesn't end it). Verified with `qa1-m-sources.mjs` Chromium + WebKit: surname link → `detail_surname_add` then one `detail_closed`; every other source still passes (0 FAIL).
 - **Cycle fixed:** 1
+
+### ND-BUG-007: A quick double tap on the card opens the sheet with a word selected in the surname box
+
+- **Cycle found:** 2 · **QA story:** US-QA2-A · **Browser:** sim-safari (iPhone 17 Pro, iOS 26.5) · **Screen:** /names (swipe deck, user with a surname set) → name sheet, :3100 production build
+- **Steps:** In Simulator Safari on localhost:3100/names (QA user 1, surname "רזניק" set), double tap the card body at device point (201,435), the taps ~300 ms apart (cliclick's fastest there): `QA_CYCLE=2 node scripts/ralph/qa/name-detail/shots/qa1-a-sim.mjs taps 201 435 2 60 dbl2`.
+- **Expected:** PRD §11.4 A "Fast repeated taps open one sheet": one sheet, in its normal open state, nothing else.
+- **Actual:** One sheet opens (one history entry; one Back closes it, Safari's back arrow then greys out), but the second tap lands on the sheet's surname box ("גבריאל רזניק") and Safari treats the pair as a native double-tap word selection: "גבריאל" is selected with blue handles and the Copy / Find Selection / Look Up callout covers the sheet's "מה השם אומר" section. BottomSheet's 350 ms click guard (ND-BUG-001 fix) blocks clicks only; it doesn't stop the native text selection. Reproduced 3 times (after fling taps too, on "מה השם אומר" text, `qa2-a-sim-fling.png`). A slower double tap (gap arg 120) opens a clean sheet (`qa2-a-sim-dbl3.png`). Cycle 1 didn't see it because user 1 had no surname then, so the second tap hit the "הוספת שם משפחה" link area. Playwright WebKit/Chromium don't do native double-tap selection, so only the Simulator shows it.
+- **Screenshot:** `scripts/ralph/qa/name-detail/shots/qa2-a-sim-dbl2.png` (selection + callout), `qa2-a-sim-dbl.png` (first occurrence), `qa2-a-sim-fling.png`; clean open for comparison `qa2-a-sim-dbl3.png`
+- **Status:** fixed
+- **Fix note:** BottomSheet's layer opens with `select-none` and `-webkit-touch-callout: none`, and keeps them until 600 ms pass with no press in the layer, so the burst of taps that opened the sheet can't select text, however long it lasts. A selection made in the layer during the guard is cleared when the guard ends. Text can still be selected on purpose afterwards. Verified in Simulator Safari on a :3100 build: a quick double tap (×3), 4 quick taps, and fling + 4 taps (×2) open one clean sheet with no selection (`fix2-m1.png`, `fix2-m2.png`, `fix2-m4.png`). A first try with a fixed 1 s guard still selected after fling taps (`fix2-m3.png`). A deliberate double tap 2 s after opening still selects, and one Back closes the sheet (`fix2-m5.png`). Regression: `qa1-a.mjs` and `qa1-b.mjs` pass in WebKit and Chromium; the one WebKit opener-focus line is the known non-bug from cycles 1 and 2. Unit test in `tests/names/bottomSheet.test.ts`.
+- **Cycle fixed:** 2
