@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo } from "react";
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
-import DecisionButtons from "@/components/names/DecisionButtons";
+import DecisionButtons, { type Decision } from "@/components/names/DecisionButtons";
 import { BottomSheet, IconButton, closeSheet } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useNameDetails } from "@/components/names/useNameDetails";
@@ -34,6 +34,8 @@ interface Props {
   memberCount: number;
   /** The user's votes: the pinned buttons show the name's own as pressed; hidden names are never offered as similar names. */
   votes: ReadonlyMap<string, Vote>;
+  /** A decision made with the pinned buttons, for the name the sheet shows. */
+  onDecide?: (name: string, kind: Decision) => void;
 }
 
 /**
@@ -49,7 +51,7 @@ export default function NameDetailSheet(props: Props) {
   );
 }
 
-function NameGate({ cards, surname, matches, memberCount, votes }: Props) {
+function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Props) {
   const params = useSearchParams();
   const open = params.get("sheet") === NAME_SHEET;
   const name = readName(params.toString());
@@ -79,7 +81,9 @@ function NameGate({ cards, surname, matches, memberCount, votes }: Props) {
       detents={DETENTS}
       closeInHeader
       header={(titleId) => <NameHeader card={card} titleId={titleId} />}
-      footer={<SheetDecisions vote={votes.get(card.stats.name) ?? null} />}
+      footer={
+        <SheetDecisions vote={votes.get(card.stats.name) ?? null} onDecide={(kind) => onDecide?.(card.stats.name, kind)} />
+      }
     >
       <div data-detail-body className="flex flex-col gap-5">
         <SurnameSection name={card.stats.name} surname={surname} />
@@ -104,12 +108,12 @@ function NameGate({ cards, surname, matches, memberCount, votes }: Props) {
 /**
  * FR-D18: the swipe screen's three buttons pinned under the scrolling content (the footer sits
  * outside the scroller, so it never covers the last section), the name's vote shown as pressed.
- * Display only for now: deciding from the sheet is wired in US-060/061/067.
+ * The screen decides what a choice does (PRD 3.2.5, 3.2.6).
  */
-function SheetDecisions({ vote }: { vote: Vote | null }) {
+function SheetDecisions({ vote, onDecide }: { vote: Vote | null; onDecide: (kind: Decision) => void }) {
   return (
     <div data-clarity-unmask="true" className="grid grid-cols-3 gap-2 pt-3 max-[22.5rem]:gap-1.5">
-      <DecisionButtons onDecide={() => {}} pressed={vote} />
+      <DecisionButtons onDecide={onDecide} pressed={vote} />
     </div>
   );
 }

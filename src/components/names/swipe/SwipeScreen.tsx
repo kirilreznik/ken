@@ -10,7 +10,7 @@ import NameDetailSheet from "@/components/names/detail/NameDetailSheet";
 import FiltersSheet from "@/components/names/FiltersSheet";
 import MatchSheet from "@/components/names/MatchSheet";
 import SurveySheet from "@/components/names/SurveySheet";
-import { openNameSheet } from "@/components/names/ui";
+import { closeSheet, openNameSheet } from "@/components/names/ui";
 import { useCards } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useMatches, useSeenMatches } from "@/components/names/useMatches";
@@ -27,6 +27,7 @@ import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 import { currentSessionInfo, track } from "@/lib/names/track";
 import type { Vote } from "@/lib/names/types";
 import { isOpenKey } from "@/lib/names/keys";
+import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
 import AboutLink from "./AboutLink";
@@ -42,7 +43,7 @@ const NO_MATCHES: readonly Match[] = [];
 const NO_TOTALS = { votes: 0, saves: 0, names: [] as string[] };
 
 /** How the next decision was made: a drag ends in "swipe"; buttons and keys say so first. */
-type DecideMethod = "swipe" | "button" | "key";
+type DecideMethod = "swipe" | "button" | "key" | "detail";
 
 /**
  * A pref as a JSON string, so useSyncExternalStore gets a stable snapshot (getPref returns a
@@ -217,6 +218,19 @@ export default function SwipeScreen() {
     method.current = "button";
     drag.fly(kind);
   };
+  // PRD 3.2.5: on the current card the sheet closes first (Back past its entries, so none is
+  // left behind), then the card leaves as it does for the action buttons.
+  const decideInSheet = (name: string, kind: Decision) => {
+    if (!current || name !== current.stats.name || drag.busy()) return;
+    const leave = () =>
+      requestAnimationFrame(() => {
+        method.current = "detail";
+        drag.fly(kind);
+      });
+    closeSheet(NAME_SHEET);
+    if (readName(window.location.search) === null) leave();
+    else window.addEventListener("popstate", leave, { once: true });
+  };
 
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto [@media(max-height:30rem)]:h-auto">
@@ -280,6 +294,7 @@ export default function SwipeScreen() {
         matches={matches?.matches ?? NO_MATCHES}
         memberCount={space.members.length}
         votes={votes}
+        onDecide={decideInSheet}
       />
       <SurveySheet votes={votes.size} sessions={sessionCount} onDone={() => userId && setPref(userId, "survey", "done")} />
       <MatchSheet

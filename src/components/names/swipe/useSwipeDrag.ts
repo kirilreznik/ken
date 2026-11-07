@@ -149,7 +149,8 @@ export function useSwipeDrag({
       // The card was replaced mid-flight.
     }
     if (el.current !== node) return;
-    refocus.current = document.activeElement === node;
+    // Focus on the card or a control in it (the name sheet gives it back to "לכל הפרטים") moves to the next card.
+    refocus.current = node.contains(document.activeElement);
     decide.current(decision);
     busy.current = false;
   };

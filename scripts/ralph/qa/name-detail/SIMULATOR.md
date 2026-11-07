@@ -82,3 +82,35 @@ After the page scrolls, or with the keyboard open, re-measure (take a screenshot
 - Drags through cliclick reach the page only after the touch-down hold; real fingers can be
   faster. A gesture bug seen only in the Simulator needs a second look in Playwright before
   it's filed.
+
+## Sign in QA user 1 through the email-code UI (US-003, worked first try, 1 email)
+
+Run from a small script in this folder (never pass the email or code on a command line):
+
+```js
+import { tap, type, screenshot } from "./sim.mjs";
+import { qaEmail } from "../names-pwa/env.mjs";
+import { emailCode } from "../names-pwa/rest.mjs";
+// 1. node sim.mjs open http://localhost:3000/names   → welcome (signed out)
+await tap(201, 744);            // "כניסה עם קוד במייל"; the email field autofocuses
+await type(qaEmail(1));
+await tap(201, 495);            // "שליחת קוד"  (sends the one real email)
+// wait ~3 s for "מה הקוד?"
+const code = await emailCode(qaEmail(1));   // fresh code via admin generate_link, no email
+await tap(201, 445);            // code field
+await type(code);               // auto-submits at 6 digits
+```
+
+- User 1 is already onboarded (`terms_accepted_at` set), so it lands on the once-per-device intro;
+  "התחלת בחירה" is at (240, 733) (avoid the dev "N" badge at x ≈ 37). Then `/names`.
+- The session is per origin: `localhost:3000` and `localhost:3100` each need their own sign-in.
+- Delete any helper script holding these steps after use, or keep it under `shots/` (gitignored).
+
+## Background sheet (Simulator)
+
+On `/names` (not scrolled): background button (161, 100) → "ללא רקע" (326, 391), "בדים" (201, 391);
+the sheet's ✕ is (42, 288). Choosing doesn't close the sheet.
+
+## screenshot() and folders
+
+`screenshot("baseline/x")` drops the folder (it uses the basename); move the file afterwards.
