@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { closeNameIn, isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, nameSearch, openNameIn, readName, type LayerWindow } from "@/lib/names/urlLayer";
+import { closeNameIn, isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, nameSearch, openNameIn, otherLayerOpen, readName, type LayerWindow } from "@/lib/names/urlLayer";
 
 describe("layerSearch", () => {
   it("adds the sheet param and keeps the rest", () => {
@@ -182,5 +182,29 @@ describe("openNameIn / closeNameIn", () => {
     const w = fakeWindow("/names?sheet=filters");
     closeNameIn(w);
     expect(w.location.search).toBe("?sheet=filters");
+  });
+});
+
+describe("otherLayerOpen", () => {
+  it("is true for another sheet or any dialog", () => {
+    expect(otherLayerOpen("?sheet=filters")).toBe(true);
+    expect(otherLayerOpen("?sheet=survey")).toBe(true);
+    expect(otherLayerOpen("?dialog=reset")).toBe(true);
+    expect(otherLayerOpen("?sheet=name&n=x&dialog=reset")).toBe(true);
+  });
+
+  it("is false with no layer or the name sheet itself", () => {
+    expect(otherLayerOpen("")).toBe(false);
+    expect(otherLayerOpen("?tab=saved")).toBe(false);
+    expect(otherLayerOpen("?sheet=name&n=x")).toBe(false);
+  });
+
+  it("stops openNameIn over another layer", () => {
+    for (const start of ["/names?sheet=survey", "/names?sheet=decision", "/names?dialog=delete-account"]) {
+      const w = fakeWindow(start);
+      openNameIn(w, "נועם");
+      expect(w.entries).toHaveLength(1);
+      expect(readName(w.location.search)).toBeNull();
+    }
   });
 });

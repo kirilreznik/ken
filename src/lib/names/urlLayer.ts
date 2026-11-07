@@ -66,6 +66,13 @@ export function readName(search: string): string | null {
   return name ? name : null;
 }
 
+/** Whether another sheet or a dialog is open in `search`: the name sheet never opens over it (PRD 3.3.3). */
+export function otherLayerOpen(search: string): boolean {
+  const params = new URLSearchParams(search);
+  const sheet = params.get("sheet");
+  return (sheet !== null && sheet !== NAME_SHEET) || params.has("dialog");
+}
+
 /** The slice of `window` the name sheet's history logic uses (a fake in tests). */
 export interface LayerWindow {
   location: { pathname: string; search: string; hash: string };
@@ -85,10 +92,10 @@ function nameUrl(w: LayerWindow, name: string | null): string {
   return `${pathname}${nameSearch(search, name)}${hash}`;
 }
 
-/** Opens the name sheet on `name`: pushes a marked entry, or replaces the current one. */
+/** Opens the name sheet on `name`: pushes a marked entry, or replaces the current one; nothing over another layer. */
 export function openNameIn(w: LayerWindow, name: string, options: { replace?: boolean } = {}): void {
   const current = readName(w.location.search);
-  if (current === name) return;
+  if (current === name || otherLayerOpen(w.location.search)) return;
   const { depth, overLink } = nameStack(w.history.state);
   const marker = { [LAYER_STATE_KEY]: layerToken("sheet", NAME_SHEET) };
   if (options.replace) {

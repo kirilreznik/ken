@@ -6,6 +6,7 @@ import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
+import NameDetailSheet from "@/components/names/detail/NameDetailSheet";
 import FiltersSheet from "@/components/names/FiltersSheet";
 import MatchSheet from "@/components/names/MatchSheet";
 import SurveySheet from "@/components/names/SurveySheet";
@@ -254,6 +255,7 @@ export default function SwipeScreen() {
       <AboutSheet hasName={!!current} />
       <ReportSheet name={current?.stats.name ?? null} />
       <FiltersSheet userId={userId} cards={cards} votes={votes} />
+      <NameDetailSheet cards={cards} />
       <SurveySheet votes={votes.size} sessions={sessionCount} onDone={() => userId && setPref(userId, "survey", "done")} />
       <MatchSheet
         match={newMatch}
