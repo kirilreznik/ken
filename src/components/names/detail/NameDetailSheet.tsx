@@ -13,6 +13,7 @@ import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import type { Card } from "@/lib/names/types";
 import MeaningSection from "./MeaningSection";
 import NumbersSection from "./NumbersSection";
+import SexSection from "./SexSection";
 import SurnameSection from "./SurnameSection";
 import TogetherSection from "./TogetherSection";
 
@@ -73,6 +74,7 @@ function NameGate({ cards, surname, matches, memberCount }: Props) {
         <CardPeople people={card.content.people} inSheet />
         <TogetherSection together={togetherFor(card.stats.name, matches, memberCount)} />
         <NumbersSection stats={card.stats} rank={rank} />
+        <SexSection {...card.derived} />
       </div>
     </BottomSheet>
   );
