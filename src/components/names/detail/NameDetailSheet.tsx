@@ -16,6 +16,7 @@ import MeaningSection from "./MeaningSection";
 import NumbersSection from "./NumbersSection";
 import SexSection from "./SexSection";
 import SimilarSection from "./SimilarSection";
+import SourceSection from "./SourceSection";
 import SurnameSection from "./SurnameSection";
 import TogetherSection from "./TogetherSection";
 
@@ -85,6 +86,7 @@ function NameGate({ cards, surname, matches, memberCount, hiddenNames }: Props) 
         <SexSection {...card.derived} />
         <FactsSection stats={card.stats} rank={rank} />
         <SimilarSection similar={similar} />
+        <SourceSection />
       </div>
     </BottomSheet>
   );

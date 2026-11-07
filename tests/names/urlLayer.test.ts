@@ -42,6 +42,13 @@ describe("layerSearch and the name param", () => {
     expect(layerSearch("?sheet=name&n=%D7%A0%D7%95%D7%A2%D7%9D", "sheet", "filters")).toBe("?sheet=filters");
     expect(layerSearch("?tab=saved&sheet=name&n=x", "sheet", null)).toBe("?tab=saved");
   });
+
+  it("keeps n for the about and report sheets opened from the name sheet", () => {
+    expect(layerSearch("?sheet=name&n=x", "sheet", "about")).toBe("?sheet=about&n=x");
+    expect(layerSearch("?sheet=about&n=x", "sheet", "report")).toBe("?sheet=report&n=x");
+    expect(layerSearch("?sheet=report&n=x", "sheet", null)).toBe("");
+    expect(readName("?sheet=about&n=x")).toBeNull();
+  });
 });
 
 describe("nameSearch / readName", () => {

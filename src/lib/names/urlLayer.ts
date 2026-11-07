@@ -15,8 +15,8 @@ export function layerSearch(search: string, param: LayerParam, value: string | n
   const params = new URLSearchParams(search);
   if (value === null) params.delete(param);
   else params.set(param, value);
-  // `n` belongs to the name sheet only.
-  if (param === "sheet" && value !== NAME_SHEET) params.delete(NAME_PARAM);
+  // `n` belongs to the name sheet, and to the about and report sheets opened from it (FR-D17).
+  if (param === "sheet" && !(value !== null && NAME_KEEPING_SHEETS.includes(value))) params.delete(NAME_PARAM);
   const next = params.toString();
   return next ? `?${next}` : "";
 }
@@ -37,6 +37,8 @@ export function isPushedLayer(state: unknown, param: LayerParam, value: string):
 // closing goes back past all of them at once.
 
 export const NAME_SHEET = "name" satisfies SheetName;
+/** Sheets that keep `n` when they open over the name sheet: Back comes back to that name, and the report is about it. */
+const NAME_KEEPING_SHEETS: readonly string[] = [NAME_SHEET, "about", "report"];
 /** The query param holding the name shown in the name sheet. */
 export const NAME_PARAM = "n";
 /** The history.state key counting the name entries pushed in a row, up to this one. */
