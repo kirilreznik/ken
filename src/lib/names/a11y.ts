@@ -9,10 +9,17 @@ type LabelCard = {
   derived: Pick<CardDerived, "sexTag" | "countLine" | "trend">;
 };
 
-/** Screen reader label for a card: "{name}, {sex tag}, {intro}, {count line}, {trend}" (E16 acceptance #5). */
+/** The card opens the name sheet (FR-D19); the label says so last. */
+export const DETAILS_HINT = "לפרטים נוספים: הקשה";
+
+/**
+ * Screen reader label for a card: "{name}, {sex tag}, {intro}, {count line}, {trend}, {details hint}"
+ * (E16 acceptance #5, FR-D19).
+ */
 export function cardLabel({ stats, content, derived }: LabelCard): string {
   const parts = [stats.name, derived.sexTag, clause(content.intro), derived.countLine];
   if (derived.trend) parts.push(derived.trend.word);
+  parts.push(DETAILS_HINT);
   return parts.join(", ");
 }
 

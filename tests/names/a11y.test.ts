@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
 import contentFile from "./fixtures/name-content-sample.json";
-import { barLabel, cardLabel, savedLabel, sheetVoteText, statusText } from "@/lib/names/a11y";
+import { DETAILS_HINT, barLabel, cardLabel, savedLabel, sheetVoteText, statusText } from "@/lib/names/a11y";
 import { contentNames, parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
 import { countLine, trend } from "@/lib/names/popularity";
 import { sexSplit, sexTag } from "@/lib/names/sex";
@@ -41,22 +41,22 @@ describe("cardLabel", () => {
     const label = cardLabel(card);
     expect(label.startsWith(start)).toBe(true);
     const t = card.derived.trend;
-    const tail = t ? `${card.derived.countLine}, ${t.word}` : card.derived.countLine;
+    const tail = `${t ? `${card.derived.countLine}, ${t.word}` : card.derived.countLine}, ${DETAILS_HINT}`;
     expect(label.endsWith(tail)).toBe(true);
     expect(label).toMatch(/ניתן ל־[\d,]+ תינוקות ב־2024/u);
     expect(label).not.toContain(".,");
   });
 
-  it("orders name, sex tag, intro, count, trend", () => {
+  it("orders name, sex tag, intro, count, trend, details hint", () => {
     const amit = byName.get("עמית")!;
     expect(cardLabel(amit)).toBe(
-      `עמית, מתאים לכולם, עמית הוא חבר, רע, מי שהולך לצדך, ${amit.derived.countLine}, בירידה`,
+      `עמית, מתאים לכולם, עמית הוא חבר, רע, מי שהולך לצדך, ${amit.derived.countLine}, בירידה, לפרטים נוספים: הקשה`,
     );
   });
 
   it("omits the trend when it is null", () => {
     const card = { ...byName.get("זיו")!, derived: { ...byName.get("זיו")!.derived, trend: null } };
-    expect(cardLabel(card)).toBe("זיו, מתאים לכולם, זיו הוא אור, זוהר וברק. שם קצר שניתן לבנים ולבנות, ניתן ל־302 תינוקות ב־2024");
+    expect(cardLabel(card)).toBe("זיו, מתאים לכולם, זיו הוא אור, זוהר וברק. שם קצר שניתן לבנים ולבנות, ניתן ל־302 תינוקות ב־2024, לפרטים נוספים: הקשה");
   });
 });
 
