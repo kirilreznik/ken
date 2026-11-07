@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
@@ -26,6 +26,7 @@ import { RECAP_VOTES, countSession, pauseToShow, sessionTotals, surveyDue, type 
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
 import { currentSessionInfo, track } from "@/lib/names/track";
 import type { Vote } from "@/lib/names/types";
+import { isOpenKey } from "@/lib/names/keys";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
 import AboutLink from "./AboutLink";
@@ -177,13 +178,20 @@ export default function SwipeScreen() {
     setNext(deck?.cards[1]?.stats.name ?? null);
   };
 
-  const openDetails = (source: "tap" | "button") => () => {
+  const openDetails = (source: "tap" | "button" | "key") => () => {
     if (!current) return;
     openNameSheet(current.stats.name);
     track("detail_opened", { source });
   };
 
   const drag = useSwipeDrag({ onDecide: decide, onTap: openDetails("tap"), disabled: !current });
+
+  // Enter or Space on the card itself; the buttons inside it keep their own Enter and Space.
+  const onCardKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (e.target !== e.currentTarget || !isOpenKey(e) || drag.busy()) return;
+    e.preventDefault();
+    openDetails("key")();
+  };
 
   const undo = () => {
     if (!store || drag.busy()) return;
@@ -236,6 +244,7 @@ export default function SwipeScreen() {
                 aria-describedby={SWIPE_KEYS_ID}
                 corner={<AboutLink />}
                 onDetails={openDetails("button")}
+                onKeyDown={onCardKeyDown}
                 {...drag.card}
               />
             ) : deck && deck.state !== "ok" ? (

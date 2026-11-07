@@ -15,7 +15,7 @@ type SwipeKeysProps = {
 /**
  * The swipe area's keyboard (FR-W11): while focus is anywhere inside it (the card, the
  * actions, the footer) K keeps, L loves, S skips and Z or Backspace undoes. Enter and Space
- * stay with the focused button. The hint is hidden; screen readers read it as the description
+ * stay with the focused button (on the card itself they open the name sheet). The hint is hidden; screen readers read it as the description
  * of each control that references it.
  */
 export default function SwipeKeys({ onKey, className, children }: SwipeKeysProps) {
