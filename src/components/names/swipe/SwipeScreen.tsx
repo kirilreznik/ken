@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
@@ -12,6 +12,7 @@ import MatchSheet from "@/components/names/MatchSheet";
 import SurveySheet from "@/components/names/SurveySheet";
 import { closeSheet, openNameSheet } from "@/components/names/ui";
 import { useCards } from "@/components/names/useCards";
+import { usePrefJson } from "@/components/names/usePrefJson";
 import { useSpace } from "@/components/names/useSpace";
 import { useMatches, useSeenMatches } from "@/components/names/useMatches";
 import { useSyncStatus } from "@/components/names/useSyncStatus";
@@ -23,7 +24,7 @@ import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
 import { matchToShow, withSeen, type Match } from "@/lib/names/matches";
 import { RECAP_VOTES, countSession, pauseToShow, sessionTotals, surveyDue, type Pause } from "@/lib/names/launch";
-import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
+import { getPref, setPref } from "@/lib/names/prefs";
 import { showToast } from "@/lib/names/toast";
 import { currentSessionInfo, track } from "@/lib/names/track";
 import type { Vote } from "@/lib/names/types";
@@ -45,21 +46,6 @@ const NO_TOTALS = { votes: 0, saves: 0, names: [] as string[] };
 
 /** How the next decision was made: a drag ends in "swipe"; buttons and keys say so first. */
 type DecideMethod = "swipe" | "button" | "key" | "detail";
-
-/**
- * A pref as a JSON string, so useSyncExternalStore gets a stable snapshot (getPref returns a
- * new object on every call).
- */
-function usePrefJson(
-  userId: string | null,
-  key: "filters" | "surname" | "sessions" | "survey" | "invitePromptShown" | "recapSession",
-): string | null {
-  return useSyncExternalStore(
-    subscribePrefs,
-    () => (userId ? JSON.stringify(getPref(userId, key)) : null),
-    () => null,
-  );
-}
 
 /**
  * The swipe screen (FR-W10, FR-W14, FR-W15): the user's seeded deck without decided or hidden
