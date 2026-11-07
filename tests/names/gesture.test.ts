@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dragOutcome, dragStart, dragStyle, flingTo, longPressMoved } from "@/lib/names/gesture";
+import { dragOutcome, dragStart, dragStyle, flingTo, isTap, longPressMoved, START_PX } from "@/lib/names/gesture";
 
 describe("dragStart", () => {
   it("waits under 8 px", () => {
@@ -69,5 +69,37 @@ describe("longPressMoved", () => {
     expect(longPressMoved(6, 8)).toBe(false);
     expect(longPressMoved(8, 8)).toBe(true);
     expect(longPressMoved(0, -11)).toBe(true);
+  });
+});
+
+describe("isTap", () => {
+  it("accepts a still tap", () => {
+    expect(isTap(0, 0, 80)).toBe(true);
+  });
+  it("accepts a shaky tap up to 10 px", () => {
+    expect(isTap(9, 0, 200)).toBe(true);
+    expect(isTap(6, 8, 200)).toBe(true);
+  });
+  it("rejects 11 px", () => {
+    expect(isTap(11, 0, 100)).toBe(false);
+    expect(isTap(0, -11, 100)).toBe(false);
+  });
+  it("rejects a press held past 400 ms", () => {
+    expect(isTap(0, 0, 400)).toBe(true);
+    expect(isTap(0, 0, 401)).toBe(false);
+  });
+  it("never starts a drag for a sideways tap below 8 px", () => {
+    for (let dx = -(START_PX - 1); dx <= START_PX - 1; dx++) {
+      expect(isTap(dx, 0, 100)).toBe(true);
+      expect(dragStart(dx, 0)).toBeNull();
+    }
+  });
+  it("never starts a sideways drag for any tap below 8 px across", () => {
+    for (let dx = -(START_PX - 1); dx <= START_PX - 1; dx++) {
+      for (let dy = -10; dy <= 10; dy++) {
+        if (!isTap(dx, dy, 100)) continue;
+        expect(dragStart(dx, dy)).not.toBe("x");
+      }
+    }
   });
 });

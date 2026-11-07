@@ -18,6 +18,9 @@ export const FLING_PX_PER_MS = 0.6;
 /** Holding "דילוג" this long opens the hide menu (US-046); moving more than the slop cancels. */
 export const LONG_PRESS_MS = 500;
 export const LONG_PRESS_SLOP_PX = 10;
+/** A tap (opens the name sheet): released within 10 px of where it went down, within 400 ms. */
+export const TAP_SLOP_PX = 10;
+export const TAP_MAX_MS = 400;
 /** The stamps are fully visible where a release starts to count (DECIDE_PX), never before. */
 export const STAMP_PX = DECIDE_PX;
 
@@ -73,4 +76,9 @@ export function keepDir(root: ParentNode = document): KeepDir {
 /** Whether a pointer held on "דילוג" moved too far to still be a long press. */
 export function longPressMoved(dx: number, dy: number): boolean {
   return Math.hypot(dx, dy) > LONG_PRESS_SLOP_PX;
+}
+
+/** Whether a released pointer was a tap: it stayed within the slop and came up in time. */
+export function isTap(dx: number, dy: number, ms: number): boolean {
+  return Math.hypot(dx, dy) <= TAP_SLOP_PX && ms <= TAP_MAX_MS;
 }
