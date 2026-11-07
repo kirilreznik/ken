@@ -177,13 +177,13 @@ export default function SwipeScreen() {
     setNext(deck?.cards[1]?.stats.name ?? null);
   };
 
-  const openDetails = () => {
+  const openDetails = (source: "tap" | "button") => () => {
     if (!current) return;
     openNameSheet(current.stats.name);
-    track("detail_opened", { source: "tap" });
+    track("detail_opened", { source });
   };
 
-  const drag = useSwipeDrag({ onDecide: decide, onTap: openDetails, disabled: !current });
+  const drag = useSwipeDrag({ onDecide: decide, onTap: openDetails("tap"), disabled: !current });
 
   const undo = () => {
     if (!store || drag.busy()) return;
@@ -235,6 +235,7 @@ export default function SwipeScreen() {
                 className={`min-h-0 ${dragClass}`}
                 aria-describedby={SWIPE_KEYS_ID}
                 corner={<AboutLink />}
+                onDetails={openDetails("button")}
                 {...drag.card}
               />
             ) : deck && deck.state !== "ok" ? (
