@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { INTRO_PATH, ONBOARDING_PATH, hasAcceptedTerms, joinPath, nextRoute, oauthRedirectTo } from "@/lib/names/routing";
+import { INTRO_PATH, ONBOARDING_PATH, SURNAME_PATH, hasAcceptedTerms, introFromSheet, joinPath, nextRoute, oauthRedirectTo } from "@/lib/names/routing";
 
 const onboarded = { user_metadata: { terms_accepted_at: "2026-11-04T10:00:00.000Z" } };
 
@@ -54,5 +54,15 @@ describe("oauthRedirectTo", () => {
     expect(oauthRedirectTo(undefined, "http://localhost:3000", "AB12cd34")).toBe(
       "http://localhost:3000/names/auth/callback?join=AB12cd34",
     );
+  });
+});
+
+describe("introFromSheet (FR-D8)", () => {
+  it("is true only for the intro opened from the name sheet", () => {
+    expect(SURNAME_PATH.startsWith(`${INTRO_PATH}?`)).toBe(true);
+    expect(introFromSheet(SURNAME_PATH.slice(INTRO_PATH.length))).toBe(true);
+    expect(introFromSheet("from=name")).toBe(true);
+    expect(introFromSheet("")).toBe(false);
+    expect(introFromSheet("?from=settings")).toBe(false);
   });
 });

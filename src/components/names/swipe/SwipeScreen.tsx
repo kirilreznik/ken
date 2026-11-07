@@ -255,7 +255,7 @@ export default function SwipeScreen() {
       <AboutSheet hasName={!!current} />
       <ReportSheet name={current?.stats.name ?? null} />
       <FiltersSheet userId={userId} cards={cards} votes={votes} />
-      <NameDetailSheet cards={cards} />
+      <NameDetailSheet cards={cards} surname={surname} />
       <SurveySheet votes={votes.size} sessions={sessionCount} onDone={() => userId && setPref(userId, "survey", "done")} />
       <MatchSheet
         match={newMatch}

@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button, IconButton } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import { getPref, setPref } from "@/lib/names/prefs";
+import { introFromSheet } from "@/lib/names/routing";
 import { useAuth } from "./AuthProvider";
 import { useSpace } from "./useSpace";
 
@@ -42,13 +43,21 @@ export default function Intro() {
   const { isShared } = useSpace();
   const userId = user?.id ?? null;
   const [surname, setSurname] = useState(() => (userId ? getPref(userId, "surname") : ""));
+  const surnameRef = useRef<HTMLInputElement>(null);
+
+  // Opened from the name sheet's "הוספת שם משפחה": go straight to the field below the fold.
+  useEffect(() => {
+    if (introFromSheet(window.location.search)) surnameRef.current?.focus();
+  }, []);
 
   function finish(saveSurname: boolean) {
     if (userId) {
       if (saveSurname) setPref(userId, "surname", surname.trim());
       setPref(userId, "introSeen", true);
     }
-    router.replace(APP_PATH);
+    // From the name sheet, Back returns to it, where the surname line now shows.
+    if (introFromSheet(window.location.search) && window.history.length > 1) router.back();
+    else router.replace(APP_PATH);
   }
 
   return (
@@ -121,6 +130,7 @@ export default function Intro() {
             שם משפחה, לא חובה
           </label>
           <input
+            ref={surnameRef}
             id="surname"
             name="surname"
             type="text"

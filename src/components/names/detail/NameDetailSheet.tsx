@@ -5,6 +5,7 @@ import { Suspense, useEffect, useMemo } from "react";
 import { BottomSheet, IconButton, closeSheet } from "@/components/names/ui";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import type { Card } from "@/lib/names/types";
+import SurnameSection from "./SurnameSection";
 
 const DETENTS = ["70", "full"] as const;
 
@@ -14,16 +15,16 @@ const close = () => closeSheet(NAME_SHEET);
  * "פרטי השם" (boards 13–15, PRD 3.1.1): the tall sheet for ?sheet=name&n=<name>. It opens only
  * for a name that has a card in the deck; any other `n` drops the layer by replacing the URL.
  */
-export default function NameDetailSheet({ cards }: { cards: readonly Card[] | null }) {
+export default function NameDetailSheet({ cards, surname }: { cards: readonly Card[] | null; surname: string | null }) {
   // useSearchParams needs a Suspense boundary on prerendered routes (Next 16).
   return (
     <Suspense fallback={null}>
-      <NameGate cards={cards} />
+      <NameGate cards={cards} surname={surname} />
     </Suspense>
   );
 }
 
-function NameGate({ cards }: { cards: readonly Card[] | null }) {
+function NameGate({ cards, surname }: { cards: readonly Card[] | null; surname: string | null }) {
   const params = useSearchParams();
   const open = params.get("sheet") === NAME_SHEET;
   const name = readName(params.toString());
@@ -39,8 +40,9 @@ function NameGate({ cards }: { cards: readonly Card[] | null }) {
   if (!card) return null;
   return (
     <BottomSheet name={NAME_SHEET} detents={DETENTS} closeInHeader header={(titleId) => <NameHeader card={card} titleId={titleId} />}>
-      {/* The sections (FR-D8…FR-D17) go here. */}
-      <div data-detail-body className="flex flex-col gap-5" />
+      <div data-detail-body className="flex flex-col gap-5">
+        <SurnameSection name={card.stats.name} surname={surname} />
+      </div>
     </BottomSheet>
   );
 }
