@@ -139,3 +139,52 @@ Baseline inventory of group 2 (Deck, PRD §6), taken by US-006 on 2026-11-07 bef
 - `report-default-sim`: the textarea takes focus on open, so the keyboard bar covers the lower sheet in Safari.
 - `detail-similar-section-sim`: a drag over the year chart leaves its tooltip on.
 - Pause, end and empty panels repeat the Nest app card (`deck-end-*`, `deck-pause-recap`, `decision-*`).
+
+## Screens G3
+
+Baseline inventory of group 3 (Lists and settings, PRD §6), taken by US-007 on 2026-11-07 before any polish, at `f513415` (no app code change since the detail run). Audits and QA use this list of screens and states and these names.
+
+**Where:** `scripts/ralph/qa/name-polish/shots/baseline/G3/` (gitignored), named `<screen>-<state>-<browser>.png`. Browsers as in G1/G2: `webkit` (iPhone 15, 393 × 659), `chromium` (Pixel 7, 412 × 839), `webkit375` (375 × 667), `webkit320` (320 × 568), `sim` (Mobile Safari, iPhone 17 Pro). Pages taller than the viewport also have a `<screen>-<state>-full-<browser>.png` (full page): `lists-saved-default`, `lists-chosen-banner`, `settings-shared`, `privacy-default`, `terms-default` in every Playwright variant, plus `settings-solo`, `duel-done`, `duel-midway` where they overflow, and at 320 also `lists-matches-default`, `lists-matches-offline`, `duel-round-1`, `duel-matches`, `about-default`.
+
+**How (re-run for the after shots):**
+- Playwright, production build :3100, QA user 1: `QA_SHOTS_DIR=scripts/ralph/qa/name-polish/shots node scripts/ralph/qa/name-polish/shots/us007-g3.mjs [webkit|chromium|webkit375|webkit320] [--only saved,matches,duel,hidden,settings,pages]`. Same mocks as `us006-g2.mjs` (`names_space`, `space_members` solo or a pair with "עומר", `name_votes` GET a list made for the state with writes echoed and never sent, `name_matches`, tracking). The saved list is 8 rows: 2 loved, 5 kept, 1 custom ("זוהרית"); hidden adds 4 hidden names; matches are 3 (one new and loved). Settings dialogs are opened by URL (`?dialog=delete-account`, `?dialog=leave-space`) and never confirmed.
+- Simulator: `QA_SHOTS_DIR=… node scripts/ralph/qa/name-polish/shots/us007-sim.mjs url <shot> <path>` on `http://localhost:3100` with QA user 1 and the real backend, by URL only (no taps, no writes). QA user 1 is really in a shared space (with QA2) with nothing saved or hidden, so Safari shows the empty and shared states.
+
+| Screen | State | How it's reached | Shots (`-<browser>.png`) | Browsers |
+|---|---|---|---|---|
+| `/names/lists` "שמרתי" | rows: loved first with "אהבתי מאוד", a custom name ("שם שהוספתי"), meta line, duel link | 8 saved votes | `lists-saved-default` (+ `-full`) | Playwright 4 |
+| `/names/lists` "שמרתי" | empty ("עוד לא נשמרו שמות.") | no votes | `lists-saved-empty` | all 5 |
+| `/names/lists` row menu | open on the first row ("בחרתי בשם…", "הסרה מהרשימה", "לא להציג יותר") | tap "אפשרויות עבור אריאל" | `lists-row-menu` | Playwright 4 |
+| `/names/lists` chosen banner | "השם שבחרתי · מוחמד" above the tabs | `chosen` pref | `lists-chosen-banner` (+ `-full`) | Playwright 4 |
+| add-name sheet | default (empty field, hint) | "הוספת שם" (Safari: `?sheet=add-name`, keyboard up) | `add-name-default` | all 5 |
+| add-name sheet | error "כבר ברשימה" | a saved name typed + "הוספה לרשימה" (nothing written) | `add-name-error` | Playwright 4 |
+| `/names/lists` "התאמות" | solo: "בוחרים ביחד?" invite card | solo space, `?tab=matches` | `lists-matches-solo` | Playwright 4 |
+| `/names/lists` "התאמות" | shared, none yet ("עוד אין התאמות.") | pair space, no matches | `lists-matches-empty` | all 5 |
+| `/names/lists` "התאמות" | shared rows ("חדש", loved mark, meta), duel link | pair space, 3 matches, 2 seen | `lists-matches-default` | Playwright 4 |
+| `/names/lists` "התאמות" | offline: "עודכן לאחרונה ב־…" line | same, then `setOffline` | `lists-matches-offline` | Playwright 4 |
+| duel | too few names ("לדו־קרב צריך לפחות שני שמות ברשימה.") | 1 saved, `?tab=duel&from=saved` | `duel-few` | all 5 |
+| duel | round 1 (progress bar, two name cards, "או", "עצירה…") | 8 saved | `duel-round-1` | Playwright 4 |
+| duel | mid-way ("החמישייה עד עכשיו" chips) | 4 picks of the first card | `duel-midway` | Playwright 4 |
+| duel | done (ranked five, "בחרתי בשם…", "דו־קרב חדש") | first card picked until the end | `duel-done` | Playwright 4 |
+| duel | between matches (source toggle "בין: שמרתי · התאמות") | pair space, 3 matches, `from=matches` | `duel-matches` | Playwright 4 |
+| `/names/hidden` | list with "החזרה" buttons | 4 hidden votes | `hidden-default` | Playwright 4 |
+| `/names/hidden` | empty ("אין שמות מוסתרים") | no hidden votes | `hidden-empty` | all 5 |
+| `/names/settings` | solo (no leave row) | solo space | `settings-solo` (+ `-full`) | Playwright 4 |
+| `/names/settings` | shared (with "יציאה מהבחירה המשותפת") | pair space | `settings-shared` (+ `-full`) | all 5 |
+| `/names/settings` dialog | delete account ("למחוק את החשבון?"), display only | `?dialog=delete-account` | `settings-delete-dialog` | all 5 |
+| `/names/settings` dialog | leave shared choice ("לצאת מהבחירה המשותפת?"), display only | pair space, `?dialog=leave-space` | `settings-leave-dialog` | all 5 |
+| `/names/about` | default | direct | `about-default` | all 5 |
+| `/names/privacy` | default (draft banner) | direct | `privacy-default` (+ `-full`) | all 5 |
+| `/names/terms` | default (draft banner) | direct | `terms-default` (+ `-full`) | all 5 |
+
+24 states: 24 shots each in webkit, chromium, webkit375 and webkit320, plus 33 `-full` shots; 11 in sim. 140 PNGs.
+
+**Gaps (with reasons):**
+- Simulator Safari (13 states not shot): it runs against QA user 1's real data (shared space, nothing saved or hidden) and Safari can't route Supabase, so states that need saved, hidden or matched names, a solo space, a chosen name, offline, or a submit/tap that could write are Playwright only. Its full-page settings, privacy and terms are not taken (Safari screenshots are the visible screen).
+- The settings screens show QA user 1's sign-in email; the shots stay in the gitignored folder.
+
+**Seen while taking them** (for the audits to judge; not findings yet):
+- `webkit375` / `webkit320`: the "השמות שלי" title wraps to two lines beside the invite and "הוספת שם" buttons; at 320 a saved row's meta line wraps ("יציב" alone on the second line).
+- Chromium has no "התקנה למסך הבית" row in settings (the install mode differs), WebKit and Safari do.
+- The duel's empty "too few" card sits over the blurred peach blob, the rest of the screen is blank.
+- Empty states in lists, matches and hidden use three different patterns (card with a link, card with a title + line + link, plain centered line).
