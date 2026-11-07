@@ -50,6 +50,9 @@ const EXIT_MS = 300;
 // A tall sheet settling after a handle drag (new detent or snap back), as the slide-in eases.
 const SETTLE = { duration: 200, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" } as const;
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// PRD 3.2.4: from 768 px a tall sheet is a centered panel (max 480 px wide, 90vh) without detents.
+const DESKTOP = "(min-width: 768px)";
+const desktop = () => window.matchMedia(DESKTOP).matches;
 // The pinned footer's height, on <html> while the sheet is open: ToastRegion sits above it, so a
 // toast never covers the sheet's buttons.
 const TOAST_LIFT = "--names-toast-lift";
@@ -128,7 +131,8 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
   const scroller = useRef<HTMLDivElement>(null);
   useToastLift(footerRef);
   useContentReset(panel, scroller, contentKey);
-  const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean } | null>(null);
+  // `detents`: a tall sheet on a phone; on desktop its handle only drags down to close.
+  const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean; detents: boolean } | null>(null);
   // Down: the panel moves down by `offset` px. Up (tall sheets only): it grows to `height` px.
   const [offset, setOffset] = useState(0);
   const [height, setHeight] = useState<number | null>(null);
@@ -168,23 +172,24 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     if (event.button !== 0) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     const startHeight = panel.current?.getBoundingClientRect().height ?? 0;
-    drag.current = { startY: event.clientY, startHeight, dy: 0, moved: false };
+    drag.current = { startY: event.clientY, startHeight, dy: 0, moved: false, detents: tall && !desktop() };
   }
 
   function onPointerMove(event: PointerEvent<HTMLButtonElement>) {
     if (!drag.current) return;
     const raw = event.clientY - drag.current.startY;
-    const dy = tall ? raw : Math.max(0, raw);
+    const dy = drag.current.detents ? raw : Math.max(0, raw);
     drag.current.dy = dy;
-    if (Math.abs(dy) > 6) drag.current.moved = true;
+    // Raw: a drag up on a sheet without detents doesn't move it, but it isn't a tap either.
+    if (Math.abs(raw) > 6) drag.current.moved = true;
     setOffset(Math.max(0, dy));
     setHeight(dy < 0 ? drag.current.startHeight - dy : null);
   }
 
   function onPointerEnd() {
     if (!drag.current) return;
-    const { dy, moved } = drag.current;
-    const next = tall ? detentAfterDrag(detent, dy, DRAG_CLOSE) : dy >= DRAG_CLOSE ? "close" : detent;
+    const { dy, moved, detents: detented } = drag.current;
+    const next = detented ? detentAfterDrag(detent, dy, DRAG_CLOSE) : dy >= DRAG_CLOSE ? "close" : detent;
     if (next === "close") close();
     else {
       if (tall && moved && panel.current) {
@@ -196,7 +201,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
       setHeight(null);
     }
     // A drag isn't a tap: keep `moved` so the click that follows pointerup is ignored.
-    drag.current = moved ? { startY: 0, startHeight: 0, dy: 0, moved } : null;
+    drag.current = moved ? { startY: 0, startHeight: 0, dy: 0, moved, detents: detented } : null;
   }
 
   function onHandleClick() {
@@ -206,7 +211,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
   }
 
   return (
-    <div data-names-layer className={`fixed inset-0 z-40 flex flex-col justify-end ${closing ? "pointer-events-none" : ""}`}>
+    <div data-names-layer className={`fixed inset-0 z-40 flex flex-col justify-end ${tall ? "md:justify-center md:px-5" : ""} ${closing ? "pointer-events-none" : ""}`}>
       <div aria-hidden="true" className={`${closing ? "names-scrim-out" : "names-scrim-in"} absolute inset-0 bg-(--nest-ink-45)`} onClick={closing ? undefined : close} />
       <section
         ref={panel}
@@ -267,7 +272,9 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
 
 function heightClass(tall: boolean, detent: Detent): string {
   if (!tall) return "max-h-[calc(100dvh-2.5rem)]";
+  // Desktop: a centered panel with all corners round, as high as its content up to 90vh.
+  const panel = "md:h-auto md:max-h-[90vh] md:max-w-[480px] md:rounded-xl";
   return detent === "full"
-    ? "h-[calc(100dvh-env(safe-area-inset-top))]"
-    : "max-h-[70dvh]";
+    ? `h-[calc(100dvh-env(safe-area-inset-top))] ${panel}`
+    : `max-h-[70dvh] ${panel}`;
 }
