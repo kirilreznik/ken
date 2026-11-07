@@ -30,6 +30,30 @@ H1 system status · H2 match with the real world · H3 user control and freedom 
 How the scores were made: design-review sub-agent (A) scored each screen from the shots and the source; the parent adjusted H2 to 2 where the "שניכם" copy shows (A listed it as a finding but scored H2 3; the skill's H2 criterion "domain-appropriate language" fails for a third member) and the code step's H3 to 2 for -17. The detector sub-agent (B) found no source issues and one real browser issue (-06); it didn't change a score.
 
 
+### G2 Deck (US-A-IMP-C-G2, 2026-11-07, at `b4d2f04`; findings `findings/IMP-C-G2.md`)
+
+| Screen (states) | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 | H9 | H10 | Total | Band | Notes (finding IDs) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| deck: card + backgrounds (none, fabric, notebook, nursery, own), drag, peeking | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 3 | 27/36 (75 %) | Good | H8: back-card edges through the glass (-02). H9 n/a: no error path on the card (own-photo failure scored in the background sheet) |
+| deck: decisions (after vote, undo, skip long-press menu, offline pending footer, surname line) | 3 | 3 | 4 | 3 | 3 | 2 | 3 | 3 | 3 | 2 | 29/40 (73 %) | Good | H6/H10: hide and shortcuts can't be found (-07); -13 |
+| deck: filtered + empty filter result | 3 | 3 | 4 | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 28/36 (78 %) | Good | -12. H10 n/a: the empty panel explains itself |
+| deck: end (solo, shared, nothing saved) | 3 | 3 | 3 | 2 | n/a | 3 | n/a | 2 | n/a | n/a | 16/24 (67 %) | Acceptable | H4: squashed "לשמות שלי" in WebKit (-01, P1); H8: the Nest card outweighs the panel's own action |
+| deck: pauses (invite prompt, round recap) + survey prompt | 3 | 2 | 3 | 3 | n/a | 3 | 3 | 3 | n/a | n/a | 20/28 (71 %) | Good | H2: "שניכם" (-17, merge with IMP-C-G1-03) |
+| name sheet (70 %, full, surname, similar section/opened, together, loading, offline) + toast | 3 | 3 | 2 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 29/40 (73 %) | Good | H3: no way back from a similar name (-05); -15, -19 |
+| filters sheet (default, selected, scrolled) | 4 | 3 | 3 | 2 | 3 | 3 | 3 | 2 | n/a | 3 | 26/36 (72 %) | Good | H4: no close, two words for unisex (-06, -10, owner); H8: 32 chips (-11, owner); -09, -12 |
+| background sheet (default, own saved) | 4 | 3 | 3 | 3 | 3 | 4 | 3 | 3 | 3 | 3 | 32/40 (80 %) | Good | the saved toast covers the privacy note while it shows (minor, no finding) |
+| match sheet | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 3 | n/a | n/a | 18/24 (75 %) | Good | -14 |
+| decision sheet (solo, shared) | 3 | 2 | 3 | 2 | 2 | 3 | n/a | 2 | n/a | n/a | 17/28 (61 %) | Acceptable | H2: "מזל טוב!" (-03); H5/H4: one-tap clear, no undo (-04); H8: main action below the fold (-08); -14 |
+| survey sheet | 3 | 3 | 2 | 2 | 3 | 3 | n/a | 3 | 3 | 3 | 25/36 (69 %) | Acceptable | H3/H4: no close while the error says "או לסגור" (-06); -03, -16, -18 (owner) |
+| about sheet | n/a | 3 | 4 | 3 | n/a | 3 | n/a | 3 | n/a | 4 | 20/24 (83 %) | Good | static text sheet |
+| report sheet | 4 | 3 | 3 | 3 | 3 | 4 | 3 | 3 | 4 | 3 | 33/40 (83 %) | Good | -06 (no close on the form) |
+| **G2 (sum of the rows)** | 39 | 37 | 40 | 35 | 26 | 40 | 24 | 36 | 19 | 24 | **320/432 (74 %)** | **Good** | |
+
+`n/a` reasons, by row: no input or destructive action (H5 on end, pauses, match, about), a single path (H7 on end, match, decision, survey, about), no error state (H9 on end, pauses, match, decision, about), a moment panel with nothing to document (H10 on end, pauses, match, decision), a static sheet with no status (H1 on about), no failure path in the sheet (H9 on filters).
+
+How the scores were made: the design-review sub-agent (A) scored each row from the shots and the source; the parent checked every row sum (A had row 2 as 30/40 and the group as 326/444; the cells give 29/40 and 320/432) and verified the P1/P2 findings against the shots and code. The detector sub-agent (B) found nothing in the source or in the overlay on 5 views, so no score moved.
+
+
 ## After (re-score)
 
 | Group | Screen | Heuristic | Baseline | After | Change | Notes (backlog IDs) |
