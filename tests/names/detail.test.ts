@@ -1,7 +1,16 @@
 import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
 import { parseNames, type RawNamesFile } from "@/lib/names/data";
-import { allTimeBirths, compare2000, rank2024, rankMap, rankText } from "@/lib/names/detail";
+import {
+  allTimeBirths,
+  chartLabel,
+  chartModel,
+  compare2000,
+  niceStep,
+  rank2024,
+  rankMap,
+  rankText,
+} from "@/lib/names/detail";
 import type { NameStats } from "@/lib/names/types";
 
 const names = parseNames(namesFile as RawNamesFile);
@@ -93,5 +102,101 @@ describe("allTimeBirths", () => {
     expect(allTimeBirths(stats("אריאל"))).toBe("48,793");
     expect(allTimeBirths(stats("מוחמד"))).toBe("130,529");
     expect(allTimeBirths({ m: 3, f: 4 })).toBe("7");
+  });
+});
+
+describe("chartModel", () => {
+  const box = { width: 300, height: 140, pad: { top: 10, end: 8, bottom: 24, start: 40 } };
+  const base = box.height - box.pad.bottom;
+
+  it("gives אריאל 0 and two round ticks, the top one covering 2,099", () => {
+    const model = chartModel(stats("אריאל").y, box)!;
+    const values = model.yTicks.map((t) => t.value);
+    expect(values[0]).toBe(0);
+    expect(values).toHaveLength(3);
+    expect(values[2]).toBeGreaterThanOrEqual(2099);
+    expect(values[2]).toBe(values[1] * 2);
+    expect(model.yTicks.map((t) => t.label)).toEqual(["0", "2,000", "4,000"]);
+    expect(model.yTicks[0].y).toBe(base);
+    expect(model.yTicks[2].y).toBe(box.pad.top);
+  });
+
+  it("uses 1/2/5 × 10^k steps", () => {
+    expect([1, 2, 3, 10, 11, 99, 100, 101, 2099, 9000, 12000].map(niceStep)).toEqual([
+      1, 1, 2, 5, 10, 50, 50, 100, 2000, 5000, 10000,
+    ]);
+  });
+
+  it("places 25 points left to right with the 2024 point last", () => {
+    const y = stats("אריאל").y!;
+    const model = chartModel(y, box)!;
+    expect(model.points).toHaveLength(25);
+    expect(model.points[0]).toMatchObject({ year: 2000, value: y[0], x: box.pad.start });
+    expect(model.last).toMatchObject({ year: 2024, value: 2099, x: box.width - box.pad.end });
+    expect(model.last.y).toBeCloseTo(base - (2099 / 4000) * (base - box.pad.top), 1);
+    expect(model.line.split(" ")).toHaveLength(25);
+    expect(model.area.split(" ")).toHaveLength(27);
+    expect(model.area.endsWith(`${box.width - box.pad.end},${base} ${box.pad.start},${base}`)).toBe(true);
+    expect(model.xLabels.map((l) => [l.year, l.label])).toEqual([
+      [2000, "2000"],
+      [2012, "2012"],
+      [2024, "2024"],
+    ]);
+    expect(model.xLabels[1].x).toBe(model.points[12].x);
+  });
+
+  it("finds the nearest year at both ends, the middle and outside the plot", () => {
+    const model = chartModel(stats("אריאל").y, box)!;
+    expect(model.nearestYear(box.pad.start)).toBe(2000);
+    expect(model.nearestYear(box.width - box.pad.end)).toBe(2024);
+    expect(model.nearestYear(model.points[12].x)).toBe(2012);
+    expect(model.nearestYear(model.points[12].x + 4)).toBe(2012);
+    expect(model.nearestYear(model.points[12].x + 6)).toBe(2013);
+    expect(model.nearestYear(-50)).toBe(2000);
+    expect(model.nearestYear(10_000)).toBe(2024);
+    expect(model.nearestYear(Number.NaN)).toBe(2000);
+  });
+
+  it("draws a flat series at mid height", () => {
+    const model = chartModel(Array<number>(25).fill(50), box)!;
+    expect(model.yTicks.map((t) => t.value)).toEqual([0, 50, 100]);
+    expect(new Set(model.points.map((p) => p.y))).toEqual(new Set([model.yTicks[1].y]));
+  });
+
+  it("draws an all-zero series on the 0 line", () => {
+    const model = chartModel(Array<number>(25).fill(0), box)!;
+    expect(model.yTicks.map((t) => t.value)).toEqual([0, 1, 2]);
+    expect(model.points.every((p) => p.y === base)).toBe(true);
+  });
+
+  it("returns null without a full series and accepts a single pad number", () => {
+    expect(chartModel(undefined, box)).toBeNull();
+    expect(chartModel([1, 2, 3], box)).toBeNull();
+    const model = chartModel(Array<number>(25).fill(5), { width: 100, height: 50, pad: 5 })!;
+    expect(model.points[0].x).toBe(5);
+    expect(model.last.x).toBe(95);
+    expect(model.yTicks[0].y).toBe(45);
+    expect(model.yTicks[2].y).toBe(5);
+  });
+});
+
+describe("chartLabel", () => {
+  it("summarises range, first and last values and the peak year", () => {
+    expect(chartLabel(stats("אריאל"))).toBe(
+      "מספר התינוקות בכל שנה, 2000 עד 2024. ב־2000: 637 תינוקות, ב־2024: 2,099 תינוקות. השיא ב־2024.",
+    );
+  });
+
+  it("uses the first peak year, the singular, and skips the peak for zeros", () => {
+    expect(chartLabel({ y: [1, 3, ...Array<number>(21).fill(2), 3, 1] })).toBe(
+      "מספר התינוקות בכל שנה, 2000 עד 2024. ב־2000: תינוק אחד, ב־2024: תינוק אחד. השיא ב־2001.",
+    );
+    expect(chartLabel({ y: Array<number>(25).fill(0) })).toBe(
+      "מספר התינוקות בכל שנה, 2000 עד 2024. ב־2000: 0 תינוקות, ב־2024: 0 תינוקות.",
+    );
+  });
+
+  it("says there is no data without years", () => {
+    expect(chartLabel(stats("אינה"))).toBe("אין נתונים לשנים 2000–2024");
   });
 });
