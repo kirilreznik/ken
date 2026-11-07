@@ -53,6 +53,26 @@ How the scores were made: design-review sub-agent (A) scored each screen from th
 
 How the scores were made: the design-review sub-agent (A) scored each row from the shots and the source; the parent checked every row sum (A had row 2 as 30/40 and the group as 326/444; the cells give 29/40 and 320/432) and verified the P1/P2 findings against the shots and code. The detector sub-agent (B) found nothing in the source or in the overlay on 5 views, so no score moved.
 
+### G3 Lists and settings (US-A-IMP-C-G3, 2026-11-07, at `e3faaee`; findings `findings/IMP-C-G3.md`)
+
+| Screen (states) | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 | H9 | H10 | Total | Band | Notes (finding IDs) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| lists "שמרתי" (rows, empty, chosen banner) | 3 | 3 | 2 | 2 | 2 | 2 | 2 | 3 | n/a | 2 | 21/36 (58 %) | Acceptable | H3/H5: one-tap clear of the chosen name (-07); H4/H10: empty state doesn't teach, three patterns (-02); H6: banner doesn't look tappable (-22); -10 |
+| lists row menu | 2 | 3 | 1 | 2 | 2 | 2 | 3 | 3 | n/a | 2 | 20/36 (56 %) | Acceptable | H3/H1: remove and hide are silent, no undo (-01, P1); H6: hidden names can't be found again (-05); -20 |
+| add-name sheet (default, error) | 3 | 3 | 2 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 29/40 (73 %) | Good | H3: no close button (-06); -17 |
+| lists "התאמות" (solo, empty, rows, offline) | 3 | 2 | 3 | 2 | 3 | 3 | 2 | 3 | 2 | 3 | 26/40 (65 %) | Acceptable | H2: "שניכם" (-08); H9/H1: bare offline timestamp (-18); -26 (owner) |
+| duel (few, round 1, mid-way, done, between matches) | 2 | 3 | 3 | 2 | 3 | 3 | 2 | 3 | 3 | 3 | 27/40 (68 %) | Acceptable | H1: round total shifts, stays after the end (-11), no press feedback (-12); H4: chips look selected (-13), result names don't open (-14); -25 (owner) |
+| hidden (list, empty) | 2 | 3 | 3 | 2 | 3 | 2 | 2 | 3 | n/a | 3 | 23/36 (64 %) | Acceptable | H1: restore is silent (-01); H4: third empty pattern (-02); H6: only reachable from filters (-05) |
+| settings (solo, shared) | 3 | 3 | 3 | 2 | 3 | 3 | 2 | 3 | 3 | 3 | 28/40 (70 %) | Good | H4: legal rows open a new tab (-03), name field off-spec (-16); -04, -24 (owner) |
+| settings dialogs (delete, leave) | 3 | 3 | 4 | 2 | 3 | 3 | n/a | 3 | 2 | 3 | 26/36 (72 %) | Good | H9: leave always fails (-09, owner); H4: delete confirm looks like any primary (-15) |
+| about page | n/a | 3 | 3 | 3 | n/a | 3 | n/a | 3 | n/a | 4 | 19/24 (79 %) | Good | -21, -23 |
+| privacy + terms (frame only; the text is the owner's) | 3 | 3 | 2 | 3 | n/a | 2 | 2 | 3 | n/a | 3 | 21/32 (66 %) | Acceptable | H3: opened in a new tab, back lands on the deck (-03); H6/H7: no section index (-27, owner); -19, -23 |
+| **G3 (sum of the rows)** | 24 | 29 | 26 | 23 | 22 | 26 | 18 | 30 | 13 | 29 | **240/360 (67 %)** | **Acceptable** | |
+
+`n/a` reasons, by row: no input or failing action of its own (H9 on saved, where add-name is scored in its own row); local writes with no failure path in the UI (H9 on row menu and hidden); single-decision confirm dialogs, Esc and Enter are the only accelerators (H7 on dialogs); a static page with no async state, no input, nothing to speed up and no error (H1, H5, H7, H9 on about); read-only pages with no error path (H5, H9 on privacy and terms).
+
+How the scores were made: the design-review sub-agent (A) scored each row from the shots and the source; the parent checked every row sum and the column sums, and verified the P1/P2 findings against the shots and code. The parent changed the row menu's H1 from 1 to 2 (the row does disappear, so there is visible feedback, just no confirmation) and its H5 from 1 to 2 (removal takes two taps through a menu), making that row 20/36 instead of A's 18/36. The parent also moved A's 320 px header finding from P2 to P3 (-10): the shot shows crowding, not overlap. The detector sub-agent (B) found 3 `undersized-ui-text` (an owner token, -24) and 8 `straggler` (-23) in the browser and nothing in the source; neither moved a score.
+
 
 ## After (re-score)
 
