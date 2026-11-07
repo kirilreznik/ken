@@ -3,6 +3,7 @@ import namesFile from "../../data/names/names.json";
 import { parseNames, type RawNamesFile } from "@/lib/names/data";
 import {
   allTimeBirths,
+  cardHints,
   chartLabel,
   chartModel,
   compare2000,
@@ -291,5 +292,28 @@ describe("togetherFor", () => {
 
   it("takes only matches, no partner votes", () => {
     expect(togetherFor.length).toBe(3);
+  });
+});
+
+describe("cardHints", () => {
+  const verse = { text: "ויקרא את שמו", ref: "בראשית ל׳ כד" };
+  const person = (name: string) => ({ name, what: "שחקנית" });
+
+  it("is empty with no verse and no people", () => {
+    expect(cardHints({ people: [] })).toEqual([]);
+  });
+
+  it("shows only the verse", () => {
+    expect(cardHints({ bible: verse, people: [] })).toEqual(["מהתנ״ך"]);
+  });
+
+  it("says one known person in words", () => {
+    expect(cardHints({ people: [person("א")] })).toEqual(["אדם מוכר אחד"]);
+    expect(cardHints({ bible: verse, people: [person("א")] })).toEqual(["מהתנ״ך", "אדם מוכר אחד"]);
+  });
+
+  it("counts two or more people, after the verse", () => {
+    expect(cardHints({ people: [person("א"), person("ב")] })).toEqual(["2 אנשים מוכרים"]);
+    expect(cardHints({ bible: verse, people: [person("א"), person("ב")] })).toEqual(["מהתנ״ך", "2 אנשים מוכרים"]);
   });
 });
