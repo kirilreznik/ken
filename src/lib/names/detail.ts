@@ -1,4 +1,5 @@
 import { FIRST_TREND_YEAR, LAST_YEAR } from "./data";
+import { matchSheetLine, type Match } from "./matches";
 import { rankByLastYear } from "./popularity";
 import type { Card, NameDetail, NameStats, SexTag } from "./types";
 
@@ -199,4 +200,20 @@ export function similarForDisplay(
     if (out.length === SIMILAR_MAX) break;
   }
   return out;
+}
+
+export interface Together {
+  text: string;
+}
+
+/**
+ * The match badge (§3.1.5, FR-D12): null unless `name` is a match of a shared space. Takes
+ * only the matches, never a partner's votes, so a lone save, skip or hide can't leak. The
+ * wording is the Lists match line ("שניכם שמרתם…" / "{n} שמרו…") after "התאמה · ".
+ */
+export function togetherFor(name: string, matches: readonly Match[], memberCount: number): Together | null {
+  if (memberCount < 2) return null;
+  const match = matches.find((m) => m.name === name);
+  if (!match) return null;
+  return { text: `התאמה · ${matchSheetLine(match).replace(/\.$/, "")}` };
 }

@@ -12,8 +12,10 @@ import {
   rankText,
   SIMILAR_MAX,
   similarForDisplay,
+  togetherFor,
 } from "@/lib/names/detail";
 import type { Card, NameDetail, NameStats, SexTag } from "@/lib/names/types";
+import type { Match } from "@/lib/names/matches";
 
 const names = parseNames(namesFile as RawNamesFile);
 const stats = (name: string) => names.get(name)!;
@@ -255,5 +257,39 @@ describe("similarForDisplay", () => {
     const shown = similarForDisplay("ארי", details, cards, []).map((s) => s.name);
     expect(shown).toHaveLength(SIMILAR_MAX);
     expect(shown).toEqual(["אריאל", "אריאלה", "אראל", "אריה", "אוריאל", "אריאה"]);
+  });
+});
+
+describe("togetherFor", () => {
+  const match = (name: string, keptByCount: number): Match => ({
+    name,
+    keptByCount,
+    lovedByCount: 0,
+    matchedAt: "2026-11-07T00:00:00Z",
+  });
+
+  it("is null in a solo space, even for a name in the list", () => {
+    expect(togetherFor("נועם", [match("נועם", 2)], 1)).toBeNull();
+    expect(togetherFor("נועם", [], 1)).toBeNull();
+  });
+
+  it("is null for a name that isn't a match", () => {
+    expect(togetherFor("נועם", [], 2)).toBeNull();
+    expect(togetherFor("נועם", [match("יעל", 2)], 2)).toBeNull();
+  });
+
+  it("uses the Lists wording for two members", () => {
+    expect(togetherFor("נועם", [match("יעל", 2), match("נועם", 2)], 2)).toEqual({
+      text: "התאמה · שניכם שמרתם את השם הזה",
+    });
+  });
+
+  it("counts the keepers with three or more members", () => {
+    expect(togetherFor("נועם", [match("נועם", 3)], 3)).toEqual({ text: "התאמה · 3 שמרו את השם הזה" });
+    expect(togetherFor("נועם", [match("נועם", 4)], 4)).toEqual({ text: "התאמה · 4 שמרו את השם הזה" });
+  });
+
+  it("takes only matches, no partner votes", () => {
+    expect(togetherFor.length).toBe(3);
   });
 });
