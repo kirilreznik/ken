@@ -4,6 +4,8 @@ import { parseNames, type RawNamesFile } from "@/lib/names/data";
 import {
   allTimeBirths,
   cardHints,
+  babies,
+  chartKeyStep,
   chartLabel,
   chartModel,
   compare2000,
@@ -182,6 +184,32 @@ describe("chartModel", () => {
     expect(model.last.x).toBe(95);
     expect(model.yTicks[0].y).toBe(45);
     expect(model.yTicks[2].y).toBe(5);
+  });
+});
+
+describe("chartKeyStep", () => {
+  it("moves one year per arrow, Left earlier, clamped to 2000–2024", () => {
+    expect(chartKeyStep(10, "ArrowLeft")).toBe(9);
+    expect(chartKeyStep(10, "ArrowRight")).toBe(11);
+    expect(chartKeyStep(0, "ArrowLeft")).toBe(0);
+    expect(chartKeyStep(24, "ArrowRight")).toBe(24);
+  });
+
+  it("starts at 2024, jumps with Home/End and ignores other keys", () => {
+    expect(chartKeyStep(null, "ArrowLeft")).toBe(24);
+    expect(chartKeyStep(null, "ArrowRight")).toBe(24);
+    expect(chartKeyStep(7, "Home")).toBe(0);
+    expect(chartKeyStep(7, "End")).toBe(24);
+    expect(chartKeyStep(7, "ArrowUp")).toBeNull();
+    expect(chartKeyStep(null, "Enter")).toBeNull();
+  });
+});
+
+describe("babies", () => {
+  it("formats the count, singular for one", () => {
+    expect(babies(1)).toBe("תינוק אחד");
+    expect(babies(0)).toBe("0 תינוקות");
+    expect(babies(2099)).toBe("2,099 תינוקות");
   });
 });
 

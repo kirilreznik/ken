@@ -145,7 +145,22 @@ export function chartModel(
   return { points, line, area, yTicks, xLabels, last: points[YEARS - 1], nearestYear };
 }
 
-const babies = (n: number) => (n === 1 ? "תינוק אחד" : `${fmt.format(n)} תינוקות`);
+/** "{n} תינוקות" with thousands separators, "תינוק אחד" for one. */
+export const babies = (n: number) => (n === 1 ? "תינוק אחד" : `${fmt.format(n)} תינוקות`);
+
+/**
+ * The chart point an arrow key moves to (index 0 = FIRST_TREND_YEAR). The SVG is LTR, so Left is
+ * the earlier year; Home/End jump to the ends. With nothing chosen yet, any key starts at the
+ * last year. Null for keys the chart ignores.
+ */
+export function chartKeyStep(index: number | null, key: string): number | null {
+  const last = YEARS - 1;
+  if (key === "Home") return 0;
+  if (key === "End") return last;
+  if (key !== "ArrowLeft" && key !== "ArrowRight") return null;
+  if (index === null) return last;
+  return Math.min(last, Math.max(0, index + (key === "ArrowLeft" ? -1 : 1)));
+}
 
 /** The chart's aria-label: range, first and last values, and the peak year (the first one, on ties). */
 export function chartLabel({ y }: Pick<NameStats, "y">): string {
