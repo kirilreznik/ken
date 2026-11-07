@@ -7,11 +7,18 @@ import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
 import { closeSheet, useLayerOpen } from "./layers";
 import { useModal, usePortalHost } from "./useModal";
 
-type BottomSheetProps = {
+/**
+ * A text title, or a custom header rendered instead of the title row (pinned above the
+ * scrolling content). The header must put `titleId` on the element that names the dialog.
+ */
+type SheetHeading =
+  | { title: string; header?: never }
+  | { header: (titleId: string) => ReactNode; title?: never };
+
+type BottomSheetProps = SheetHeading & {
   /** ?sheet=<name> opens it; open with openSheet(name) so Back closes it. */
   name: SheetName;
-  title: string;
-  /** Next to the title on the end side, e.g. "איפוס". */
+  /** Next to the title on the end side, e.g. "איפוס" (title row only). */
   headerEnd?: ReactNode;
   /** headerEnd holds its own "סגירה" button: the handle then leaves the Tab order (NP-UX-010). */
   closeInHeader?: boolean;
@@ -53,7 +60,8 @@ function SheetGate(props: BottomSheetProps) {
   return createPortal(<SheetPanel {...props} />, host);
 }
 
-function SheetPanel({ name, title, headerEnd, closeInHeader = false, footer, detents, children }: BottomSheetProps) {
+/** The panel itself; exported for markup tests. */
+export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, children }: BottomSheetProps) {
   const panel = useRef<HTMLElement>(null);
   const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean } | null>(null);
   // Down: the panel moves down by `offset` px. Up (tall sheets only): it grows to `height` px.
@@ -136,13 +144,16 @@ function SheetPanel({ name, title, headerEnd, closeInHeader = false, footer, det
         >
           <span aria-hidden="true" className="h-1.25 w-10 rounded-pill bg-line" />
         </button>
+        {header ? <div className="shrink-0 px-5 pb-3">{header(titleId)}</div> : null}
         <div className={`flex min-h-0 flex-col gap-5 ${tall ? "flex-1" : ""} overflow-y-auto overscroll-contain px-5 ${footer ? "pb-5" : SAFE_BOTTOM}`}>
-          <div className="flex min-h-11 items-center justify-between gap-3">
-            <h2 id={titleId} className="text-title">
-              {title}
-            </h2>
-            {headerEnd}
-          </div>
+          {header ? null : (
+            <div className="flex min-h-11 items-center justify-between gap-3">
+              <h2 id={titleId} className="text-title">
+                {title}
+              </h2>
+              {headerEnd}
+            </div>
+          )}
           {children}
         </div>
         {footer ? <div className={`shrink-0 px-5 ${SAFE_BOTTOM}`}>{footer}</div> : null}
