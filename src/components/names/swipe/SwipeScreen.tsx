@@ -10,6 +10,7 @@ import NameDetailSheet from "@/components/names/detail/NameDetailSheet";
 import FiltersSheet from "@/components/names/FiltersSheet";
 import MatchSheet from "@/components/names/MatchSheet";
 import SurveySheet from "@/components/names/SurveySheet";
+import { openNameSheet } from "@/components/names/ui";
 import { useCards } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useMatches, useSeenMatches } from "@/components/names/useMatches";
@@ -176,7 +177,13 @@ export default function SwipeScreen() {
     setNext(deck?.cards[1]?.stats.name ?? null);
   };
 
-  const drag = useSwipeDrag({ onDecide: decide, disabled: !current });
+  const openDetails = () => {
+    if (!current) return;
+    openNameSheet(current.stats.name);
+    track("detail_opened", { source: "tap" });
+  };
+
+  const drag = useSwipeDrag({ onDecide: decide, onTap: openDetails, disabled: !current });
 
   const undo = () => {
     if (!store || drag.busy()) return;
