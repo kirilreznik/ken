@@ -3,8 +3,10 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo } from "react";
 import { BottomSheet, IconButton, closeSheet } from "@/components/names/ui";
+import { useNameDetails } from "@/components/names/useNameDetails";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import type { Card } from "@/lib/names/types";
+import MeaningSection from "./MeaningSection";
 import SurnameSection from "./SurnameSection";
 
 const DETENTS = ["70", "full"] as const;
@@ -32,6 +34,8 @@ function NameGate({ cards, surname }: { cards: readonly Card[] | null; surname: 
   const card = name ? (byName.get(name) ?? null) : null;
   // Wait for the cards before deciding the name isn't in the deck.
   const unknown = open && cards !== null && !card;
+  // The details file (stories, similar names) loads the first time a sheet opens.
+  const details = useNameDetails({ enabled: open && card !== null });
 
   useEffect(() => {
     if (unknown) closeSheet(NAME_SHEET);
@@ -42,6 +46,11 @@ function NameGate({ cards, surname }: { cards: readonly Card[] | null; surname: 
     <BottomSheet name={NAME_SHEET} detents={DETENTS} closeInHeader header={(titleId) => <NameHeader card={card} titleId={titleId} />}>
       <div data-detail-body className="flex flex-col gap-5">
         <SurnameSection name={card.stats.name} surname={surname} />
+        <MeaningSection
+          intro={card.content.intro}
+          story={details.details?.get(card.stats.name)?.story ?? null}
+          state={details.state}
+        />
       </div>
     </BottomSheet>
   );
