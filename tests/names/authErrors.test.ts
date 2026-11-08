@@ -9,6 +9,7 @@ import {
   OFFLINE_MESSAGE,
   RATE_LIMIT_MESSAGE,
   WRONG_CODE_MESSAGE,
+  clearsCode,
   authErrorKind,
   authErrorMessage,
   handleAuthError,
@@ -160,4 +161,17 @@ describe("visibleSignInError", () => {
 describe("isValidEmail", () => {
   it.each(["a@b.co", " name@example.com ", "x.y+z@sub.domain.org"])("accepts %s", (v) => expect(isValidEmail(v)).toBe(true));
   it.each(["", "a", "a@b", "a@b.c", "a b@c.com", "@c.com", "a@.com"])("rejects %s", (v) => expect(isValidEmail(v)).toBe(false));
+});
+
+describe("after a failed verify (NP-004)", () => {
+  it("clears only a wrong code", () => {
+    expect(clearsCode("wrong-code")).toBe(true);
+    for (const kind of ["rate-limit", "offline", "other", "signups-closed"] as const) expect(clearsCode(kind)).toBe(false);
+  });
+
+  it("says to type the code again and doesn't ask for a resend that may still be locked", () => {
+    expect(WRONG_CODE_MESSAGE).toContain("אפשר להקליד שוב");
+    expect(WRONG_CODE_MESSAGE).toContain("כשהשליחה החוזרת תיפתח");
+    expect(WRONG_CODE_MESSAGE).not.toContain("!");
+  });
 });

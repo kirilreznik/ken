@@ -1,7 +1,8 @@
 import { reportClientLog } from "./clientLog";
 
 /** FR-W5: Supabase auth errors in Hebrew; raw English never reaches the screen. */
-export const WRONG_CODE_MESSAGE = "הקוד לא נכון או שפג תוקפו. אפשר לבקש קוד חדש.";
+export const WRONG_CODE_MESSAGE =
+  "הקוד לא נכון או שפג תוקפו. אפשר להקליד שוב או לבקש קוד חדש כשהשליחה החוזרת תיפתח.";
 export const RATE_LIMIT_MESSAGE = "נשלחו יותר מדי קודים. אפשר לנסות שוב בעוד כמה דקות.";
 export const OFFLINE_MESSAGE = "אין חיבור לאינטרנט. אפשר להיכנס כשהחיבור יחזור.";
 export const GENERIC_MESSAGE = "משהו השתבש. אפשר לנסות שוב.";
@@ -88,6 +89,14 @@ export function handleAuthError(area: string, error: unknown): { kind: AuthError
   const kind = authErrorKind(error);
   if (kind === "other") reportAuthError(area, error);
   return { kind, message: kind === "signups-closed" ? null : authErrorMessage(kind) };
+}
+
+/**
+ * After a failed verify, a code known to be wrong is cleared so a new one can be typed or pasted
+ * (the field keeps only the first six digits). A network or server failure keeps it: it may be right.
+ */
+export function clearsCode(kind: AuthErrorKind): boolean {
+  return kind === "wrong-code";
 }
 
 /** True when the browser says it's offline (checked before any sign-in request). */

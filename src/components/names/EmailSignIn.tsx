@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
 import { Button, inputClass } from "@/components/names/ui";
@@ -14,6 +14,8 @@ import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import {
   INVALID_EMAIL_MESSAGE,
   OFFLINE_MESSAGE,
+  type AuthErrorKind,
+  clearsCode,
   handleAuthError,
   isOffline,
   isValidEmail,
@@ -48,6 +50,7 @@ export default function EmailSignIn() {
   const [error, setError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaKey, setCaptchaKey] = useState(0);
+  const codeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (loading || !user) return;
@@ -61,14 +64,23 @@ export default function EmailSignIn() {
     return () => window.removeEventListener("online", clear);
   }, []);
 
-  function fail(area: string, err: unknown): void {
+  function fail(area: string, err: unknown): AuthErrorKind {
     track("signin_failed", { method: "email", step: area.endsWith("verify") ? "verify" : "send" });
-    const { message } = handleAuthError(area, err);
+    const { kind, message } = handleAuthError(area, err);
     if (message === null) {
       router.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));
-      return;
+      return kind;
     }
     setError(message);
+    return kind;
+  }
+
+  // A wrong code is cleared with focus kept in the field, so typing, pasting or the
+  // one-time-code fill starts fresh (CRIT-G1-01).
+  function failVerify(err: unknown): void {
+    if (!clearsCode(fail("sign-in-email-verify", err))) return;
+    setCode("");
+    codeRef.current?.focus();
   }
 
   async function sendCode(): Promise<boolean> {
@@ -130,10 +142,10 @@ export default function EmailSignIn() {
     try {
       const { data, error: err } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: "email" });
       // On success the auth listener sets the user and the effect above routes on.
-      if (err) fail("sign-in-email-verify", err);
+      if (err) failVerify(err);
       else track("signin_completed", { method: "email", new_user: !hasAcceptedTerms(data.user) });
     } catch (err) {
-      fail("sign-in-email-verify", err);
+      failVerify(err);
     } finally {
       setBusy(false);
     }
@@ -150,7 +162,7 @@ export default function EmailSignIn() {
   const backHref = withJoin(WELCOME_PATH, join);
   const shownError = visibleSignInError(error, online);
   const errorLine = shownError ? (
-    <p id="email-sign-in-error" role="alert" className="text-body font-medium text-urgent">
+    <p id="email-sign-in-error" role="alert" className="text-body font-medium text-pretty text-urgent">
       {shownError}
     </p>
   ) : null;
@@ -234,6 +246,7 @@ export default function EmailSignIn() {
           invalid={shownError !== null}
           describedBy={shownError ? "email-sign-in-error" : undefined}
           autoFocus
+          inputRef={codeRef}
         />
         {errorLine}
         <Button type="submit" disabled={busy || code.length !== CODE_LENGTH} aria-busy={busy}>

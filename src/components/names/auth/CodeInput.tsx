@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type Ref } from "react";
 import { inputClass } from "@/components/names/ui/classes";
 import { cleanCode } from "@/lib/names/resend";
 
@@ -18,6 +18,7 @@ interface CodeInputProps {
   /** Id of the hint or error text under the field. */
   describedBy?: string;
   autoFocus?: boolean;
+  inputRef?: Ref<HTMLInputElement>;
 }
 
 /**
@@ -34,6 +35,7 @@ export default function CodeInput({
   invalid,
   describedBy,
   autoFocus,
+  inputRef,
 }: CodeInputProps) {
   const lastSubmitted = useRef<string | null>(null);
 
@@ -54,6 +56,7 @@ export default function CodeInput({
         {label}
       </label>
       <input
+        ref={inputRef}
         id={id}
         name="code"
         type="text"
