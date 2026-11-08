@@ -202,7 +202,12 @@ export default function EmailSignIn() {
       title="מה הקוד?"
       lead={
         <>
-          שלחנו קוד בן 6 ספרות ל־<bdi dir="ltr">{email.trim()}</bdi>. אפשר לבדוק גם בתיקיית הספאם.
+          שלחנו קוד בן 6 ספרות ל־
+          {/* Own line: the address stays whole where it fits and breaks anywhere only when it's wider. */}
+          <bdi dir="ltr" className="block text-end wrap-anywhere">
+            {email.trim()}
+          </bdi>
+          אפשר לבדוק גם בתיקיית הספאם.
         </>
       }
       backHref={backHref}
