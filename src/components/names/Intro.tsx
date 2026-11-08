@@ -70,7 +70,8 @@ export default function Intro() {
         }}
         className="flex flex-1 flex-col gap-6 px-5 pt-14"
       >
-        <IconButton aria-label="סגירה" onClick={() => finish(false)} className="self-end">
+        {/* X keeps a typed surname too; an empty field leaves a saved one alone (NP-029). */}
+        <IconButton aria-label="סגירה" onClick={() => finish(surname.trim() !== "")} className="self-end">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
