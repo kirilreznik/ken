@@ -242,7 +242,7 @@ export default function Onboarding() {
             aria-busy={busy}
             aria-describedby={valid ? undefined : "onboarding-missing"}
           >
-            {busy ? "שומרים…" : "התחלת בחירה"}
+            {busy ? "שומרים…" : "שמירה והמשך"}
           </Button>
           {valid ? null : (
             <p id="onboarding-missing" aria-live="polite" className={`text-center text-caption ${tried ? CAPTION_ERROR : "text-ink-soft"}`}>

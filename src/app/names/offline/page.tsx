@@ -19,10 +19,10 @@ export default function NamesOffline() {
       <div className="flex flex-col gap-2">
         <h1 className="text-display">אין חיבור לאינטרנט</h1>
         <p className="text-card-title font-medium text-balance text-ink-soft">
-          העמוד הזה עוד לא שמור במכשיר. אפשר לחזור לבחירת שם, או לנסות שוב כשהחיבור יחזור.
+          העמוד הזה עוד לא שמור במכשיר. אפשר לחזור לבחירת שמות, או לנסות שוב כשהחיבור יחזור.
         </p>
       </div>
-      <Button href="/names">לבחירת שם</Button>
+      <Button href="/names">לבחירת שמות</Button>
     </main>
   );
 }

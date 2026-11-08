@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function NamesNotFound() {
   return (
     <AuthLayout title="העמוד לא נמצא" lead="אולי הקישור השתנה." hero={<Wordmark />}>
-      <Button href="/names">לבחירת שם</Button>
+      <Button href="/names">לבחירת שמות</Button>
     </AuthLayout>
   );
 }

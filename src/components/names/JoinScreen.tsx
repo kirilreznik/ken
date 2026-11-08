@@ -24,7 +24,7 @@ import {
 } from "@/lib/names/join";
 import { joinWithCode } from "@/lib/names/joinSpace";
 import { getPref } from "@/lib/names/prefs";
-import { ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
+import { INTRO_PATH, ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { track } from "@/lib/names/track";
 
 const wordmark = <Wordmark />;
@@ -88,6 +88,8 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
   if (loading && stored) return <AuthSkeleton />;
 
   const startHref = user ? nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, null) : APP_PATH;
+  // The button says where it goes: on to the intro, or back to the deck (NP-024).
+  const startLabel = startHref === INTRO_PATH ? "המשך" : "לבחירת שמות";
 
   if (!code || outcome?.kind === "invalid") {
     const copy = JOIN_COPY.invalid;
@@ -96,7 +98,7 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
         <p role="status" className="sr-only">
           {`${copy.title} ${copy.lead}`}
         </p>
-        {session ? <Button href={startHref}>לבחירת שמות</Button> : <Button href={WELCOME_PATH}>לכניסה</Button>}
+        {session ? <Button href={startHref}>{startLabel}</Button> : <Button href={WELCOME_PATH}>לכניסה</Button>}
       </Outcome>
     );
     return session ? invalid : <SignedOutView>{invalid}</SignedOutView>;
@@ -162,7 +164,7 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
       <p role="status" className="sr-only">
         {[copy.title, copy.lead, moved ? VOTES_MOVE_TEXT : ""].join(" ").trim()}
       </p>
-      <Button href={startHref}>{outcome.kind === "joined" ? "להתחיל לבחור" : "להמשיך לבחור"}</Button>
+      <Button href={startHref}>{startLabel}</Button>
     </Outcome>
   );
 }
