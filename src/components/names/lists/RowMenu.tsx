@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { iconButtonClass } from "@/components/names/ui/classes";
 
 type RowMenuProps = {
@@ -13,7 +13,7 @@ type RowMenuProps = {
 };
 
 const ITEM =
-  "flex min-h-11 w-full items-center gap-2 whitespace-nowrap rounded-sm px-3.5 text-body font-bold text-ink hover:bg-sand focus-visible:bg-sand";
+  "flex min-h-11 w-full items-center gap-2 rounded-sm px-3.5 py-2 text-start text-body font-bold text-ink hover:bg-sand focus-visible:bg-sand";
 
 function Icon({ children }: { children: React.ReactNode }) {
   return (
@@ -26,14 +26,25 @@ function Icon({ children }: { children: React.ReactNode }) {
 /**
  * A "שמרתי" row's menu (FR-W18): "הסרה מהרשימה" and "לא להציג יותר". Same behavior as the
  * skip menu: focus goes to the first item, arrows move, Escape returns focus, Tab or a tap
- * outside close it.
+ * outside close it. It opens under its button, or above it when it wouldn't fit below (a row near the
+ * bottom of the screen), and wraps a long label instead of running past the page's edge.
  */
 export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide }: RowMenuProps) {
   const [open, setOpen] = useState(false);
+  const [up, setUp] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   const menuId = useId();
+
+  useLayoutEffect(() => {
+    if (!open || !button.current || !menu.current) return;
+    const b = button.current.getBoundingClientRect();
+    const height = menu.current.offsetHeight + 6;
+    // The menu's scroll-margin-bottom resolves the home bar's inset to pixels.
+    const below = innerHeight - parseFloat(getComputedStyle(menu.current).scrollMarginBottom || "0") - b.bottom;
+    setUp(below < height && b.top > below);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -97,7 +108,7 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
           aria-label={`אפשרויות עבור ${name}`}
           data-motion="fade"
           onKeyDown={onMenuKeyDown}
-          className="names-glass names-toast-in absolute end-0 top-full z-10 mt-1.5 flex flex-col rounded-md bg-surface p-1.5"
+          className={`names-glass names-toast-in absolute end-0 z-10 flex w-max max-w-[calc(min(100vw,480px)-2.5rem)] scroll-mb-[env(safe-area-inset-bottom)] flex-col rounded-md bg-surface p-1.5 ${up ? "bottom-full mb-1.5" : "top-full mt-1.5"}`}
         >
           {onChoose ? (
             <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onChoose)}>
