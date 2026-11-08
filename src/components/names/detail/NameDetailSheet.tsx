@@ -173,11 +173,11 @@ function useSectionsSeen(visits: DetailVisits, body: HTMLElement | null, content
 /**
  * FR-D18: the swipe screen's three buttons pinned under the scrolling content (the footer sits
  * outside the scroller, so it never covers the last section), the name's vote shown as pressed.
- * The screen decides what a choice does (PRD 3.2.5, 3.2.6).
+ * The screen decides what a choice does (PRD 3.2.5, 3.2.6). Under 17rem "דילוג" takes a line of its own.
  */
 function SheetDecisions({ vote, onDecide }: { vote: Vote | null; onDecide: (kind: Decision) => void }) {
   return (
-    <div data-clarity-unmask="true" className="grid grid-cols-3 gap-2 pt-3 max-[22.5rem]:gap-1.5">
+    <div data-clarity-unmask="true" className="grid grid-cols-3 gap-2 pt-3 max-[22.5rem]:gap-1.5 max-[17rem]:grid-cols-2 max-[17rem]:[&>:last-child]:col-span-2">
       <DecisionButtons onDecide={onDecide} pressed={vote} />
     </div>
   );

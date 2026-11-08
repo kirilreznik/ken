@@ -304,7 +304,7 @@ All in `src/components/names/ui/` unless noted. Fix a pattern in the shared comp
 - **No pull-to-refresh:** `html` and `body` get `overscroll-behavior-y: none` while a `/names` screen is mounted (`:has(.nest-names)`, so the landing keeps it). A pull past the top doesn't drag the screen down or reload it; inner scrollers (sheets, the card) use `overscroll-contain`.
 
 ### Decision buttons (`src/components/names/DecisionButtons.tsx`)
-Three equal pills, each with its word and icon, shared by the swipe screen's `ActionBar` and the detail sheet: "שמירה לרשימה" (ink, primary), "אהבתי מאוד" (peach-soft with `clay-deep`), "דילוג" (quiet white glass). In the sheet, the current vote shows as pressed with an ink ring and a check in place of the icon, so it isn't told by color.
+Three equal pills, each with its word and icon, shared by the swipe screen's `ActionBar` and the detail sheet: "שמירה לרשימה" (ink, primary), "אהבתי מאוד" (peach-soft with `clay-deep`), "דילוג" (quiet white glass). In the sheet, the current vote shows as pressed with an ink ring and a check in place of the icon, so it isn't told by color. Under 22.5rem the pills drop their icons; under 17rem (200 % zoom, large text) the row wraps instead of shrinking under 44 px: "שמירה" and "אהבתי" on the first line, then "דילוג" with "ביטול" (bar) or "דילוג" alone across the row (sheet).
 
 ### Chips (`Chip`, `chipClass`, `hintChipClass`)
 - **Toggle chip:** selected is ink with white text; unselected is soft glass with ink text (`sand` with `ink-soft` on "ללא רקע"); state via `aria-pressed`. A 29 px pill whose hit area stretches to 45 px.
