@@ -49,7 +49,8 @@ export function iconButtonClass(): string {
   return ["names-glass-soft inline-flex size-11 shrink-0 items-center justify-center rounded-pill text-ink", PRESS, DISABLED].join(" ");
 }
 
-// Text fields (DESIGN.md "Inputs"): surface fill, 48 px, text-intro with stone placeholders. The edge
+// Text fields (DESIGN.md "Inputs"): surface fill, 48 px, text-field (16 px: iOS Safari zooms into anything smaller and
+// stays zoomed) with stone placeholders. The edge
 // is stone on solid surfaces and ink-soft on glass, where the photo behind can be darker (≥ 3:1
 // either way); read-only fields are sand. Focus is the global 2 px outline pulled onto the field's
 // own edge (no floating second ring); an invalid field keeps its urgent edge while focused. "code" is the sign-in code's large centered digits;
@@ -64,8 +65,8 @@ const FIELD = [
 ].join(" ");
 
 const FIELD_KIND: Record<InputKind, string> = {
-  line: "h-12 text-start text-intro",
-  multiline: "py-3 text-start text-intro resize-y pointer-coarse:resize-none",
+  line: "h-12 text-start text-field",
+  multiline: "py-3 text-start text-field resize-y pointer-coarse:resize-none",
   code: "h-12 text-center text-title tracking-[0.4em] tabular-nums",
   link: "h-12 text-start text-caption",
 };

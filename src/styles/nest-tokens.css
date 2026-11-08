@@ -103,6 +103,9 @@
   --nest-text-intro: 15px;
   --nest-text-intro-line-height: 22px;
   --nest-text-intro-weight: 500;
+  --nest-text-field: 16px;
+  --nest-text-field-line-height: 22px;
+  --nest-text-field-weight: 500;
   --nest-text-stamp: 22px;
   --nest-text-stamp-line-height: 28px;
   --nest-text-stamp-weight: 800;
@@ -245,6 +248,9 @@
   --text-intro: var(--nest-text-intro);
   --text-intro--line-height: var(--nest-text-intro-line-height);
   --text-intro--font-weight: var(--nest-text-intro-weight);
+  --text-field: var(--nest-text-field);
+  --text-field--line-height: var(--nest-text-field-line-height);
+  --text-field--font-weight: var(--nest-text-field-weight);
   --text-stamp: var(--nest-text-stamp);
   --text-stamp--line-height: var(--nest-text-stamp-line-height);
   --text-stamp--font-weight: var(--nest-text-stamp-weight);

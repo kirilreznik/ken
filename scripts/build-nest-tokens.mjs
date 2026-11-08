@@ -71,6 +71,8 @@ const extraStyles = [
   { name: "stat", fontSize: "18px", lineHeight: "22px", fontWeight: 800 },
   // The card's intro line (Main.dc.html) and the swipe stamps (the demo's .nd-stamp).
   { name: "intro", fontSize: "15px", lineHeight: "22px", fontWeight: 500 },
+  // Text fields: 16 px, so iOS Safari doesn't zoom the page on focus and stay zoomed (NP-031, NP-054).
+  { name: "field", fontSize: "16px", lineHeight: "22px", fontWeight: 500 },
   { name: "stamp", fontSize: "22px", lineHeight: "28px", fontWeight: 800 },
   // The next-but-one name on the farther peeking card (Main.dc.html).
   { name: "peek", fontSize: "14px", lineHeight: "18px", fontWeight: 800 },
