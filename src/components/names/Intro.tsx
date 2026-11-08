@@ -142,15 +142,17 @@ export default function Intro() {
             value={surname}
             onChange={(e) => setSurname(e.target.value)}
             aria-describedby="surname-hint"
-            className={inputClass()}
+            // Focus scrolls the field and its hint clear of the pinned button below (NP-030).
+            className={`${inputClass()} scroll-mb-34`}
           />
           <span id="surname-hint" className="text-caption text-ink-soft in-data-[names-bg=none]:text-stone">
             נשמר רק במכשיר הזה.
           </span>
         </div>
 
-        {/* Sticky so the main action is in view on a short screen (NP-UX-002). */}
-        <div className="sticky bottom-0 -mx-5 mt-auto bg-linear-to-t from-(--nest-canvas) from-40% to-transparent px-5 pt-6 pb-[max(16px,env(safe-area-inset-bottom))]">
+        {/* Sticky so the main action is in view on a short screen (NP-UX-002). The canvas fade only
+            on "ללא רקע": on a photo it would paint a grey band, so the button sits on the photo (NP-030). */}
+        <div className="sticky bottom-0 -mx-5 mt-auto px-5 pt-6 pb-[max(16px,env(safe-area-inset-bottom))] in-data-[names-bg=none]:bg-linear-to-t in-data-[names-bg=none]:from-(--nest-canvas) in-data-[names-bg=none]:from-40% in-data-[names-bg=none]:to-transparent">
           <Button type="submit" className="w-full">
             התחלת בחירה
           </Button>

@@ -363,11 +363,13 @@ No tab bar. The swipe header's "השמות שלי" ink pill and the settings but
 - **Do** carry status with a word and an icon as well as color.
 - **Do** keep a `prefers-reduced-motion` version of every animation (`names.css` caps everything else at near zero; short fades marked `data-motion="fade"` keep 200 ms).
 - **Do** use logical properties and mirror only directional icons; never mirror the logo.
+- **Do** give a field above a sticky page button a `scroll-mb-*` that clears the button and the field's hint (the intro's surname: `scroll-mb-34`); Chromium doesn't scroll a focused field that's already in the viewport, even under the button.
 
 ### Don't:
 - **Don't** use hex, rgb or px font sizes in names code (`tests/names/designGuard.test.ts`).
 - **Don't** use colored primary buttons, green for matches or success, or confetti.
 - **Don't** set text in `clay`, or switch text to white over a photo.
+- **Don't** fade a sticky footer to `canvas` over a photo (a grey band); keep the fade for "ללא רקע" (`in-data-[names-bg=none]:`).
 - **Don't** rebuild the wordmark in Heebo, add a container behind it, or recolor the dot.
 - **Don't** make the swipe card scroll on a 390 × 844 phone.
 - **Don't** add a UI library or animation dependency; the system is CSS, tokens and these components.
