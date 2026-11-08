@@ -5,15 +5,21 @@ import {
   dragOutcome,
   dragStart,
   dragStyle,
+  flingDistance,
+  flingTiming,
   flingTo,
   isTap,
   keepDir,
+  keepSamples,
+  releaseVelocity,
   type Decision,
   type DragKind,
   type DragMode,
   type KeepDir,
+  type Sample,
+  type Velocity,
 } from "@/lib/names/gesture";
-import { DURATION_FADE, DURATION_FLING, DURATION_SNAP } from "@/styles/nest-motion";
+import { DURATION_FADE, DURATION_SNAP, EASE_OUT } from "@/styles/nest-motion";
 
 type Drag = {
   id: number;
@@ -24,6 +30,8 @@ type Drag = {
   mode: DragMode | null;
   dx: number;
   dy: number;
+  /** The last moves (relative to the start), for the release speed. */
+  moves: Sample[];
   /** It went down on a control inside the card ("i", "לכל הפרטים"): a tap there is the control's. */
   onControl: boolean;
 };
@@ -183,7 +191,7 @@ export function useSwipeDrag({
     paint(node, "");
     if (!from || reducedMotion()) return;
     moving(node, true);
-    node.animate([{ transform: from }, { transform: "none" }], { duration: DURATION_SNAP, easing: "ease-out" }).finished.then(
+    node.animate([{ transform: from }, { transform: "none" }], { duration: DURATION_SNAP, easing: EASE_OUT }).finished.then(
       () => !drag.current?.mode && moving(node, false),
       () => {},
     );
@@ -197,8 +205,9 @@ export function useSwipeDrag({
    * card mounts under the flying copy and takes taps, keys and undo at once; nothing waits for
    * the 300 ms flight. The copy is a fixed, inert clone over the card's place, removed when it
    * lands. If the decision didn't replace the card, the card comes back when the copy lands.
+   * A released drag passes its velocity, so the flight picks up the finger's speed (flingTiming).
    */
-  const fling = (node: HTMLElement, kind: DragKind, dir: KeepDir, decision: Decision = kind) => {
+  const fling = (node: HTMLElement, kind: DragKind, dir: KeepDir, decision: Decision = kind, release?: { dx: number; dy: number; v: Velocity }) => {
     busy.current = true;
     // Focus on the card or a control in it (the name sheet gives it back to "לכל הפרטים") moves to the next card.
     refocus.current = node.contains(document.activeElement);
@@ -208,7 +217,13 @@ export function useSwipeDrag({
       ? [{ opacity: 1 }, { opacity: 0 }]
       : [{ transform: from }, { transform: flingTo(kind, dir), opacity: 0.4 }];
     if (kind === "love" && !reducedMotion()) copy.style.setProperty("--love", "1");
-    const flight = copy.animate(frames, { duration: reducedMotion() ? DURATION_FADE : DURATION_FLING, easing: "ease-in", fill: "forwards" });
+    const timing = release
+      ? flingTiming(
+          flingDistance(kind, release.dx, release.dy, copy.offsetWidth, copy.offsetHeight),
+          kind === "love" ? -release.v.y : release.v.x * Math.sign(release.dx),
+        )
+      : flingTiming(0);
+    const flight = copy.animate(frames, { ...(reducedMotion() ? { duration: DURATION_FADE, easing: EASE_OUT } : timing), fill: "forwards" });
     flights.current.add(flight);
     const land = () => {
       flights.current.delete(flight);
@@ -236,6 +251,7 @@ export function useSwipeDrag({
       mode: null,
       dx: 0,
       dy: 0,
+      moves: [{ x: 0, y: 0, t: performance.now() }],
       onControl: !!control && control !== e.currentTarget && e.currentTarget.contains(control),
     };
   };
@@ -245,6 +261,7 @@ export function useSwipeDrag({
     if (!s || e.pointerId !== s.id) return;
     s.dx = e.clientX - s.x;
     s.dy = e.clientY - s.y;
+    s.moves = keepSamples(s.moves, { x: s.dx, y: s.dy, t: performance.now() });
     if (!s.mode) {
       const start = dragStart(s.dx, s.dy);
       if (start === "cancel") drag.current = null;
@@ -270,10 +287,12 @@ export function useSwipeDrag({
       }
       return;
     }
-    const kind = dragOutcome(s.mode, s.dx, s.dy, performance.now() - s.t, s.dir);
+    const now = performance.now();
+    const v = releaseVelocity(keepSamples(s.moves, { x: e.clientX - s.x, y: e.clientY - s.y, t: now }), now);
+    const kind = dragOutcome(s.mode, s.dx, s.dy, now - s.t, s.dir, v);
     if (!kind) return snapBack();
     drag.current = null;
-    fling(e.currentTarget, kind, s.dir);
+    fling(e.currentTarget, kind, s.dir, kind, { dx: s.dx, dy: s.dy, v });
   };
 
   const onPointerCancel = (e: PointerEvent<HTMLElement>) => {

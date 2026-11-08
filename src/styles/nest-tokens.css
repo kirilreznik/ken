@@ -51,6 +51,7 @@
   --nest-duration-sheet: 260ms;
   --nest-duration-card: 280ms;
   --nest-duration-fling: 300ms;
+  --nest-duration-fling-quick: 180ms;
   --nest-font-sans: "Heebo", system-ui, "Noto Sans Hebrew", Arial, sans-serif;
   --nest-text-display-xl: 44px;
   --nest-text-display-xl-line-height: 48px;
