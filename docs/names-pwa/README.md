@@ -14,7 +14,7 @@ A Hebrew, installable web app for choosing a baby name, alone or with a partner:
 | `src/content/names-legal/` | privacy policy and terms text, with their versions in `versions.ts` |
 | `data/names/` | source data: `names.json` (CBS births) and `name-content.json` (card content), see its README |
 | `public/names/` | `sw.js`, icons, brand SVGs; `data/` is generated at build time (gitignored) |
-| `src/styles/nest-tokens.css` | generated design tokens (below) |
+| `src/styles/nest-tokens.css`, `src/styles/nest-motion.ts` | generated design tokens and motion tokens for Web Animations (below) |
 
 ## Routes
 
@@ -45,9 +45,10 @@ Filters, background, about, match, report, install, add-name, survey, decision a
 ## Auth
 
 - One browser client, `getSupabase()` in `src/lib/names/supabase.ts`: `flowType: 'pkce'`, session in `localStorage` under `nest-names-auth`, `detectSessionInUrl`. It is null on the server and when the public variables are missing; the names layout then renders "השירות לא מוגדר" and nothing else. No SSR auth, no cookies.
-- `AuthProvider` (`src/components/names/AuthProvider.tsx`) exposes `useAuth()`: session, user, loading, `expired` (the refresh token was rejected, shown as "צריך להיכנס שוב") and `signOut()`.
+- `AuthProvider` (`src/components/names/AuthProvider.tsx`) exposes `useAuth()`: session, user, loading, `expired` (the refresh token was rejected, shown as "החיבור לחשבון הסתיים. צריך להיכנס שוב כדי להמשיך.") and `signOut()`.
 - **Google:** `signInWithOAuth` with `redirectTo` = `NEXT_PUBLIC_SITE_URL` (or the current origin) + `/names/auth/callback`, plus `?join=` when an invite is pending.
 - **Email code:** `signInWithOtp({ shouldCreateUser: true })`, then `verifyOtp({ type: 'email' })` with 6 digits. Turnstile is rendered and its token passed only when `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is set.
+- **No signed-out flash:** welcome and join render their signed-out screen on the server inside `SignedOutView` (`AuthGuard.tsx`). On a device that keeps a session, `auth/StoredSessionHint.tsx` (an inline script that runs while the HTML parses) hides it until React shows the skeleton or redirects, so a signed-in person never sees the sign-in buttons flash (`useStoredSession()` in `AuthProvider.tsx`).
 - **Sign-ups switch:** while "Allow new users to sign up" is off in Supabase, a new person gets `/names/welcome?closed=1` with the waitlist link. Error mapping is in `src/lib/names/authErrors.ts`; raw error messages are never shown.
 - **Where to go next** (`nextRoute` in `src/lib/names/routing.ts`): onboarding until `user_metadata.terms_accepted_at` is set, then a pending invite, then the intro (once per device), then the swipe screen.
 - **Onboarding** writes `display_name`, `age_confirmed_at`, `terms_version`, `privacy_version`, `terms_accepted_at`, `updates_opt_in(_at)` and `signup_source: 'names-pwa'` to `user_metadata` with `auth.updateUser`.
@@ -171,6 +172,13 @@ npm run tokens:css
 ```
 
 The file defines every value as a `--nest-*` CSS variable on `:root` and exposes them to Tailwind 4 through `@theme` (`bg-ink`, `text-stone`, `rounded-lg`, `shadow-card`, `text-title`, `font-nest`, …). It is imported once, from `src/app/names/layout.tsx`; the landing page doesn't load it. `tests/nest-tokens.test.ts` checks the generated file against `tokens.json`.
+
+Added in the polish run (`tasks/prd-name-polish.md`):
+
+- **Motion** (`motion` group in `tokens.json`): `ease-out` `cubic-bezier(0.2, 0.8, 0.2, 1)`, `ease-drawer` `cubic-bezier(0.32, 0.72, 0, 1)` (not used yet), `duration-press` 150, `duration-fade` 160, `duration-fast` 200, `duration-snap` 220, `duration-sheet` 260, `duration-card` 280, `duration-fling` 300 and `duration-fling-quick` 180 ms. They become `--nest-ease-*` / `--nest-duration-*` in `nest-tokens.css` (in classes: `duration-(--nest-duration-press)`) and constants in the generated `src/styles/nest-motion.ts` for Web Animations calls (`EASE_OUT`, `DURATION_FAST`, …). Never inline a curve or a duration.
+- **Type `field`** (16 / 22 px, 500, set in `scripts/build-nest-tokens.mjs`): every text field (`inputClass()`), so iOS Safari doesn't zoom the page on focus.
+
+Component notes for the polish run's shared pieces (`inputClass`, `checkboxClass`, `emptyPanelClass`, `collapseRow`, `PanelNote`, `LegalLine`, `Wordmark`, `DeckLoad`, `BottomSheet`'s `closeButton`, toast links, the controls and pull-to-refresh base rules in `names.css`) are in [`DESIGN.md`](../../DESIGN.md) at the repo root.
 
 ## Performance
 
