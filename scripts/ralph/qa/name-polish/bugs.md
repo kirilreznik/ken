@@ -17,6 +17,7 @@ Browser: `webkit-iphone` · `chromium-pixel` · `sim-safari` · `desktop`. Statu
 | NP-BUG-009 | 1 | US-QA1-I | chromium-pixel | deck and background sheet, offline after one online visit | fixed | Offline after one online visit, the photo background is gone (plain canvas) and the background sheet's photo thumbnails show broken-image icons |
 | NP-BUG-010 | 2 | US-QA2-B | webkit-iphone, chromium-pixel | deck card at 320 × 568 | fixed | About 1 card in 10 (2-line intro + a chip) is 29–35 px too tall at 320 × 568: the card clips "לכל הפרטים" through its middle |
 | NP-BUG-011 | 2 | US-QA2-I | sim-safari, chromium-pixel | deck, "עדכון זמין" toast | fixed | The sticky "עדכון זמין" toast now sits over the lower half of the card's "לכל הפרטים" button and stays there until "רענון" is tapped |
+| NP-BUG-012 | 3 | US-QA3-B | webkit-iphone, chromium-pixel | duel at 320 px and Page Zoom 150 % | fixed | A long one-word added name (19 letters) stayed one line on the duel card and ran past both card edges, so the page scrolled sideways |
 
 ### NP-BUG-001: The welcome preview card's peek cuts the intro line through its letters
 
