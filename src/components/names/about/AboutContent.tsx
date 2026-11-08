@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Button } from "@/components/names/ui";
 import { CBS_ACCESSED, CBS_FILE, CBS_FILE_URL, CBS_LICENCE_URL, reportButtonLabel } from "@/lib/names/report";
 
 // 32 px tall on the board; -my-1.5 keeps that spacing while the hit area is 44 px.
@@ -55,11 +56,8 @@ export default function AboutContent({ hasName, onReport, level = 3 }: { hasName
         טעויות. האנשים הידועים נבדקו מול <bdi dir="ltr">Wikidata</bdi>.
       </Part>
 
-      <button
-        type="button"
-        onClick={onReport}
-        className="inline-flex h-13 items-center justify-center gap-2 rounded-pill border border-line bg-surface px-6 text-card-title text-ink transition-transform duration-150 motion-safe:active:scale-95"
-      >
+      {/* About sits on "ללא רקע" (page and sheet), where the secondary pill is white with a line edge. */}
+      <Button variant="secondary" onClick={onReport}>
         <svg
           width="18"
           height="18"
@@ -75,7 +73,7 @@ export default function AboutContent({ hasName, onReport, level = 3 }: { hasName
           <path d="M5 21V4h11l-1.5 4L16 12H5" />
         </svg>
         {reportButtonLabel(hasName)}
-      </button>
+      </Button>
     </div>
   );
 }

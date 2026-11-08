@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import { Button } from "@/components/names/ui";
 import CodeInput, { CODE_LENGTH } from "@/components/names/auth/CodeInput";
 import ResendTimer from "@/components/names/auth/ResendTimer";
 import Turnstile, { captchaEnabled } from "@/components/names/auth/Turnstile";
@@ -28,9 +29,6 @@ import { useOnline } from "./useMatches";
 import { track } from "@/lib/names/track";
 
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
-
-const primaryButton =
-  "flex h-14 items-center justify-center rounded-pill bg-ink px-6 text-button text-surface shadow-button disabled:opacity-60";
 
 /**
  * FR-W4: step 1 asks for the address and sends a code (signInWithOtp), step 2 takes the
@@ -191,9 +189,9 @@ export default function EmailSignIn() {
           </div>
           {errorLine}
           <Turnstile key={captchaKey} onToken={setCaptchaToken} />
-          <button type="submit" disabled={busy || sendBlocked} aria-busy={busy} className={primaryButton}>
+          <Button type="submit" disabled={busy || sendBlocked} aria-busy={busy}>
             {busy ? "שולחים…" : "שליחת קוד"}
-          </button>
+          </Button>
         </form>
       </AuthLayout>
     );
@@ -233,9 +231,9 @@ export default function EmailSignIn() {
           autoFocus
         />
         {errorLine}
-        <button type="submit" disabled={busy || code.length !== CODE_LENGTH} aria-busy={busy} className={primaryButton}>
+        <Button type="submit" disabled={busy || code.length !== CODE_LENGTH} aria-busy={busy}>
           {busy ? "נכנסים…" : "כניסה"}
-        </button>
+        </Button>
       </form>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <ResendTimer sentAt={sentAt} onResend={() => void sendCode()} busy={busy || sendBlocked} />

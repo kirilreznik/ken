@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import { Button } from "@/components/names/ui";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { GENERIC_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
 import {
@@ -229,15 +230,14 @@ export default function Onboarding() {
         ) : null}
 
         <div className="flex flex-col gap-2">
-          <button
+          <Button
             type="submit"
             aria-disabled={!valid || busy}
             aria-busy={busy}
             aria-describedby={valid ? undefined : "onboarding-missing"}
-            className="flex h-14 items-center justify-center rounded-pill bg-ink px-6 text-button text-surface shadow-button aria-disabled:opacity-60"
           >
             {busy ? "שומרים…" : "התחלת בחירה"}
-          </button>
+          </Button>
           {valid ? null : (
             <p id="onboarding-missing" aria-live="polite" className={`text-center text-caption ${tried ? "font-bold text-urgent" : "text-ink-soft"}`}>
               {MISSING_HINT}
