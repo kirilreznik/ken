@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   INVITE_PROMPT_SAVES,
+  choiceClearedText,
+  choiceRestoredText,
+  clearChoiceLabel,
   RECAP_VOTES,
   countSession,
   decideLabel,
@@ -86,5 +89,11 @@ describe("copy", () => {
     expect(recapLine(30, 6)).toBe("עברת על 30 שמות ושמרת 6.");
     expect(recapLine(30, 1)).toBe("עברת על 30 שמות ושמרת אחד.");
     expect(recapLine(30, 0)).toContain("עוד בלי שמירות");
+  });
+
+  it("names the chosen name when it is taken back, and when the undo brings it back", () => {
+    expect(clearChoiceLabel("נועה")).toBe("ביטול הבחירה בשם נועה");
+    expect(choiceClearedText("נועה")).toBe("הבחירה בשם נועה בוטלה");
+    expect(choiceRestoredText("נועה")).toBe("השם נועה נבחר שוב");
   });
 });

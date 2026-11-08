@@ -323,6 +323,7 @@ Confirm dialogs (`role="alertdialog"`) bound to `?dialog=<name>`; Escape, Back a
 
 ### Toast (`ToastRegion`, `src/lib/names/toast.ts`)
 The one toast: an ink pill near the bottom with `text-body` bold white text, an optional action ("ביטול"), `shadow-button`. Its `role="status"` region is always mounted, so screen readers hear every message; over a sheet with pinned buttons it sits just above them.
+Reversible acts that leave no row to look at get the toast's undo instead of a confirm dialog: restoring a hidden name ("השם {name} יחזור לבחירה") and taking the chosen name back ("הבחירה בשם {name} בוטלה", then "השם {name} נבחר שוב"). The act's label says what it undoes ("ביטול הבחירה"), so "ביטול" on the toast reads as undo.
 
 ### Legal line (`auth/LegalLine.tsx`)
 The line under the welcome and join panels ("בהמשך מאשרים את תנאי השימוש ומדיניות הפרטיות"): one element for both screens, a `names-glass` (strong) pill with `radius-lg`, `text-caption` `ink` text and bold underlined `ink` links, ≥ 4.5:1 over the photo's darkest fold. Each link owns a 44 px tall tap area (`-my-3 inline-flex min-h-11`) without growing the pill, and the "ו" stays with "מדיניות הפרטיות" when the line wraps at 320 px.

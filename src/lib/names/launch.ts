@@ -84,3 +84,18 @@ export function decisionTitle(shared: boolean): string {
 export function decideLabel(shared: boolean, name: string): string {
   return shared ? `בחרנו בשם ${name}` : `בחרתי בשם ${name}`;
 }
+
+/** The action that takes the chosen name back, on the decision sheet and the lists banner (aria). */
+export function clearChoiceLabel(name: string): string {
+  return `ביטול הבחירה בשם ${name}`;
+}
+
+/** Toast after taking the chosen name back; its "ביטול" restores it. */
+export function choiceClearedText(name: string): string {
+  return `הבחירה בשם ${name} בוטלה`;
+}
+
+/** Toast after that "ביטול": the name is chosen again. */
+export function choiceRestoredText(name: string): string {
+  return `השם ${name} נבחר שוב`;
+}

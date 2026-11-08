@@ -27,7 +27,7 @@ import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
 import DuelScreen from "./DuelScreen";
 import RowMenu from "./RowMenu";
-import { decideLabel } from "@/lib/names/launch";
+import { clearChoiceLabel, decideLabel } from "@/lib/names/launch";
 import { track } from "@/lib/names/track";
 
 const LISTS_PATH = "/names/lists";
@@ -624,8 +624,8 @@ function ChosenBanner({ name, shared, onOpen, onClear }: { name: string; shared:
         <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
         <span className="text-row-name break-words">{name}</span>
       </button>
-      <Button variant="link" onClick={onClear} aria-label={`ביטול הבחירה בשם ${name}`} className="text-person!">
-        ביטול
+      <Button variant="link" onClick={onClear} aria-label={clearChoiceLabel(name)} className="text-person!">
+        ביטול הבחירה
       </Button>
     </div>
   );

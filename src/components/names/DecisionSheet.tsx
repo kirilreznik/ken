@@ -8,7 +8,7 @@ import { Button, Glass, IconButton } from "@/components/names/ui";
 import { closeSheet, useLayerOpen } from "@/components/names/ui/layers";
 import { useModal, usePortalHost } from "@/components/names/ui/useModal";
 import { useNameStats } from "@/components/names/useCards";
-import { decisionTitle } from "@/lib/names/launch";
+import { clearChoiceLabel, decisionTitle } from "@/lib/names/launch";
 import { countLine } from "@/lib/names/popularity";
 
 type DecisionSheetProps = {
@@ -91,7 +91,7 @@ function Panel({ name, shared, onClear }: DecisionSheetProps & { name: string })
                 close();
               }}
             >
-              לשנות את הבחירה
+              {clearChoiceLabel(name)}
             </Button>
           </div>
         </section>
