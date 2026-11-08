@@ -17,7 +17,7 @@ export function GoodbyeView() {
         {DELETED_TITLE}
       </p>
       {/* A full page load, so nothing of the deleted account stays in memory. */}
-      <a href="/" className={buttonClass("primary", "lg")}>
+      <a href="/" data-control className={buttonClass("primary", "lg")}>
         לדף הבית של Nest
       </a>
     </AuthLayout>

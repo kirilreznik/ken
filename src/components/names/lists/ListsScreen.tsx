@@ -466,6 +466,7 @@ function DuelLink({ title, from }: { title: string; from: "saved" | "matches" })
       href={`${LISTS_PATH}?tab=duel&from=${from}`}
       replace
       scroll={false}
+      data-control
       className="flex items-center gap-3 rounded-lg bg-peach-soft px-4 py-3.5 text-ink"
     >
       <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-md bg-surface">

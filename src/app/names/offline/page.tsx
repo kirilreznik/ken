@@ -17,7 +17,7 @@ export default function NamesOffline() {
       <p className="max-w-80 text-body text-ink-soft">
         העמוד הזה עוד לא שמור במכשיר. אפשר לחזור לבחירת שם, או לנסות שוב כשהחיבור יחזור.
       </p>
-      <Link href="/names" className="inline-flex min-h-11 items-center px-4 text-card-title underline underline-offset-4">
+      <Link href="/names" data-control className="inline-flex min-h-11 items-center px-4 text-card-title underline underline-offset-4">
         לבחירת שם
       </Link>
     </main>

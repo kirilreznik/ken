@@ -23,7 +23,7 @@ export default function NamesError({ error, retry }: { error: Error & { digest?:
       <Button variant="primary" size="lg" onClick={() => retry()}>
         {ERROR_RETRY}
       </Button>
-      <Link href="/names" className="inline-flex min-h-11 items-center px-4 text-card-title underline underline-offset-4">
+      <Link href="/names" data-control className="inline-flex min-h-11 items-center px-4 text-card-title underline underline-offset-4">
         לבחירת שם
       </Link>
     </main>

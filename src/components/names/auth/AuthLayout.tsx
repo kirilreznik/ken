@@ -39,6 +39,7 @@ export default function AuthLayout({ title, lead, backHref, hero, footer, childr
           <Link
             href={backHref}
             aria-label="חזרה"
+            data-control
             className="names-glass-soft flex size-11 items-center justify-center self-start rounded-pill text-ink"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">

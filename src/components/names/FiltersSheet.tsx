@@ -312,6 +312,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
 
       <Link
         href="/names/hidden"
+        data-control
         className="flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink"
       >
         <span>שמות שהסתרתי</span>

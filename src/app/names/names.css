@@ -50,6 +50,31 @@
     color: inherit;
   }
 
+  /* Controls (mobile-native §5, §8): holding or double-tapping one never selects its label or
+   * opens Safari's link preview (the callout is inherited, so thumbnails inside are covered),
+   * sliding off a held one doesn't drag out its link or image, a quick second tap is a second click, and a pointer gets the hand. Links that act as
+   * controls (pills, round buttons, rows) carry data-control; other links are content and
+   * keep their callout. Zero-specificity :where(), so a component's utility still wins. */
+  .nest-names :where(button, [role="button"], [role="tab"], [role="switch"], [role="radio"], [role="menuitem"], summary, a[data-control], label:has(input[type="checkbox"], input[type="radio"])) {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+  }
+
+  .nest-names :where(a[data-control], a[data-control] img, button img, [role="radio"] img) {
+    -webkit-user-drag: none;
+  }
+
+  .nest-names :where(a:not([data-control])) {
+    -webkit-touch-callout: default;
+    touch-action: manipulation;
+  }
+
+  .nest-names :where(button, [role="button"], [role="tab"], [role="switch"], [role="radio"], [role="menuitem"], summary, label:has(input[type="checkbox"], input[type="radio"])):where(:not(:disabled, [aria-disabled="true"])) {
+    cursor: pointer;
+  }
+
   .nest-names :focus-visible {
     outline: 2px solid var(--nest-ink);
     outline-offset: 2px;

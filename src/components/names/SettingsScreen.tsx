@@ -56,13 +56,13 @@ function LinkRow({ href, children, newTab = false }: { href: string; children: R
   return (
     <li className={row}>
       {newTab ? (
-        <a href={href} target="_blank" rel="noopener" className={rowAction}>
+        <a href={href} target="_blank" rel="noopener" data-control className={rowAction}>
           {children}
           <span className="sr-only"> (נפתח בכרטיסייה חדשה)</span>
           <Chevron />
         </a>
       ) : (
-        <Link href={href} className={rowAction}>
+        <Link href={href} data-control className={rowAction}>
           {children}
           <Chevron />
         </Link>
