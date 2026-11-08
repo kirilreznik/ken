@@ -13,6 +13,7 @@ import {
   DISPLAY_NAME_MAX,
   canSubmit,
   isValidDisplayName,
+  missingHint,
   onboardingMetadata,
   suggestedDisplayName,
   type OnboardingForm,
@@ -26,7 +27,6 @@ import { track } from "@/lib/names/track";
 
 const OFFLINE_SAVE_MESSAGE = "אין חיבור לאינטרנט. אפשר לשמור שוב כשהחיבור יחזור.";
 const ADULTS_ONLY = "השירות מיועד מגיל 18 ומעלה.";
-const MISSING_HINT = "אפשר להתחיל אחרי שממלאים שם ומאשרים את שני הסעיפים הראשונים.";
 
 const wordmark = <Wordmark />;
 
@@ -189,7 +189,7 @@ export default function Onboarding() {
                 checked={form.ageConfirmed}
                 onChange={(e) => update({ ageConfirmed: e.target.checked })}
                 aria-invalid={ageInvalid || undefined}
-                aria-describedby="age-hint"
+                aria-describedby={ageInvalid ? "age-hint onboarding-missing" : "age-hint"}
                 className={checkbox}
               />
               <span>אני בן/בת 18 ומעלה</span>
@@ -206,6 +206,7 @@ export default function Onboarding() {
               checked={form.termsAccepted}
               onChange={(e) => update({ termsAccepted: e.target.checked })}
               aria-invalid={termsInvalid || undefined}
+              aria-describedby={termsInvalid ? "onboarding-missing" : undefined}
               className={checkbox}
             />
             <span>
@@ -213,7 +214,8 @@ export default function Onboarding() {
               <NewTabLink href="/names/privacy">מדיניות הפרטיות</NewTabLink>
             </span>
           </label>
-          <label className={checkboxRow}>
+          {/* The optional opt-in is its own group, apart from the two required confirmations. */}
+          <label className={`${checkboxRow} mt-2 border-t border-line pt-4`}>
             <input
               type="checkbox"
               checked={form.updatesOptIn}
@@ -247,7 +249,7 @@ export default function Onboarding() {
           {valid ? null : (
             <p id="onboarding-missing" aria-live="polite" className={`text-center text-caption ${tried ? CAPTION_ERROR : "text-ink-soft"}`}>
               {tried ? <ErrorMark /> : null}
-              {MISSING_HINT}
+              {missingHint(form)}
             </p>
           )}
         </div>

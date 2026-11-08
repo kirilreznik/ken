@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { PRIVACY_VERSION, TERMS_VERSION } from "@/content/names-legal/versions";
-import { canSubmit, isValidDisplayName, onboardingMetadata, suggestedDisplayName } from "@/lib/names/onboarding";
+import { canSubmit, isValidDisplayName, missingHint, onboardingMetadata, suggestedDisplayName } from "@/lib/names/onboarding";
 
 const valid = { displayName: "נועה", ageConfirmed: true, termsAccepted: true, updatesOptIn: false };
 
@@ -65,5 +65,20 @@ describe("onboardingMetadata", () => {
 
   it("never carries a due date", () => {
     expect(Object.keys(onboardingMetadata(valid, now)).some((k) => /due|week|pregnan/i.test(k))).toBe(false);
+  });
+});
+
+describe("missingHint", () => {
+  const empty = { displayName: "", ageConfirmed: false, termsAccepted: false, updatesOptIn: false };
+  it("names every missing item", () => {
+    expect(missingHint(empty)).toBe("אפשר להמשיך אחרי שממלאים שם, מאשרים גיל ומסכימים לתנאים.");
+  });
+  it("names only what is left", () => {
+    expect(missingHint({ ...empty, displayName: "נועה" })).toBe("אפשר להמשיך אחרי שמאשרים גיל ומסכימים לתנאים.");
+    expect(missingHint({ ...empty, displayName: "נועה", ageConfirmed: true })).toBe("אפשר להמשיך אחרי שמסכימים לתנאים.");
+    expect(missingHint({ ...empty, ageConfirmed: true, termsAccepted: true })).toBe("אפשר להמשיך אחרי שממלאים שם.");
+  });
+  it("ignores the optional opt-in and is empty when the form is complete", () => {
+    expect(missingHint({ displayName: "נועה", ageConfirmed: true, termsAccepted: true, updatesOptIn: false })).toBe("");
   });
 });

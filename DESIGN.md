@@ -360,6 +360,8 @@ The same card stands in for "התאמות" when `name_matches` failed online wit
 ### Checkboxes (`checkboxClass`)
 Onboarding's three consents and the filter sheet's "מספר אותיות מותאם אישית" use `checkboxClass()` (`ui/classes.ts`): a drawn 24 px box (`appearance: none`, half of `radius-sm`, so it never reads as a radio), `surface` fill and a 2 px edge at ≥ 3:1 like the fields: `stone` on solid surfaces, `ink-soft` on glass. Checked is an `ink` box with a `surface` tick (`names.css` `.names-checkbox`), so the state is told by the mark, not the color. Invalid and unchecked turns the edge `urgent`. The whole label row is the ≥ 44 px target; focus is the global 2 px ink outline 2 px off the box (on the ink box an outline on its edge would vanish).
 
+Onboarding keeps the two required confirmations (age, terms) together and sets the optional updates opt-in apart below a `border-line` hairline (`mt-2 pt-4`). The line under the button names what is still missing (`missingHint`, `lib/names/onboarding.ts`): "אפשר להמשיך אחרי שממלאים שם, מאשרים גיל ומסכימים לתנאים.", shortening as items are done; never counts boxes. After a submit, an invalid age or terms box is `aria-describedby` that line too.
+
 ### Navigation
 No tab bar. The swipe header's "השמות שלי" ink pill and the settings button lead to lists and settings; other screens have a `BackButton` and a title. Lists switches between "שמרתי", "התאמות" and "דו־קרב" with segments in the URL (`?tab=`).
 
