@@ -55,7 +55,8 @@ export function iconButtonClass(): string {
 // either way); read-only fields are sand. Focus is the global 2 px outline pulled onto the field's
 // own edge (no floating second ring); an invalid field keeps its urgent edge while focused. "code" is the sign-in code's large centered digits;
 // "multiline" is a textarea (its min height comes from the caller) and has no resize grip on touch;
-// "link" is a read-only URL in caption type, so the whole invite link fits on a phone.
+// "link" is a read-only URL: text-field too (a 12 px field zoomed Safari on tap, NP-BUG-007), cut with an
+// ellipsis on a phone; "העתקת הקישור" and "שליחת קישור הזמנה" carry the whole link.
 export type InputKind = "line" | "multiline" | "code" | "link";
 
 const FIELD = [
@@ -68,7 +69,7 @@ const FIELD_KIND: Record<InputKind, string> = {
   line: "h-12 text-start text-field",
   multiline: "py-3 text-start text-field resize-y pointer-coarse:resize-none",
   code: "h-12 text-center text-title tracking-[0.4em] tabular-nums",
-  link: "h-12 text-start text-caption",
+  link: "h-12 text-start text-field text-ellipsis",
 };
 
 export function inputClass(kind: InputKind = "line"): string {

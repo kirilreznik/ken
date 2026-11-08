@@ -7,7 +7,7 @@ import CardStack from "@/components/names/card/CardStack";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
 import FiltersSheet from "@/components/names/FiltersSheet";
 import MatchSheet from "@/components/names/MatchSheet";
-import { closeSheet, openNameSheet } from "@/components/names/ui";
+import { closeSheet, openNameSheet, useToastLift } from "@/components/names/ui";
 import { lazySheet } from "@/components/names/lazySheet";
 import { useCards } from "@/components/names/useCards";
 import { usePrefJson } from "@/components/names/usePrefJson";
@@ -60,6 +60,7 @@ export default function SwipeScreen() {
   const { user } = useAuth();
   const userId = user?.id ?? null;
   const space = useSpace();
+  const barRef = useToastLift();
   const { cards, error: cardsError, retry: retryCards } = useCards();
   const [retried, setRetried] = useState(false);
   const { store, state } = useVotes(space.spaceId, userId);
@@ -306,8 +307,8 @@ export default function SwipeScreen() {
               <DeckSkeleton />
             )}
           </div>
-          {/* The sync line floats above the action bar (SwipeFooter). */}
-          <div className="relative">
+          {/* The sync line floats above the action bar (SwipeFooter); toasts sit above it too. */}
+          <div ref={barRef} className="relative">
             <ActionBar
               onKeep={fly("keep")}
               onLove={fly("love")}

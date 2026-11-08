@@ -3,11 +3,13 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
+import { dismissScreenToast } from "@/lib/names/toast";
 import { otherLayerOpen, type SheetName } from "@/lib/names/urlLayer";
 import { DURATION_FAST, DURATION_SHEET, EASE_OUT } from "@/styles/nest-motion";
 import { IconButton } from "./Button";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
 import { closeSheet, useLayerOpen } from "./layers";
+import { useToastLayer, useToastLift } from "./toastLift";
 import { useModal, usePortalHost } from "./useModal";
 
 /**
@@ -71,27 +73,6 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
 // PRD 3.2.4: from 768 px a tall sheet is a centered panel (max 480 px wide, 90vh) without detents.
 const DESKTOP = "(min-width: 768px)";
 const desktop = () => window.matchMedia(DESKTOP).matches;
-// The pinned footer's height, on <html> while the sheet is open: ToastRegion sits above it, so a
-// toast never covers the sheet's buttons.
-const TOAST_LIFT = "--names-toast-lift";
-
-/** Publishes the footer's height as TOAST_LIFT for as long as it is mounted. */
-function useToastLift(footer: RefObject<HTMLDivElement | null>) {
-  useLayoutEffect(() => {
-    const node = footer.current;
-    if (!node) return;
-    const root = document.documentElement.style;
-    const lift = () => root.setProperty(TOAST_LIFT, `${node.offsetHeight}px`);
-    lift();
-    const observer = new ResizeObserver(lift);
-    observer.observe(node);
-    return () => {
-      observer.disconnect();
-      root.removeProperty(TOAST_LIFT);
-    };
-  }, [footer]);
-}
-
 /** A new `key` in an open sheet starts it over: content at the top, focus on [data-autofocus]. */
 function useContentReset(panel: RefObject<HTMLElement | null>, scroller: RefObject<HTMLDivElement | null>, key: string | undefined) {
   const shown = useRef(key);
@@ -145,9 +126,10 @@ type PanelProps = BottomSheetProps & {
 /** The panel itself; exported for markup tests. */
 export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, closeButton = false, footer, detents, onDetent, contentKey, closing = false, onClosed, children }: PanelProps) {
   const panel = useRef<HTMLElement>(null);
-  const footerRef = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
-  useToastLift(footerRef);
+  const footerRef = useToastLift({ layer: true });
+  useToastLayer();
+  useEffect(dismissScreenToast, []);
   useContentReset(panel, scroller, contentKey);
   // `detents`: a tall sheet on a phone; on desktop its handle only drags down to close.
   const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean; detents: boolean } | null>(null);

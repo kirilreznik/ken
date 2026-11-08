@@ -38,7 +38,7 @@ export default function CardStack({ cards, enter = false, className = "", ...car
       <NameCard
         key={card.stats.name}
         card={card}
-        data-motion={enter ? "fade" : undefined}
+        data-motion={enter ? "fade-in" : undefined}
         className={`flex-1 ${enter ? "names-card-enter" : ""} ${className}`}
         {...cardProps}
       />

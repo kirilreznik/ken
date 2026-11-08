@@ -3,6 +3,8 @@ import type { Background } from "./prefs";
 /** The three photos of FR-W17, served from public/landing/. */
 export const PHOTO_BACKGROUNDS = ["fabric", "notebook", "nursery"] as const;
 export type PhotoBackground = (typeof PHOTO_BACKGROUNDS)[number];
+/** The photo's file as public/names/sw.js precaches it (STATIC_ASSETS): shown as is, it works offline after one visit (NP-BUG-009). */
+export const photoUrl = (id: PhotoBackground) => `/landing/names-${id}.webp`;
 
 /** What the screen actually shows: "own" without a readable photo falls back to "בדים" (FR-W17). */
 export function effectiveBackground(choice: Background, hasOwnPhoto: boolean): Background {

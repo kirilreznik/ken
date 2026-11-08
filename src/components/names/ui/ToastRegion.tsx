@@ -12,8 +12,9 @@ const actionClass =
 /**
  * The one toast (showToast in src/lib/names/toast.ts): an ink pill near the bottom. The
  * role="status" region is always mounted so screen readers announce each new message, and
- * it stays usable while a sheet makes the rest of the page inert. Over a sheet with pinned
- * buttons it sits just above them (--names-toast-lift, set by BottomSheet).
+ * it stays usable while a sheet makes the rest of the page inert. It sits just above pinned
+ * controls: a sheet's footer, the deck's action bar, the duel's "עצירה" (--names-toast-lift,
+ * useToastLift in ./toastLift).
  */
 export function ToastRegion() {
   const toast = useSyncExternalStore(subscribeToast, getToast, serverToast);

@@ -95,10 +95,13 @@
 
 /* Reduced motion: no transition or animation runs longer than 200 ms. Short fades that
  * should still play (the next card fading in, PRD 3.2.17) mark their element with
- * data-motion="fade" and get capped at 200 ms; everything else is switched off. */
+ * data-motion="fade" and get capped at 200 ms; everything else is switched off.
+ * data-motion="fade-in" caps only the entrance animation: its transitions stay off, so a card
+ * moved by the finger follows it in the same frame (NP-BUG-008). */
 @media (prefers-reduced-motion: reduce) {
   .nest-names,
-  .nest-names *:not([data-motion="fade"]),
+  .nest-names *:not([data-motion]),
+  .nest-names [data-motion="fade-in"],
   .nest-names *::before,
   .nest-names *::after {
     animation-duration: 0.01ms !important;
@@ -113,6 +116,10 @@
     animation-iteration-count: 1 !important;
     transition-duration: var(--nest-duration-fast) !important;
     transition-delay: 0s !important;
+  }
+
+  .nest-names [data-motion="fade-in"] {
+    animation-duration: var(--nest-duration-fast) !important;
   }
 }
 
@@ -365,7 +372,7 @@
 /* The card stack (CardStack, Main.dc.html / GlassFabric.dc.html): the peeking cards are soft
  * glass, the nearer one whiter. On "ללא רקע" they're solid: sand behind, near-white in front,
  * line border and card shadows. The current card enters like the demo's .nd-card.enter; with
- * reduced motion it only fades (data-motion="fade" keeps it at 200 ms). */
+ * reduced motion it only fades (data-motion="fade-in" keeps the animation at 200 ms). */
 @keyframes names-card-in {
   from {
     transform: translateY(14px) scale(0.96);
@@ -428,5 +435,29 @@
     .nest-names .names-card-enter {
       animation-name: names-fade-in;
     }
+  }
+}
+
+/* The welcome screen's preview card (PreviewCard) only gets the height the panel leaves. It ends
+ * after a whole part, never through a line (NP-BUG-001): each part goes, with all after it, once
+ * the card (its size container minus 16 px) can't hold it plus the card's 20 px bottom padding.
+ * Card parts: tag row, middle (name, intro, chips), sex bar, stats; the stats never fit the 300 px cap.
+ * Unlayered, so it wins over the parts' own display utilities. */
+.nest-names .names-preview-card > :nth-child(n + 4) {
+  display: none;
+}
+@container (height < 18.5rem) {
+  .nest-names .names-preview-card > :nth-child(n + 3) {
+    display: none;
+  }
+}
+@container (height < 15.875rem) {
+  .nest-names .names-preview-card > :nth-child(2) > :nth-child(n + 3) {
+    display: none;
+  }
+}
+@container (height < 13.1875rem) {
+  .nest-names .names-preview-card > :nth-child(2) > :nth-child(n + 2) {
+    display: none;
   }
 }

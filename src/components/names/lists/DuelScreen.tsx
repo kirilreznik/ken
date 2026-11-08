@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
-import { Button, IconButton, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
+import { Button, IconButton, emptyPanelClass, emptyTitleClass, useToastLift } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import {
   currentPair,
@@ -86,6 +86,8 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
   const [status, setStatus] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
   const resultRef = useRef<HTMLHeadingElement>(null);
+  // Toasts ("השם … נוסף לרשימה") sit above "עצירה" (NP-BUG-003).
+  const stopRef = useToastLift();
 
   const source = duelSource(from, savedDuel(saves), savedNames.length, matchNames.length);
   const list = source === "matches" ? matchNames : savedNames;
@@ -294,7 +296,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                   </ol>
                 </div>
 
-                <div className="mt-auto flex items-center">
+                <div ref={stopRef} className="mt-auto flex items-center">
                   <button
                     type="button"
                     onClick={stop}

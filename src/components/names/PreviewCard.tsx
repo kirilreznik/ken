@@ -8,6 +8,7 @@ import { staticCards } from "@/lib/names/staticCards";
  * A direct child of AuthLayout's column, it only takes the height the panel leaves (up to
  * its full 300 px), so the sign-in buttons stay in the first screen on short phones; when
  * less than 8rem is left it hides (a size container, so it never pushes the panel down).
+ * Cut short, it ends after a whole part, never through a line (names.css .names-preview-card).
  */
 export default function PreviewCard() {
   const card = staticCards().find((c) => c.stats.name === "זיו");
@@ -21,7 +22,7 @@ export default function PreviewCard() {
       <NameCard
         card={card}
         inert
-        className="max-h-[300px] min-h-0 -rotate-2 overflow-hidden mask-b-from-60% [&>*]:shrink-0 [@container(max-height:8rem)]:hidden"
+        className="names-preview-card max-h-[300px] min-h-0 -rotate-2 overflow-hidden mask-b-from-60% [&>*]:shrink-0 [@container(max-height:8rem)]:hidden"
       />
     </div>
   );
