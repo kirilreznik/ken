@@ -8,9 +8,9 @@ import { clearVoteCache } from "./voteStore";
 export const WELCOME_PATH = "/names/welcome";
 export const APP_PATH = "/names";
 
-/** Query flag on welcome after a rejected refresh token (FR-W8): shows "צריך להיכנס שוב". */
+/** Query flag on welcome after a rejected refresh token (FR-W8): shows EXPIRED_MESSAGE. */
 export const EXPIRED_PARAM = "expired";
-export const EXPIRED_MESSAGE = "צריך להיכנס שוב";
+export const EXPIRED_MESSAGE = "החיבור לחשבון הסתיים. צריך להיכנס שוב כדי להמשיך.";
 
 /** Query flag on welcome when Supabase refuses a new account (PRD 3.2.2, FR-W5). */
 export const CLOSED_PARAM = "closed";

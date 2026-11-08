@@ -319,6 +319,9 @@ Confirm dialogs (`role="alertdialog"`) bound to `?dialog=<name>`; Escape, Back a
 ### Toast (`ToastRegion`, `src/lib/names/toast.ts`)
 The one toast: an ink pill near the bottom with `text-body` bold white text, an optional action ("ביטול"), `shadow-button`. Its `role="status"` region is always mounted, so screen readers hear every message; over a sheet with pinned buttons it sits just above them.
 
+### Panel notes (`auth/PanelNote.tsx`)
+A notice inside the auth glass panel (offline, sign-ups closed, session expired) is a line, not a box: a 20 px drawn icon (offline, info, clock) and `text-body` medium `ink` text, ≥ 7.8:1 on the glass. It sits in the panel's `gap-6` above the buttons inside an always-mounted `role="status"` region (`display: contents`, so an empty one adds no gap).
+
 ### Name card (`src/components/names/card/`)
 `NameCard` on `names-glass names-card-glass`, `radius-xl`, padding `space-5`: `CardHeader` (sex tag in `peach-soft`/`clay-deep`, position line, the name in `text-name`, niqqud, surname line), the intro clamped to two lines, hint chips, `CardSexBar` (boys `ink`, girls `peach`), `CardStats` (two well tiles with `text-stat` and a sparkline), and "לכל הפרטים" (secondary `md`). Swipe stamps show while dragging: keep in `ink`, skip in `ink-soft`, love in `clay-deep`. `CardStack` adds the two peeking cards (`names-back-near`, `names-back-far`).
 
