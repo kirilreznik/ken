@@ -309,6 +309,9 @@ Three equal pills, each with its word and icon, shared by the swipe screen's `Ac
 - **Toggle chip:** selected is ink with white text; unselected is soft glass with ink text (`sand` with `ink-soft` on "ללא רקע"); state via `aria-pressed`. A 29 px pill whose hit area stretches to 45 px.
 - **Hint chip:** the unselected look, not a control (the card's "מהתנ״ך" / "{n} אנשים מוכרים").
 
+### Switch (settings opt-in)
+A 52 × 32 px pill track with a 2 px edge: off is `sand` with a `stone` edge (≥ 3:1 against `surface`), on is `ink`. The 24 px `surface` thumb sits at the start and slides 20 px with `translate` (150 ms ease-out, mirrored in RTL); the track color eases with it. The state is also said in words under the title ("פעיל" / "כבוי").
+
 ### Glass panels (`Glass`, `glassClass`)
 See Elevation & Depth. `Glass` renders the panel as `div`, `section`, `article`, `header`, `nav` or `aside`.
 

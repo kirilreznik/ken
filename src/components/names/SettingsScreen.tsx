@@ -52,21 +52,13 @@ function Chevron() {
   );
 }
 
-function LinkRow({ href, children, newTab = false }: { href: string; children: React.ReactNode; newTab?: boolean }) {
+function LinkRow({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <li className={row}>
-      {newTab ? (
-        <a href={href} target="_blank" rel="noopener" data-control className={rowAction}>
-          {children}
-          <span className="sr-only"> (נפתח בכרטיסייה חדשה)</span>
-          <Chevron />
-        </a>
-      ) : (
-        <Link href={href} data-control className={rowAction}>
-          {children}
-          <Chevron />
-        </Link>
-      )}
+      <Link href={href} data-control className={rowAction}>
+        {children}
+        <Chevron />
+      </Link>
     </li>
   );
 }
@@ -327,9 +319,9 @@ export default function SettingsScreen() {
                 </span>
                 <span
                   aria-hidden="true"
-                  className={`relative inline-flex h-8 w-13 shrink-0 items-center rounded-pill border-2 transition-colors ${optedIn ? "border-ink bg-ink" : "border-line bg-sand"}`}
+                  className={`relative inline-flex h-8 w-13 shrink-0 items-center rounded-pill border-2 transition-colors duration-150 ease-out ${optedIn ? "border-ink bg-ink" : "border-stone bg-sand"}`}
                 >
-                  <span className={`absolute size-6 rounded-full bg-surface shadow-card transition-[inset-inline-start] ${optedIn ? "start-[calc(100%-26px)]" : "start-0.5"}`} />
+                  <span className={`absolute start-0.5 size-6 rounded-full bg-surface shadow-card transition-transform duration-150 ease-out ${optedIn ? "translate-x-5 rtl:-translate-x-5" : ""}`} />
                 </span>
               </button>
               {optInError ? (
@@ -373,12 +365,8 @@ export default function SettingsScreen() {
                 </button>
               </li>
             ) : null}
-            <LinkRow href="/names/terms" newTab>
-              תנאי שימוש
-            </LinkRow>
-            <LinkRow href="/names/privacy" newTab>
-              מדיניות פרטיות
-            </LinkRow>
+            <LinkRow href="/names/terms">תנאי שימוש</LinkRow>
+            <LinkRow href="/names/privacy">מדיניות פרטיות</LinkRow>
           </ul>
         </Section>
 
