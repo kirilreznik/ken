@@ -158,6 +158,40 @@ Change per screen (after − baseline):
 
 How the scores were made: as the baseline. The design-review sub-agent (A) scored each screen fresh from the after shots (`shots/after/G2/`: 45 states in webkit, chromium, webkit375, webkit320; 25 in sim) and the source, before reading the baseline findings; the parent checked every row and column sum (A's were right). The detector sub-agent (B) ran `impeccable detect` on 58 G2 files (exit 0, `[]`, also with `--no-config`) and the overlay on the same 5 views as the baseline (0 items). Parent adjustments, by the US-R1 rule that a move on unchanged code is scorer variance: A scored H5 2 on "deck: filtered + empty" and on the filters sheet for -12 (0-result apply) and H8 2 on the pauses, each marked by A as calibration with the screen unchanged; the baseline cells (3) are held. A's sum was 330/432; held cells make it 333/432.
 
+### G3 Lists and settings (US-R3, 2026-11-08, at `f404077`; findings `findings/R3-G3.md`)
+
+| Screen (states) | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 | H9 | H10 | Total | Band | Notes (backlog IDs) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| lists "שמרתי" (rows, empty, chosen banner) | 3 | 3 | 3 | 3 | 3 | 2 | 2 | 3 | n/a | 3 | 25/36 (69 %) | Acceptable | H3/H5 up: "ביטול הבחירה" with an undo toast (NP-126); H4/H10 up: the shared empty card says how the list fills (NP-069, NP-171); H6 still 2: the banner doesn't look tappable (-22, NP-127 next-run); -10 at 320 (NP-144 next-run) |
+| lists row menu | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 2 | 26/36 (72 %) | Good | H1/H3/H4 up: the row collapses, then a toast with "ביטול" (NP-137); H6 up: the hide toast links to "לשמות שהסתרתי" (NP-129); H5 up: no hide on added names, every removal can be undone; -20 divider (NP-140 next-run) |
+| add-name sheet (default, error) | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 30/40 (75 %) | Good | H3 up: close button (NP-110); shared field (NP-053); -17 (NP-145 next-run) |
+| lists "התאמות" (solo, empty, rows, offline) | 3 | 3 | 3 | 3 | 3 | 3 | 2 | 3 | 2 | 3 | 28/40 (70 %) | Good | H2 up: no "שניכם" (NP-025); H4 up: shared empty card (NP-171), copy matches the 2+ rule (-26 partly, OD-014); H9 still 2: bare offline timestamp (-18, NP-136 next-run) |
+| duel (few, round 1, mid-way, done, between matches) | 2 | 3 | 3 | 2 | 3 | 3 | 2 | 3 | 3 | 3 | 27/40 (68 %) | Acceptable | unchanged score; the too-few card teaches and offers "הוספת שם" (NP-171); -11/-12/-13/-14 next-run (NP-165/162/166/167); the add toast covers "עצירה…" (NP-BUG-003) |
+| hidden (list, empty) | 3 | 3 | 3 | 3 | 3 | 3 | 2 | 3 | n/a | 3 | 26/36 (72 %) | Good | H1 up: restore gives a toast with "ביטול" (NP-137); H4 up: shared empty card (NP-171); H6 up: the empty card teaches the long press, toast link from lists (NP-129) |
+| settings (solo, shared) | 3 | 3 | 3 | 3 | 3 | 3 | 2 | 3 | 3 | 3 | 29/40 (73 %) | Good | H4 up: legal rows open in the app (NP-157), name field on spec (NP-053); off-switch outline (NP-154); -24 owner (OD-012) |
+| settings dialogs (delete, leave) | 3 | 3 | 4 | 2 | 3 | 3 | n/a | 3 | 2 | 3 | 26/36 (72 %) | Good | unchanged; -09 owner (OD-011), -15 next-run (NP-150) |
+| about page | n/a | 3 | 3 | 3 | n/a | 3 | n/a | 3 | n/a | 4 | 19/24 (79 %) | Good | unchanged score; the report button is the shared Button (NP-047); -23 (NP-071 next-run) |
+| privacy + terms (frame only; the text is the owner's) | 3 | 3 | 3 | 3 | n/a | 2 | 2 | 3 | n/a | 3 | 22/32 (69 %) | Acceptable | H3 up: same tab from settings, back returns to settings (NP-157); -27 owner (OD-015); -19 next-run (NP-159) |
+| **G3 (sum of the rows)** | 26 | 30 | 31 | 28 | 24 | 28 | 18 | 30 | 13 | 30 | **258/360 (72 %)** | **Good** | |
+
+Change per screen (after − baseline):
+
+| Screen | Baseline | After | Change | Heuristics that moved |
+|---|---|---|---|---|
+| lists "שמרתי" | 21/36 (58 %) | 25/36 (69 %) | +4 | H3 2→3, H4 2→3, H5 2→3, H10 2→3 |
+| lists row menu | 20/36 (56 %) | 26/36 (72 %) | +6 | H1 2→3, H3 1→3, H4 2→3, H5 2→3, H6 2→3 |
+| add-name sheet | 29/40 (73 %) | 30/40 (75 %) | +1 | H3 2→3 |
+| lists "התאמות" | 26/40 (65 %) | 28/40 (70 %) | +2 | H2 2→3, H4 2→3 |
+| duel | 27/40 (68 %) | 27/40 (68 %) | 0 | none |
+| hidden | 23/36 (64 %) | 26/36 (72 %) | +3 | H1 2→3, H4 2→3, H6 2→3 |
+| settings | 28/40 (70 %) | 29/40 (73 %) | +1 | H4 2→3 |
+| settings dialogs | 26/36 (72 %) | 26/36 (72 %) | 0 | none |
+| about page | 19/24 (79 %) | 19/24 (79 %) | 0 | none |
+| privacy + terms | 21/32 (66 %) | 22/32 (69 %) | +1 | H3 2→3 |
+| **G3** | **240/360 (67 %), Acceptable** | **258/360 (72 %), Good** | **+18** | no screen lower than its baseline |
+
+How the scores were made: as the baseline. The design-review sub-agent (A) scored each screen fresh from the after shots (`shots/after/G3/`: 25 states in webkit, chromium, webkit375, webkit320, with the new `duel-few-added`; 11 in sim) and the source, before reading the baseline findings; every moved cell is tied to a polish change in source, so no cell sat on unchanged code and none was held. The parent checked every row and column sum (A's were right) and took the toast states A had scored from source only (`lists-toast-removed`, `lists-toast-hidden`, `hidden-toast-restored`, `lists-toast-unchosen` in webkit, webkit320, chromium): each shows its toast with "ביטול" (and "לשמות שהסתרתי" on hide), so A's H1/H3/H6 moves stand. The detector sub-agent (B) ran `impeccable detect` on 24 G3 files (exit 0, `[]`, also with `--no-config`) and the overlay on the baseline's 7 views: 10 items against 11 (the matches "יודע." straggler is gone; nothing new).
+
 ## Baseline performance
 
 Measured by US-004 on 2026-11-07, `npm run build` at `b6ab9ca` (no code change since the detail run), production server `next start -p 3100`. Budget (PRD §3.1.8): `/names` first-load JS ≤ baseline + 3 KB gzipped, CLS 0 on the swipe screen, detail sheet open < 150 ms.

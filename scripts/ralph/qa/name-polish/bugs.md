@@ -8,6 +8,7 @@ Browser: `webkit-iphone` · `chromium-pixel` · `sim-safari` · `desktop`. Statu
 |---|---|---|---|---|---|---|
 | NP-BUG-001 | R1 | US-R1 | webkit-iphone, sim-safari | welcome, join invited | open | The welcome preview card's peek cuts the intro line through its letters at 375 px and in Safari |
 | NP-BUG-002 | R2 | US-R2 | webkit-iphone, chromium-pixel | deck offline pending | open | The offline sync line now sits on the card's bottom edge and, at 320 px, covers its "לכל הפרטים" row |
+| NP-BUG-003 | R3 | US-R3 | webkit-iphone, chromium-pixel | duel after "הוספת שם" | open | The "added" toast covers the duel's only exit, "עצירה, אפשר להמשיך אחר כך", nearly all of it at 320 px |
 
 ### NP-BUG-001: The welcome preview card's peek cuts the intro line through its letters
 
@@ -29,6 +30,17 @@ Browser: `webkit-iphone` · `chromium-pixel` · `sim-safari` · `desktop`. Statu
 - **Screenshot:** `scripts/ralph/qa/name-polish/shots/after/G2/deck-offline-pending-webkit320.png`, `deck-offline-pending-webkit.png`, `deck-offline-pending-chromium.png`; before: `shots/baseline/G2/deck-offline-pending-webkit320.png`
 - **Status:** open
 - **Fix note:** Suggested inside §3.1, in `swipe/SwipeFooter.tsx`: keep the line out of the flex flow, but reserve its height under the action bar always (an empty slot with the line's min-height), or place it in the space under the bar. Then it never moves the bar and never overlaps the card. Check CLS = 0 again with the NP-077 probe.
+- **Cycle fixed:** …
+
+### NP-BUG-003: The "added" toast covers the duel's "עצירה" link
+
+- **Cycle found:** R3 (re-score, before QA) · **QA story:** US-R3 · **Browser:** webkit-iphone (393 × 659, 375 × 667, 320 × 568), chromium-pixel · **Screen:** `/names/lists?tab=duel&from=saved` with one saved name
+- **Steps:** With one saved name, open the duel ("לדו־קרב צריך לפחות שני שמות…"), tap "הוספת שם", add a name (`us007-g3.mjs` state `duel-few-added`).
+- **Expected:** The duel starts and its footer link "עצירה, אפשר להמשיך אחר כך" stays readable and tappable while the "השם … נוסף לרשימה" toast shows.
+- **Actual:** The toast sits on the footer link: about half of it is covered at 393 and 412 px, nearly all of it at 320 px, until the toast goes. Before polish the too-few card had no "הוספת שם" and adding didn't stay in the duel (NP-171, US-P24), so this state is new; the toast region's position is unchanged (it lifts only over a `BottomSheet`, `--names-toast-lift`).
+- **Screenshot:** `scripts/ralph/qa/name-polish/shots/after/G3/duel-few-added-webkit320.png`, `duel-few-added-webkit.png`, `duel-few-added-chromium.png`
+- **Status:** open
+- **Fix note:** Suggested inside §3.1: let `DuelScreen` set `--names-toast-lift` (as `BottomSheet` does) to the footer's height plus the safe area while a round shows, so toasts sit above "עצירה…"; or reserve the toast's height under the footer. The same lift question applies to the deck's action bar (US-R1/R2 hand-off, left for QA).
 - **Cycle fixed:** …
 
 <!--
