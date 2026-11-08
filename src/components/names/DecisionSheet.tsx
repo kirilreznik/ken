@@ -21,7 +21,7 @@ type DecisionSheetProps = {
 
 /**
  * The "בחרנו שם" moment (?sheet=decision, product review step 4): the chosen name on the
- * match sheet's look, the Nest app card, and a way back. Ink and a clay dot like the match
+ * match sheet's look, a way back, then the Nest app card. Ink and a clay dot like the match
  * sheet; no confetti.
  */
 export default function DecisionSheet(props: DecisionSheetProps) {
@@ -74,11 +74,10 @@ function Panel({ name, shared, onClear }: DecisionSheetProps & { name: string })
               </h2>
               <span aria-hidden="true" className="size-2.5 rounded-full bg-clay" />
               <p id={lineId} className="m-0 text-match-line text-ink-soft">
-                מזל טוב! השם נשמר כאן, ואפשר לשנות אותו בכל רגע.
+                מזל טוב. השם נשמר כאן, ואפשר לשנות אותו בכל רגע.
               </p>
               {stats ? <p className="m-0 text-caption text-stone">{countLine(stats)}</p> : null}
             </Glass>
-            <NestCard placement="decision" />
           </div>
 
           <div className="flex flex-col gap-3">
@@ -94,6 +93,9 @@ function Panel({ name, shared, onClear }: DecisionSheetProps & { name: string })
               {clearChoiceLabel(name)}
             </Button>
           </div>
+
+          {/* The side offer comes after the sheet's own actions, so they stay above the fold. */}
+          <NestCard placement="decision" />
         </section>
       </ScreenBackground>
     </div>

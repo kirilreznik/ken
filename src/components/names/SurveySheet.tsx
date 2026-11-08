@@ -115,7 +115,7 @@ function Panel({ votes, sessions, onDone }: SurveySheetProps) {
     track("survey_submitted", surveyEventProps(answer, context));
     onDone();
     closeSheet("survey");
-    showToast("תודה! התשובות נשלחו.");
+    showToast("תודה, התשובות נשלחו.");
   };
 
   return (
