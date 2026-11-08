@@ -95,6 +95,15 @@ export function isOffline(): boolean {
   return typeof navigator !== "undefined" && navigator.onLine === false;
 }
 
+/**
+ * The error line for the sign-in screens. While offline ConnectionNote already says
+ * OFFLINE_MESSAGE, so it isn't repeated; a network failure while the phone says it's
+ * online (status 0, captive portal, DNS) has no note, so the line shows it (BREAK-G1-01).
+ */
+export function visibleSignInError(error: string | null, online: boolean): string | null {
+  return error === OFFLINE_MESSAGE && !online ? null : error;
+}
+
 /** A light check before sending: something@domain.tld, no spaces. */
 export function isValidEmail(raw: string): boolean {
   return /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[^\s@.]{2,}$/.test(raw.trim());

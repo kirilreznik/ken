@@ -16,6 +16,7 @@ import {
   isValidEmail,
   reportAuthError,
   urlAuthError,
+  visibleSignInError,
 } from "@/lib/names/authErrors";
 
 const report = vi.mocked(reportClientLog);
@@ -137,6 +138,22 @@ describe("isOffline", () => {
     expect(isOffline()).toBe(true);
     Object.defineProperty(globalThis, "navigator", { value: { onLine: true }, configurable: true });
     expect(isOffline()).toBe(false);
+  });
+});
+
+describe("visibleSignInError", () => {
+  it("shows the offline line when a request fails while the phone says it's online", () => {
+    expect(visibleSignInError(OFFLINE_MESSAGE, true)).toBe(OFFLINE_MESSAGE);
+  });
+
+  it("leaves it to ConnectionNote while offline", () => {
+    expect(visibleSignInError(OFFLINE_MESSAGE, false)).toBeNull();
+  });
+
+  it("shows every other error either way", () => {
+    expect(visibleSignInError(WRONG_CODE_MESSAGE, true)).toBe(WRONG_CODE_MESSAGE);
+    expect(visibleSignInError(GENERIC_MESSAGE, false)).toBe(GENERIC_MESSAGE);
+    expect(visibleSignInError(null, true)).toBeNull();
   });
 });
 

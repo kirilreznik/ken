@@ -10,13 +10,21 @@ import ResendTimer from "@/components/names/auth/ResendTimer";
 import Turnstile, { captchaEnabled } from "@/components/names/auth/Turnstile";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
-import { INVALID_EMAIL_MESSAGE, OFFLINE_MESSAGE, handleAuthError, isOffline, isValidEmail } from "@/lib/names/authErrors";
+import {
+  INVALID_EMAIL_MESSAGE,
+  OFFLINE_MESSAGE,
+  handleAuthError,
+  isOffline,
+  isValidEmail,
+  visibleSignInError,
+} from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
 import { getPref } from "@/lib/names/prefs";
 import { hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
 import ConnectionNote from "./ConnectionNote";
+import { useOnline } from "./useMatches";
 import { track } from "@/lib/names/track";
 
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
@@ -32,6 +40,7 @@ export default function EmailSignIn() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const join = usePendingJoin();
+  const online = useOnline();
 
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
@@ -46,6 +55,13 @@ export default function EmailSignIn() {
     if (loading || !user) return;
     router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
   }, [loading, user, join, router]);
+
+  // Back online, "no connection" is stale: drop it (while offline ConnectionNote says it instead).
+  useEffect(() => {
+    const clear = () => setError((e) => (e === OFFLINE_MESSAGE ? null : e));
+    window.addEventListener("online", clear);
+    return () => window.removeEventListener("online", clear);
+  }, []);
 
   function fail(area: string, err: unknown): void {
     track("signin_failed", { method: "email", step: area.endsWith("verify") ? "verify" : "send" });
@@ -134,8 +150,7 @@ export default function EmailSignIn() {
   if (loading || user) return <AuthSkeleton />;
 
   const backHref = withJoin(WELCOME_PATH, join);
-  // ConnectionNote says it while offline; don't repeat it, or keep it once back online.
-  const shownError = error === OFFLINE_MESSAGE ? null : error;
+  const shownError = visibleSignInError(error, online);
   const errorLine = shownError ? (
     <p id="email-sign-in-error" role="alert" className="text-body font-medium text-urgent">
       {shownError}
