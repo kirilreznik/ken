@@ -82,7 +82,7 @@ function chipClass(on: boolean): string {
   return [
     "relative inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-pill px-3.5 text-person font-bold",
     "before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-['']",
-    "transition-transform duration-150 motion-safe:active:scale-95",
+    "transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95",
     on ? "border border-ink bg-ink text-surface" : "border border-line bg-surface text-ink",
   ].join(" ");
 }

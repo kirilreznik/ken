@@ -11,7 +11,7 @@ export function glassClass(variant: GlassVariant = "strong"): string {
 }
 
 // Pressed state: scale 0.95, never under reduced motion.
-const PRESS = "touch-manipulation transition-transform duration-150 motion-safe:active:scale-95";
+const PRESS = "touch-manipulation transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95";
 const DISABLED = "disabled:opacity-60 aria-disabled:opacity-60";
 
 const SIZE: Record<ButtonSize, string> = {

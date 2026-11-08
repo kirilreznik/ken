@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { otherLayerOpen, type SheetName } from "@/lib/names/urlLayer";
+import { DURATION_FAST, DURATION_SHEET, EASE_OUT } from "@/styles/nest-motion";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
 import { closeSheet, useLayerOpen } from "./layers";
 import { useModal, usePortalHost } from "./useModal";
@@ -46,20 +47,20 @@ const DRAG_CLOSE = DETENT_DRAG;
 const FULL_HEIGHT = "calc(100dvh - env(safe-area-inset-top))";
 // 28 px under the content (board 3), more on phones with a home indicator.
 const SAFE_BOTTOM = "pb-[max(1.75rem,env(safe-area-inset-bottom))]";
-// PRD 3.2.12: a tall sheet slides out in 200 ms (160 ms fade with reduced motion, names.css);
+// PRD 3.2.12: a tall sheet slides out in DURATION_FAST (DURATION_FADE with reduced motion, names.css);
 // it unmounts on animationend, or after this if that never fires.
-const EXIT_MS = 300;
+const EXIT_MS = DURATION_FAST + 100;
 // PRD 3.2.2: a card tap opens the sheet on pointerup. Quick taps that follow land on the scrim or
-// on the sliding panel's controls before it has slid in (260 ms); for this long after opening,
+// on the sliding panel's controls before it has slid in (DURATION_SHEET); for this long after opening,
 // clicks in the layer do nothing (no close, no decision).
-const OPEN_GUARD_MS = 350;
+const OPEN_GUARD_MS = DURATION_SHEET + 90;
 // Mobile Safari turns a quick double tap on the card into a word selection in the sheet that just
 // opened under the second tap (ND-BUG-007). Text in the layer can't be selected until the taps that
 // opened it stop: this long after opening, or after the last press in the layer during it. A
 // selection made in it meanwhile is dropped when the guard ends.
 const SELECT_GUARD_MS = 600;
 // A tall sheet settling after a handle drag (new detent or snap back), as the slide-in eases.
-const SETTLE = { duration: 200, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" } as const;
+const SETTLE = { duration: DURATION_FAST, easing: EASE_OUT } as const;
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 // PRD 3.2.4: from 768 px a tall sheet is a centered panel (max 480 px wide, 90vh) without detents.
 const DESKTOP = "(min-width: 768px)";
@@ -275,7 +276,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
               ? { transform: `translateY(${offset}px)` }
               : undefined
         }
-        className={`${closing ? "names-sheet-out" : "names-sheet-in"} relative mx-auto flex w-full max-w-lg flex-col rounded-t-xl bg-surface text-ink outline-none ${heightClass(tall, detent)} ${offset || height !== null || tall ? "" : "transition-transform duration-200"}`}
+        className={`${closing ? "names-sheet-out" : "names-sheet-in"} relative mx-auto flex w-full max-w-lg flex-col rounded-t-xl bg-surface text-ink outline-none ${heightClass(tall, detent)} ${offset || height !== null || tall ? "" : "transition-transform duration-(--nest-duration-fast)"}`}
       >
         <button
           type="button"

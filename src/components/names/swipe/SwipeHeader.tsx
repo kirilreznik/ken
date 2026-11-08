@@ -61,7 +61,7 @@ export default function SwipeHeader({ saved, filtered = false }: { saved: number
         href="/names/lists"
         aria-label={savedLabel(saved)}
         data-control
-        className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-pill bg-ink px-3.5 text-person font-bold text-surface transition-transform duration-150 motion-safe:active:scale-95"
+        className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-pill bg-ink px-3.5 text-person font-bold text-surface transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95"
       >
         <Icon size={18}>
           <path d="M6 4h12v16l-6-4-6 4z" />

@@ -373,7 +373,7 @@ No tab bar. The swipe header's "השמות שלי" ink pill and the settings but
 - **Don't** add a UI library or animation dependency; the system is CSS, tokens and these components.
 
 ### Motion as it is today
-Quoted from `src/app/names/names.css`, `ui/classes.ts` and `swipe/useSwipeDrag.ts`; there are no motion tokens yet.
+Quoted from `src/app/names/names.css`, `ui/classes.ts` and `swipe/useSwipeDrag.ts`. The curves and durations are motion tokens (`motion` in `tokens.json` → `--nest-ease-*` / `--nest-duration-*` in `nest-tokens.css`, and `src/styles/nest-motion.ts` for Web Animations calls): `ease-out` `cubic-bezier(0.2, 0.8, 0.2, 1)`, `ease-drawer` `cubic-bezier(0.32, 0.72, 0, 1)` (not used yet), `duration-press` 150, `-fade` 160, `-fast` 200, `-snap` 220, `-sheet` 260, `-card` 280, `-fling` 300 ms. Use a token, never an inlined value; in classes `duration-(--nest-duration-press)`.
 - Sheet in: `names-sheet-in`, 260 ms, `cubic-bezier(0.2, 0.8, 0.2, 1)`. Sheet out: `names-sheet-out`, 200 ms ease-in. Scrim and toast: `names-fade-in` 200 ms ease-out; scrim out `names-fade-out` 200 ms ease-in. Dialog in: `names-dialog-in` 200 ms ease-out (also the desktop sheet panel).
 - Card enter: `names-card-in` (from 14 px lower, 0.96 scale, half opacity), 280 ms ease-out.
 - Card fling: 300 ms ease-in to off-screen; snap back 220 ms ease-out (Web Animations API).

@@ -319,9 +319,9 @@ export default function SettingsScreen() {
                 </span>
                 <span
                   aria-hidden="true"
-                  className={`relative inline-flex h-8 w-13 shrink-0 items-center rounded-pill border-2 transition-colors duration-150 ease-out ${optedIn ? "border-ink bg-ink" : "border-stone bg-sand"}`}
+                  className={`relative inline-flex h-8 w-13 shrink-0 items-center rounded-pill border-2 transition-colors duration-(--nest-duration-press) ease-out ${optedIn ? "border-ink bg-ink" : "border-stone bg-sand"}`}
                 >
-                  <span className={`absolute start-0.5 size-6 rounded-full bg-surface shadow-card transition-transform duration-150 ease-out ${optedIn ? "translate-x-5 rtl:-translate-x-5" : ""}`} />
+                  <span className={`absolute start-0.5 size-6 rounded-full bg-surface shadow-card transition-transform duration-(--nest-duration-press) ease-out ${optedIn ? "translate-x-5 rtl:-translate-x-5" : ""}`} />
                 </span>
               </button>
               {optInError ? (

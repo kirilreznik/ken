@@ -42,6 +42,15 @@
   --nest-space-5: 20px;
   --nest-space-6: 24px;
   --nest-space-8: 32px;
+  --nest-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --nest-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --nest-duration-press: 150ms;
+  --nest-duration-fade: 160ms;
+  --nest-duration-fast: 200ms;
+  --nest-duration-snap: 220ms;
+  --nest-duration-sheet: 260ms;
+  --nest-duration-card: 280ms;
+  --nest-duration-fling: 300ms;
   --nest-font-sans: "Heebo", system-ui, "Noto Sans Hebrew", Arial, sans-serif;
   --nest-text-display-xl: 44px;
   --nest-text-display-xl-line-height: 48px;

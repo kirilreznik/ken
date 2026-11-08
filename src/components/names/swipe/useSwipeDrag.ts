@@ -13,6 +13,7 @@ import {
   type DragMode,
   type KeepDir,
 } from "@/lib/names/gesture";
+import { DURATION_FADE, DURATION_FLING, DURATION_SNAP } from "@/styles/nest-motion";
 
 type Drag = {
   id: number;
@@ -139,7 +140,7 @@ export function useSwipeDrag({
     paint(node, "");
     if (!from || reducedMotion()) return;
     moving(node, true);
-    node.animate([{ transform: from }, { transform: "none" }], { duration: 220, easing: "ease-out" }).finished.then(
+    node.animate([{ transform: from }, { transform: "none" }], { duration: DURATION_SNAP, easing: "ease-out" }).finished.then(
       () => !drag.current?.mode && moving(node, false),
       () => {},
     );
@@ -154,7 +155,7 @@ export function useSwipeDrag({
       : [{ transform: from }, { transform: flingTo(kind, dir), opacity: 0.4 }];
     if (kind === "love" && !reducedMotion()) node.style.setProperty("--love", "1");
     try {
-      await node.animate(frames, { duration: reducedMotion() ? 160 : 300, easing: "ease-in", fill: "forwards" }).finished;
+      await node.animate(frames, { duration: reducedMotion() ? DURATION_FADE : DURATION_FLING, easing: "ease-in", fill: "forwards" }).finished;
     } catch {
       // The card was replaced mid-flight.
     }

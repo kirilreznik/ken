@@ -1,10 +1,8 @@
 // A list row that leaves (removed, hidden, restored): it fades, then its height closes so the
 // rows below slide up instead of jumping (NP-137). Reduced motion: a fade only. Durations and
-// the curve are the sheets' (names.css); there are no motion tokens yet.
+// the curve are the sheets' motion tokens (nest-motion.ts).
 
-const EXIT_MS = 200;
-const EXIT_FADE_MS = 160;
-const EASE_OUT = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+import { DURATION_FADE, DURATION_FAST, EASE_OUT } from "@/styles/nest-motion";
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -24,6 +22,6 @@ export function collapseRow(row: HTMLElement | null | undefined, done: () => voi
         { opacity: 0, offset: 0.4 },
         { opacity: 0, height: "0px", paddingTop: "0px", paddingBottom: "0px", borderBottomWidth: "0px", overflow: "hidden" },
       ];
-  const animation = row.animate(frames, { duration: reducedMotion() ? EXIT_FADE_MS : EXIT_MS, easing: EASE_OUT, fill: "forwards" });
+  const animation = row.animate(frames, { duration: reducedMotion() ? DURATION_FADE : DURATION_FAST, easing: EASE_OUT, fill: "forwards" });
   animation.finished.then(done, done);
 }
