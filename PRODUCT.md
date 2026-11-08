@@ -59,7 +59,7 @@ Screens: welcome, email sign-in (email, then code), auth callback, onboarding, i
 Owner decisions that are constraints (don't reopen; tasks/prd-names-pwa.md §3.1, tasks/prd-name-detail.md §3.1, tasks/prd-name-polish.md §3.1):
 
 - **No due date, anywhere.** Never asked for, never shown.
-- **A partner's non-mutual choices are never shown.** Nobody sees another person's skips, lone saves, loves or hides. Together is shown only as a match (every member kept or loved the name).
+- **A partner's non-mutual choices are never shown.** Nobody sees another person's skips, lone saves, loves or hides. Together is shown only as a match (two or more members kept or loved the name, `name_matches`); the copy says "שם שנשמר אצל שניים או יותר", never "שניכם".
 - **Matches are never green and never get confetti.** Status is never shown by color alone.
 - **The deck order, the filters and the matching rules don't change.** The deck is the names that have content, shuffled per user with a seeded order.
 - **The swipe card never scrolls** on a 390 × 844 phone, so swipe-up ("אהבתי מאוד") works on every card. Everything else about a name lives in the detail sheet (a bottom sheet at 70% that drags to full height).

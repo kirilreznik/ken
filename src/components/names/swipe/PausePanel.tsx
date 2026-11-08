@@ -52,7 +52,7 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
               רוצה לבחור עם מישהו?
             </h2>
             <p className="m-0 text-intro text-ink-soft">
-              כבר שמרת 5 שמות. אפשר להזמין את מי שבוחר איתך: כל אחד בוחר בטלפון שלו, ושם ששניכם שמרתם הופך להתאמה.
+              כבר שמרת 5 שמות. אפשר להזמין מישהו נוסף: הבחירה נעשית בנפרד, בכל טלפון, ושם שנשמר אצל שניים או יותר הופך להתאמה.
             </p>
             <p className="m-0 text-person text-ink-soft">על מה דילגת נשאר רק אצלך.</p>
             <Button

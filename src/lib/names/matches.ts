@@ -247,14 +247,13 @@ export function keptByText(match: Match): string | null {
 
 /** The line under the name on the match sheet (board 4). */
 export function matchSheetLine(match: Match): string {
-  return match.keptByCount >= 3 ? `${match.keptByCount} שמרו את השם הזה.` : "שניכם שמרתם את השם הזה.";
+  return match.keptByCount >= 3 ? `${match.keptByCount} שמרו את השם הזה.` : "שניים שמרו את השם הזה.";
 }
 
 /** The explainer above the "התאמות" list (board 5); never says who skipped what. */
 export function matchesIntro(memberCount: number): string {
   if (memberCount < 2) return "התאמות יופיעו כשמישהו נוסף יבחר איתך. הדילוגים נשארים פרטיים.";
-  const who = memberCount > 2 ? "שמות שלפחות שניים מכם שמרו." : "שמות ששניכם שמרתם.";
-  return `${who} על שמות שדילגתם עליהם אף אחד לא יודע.`;
+  return "שמות שנשמרו אצל שניים או יותר. על דילוגים אף אחד לא יודע.";
 }
 
 /** The newest match the user hasn't been shown on this device, or null. */

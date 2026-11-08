@@ -80,10 +80,10 @@ describe("helpers", () => {
     const [two, three] = toMatches([row("זיו", "2026-11-02T10:00:00Z", 2, 1), row("יעל", "2026-11-01T10:00:00Z", 3)]);
     expect(keptByText(two)).toBeNull();
     expect(keptByText(three)).toBe("3 שמרו");
-    expect(matchSheetLine(two)).toBe("שניכם שמרתם את השם הזה.");
+    expect(matchSheetLine(two)).toBe("שניים שמרו את השם הזה.");
     expect(matchSheetLine(three)).toBe("3 שמרו את השם הזה.");
-    expect(matchesIntro(2)).toBe("שמות ששניכם שמרתם. על שמות שדילגתם עליהם אף אחד לא יודע.");
-    expect(matchesIntro(3)).toBe("שמות שלפחות שניים מכם שמרו. על שמות שדילגתם עליהם אף אחד לא יודע.");
+    expect(matchesIntro(2)).toBe("שמות שנשמרו אצל שניים או יותר. על דילוגים אף אחד לא יודע.");
+    expect(matchesIntro(3)).toBe("שמות שנשמרו אצל שניים או יותר. על דילוגים אף אחד לא יודע.");
   });
 
   it("matchToShow picks the newest unseen match; withSeen adds every match once", () => {

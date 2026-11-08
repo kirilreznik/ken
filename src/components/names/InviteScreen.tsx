@@ -152,7 +152,7 @@ export default function InviteScreen() {
           <h1 className="m-0 min-w-0 flex-1 text-title">הזמנה לבחירה</h1>
         </header>
         <p className="m-0 text-person font-medium text-ink-soft">
-          בוחרים שם ביחד? שולחים קישור, והבחירה נעשית בנפרד, בכל טלפון. שם ששניכם שמרתם יופיע בהתאמות, ועל דילוגים אף אחד לא יודע.
+          בוחרים שם ביחד? שולחים קישור, והבחירה נעשית בנפרד, בכל טלפון. שם שנשמר אצל שניים או יותר יופיע בהתאמות, ועל דילוגים אף אחד לא יודע.
         </p>
 
         <section aria-labelledby="invite-link-title" className="flex flex-col gap-3 rounded-lg bg-surface p-4 shadow-card">

@@ -74,9 +74,9 @@ export function callbackUrl(origin: string, code: string | null): string {
 
 /** FR-W24 copy. Each message is a short title plus its second sentence as the lead. */
 export const JOIN_INVITED_TITLE = "קיבלת הזמנה לבחור שם ביחד ב־Nest";
-export const JOIN_INVITED_LEAD = "הבחירה נעשית בנפרד, בכל טלפון. שם ששניכם שמרתם יופיע בהתאמות.";
+export const JOIN_INVITED_LEAD = "הבחירה נעשית בנפרד, בכל טלפון. שם שנשמר אצל שניים או יותר יופיע בהתאמות.";
 export const JOIN_COPY = {
-  joined: { title: "הצטרפת.", lead: "מעכשיו שמות ששניכם שמרתם יופיעו בהתאמות." },
+  joined: { title: "הצטרפת.", lead: "מעכשיו שמות שנשמרו אצל שניים או יותר יופיעו בהתאמות." },
   already: { title: "כבר משתתפים בבחירה הזו.", lead: "אפשר להמשיך לבחור." },
   invalid: { title: "הקישור כבר לא בתוקף, או שכבר השתמשו בו.", lead: "אפשר לבקש קישור חדש ממי ששלח את ההזמנה." },
   offline: { title: "אין חיבור לאינטרנט.", lead: "אפשר לנסות שוב כשהחיבור יחזור." },

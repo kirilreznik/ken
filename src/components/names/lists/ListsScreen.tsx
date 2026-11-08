@@ -374,11 +374,7 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
       <div className={emptyPanelClass("card")}>
         <h2 className={emptyTitleClass("card")}>עוד אין התאמות.</h2>
         <p className={emptyLineClass()}>
-          {memberCount < 2
-            ? "התאמה היא שם שגם מי שבוחר איתך שמר."
-            : memberCount > 2
-              ? "שם ששניים מכם שמרו יופיע כאן."
-              : "שם ששניכם שמרתם יופיע כאן."}
+          {memberCount < 2 ? "התאמה היא שם שנשמר אצל שניים או יותר." : "שם שנשמר אצל שניים או יותר יופיע כאן."}
         </p>
         {memberCount < 2 ? (
           <Button variant="link" href="/names/invite">
@@ -618,9 +614,9 @@ function SoloMatches() {
       </span>
       <h2 className={emptyTitleClass("card")}>בוחרים ביחד?</h2>
       <p className={emptyLineClass()}>
-        אפשר להזמין את מי שבוחר איתך. כל אחד בוחר בטלפון שלו, ושם ששניכם שמרתם יופיע כאן כהתאמה.
+        אפשר להזמין מישהו נוסף. הבחירה נעשית בנפרד, בכל טלפון, ושם שנשמר אצל שניים או יותר יופיע כאן כהתאמה.
       </p>
-      <p className="m-0 text-caption text-stone">על מה כל אחד דילג נשאר פרטי. השמות ששמרת עוברים איתך.</p>
+      <p className="m-0 text-caption text-stone">הדילוגים נשארים פרטיים. השמות ששמרת עוברים איתך.</p>
       <Button size="md" href="/names/invite" onClick={() => track("invite_prompt", { placement: "matches_tab", action: "invite" })}>
         הזמנה לבחירה משותפת
       </Button>
