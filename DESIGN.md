@@ -376,7 +376,7 @@ No tab bar. The swipe header's "השמות שלי" ink pill and the settings but
 Quoted from `src/app/names/names.css`, `ui/classes.ts` and `swipe/useSwipeDrag.ts`. The curves and durations are motion tokens (`motion` in `tokens.json` → `--nest-ease-*` / `--nest-duration-*` in `nest-tokens.css`, and `src/styles/nest-motion.ts` for Web Animations calls): `ease-out` `cubic-bezier(0.2, 0.8, 0.2, 1)`, `ease-drawer` `cubic-bezier(0.32, 0.72, 0, 1)` (not used yet), `duration-press` 150, `-fade` 160, `-fast` 200, `-snap` 220, `-sheet` 260, `-card` 280, `-fling` 300 ms. Use a token, never an inlined value; in classes `duration-(--nest-duration-press)`.
 - Sheet in: `names-sheet-in`, 260 ms, `cubic-bezier(0.2, 0.8, 0.2, 1)`. Sheet out: `names-sheet-out`, 200 ms ease-in. Scrim and toast: `names-fade-in` 200 ms ease-out; scrim out `names-fade-out` 200 ms ease-in. Dialog in: `names-dialog-in` 200 ms ease-out (also the desktop sheet panel).
 - Card enter: `names-card-in` (from 14 px lower, 0.96 scale, half opacity), 280 ms ease-out.
-- Card fling: 300 ms ease-in to off-screen; snap back 220 ms ease-out (Web Animations API).
+- Card fling: 300 ms ease-in to off-screen; snap back 220 ms ease-out (Web Animations API). The decision is made as the fling starts: a fixed, inert copy of the card flies off while the next card enters under it, so taps, keys and "ביטול" during the fling are never dropped (undo lands the copy at once).
 - Press: scale 0.95 in 150 ms, `motion-safe` only.
 - Reduced motion: sheets and scrim fade in 160 ms; a decision is a 160 ms fade instead of a fling; the next card fades in (`data-motion="fade"`, capped at 200 ms); everything else is effectively off.
 - BRAND.md: the logo animation (2.8 s) plays once only, and reduced motion shows the static mark.

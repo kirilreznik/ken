@@ -62,9 +62,52 @@ function paint(el: HTMLElement, transform: string, keep = 0, skip = 0, love = 0)
 }
 
 /**
+ * A copy of the card for its flight off screen: same place and size (fixed, measured without the
+ * drag's transform, corrected for any containing block), the drag's transform and stamps kept,
+ * no ids, focus, entrance or pointer events. It goes next to the card stack, so it keeps the
+ * deck's styles and outlives the stack when the deck ends or pauses; the card itself is hidden.
+ */
+function flyingCopy(node: HTMLElement): HTMLElement {
+  // A card still playing its entrance leaves from where it's headed.
+  for (const a of node.getAnimations()) a.finish();
+  const transform = node.style.transform;
+  node.style.transform = "";
+  const box = node.getBoundingClientRect();
+  node.style.transform = transform;
+  const copy = node.cloneNode(true) as HTMLElement;
+  copy.classList.remove("names-card-enter");
+  copy.removeAttribute("tabindex");
+  copy.removeAttribute("aria-describedby");
+  for (const el of [copy, ...copy.querySelectorAll("[id]")]) el.removeAttribute("id");
+  copy.setAttribute("aria-hidden", "true");
+  copy.inert = true;
+  // Pinned to the viewport's corner and moved by `translate` (it stacks under the fling's
+  // transform): the measured box is in viewport coordinates, the same in RTL and LTR.
+  const place = (x: number, y: number) => (copy.style.translate = `${x}px ${y}px`);
+  Object.assign(copy.style, {
+    position: "fixed",
+    inset: "0 auto auto 0",
+    width: `${box.width}px`,
+    height: `${box.height}px`,
+    margin: "0",
+    pointerEvents: "none",
+  });
+  place(box.left, box.top);
+  const host = node.closest(".names-stack")?.parentElement ?? node.parentElement ?? document.body;
+  host.append(copy);
+  copy.style.transform = "";
+  const at = copy.getBoundingClientRect();
+  copy.style.transform = transform;
+  if (at.left !== box.left || at.top !== box.top) place(2 * box.left - at.left, 2 * box.top - at.top);
+  copy.scrollTop = node.scrollTop;
+  node.style.visibility = "hidden";
+  return copy;
+}
+
+/**
  * The card drag (FR-W11) for mouse, touch and pen, like the landing demo's bindDrag(): the card
- * follows the pointer with the stamps showing, and on release it flies off and calls onDecide,
- * or snaps back. The keep side is read from the action buttons when the drag starts (PRD
+ * follows the pointer with the stamps showing, and on release it calls onDecide while a copy of it
+ * flies off (so the next card is live at once), or snaps back. The keep side is read from the action buttons when the drag starts (PRD
  * 3.2.12). A card whose content fits keeps every touch gesture (touch-action: none) so a swipe
  * up can love it; a card that scrolls leaves vertical touch to scrolling (pan-y), and the
  * "אהבתי מאוד" button stays the way to love it by touch.
@@ -146,24 +189,37 @@ export function useSwipeDrag({
     );
   };
 
-  const fling = async (node: HTMLElement, kind: DragKind, dir: KeepDir, decision: Decision = kind) => {
+  // Leaving copies still in flight (see fling): undo finishes them so the card it brings back isn't shadowed.
+  const flights = useRef(new Set<Animation>());
+
+  /**
+   * The card leaves as a copy (NP-088): the decision is made as the fling starts, so the next
+   * card mounts under the flying copy and takes taps, keys and undo at once; nothing waits for
+   * the 300 ms flight. The copy is a fixed, inert clone over the card's place, removed when it
+   * lands. If the decision didn't replace the card, the card comes back when the copy lands.
+   */
+  const fling = (node: HTMLElement, kind: DragKind, dir: KeepDir, decision: Decision = kind) => {
     busy.current = true;
-    moving(node, true);
+    // Focus on the card or a control in it (the name sheet gives it back to "לכל הפרטים") moves to the next card.
+    refocus.current = node.contains(document.activeElement);
     const from = node.style.transform || "none";
+    const copy = flyingCopy(node);
     const frames = reducedMotion()
       ? [{ opacity: 1 }, { opacity: 0 }]
       : [{ transform: from }, { transform: flingTo(kind, dir), opacity: 0.4 }];
-    if (kind === "love" && !reducedMotion()) node.style.setProperty("--love", "1");
-    try {
-      await node.animate(frames, { duration: reducedMotion() ? DURATION_FADE : DURATION_FLING, easing: "ease-in", fill: "forwards" }).finished;
-    } catch {
-      // The card was replaced mid-flight.
-    }
-    if (el.current !== node) return;
-    // Focus on the card or a control in it (the name sheet gives it back to "לכל הפרטים") moves to the next card.
-    refocus.current = node.contains(document.activeElement);
+    if (kind === "love" && !reducedMotion()) copy.style.setProperty("--love", "1");
+    const flight = copy.animate(frames, { duration: reducedMotion() ? DURATION_FADE : DURATION_FLING, easing: "ease-in", fill: "forwards" });
+    flights.current.add(flight);
+    const land = () => {
+      flights.current.delete(flight);
+      copy.remove();
+      if (el.current !== node) return;
+      node.style.visibility = "";
+      paint(node, "");
+      busy.current = false;
+    };
+    flight.finished.then(land, land);
     decide.current(decision);
-    busy.current = false;
   };
 
   const onPointerDown = (e: PointerEvent<HTMLElement>) => {
@@ -217,7 +273,7 @@ export function useSwipeDrag({
     const kind = dragOutcome(s.mode, s.dx, s.dy, performance.now() - s.t, s.dir);
     if (!kind) return snapBack();
     drag.current = null;
-    void fling(e.currentTarget, kind, s.dir);
+    fling(e.currentTarget, kind, s.dir);
   };
 
   const onPointerCancel = (e: PointerEvent<HTMLElement>) => {
@@ -237,12 +293,16 @@ export function useSwipeDrag({
     const node = el.current;
     if (!node || disabled || busy.current || drag.current?.mode) return;
     drag.current = null;
-    void fling(node, decision === "hidden" ? "skip" : decision, keepDir(), decision);
+    fling(node, decision === "hidden" ? "skip" : decision, keepDir(), decision);
   };
 
-  /** Call before anything that replaces the card (undo) to move focus to the new one. */
+  /**
+   * Call before anything that replaces the card (undo): focus moves to the new one, and a card
+   * still flying off lands at once, so the name undo brings back isn't covered by its copy.
+   */
   const holdFocus = () => {
     refocus.current = !!el.current && document.activeElement === el.current;
+    for (const flight of flights.current) flight.finish();
   };
 
   return {
