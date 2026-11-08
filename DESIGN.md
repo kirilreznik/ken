@@ -200,7 +200,7 @@ A warm neutral palette with two brand warms; status colors exist in the tokens b
 
 ### Neutral
 - **Ink soft** (`ink-soft`): secondary text and section labels on canvas, surface and glass. tokens.json: "8.8:1 on canvas."
-- **Stone** (`stone`): supporting text (subtitles, metadata, placeholders in inputs). tokens.json: "5.1:1 on canvas, 5.7:1 on surface."
+- **Stone** (`stone`): supporting text (subtitles, metadata, placeholders in inputs). tokens.json: "5.1:1 on canvas, 5.7:1 on surface." Not on glass over a photo, where it drops to about 2:1: there small supporting lines are `ink` (the resend countdown on sign-in).
 - **Mist** (`mist`): icons and placeholders only, "never body copy (3.2:1 on canvas)".
 - **Faint** (`faint`): disabled states and hairlines, "Not for meaningful text."
 - **Canvas** (`canvas`): the app background behind everything; also the wells inside solid cards.

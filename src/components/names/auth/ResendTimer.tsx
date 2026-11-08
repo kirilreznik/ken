@@ -49,7 +49,7 @@ export default function ResendTimer({ sentAt, onResend, disabled, sending, sentN
         {sending ? "שולחים…" : "שליחה חוזרת"}
       </button>
       {left > 0 ? (
-        <span aria-hidden="true" className="text-caption text-stone">
+        <span aria-hidden="true" className="text-caption text-ink tabular-nums">
           {resendWaitText(left)}
         </span>
       ) : null}
