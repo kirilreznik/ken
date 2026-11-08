@@ -122,6 +122,7 @@ function Panel({ votes, sessions, onDone }: SurveySheetProps) {
     <BottomSheet
       name="survey"
       title="שאלון קצר"
+      closeButton
       footer={
         <div className="flex flex-col gap-2">
           {error ? (

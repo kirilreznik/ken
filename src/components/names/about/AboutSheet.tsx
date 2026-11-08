@@ -1,6 +1,6 @@
 "use client";
 
-import { BottomSheet, IconButton, closeSheet, openSheet } from "@/components/names/ui";
+import { BottomSheet, openSheet } from "@/components/names/ui";
 import AboutContent from "./AboutContent";
 
 /**
@@ -12,14 +12,7 @@ export default function AboutSheet({ hasName }: { hasName: boolean }) {
     <BottomSheet
       name="about"
       title="על הנתונים"
-      closeInHeader
-      headerEnd={
-        <IconButton aria-label="סגירה" onClick={() => closeSheet("about")}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </IconButton>
-      }
+      closeButton
     >
       <AboutContent hasName={hasName} onReport={() => openSheet("report")} />
     </BottomSheet>

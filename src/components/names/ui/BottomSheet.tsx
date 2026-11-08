@@ -5,6 +5,7 @@ import { Suspense, useCallback, useEffect, useId, useLayoutEffect, useRef, useSt
 import { createPortal } from "react-dom";
 import { otherLayerOpen, type SheetName } from "@/lib/names/urlLayer";
 import { DURATION_FAST, DURATION_SHEET, EASE_OUT } from "@/styles/nest-motion";
+import { IconButton } from "./Button";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
 import { closeSheet, useLayerOpen } from "./layers";
 import { useModal, usePortalHost } from "./useModal";
@@ -22,8 +23,13 @@ type BottomSheetProps = SheetHeading & {
   name: SheetName;
   /** Next to the title on the end side, e.g. "איפוס" (title row only). */
   headerEnd?: ReactNode;
-  /** headerEnd holds its own "סגירה" button: the handle then leaves the Tab order (NP-UX-010). */
+  /** The custom header holds its own "סגירה" button: the handle then leaves the Tab order (NP-UX-010). */
   closeInHeader?: boolean;
+  /**
+   * A "סגירה" X at the end of the title row, after `headerEnd` (title row only). The handle then
+   * leaves the Tab order, as with `closeInHeader` (NP-110).
+   */
+  closeButton?: boolean;
   /** Stays below the scrolling content, e.g. the apply button. */
   footer?: ReactNode;
   /**
@@ -137,7 +143,7 @@ type PanelProps = BottomSheetProps & {
 };
 
 /** The panel itself; exported for markup tests. */
-export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, onDetent, contentKey, closing = false, onClosed, children }: PanelProps) {
+export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, closeButton = false, footer, detents, onDetent, contentKey, closing = false, onClosed, children }: PanelProps) {
   const panel = useRef<HTMLElement>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -281,7 +287,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
         <button
           type="button"
           aria-label="סגירה"
-          tabIndex={closeInHeader ? -1 : undefined}
+          tabIndex={closeInHeader || closeButton ? -1 : undefined}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerEnd}
@@ -298,7 +304,18 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
               <h2 id={titleId} className="text-title">
                 {title}
               </h2>
-              {headerEnd}
+              {closeButton ? (
+                <div className="flex items-center gap-2">
+                  {headerEnd}
+                  <IconButton aria-label="סגירה" onClick={close}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                  </IconButton>
+                </div>
+              ) : (
+                headerEnd
+              )}
             </div>
           )}
           {children}

@@ -56,6 +56,7 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
     <BottomSheet
       name="add-name"
       title="הוספת שם"
+      closeButton
       footer={
         <Button type="submit" form={FORM_ID} className="w-full" aria-disabled={!names || undefined}>
           הוספה לרשימה

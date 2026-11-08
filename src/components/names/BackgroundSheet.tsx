@@ -4,7 +4,7 @@ import Image, { type StaticImageData } from "next/image";
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import { useBackgroundChoice } from "@/components/names/ScreenBackground";
-import { BottomSheet, Button, IconButton, closeSheet } from "@/components/names/ui";
+import { BottomSheet, Button } from "@/components/names/ui";
 import { canvasColor } from "@/lib/names/brand";
 import { loadOwnPhoto, resizePhoto, saveOwnPhoto, subscribeOwnPhoto } from "@/lib/names/photo";
 import { setPref, type Background } from "@/lib/names/prefs";
@@ -85,14 +85,7 @@ export default function BackgroundSheet() {
     <BottomSheet
       name="background"
       title="רקע למסך"
-      closeInHeader
-      headerEnd={
-        <IconButton aria-label="סגירה" onClick={() => closeSheet("background")}>
-          <Icon size={20}>
-            <path d="M6 6l12 12M18 6L6 18" />
-          </Icon>
-        </IconButton>
-      }
+      closeButton
     >
       <BackgroundOptions />
       <p className="flex items-start gap-2.5 rounded-md bg-canvas px-3.5 py-3 text-note text-ink-soft">

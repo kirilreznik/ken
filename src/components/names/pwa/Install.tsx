@@ -74,14 +74,7 @@ export function InstallSheet() {
     <BottomSheet
       name="install"
       title={INSTALL_TITLE}
-      closeInHeader
-      headerEnd={
-        <IconButton aria-label="סגירה" onClick={() => closeSheet("install")}>
-          <Icon>
-            <path d="M6 6l12 12M18 6L6 18" />
-          </Icon>
-        </IconButton>
-      }
+      closeButton
       footer={
         <Button variant="primary" className="w-full" onClick={() => closeSheet("install")}>
           הבנתי

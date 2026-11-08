@@ -249,6 +249,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
     <BottomSheet
       name="filters"
       title="סינון"
+      closeButton
       headerEnd={
         <button
           type="button"

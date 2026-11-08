@@ -103,6 +103,7 @@ function Panel({ name }: { name: string | null }) {
       <BottomSheet
         name="report"
         title={reportTitle(name)}
+        closeButton
         footer={
           <Button className="w-full" onClick={() => closeSheet("report")}>
             סגירה
@@ -123,6 +124,7 @@ function Panel({ name }: { name: string | null }) {
     <BottomSheet
       name="report"
       title={reportTitle(name)}
+      closeButton
       footer={
         <Button type="submit" form={FORM_ID} className="w-full" aria-disabled={sending || undefined}>
           {sending ? "שולחים…" : "שליחת דיווח"}
