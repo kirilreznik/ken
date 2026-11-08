@@ -118,6 +118,46 @@ Change per screen (after − baseline):
 
 How the scores were made: as the baseline. The design-review sub-agent (A) scored each screen fresh from the after shots and the source, before reading the baseline findings; the detector sub-agent (B) ran `impeccable detect` on 31 G1 files (exit 0, `[]`) and the overlay on 8 signed-out pages (4 items, all false positives; the one real baseline item, the placeholder, now 5.69:1). Parent adjustment: A scored the unconfigured notice 11 (H4 1, H8 2, H6 2); `Unconfigured.tsx` and its evidence are byte-for-byte the baseline's, so the baseline row (12) is held: a 1-point move on unchanged code is scorer variance, not a regression. A read the Simulator shots of the signed-out states before they were retaken (see `findings/R1-G1.md`); its Safari-only items were dropped and the retaken shots were read by the parent.
 
+### G2 Deck (US-R2, 2026-11-08, at `f404077`; findings `findings/R2-G2.md`)
+
+| Screen (states) | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 | H9 | H10 | Total | Band | Notes (backlog IDs) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| deck: card + backgrounds (none, fabric, notebook, nursery, own), drag, peeking | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 3 | 27/36 (75 %) | Good | back-card edges gone from the glass (NP-076); H8 held at 3: peeking cards still read as a double frame, "לכל הפרטים" cut at 320 with a two-line intro (existing) |
+| deck: decisions (after vote, undo, skip long-press menu, offline pending footer, surname line) | 3 | 3 | 4 | 3 | 3 | 2 | 3 | 3 | 3 | 2 | 29/40 (73 %) | Good | H6/H10 still 2: hide is long-press only, shortcuts screen-reader only (-07 partly, NP-129); the offline sync pill now sits on the card's edge (NP-077, NP-BUG-002) |
+| deck: filtered + empty filter result | 3 | 3 | 4 | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 28/36 (78 %) | Good | unchanged; -12 (0-result apply) next-run (NP-134); A's H5 2 not taken, see below |
+| deck: end (solo, shared, nothing saved) | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 2 | n/a | n/a | 17/24 (71 %) | Good | H4 up: "לשמות שלי" full height (NP-075); H8 still 2: the Nest card's ink button competes, cut at 320 |
+| deck: pauses (invite prompt, round recap) + survey prompt | 3 | 3 | 3 | 3 | n/a | 3 | 3 | 3 | n/a | n/a | 21/28 (75 %) | Good | H2 up: no "שניכם" (NP-025); A's H8 2 not taken, see below |
+| name sheet (70 %, full, surname, similar section/opened, together, loading, offline) + toast | 3 | 3 | 4 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 31/40 (78 %) | Good | H3 up: "חזרה ל־{name}" from a similar name (NP-117); -15 offline line, -19 "#148" next-run (NP-136, NP-116) |
+| filters sheet (default, selected, scrolled) | 4 | 3 | 4 | 3 | 3 | 3 | 3 | 2 | n/a | 3 | 28/36 (78 %) | Good | H3/H4 up: close button (NP-110); hidden-names hint (NP-129); H8 still 2: 32 chips (-11, owner); -09, -10, -12 open |
+| background sheet (default, own saved) | 4 | 3 | 3 | 3 | 3 | 4 | 3 | 3 | 3 | 3 | 32/40 (80 %) | Good | unchanged; the saved toast still covers the privacy note while it shows |
+| match sheet | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 3 | n/a | n/a | 18/24 (75 %) | Good | copy without "שניכם" (NP-025); -14 niqqud next-run (NP-123) |
+| decision sheet (solo, shared) | 3 | 3 | 4 | 3 | 3 | 3 | n/a | 3 | n/a | n/a | 22/28 (79 %) | Good | H2 up: no "!" (NP-125); H3/H4/H5 up: "ביטול הבחירה בשם…" with an undo toast (NP-126); H8 up: actions above the Nest card (NP-124) |
+| survey sheet | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 3 | 3 | 3 | 27/36 (75 %) | Good | H3/H4 up: close button (NP-110); -16 "שליחה" next-run (NP-131), -18 owner |
+| about sheet | n/a | 3 | 4 | 3 | n/a | 3 | n/a | 3 | n/a | 4 | 20/24 (83 %) | Good | unchanged |
+| report sheet | 4 | 3 | 3 | 3 | 3 | 4 | 3 | 3 | 4 | 3 | 33/40 (83 %) | Good | unchanged score; close button (NP-110); at 320 the title wraps the name onto its own line |
+| **G2 (sum of the rows)** | 39 | 39 | 45 | 39 | 27 | 40 | 24 | 37 | 19 | 24 | **333/432 (77 %)** | **Good** | |
+
+Change per screen (after − baseline):
+
+| Screen | Baseline | After | Change | Heuristics that moved |
+|---|---|---|---|---|
+| deck: card + backgrounds | 27/36 (75 %) | 27/36 (75 %) | 0 | none |
+| deck: decisions | 29/40 (73 %) | 29/40 (73 %) | 0 | none |
+| deck: filtered + empty | 28/36 (78 %) | 28/36 (78 %) | 0 | none |
+| deck: end | 16/24 (67 %) | 17/24 (71 %) | +1 | H4 2→3 |
+| deck: pauses + survey prompt | 20/28 (71 %) | 21/28 (75 %) | +1 | H2 2→3 |
+| name sheet + toast | 29/40 (73 %) | 31/40 (78 %) | +2 | H3 2→4 |
+| filters sheet | 26/36 (72 %) | 28/36 (78 %) | +2 | H3 3→4, H4 2→3 |
+| background sheet | 32/40 (80 %) | 32/40 (80 %) | 0 | none |
+| match sheet | 18/24 (75 %) | 18/24 (75 %) | 0 | none |
+| decision sheet | 17/28 (61 %) | 22/28 (79 %) | +5 | H2 2→3, H3 3→4, H4 2→3, H5 2→3, H8 2→3 |
+| survey sheet | 25/36 (69 %) | 27/36 (75 %) | +2 | H3 2→3, H4 2→3 |
+| about sheet | 20/24 (83 %) | 20/24 (83 %) | 0 | none |
+| report sheet | 33/40 (83 %) | 33/40 (83 %) | 0 | none |
+| **G2** | **320/432 (74 %), Good** | **333/432 (77 %), Good** | **+13** | no screen lower than its baseline |
+
+How the scores were made: as the baseline. The design-review sub-agent (A) scored each screen fresh from the after shots (`shots/after/G2/`: 45 states in webkit, chromium, webkit375, webkit320; 25 in sim) and the source, before reading the baseline findings; the parent checked every row and column sum (A's were right). The detector sub-agent (B) ran `impeccable detect` on 58 G2 files (exit 0, `[]`, also with `--no-config`) and the overlay on the same 5 views as the baseline (0 items). Parent adjustments, by the US-R1 rule that a move on unchanged code is scorer variance: A scored H5 2 on "deck: filtered + empty" and on the filters sheet for -12 (0-result apply) and H8 2 on the pauses, each marked by A as calibration with the screen unchanged; the baseline cells (3) are held. A's sum was 330/432; held cells make it 333/432.
+
 ## Baseline performance
 
 Measured by US-004 on 2026-11-07, `npm run build` at `b6ab9ca` (no code change since the detail run), production server `next start -p 3100`. Budget (PRD §3.1.8): `/names` first-load JS ≤ baseline + 3 KB gzipped, CLS 0 on the swipe screen, detail sheet open < 150 ms.
