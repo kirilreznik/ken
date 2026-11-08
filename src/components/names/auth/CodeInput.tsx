@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { inputClass } from "@/components/names/ui/classes";
 import { cleanCode } from "@/lib/names/resend";
 
 export const CODE_LENGTH = 6;
@@ -70,7 +71,7 @@ export default function CodeInput({
         aria-invalid={invalid || undefined}
         aria-describedby={describedBy}
         onChange={(e) => handle(e.target.value)}
-        className="h-14 w-full rounded-md border border-line bg-surface px-3.5 text-center text-title tracking-[0.4em] text-ink tabular-nums placeholder:text-faint aria-invalid:border-urgent disabled:opacity-60"
+        className={inputClass("code")}
       />
     </div>
   );

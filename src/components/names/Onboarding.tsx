@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
-import { Button } from "@/components/names/ui";
+import { Button, inputClass } from "@/components/names/ui";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { GENERIC_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
 import {
@@ -164,7 +164,7 @@ export default function Onboarding() {
             onChange={(e) => update({ displayName: e.target.value })}
             aria-invalid={nameInvalid || undefined}
             aria-describedby="display-name-hint"
-            className="h-14 w-full rounded-md border border-line bg-surface px-4 text-start text-card-title text-ink placeholder:text-faint aria-invalid:border-urgent"
+            className={inputClass()}
           />
           <p id="display-name-hint" className="text-caption text-ink-soft">
             {nameInvalid ? <strong className="font-bold text-urgent">צריך שם, עד 40 תווים. </strong> : null}

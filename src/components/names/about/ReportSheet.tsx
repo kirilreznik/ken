@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useState, type FormEvent } from "react";
-import { BottomSheet, Button, closeSheet } from "@/components/names/ui";
+import { BottomSheet, Button, closeSheet, inputClass } from "@/components/names/ui";
 import { useSearchParams } from "next/navigation";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { isOffline } from "@/lib/names/authErrors";
@@ -27,7 +27,6 @@ type ReportSheetProps = {
 };
 
 const FORM_ID = "report-form";
-const field = "w-full rounded-md border border-line bg-surface px-3.5 text-start text-intro text-ink aria-invalid:border-urgent";
 
 function ErrorLine({ id, children }: { id: string; children: string }) {
   return (
@@ -148,7 +147,7 @@ function Panel({ name }: { name: string | null }) {
               maxLength={40}
               value={typedName}
               onChange={(e) => setTypedName(e.target.value)}
-              className={`${field} mb-3 h-12`}
+              className={`${inputClass()} mb-3`}
             />
           </>
         )}
@@ -170,7 +169,7 @@ function Panel({ name }: { name: string | null }) {
           }}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? "report-error" : "report-hint"}
-          className={`${field} min-h-30 resize-y py-3`}
+          className={`${inputClass("multiline")} min-h-30`}
         />
         {error ? (
           <ErrorLine id="report-error">{error}</ErrorLine>

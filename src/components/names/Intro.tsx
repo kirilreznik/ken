@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Button, IconButton } from "@/components/names/ui";
+import { Button, IconButton, inputClass } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { introFromSheet } from "@/lib/names/routing";
@@ -141,7 +141,7 @@ export default function Intro() {
             value={surname}
             onChange={(e) => setSurname(e.target.value)}
             aria-describedby="surname-hint"
-            className="h-12 w-full rounded-md border border-line bg-surface px-3.5 text-start text-intro text-ink placeholder:text-stone"
+            className={inputClass()}
           />
           <span id="surname-hint" className="text-caption text-ink-soft in-data-[names-bg=none]:text-stone">
             נשמר רק במכשיר הזה.

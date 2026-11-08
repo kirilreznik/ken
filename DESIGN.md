@@ -207,7 +207,7 @@ A warm neutral palette with two brand warms; status colors exist in the tokens b
 - **Surface** (`surface`): cards, sheets and inputs on canvas; solid glass.
 - **Surface dim** (`surface-dim`): the nearer peeking card under the current one on "ללא רקע".
 - **Sand** (`sand`): quiet fills: unselected chips on "ללא רקע", the farther peeking card, the "התאמה" badge behind ink text.
-- **Line** (`line`): 1 px dividers, input borders, borders of soft glass on "ללא רקע".
+- **Line** (`line`): 1 px dividers, borders of soft glass on "ללא רקע".
 
 ### Status (administrative only)
 - `info` / `info-bg`, `caution` / `caution-bg`, `urgent` / `urgent-bg`. In the swiper, `urgent` marks an invalid input border (add-name). BRAND.md: they "describe administrative state only … never imply a medical result", and never by color alone.
@@ -326,7 +326,7 @@ The one toast: an ink pill near the bottom with `text-body` bold white text, an 
 The tall `BottomSheet` with sections in board order (surname, meaning, together, numbers with `YearChart`, boys/girls, facts, similar, source), each through `Section`: a `text-tag` label in `ink-soft` and a `gap-2` body. The together badge is ink on `sand` with a small heart. Decision buttons pinned in the footer.
 
 ### Inputs
-Inputs are `surface` with a `line` border, `radius-md`, 48 px tall, `text-intro` ink with `stone` placeholders; invalid adds an `urgent` border (`aria-invalid`). Focus uses the global ink outline.
+Every text field uses `inputClass()` (`ui/classes.ts`): `surface`, `radius-md`, 48 px tall, `text-intro` ink with `stone` placeholders, and a 1 px edge that reads at ≥ 3:1: `stone` on solid surfaces (sheets, cards), `ink-soft` on glass, where the photo behind can be darker. Read-only fields (the invite link) are `sand`. Invalid turns the edge `urgent` (`aria-invalid`). Focus is the global 2 px ink outline drawn on the field's own edge (`-outline-offset-1`, no floating second ring); a focused invalid field keeps an `urgent` outline. Kinds: `code` (the sign-in code's centered `text-title` digits), `multiline` (textareas; no resize grip on touch) and `link` (the read-only invite URL in `text-caption`, so it fits).
 
 ### Navigation
 No tab bar. The swipe header's "השמות שלי" ink pill and the settings button lead to lists and settings; other screens have a `BackButton` and a title. Lists switches between "שמרתי", "התאמות" and "דו־קרב" with segments in the URL (`?tab=`).

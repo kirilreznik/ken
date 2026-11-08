@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, Dialog, IconButton, closeDialog, openDialog } from "@/components/names/ui";
+import { Button, Dialog, IconButton, closeDialog, inputClass, openDialog } from "@/components/names/ui";
 import { InstallSheet, useInstall } from "@/components/names/pwa/Install";
 import { useSpace } from "@/components/names/useSpace";
 import {
@@ -282,7 +282,7 @@ export default function SettingsScreen() {
                     }}
                     aria-invalid={nameError ? true : undefined}
                     aria-describedby="settings-name-hint"
-                    className="min-h-11 min-w-0 flex-1 rounded-md border border-line bg-sand px-3 text-start text-body text-ink"
+                    className={`${inputClass()} min-w-0 flex-1`}
                   />
                   <Button type="submit" variant="secondary" size="md" aria-disabled={!changed || savingName} aria-busy={savingName} className="aria-disabled:opacity-60">
                     {savingName ? "שומרים…" : "שמירה"}

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
-import { Button } from "@/components/names/ui";
+import { Button, inputClass } from "@/components/names/ui";
 import CodeInput, { CODE_LENGTH } from "@/components/names/auth/CodeInput";
 import ResendTimer from "@/components/names/auth/ResendTimer";
 import Turnstile, { captchaEnabled } from "@/components/names/auth/Turnstile";
@@ -184,7 +184,7 @@ export default function EmailSignIn() {
               }}
               aria-invalid={shownError === INVALID_EMAIL_MESSAGE || undefined}
               aria-describedby={shownError ? "email-sign-in-error" : undefined}
-              className="h-14 w-full rounded-md border border-line bg-surface px-3.5 text-start text-card-title text-ink placeholder:text-faint aria-invalid:border-urgent"
+              className={inputClass()}
             />
           </div>
           {errorLine}

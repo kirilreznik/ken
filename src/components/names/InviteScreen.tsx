@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, IconButton } from "@/components/names/ui";
+import { Button, IconButton, inputClass } from "@/components/names/ui";
 import { useOnline } from "@/components/names/useMatches";
 import { useSpace } from "@/components/names/useSpace";
 import { hasAppEntry } from "@/lib/names/appHistory";
@@ -169,7 +169,7 @@ export default function InviteScreen() {
                 aria-label="קישור ההזמנה"
                 aria-describedby="invite-expiry"
                 onFocus={(e) => e.currentTarget.select()}
-                className="min-h-11 w-full rounded-md border border-line bg-sand px-3 text-start text-caption text-ink"
+                className={inputClass("link")}
               />
               <p id="invite-expiry" className="m-0 text-caption text-stone">
                 {expiryText(invite.expiresAt)} · הקישור עובד פעם אחת

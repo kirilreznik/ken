@@ -49,6 +49,31 @@ export function iconButtonClass(): string {
   return ["names-glass-soft inline-flex size-11 shrink-0 items-center justify-center rounded-pill text-ink", PRESS, DISABLED].join(" ");
 }
 
+// Text fields (DESIGN.md "Inputs"): surface fill, 48 px, text-intro with stone placeholders. The edge
+// is stone on solid surfaces and ink-soft on glass, where the photo behind can be darker (≥ 3:1
+// either way); read-only fields are sand. Focus is the global 2 px outline pulled onto the field's
+// own edge (no floating second ring); an invalid field keeps its urgent edge while focused. "code" is the sign-in code's large centered digits;
+// "multiline" is a textarea (its min height comes from the caller) and has no resize grip on touch;
+// "link" is a read-only URL in caption type, so the whole invite link fits on a phone.
+export type InputKind = "line" | "multiline" | "code" | "link";
+
+const FIELD = [
+  "w-full rounded-md border border-stone in-[.names-glass]:border-ink-soft bg-surface px-3.5 text-ink placeholder:text-stone read-only:enabled:bg-sand",
+  "focus-visible:-outline-offset-1 aria-invalid:border-urgent aria-invalid:focus-visible:outline-urgent",
+  DISABLED,
+].join(" ");
+
+const FIELD_KIND: Record<InputKind, string> = {
+  line: "h-12 text-start text-intro",
+  multiline: "py-3 text-start text-intro resize-y pointer-coarse:resize-none",
+  code: "h-12 text-center text-title tracking-[0.4em] tabular-nums",
+  link: "h-12 text-start text-caption",
+};
+
+export function inputClass(kind: InputKind = "line"): string {
+  return `${FIELD} ${FIELD_KIND[kind]}`;
+}
+
 // The pill is 29 px tall like the board; ::before stretches the hit area to 45 px tall and 8 px wider.
 const CHIP = "inline-flex items-center justify-center rounded-pill px-3 py-1.5 text-caption font-bold";
 const CHIP_OFF = "names-glass-soft names-chip-off text-ink in-data-[names-bg=none]:text-ink-soft";
