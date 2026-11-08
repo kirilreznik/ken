@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, IconButton, collapseRow } from "@/components/names/ui";
+import { Button, IconButton, collapseRow, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
@@ -84,7 +84,9 @@ export default function HiddenScreen() {
             <span className="sr-only">בטעינה</span>
           </div>
         ) : hidden.length === 0 ? (
-          <p className="m-0 rounded-lg bg-surface px-4 py-6 text-center text-card-title text-ink-soft shadow-card">אין שמות מוסתרים</p>
+          <div className={emptyPanelClass("card")}>
+            <p className={emptyTitleClass("card")}>אין שמות מוסתרים</p>
+          </div>
         ) : (
           <ul ref={listRef} aria-label="שמות מוסתרים" className="m-0 list-none overflow-hidden rounded-lg bg-surface p-0 shadow-card">
             {hidden.map((name, i) => {

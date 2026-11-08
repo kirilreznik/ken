@@ -104,3 +104,30 @@ export function chipClass(selected: boolean): string {
 export function hintChipClass(): string {
   return `${CHIP} ${CHIP_OFF}`;
 }
+
+// Empty and end panels (DESIGN.md "Empty and end panels"): one centered column, gap-3, px-5 py-6,
+// radius-xl. "glass" stands where the swipe card was (deck end, empty filter, pauses, load error)
+// and scrolls inside itself when its content is taller than the room; "card" is the white card of
+// an empty list (saved, matches, hidden, duel). The title role follows the surface: the deck's
+// panels replace the card and take text-title, an empty list's card takes text-card-title.
+export type EmptyPanelSurface = "glass" | "card";
+
+const EMPTY_PANEL = "flex flex-col items-center gap-3 rounded-xl px-5 py-6 text-center";
+
+const EMPTY_PANEL_SURFACE: Record<EmptyPanelSurface, string> = {
+  glass: "min-h-0 flex-1 justify-center-safe overflow-y-auto [&>*]:shrink-0",
+  card: "bg-surface shadow-card",
+};
+
+const EMPTY_TITLE: Record<EmptyPanelSurface, string> = {
+  glass: "m-0 text-title font-bold text-ink",
+  card: "m-0 text-card-title text-ink",
+};
+
+export function emptyPanelClass(surface: EmptyPanelSurface): string {
+  return `${EMPTY_PANEL} ${EMPTY_PANEL_SURFACE[surface]}`;
+}
+
+export function emptyTitleClass(surface: EmptyPanelSurface): string {
+  return EMPTY_TITLE[surface];
+}

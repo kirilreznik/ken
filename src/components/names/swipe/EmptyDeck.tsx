@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import NestCard from "@/components/names/NestCard";
-import { Button, openSheet, Glass } from "@/components/names/ui";
+import { Button, openSheet, Glass, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
 
 type EmptyDeckProps = {
   /** "empty-filter": undecided names exist but none match; "all-decided": every name has a vote. */
@@ -19,10 +19,9 @@ type EmptyDeckProps = {
   takeFocus: boolean;
 };
 
-/** The end panel's shape, shared with the deck's load error (DeckLoad). */
+/** The deck panel's shape (`emptyPanelClass("glass")`), shared with the pauses (PausePanel) and the load error (DeckLoad). */
 export const deckPanelWrap = "flex min-h-0 flex-1 flex-col pb-7";
-export const deckPanel =
-  "flex min-h-0 flex-1 flex-col items-center justify-center-safe gap-3.5 overflow-y-auto rounded-xl px-5.5 py-7 text-center [&>*]:shrink-0";
+export const deckPanel = emptyPanelClass("glass");
 
 /** Shown names on the all-decided panel; the rest are on "השמות שלי". */
 const SAVED_SHOWN = 10;
@@ -51,7 +50,7 @@ export default function EmptyDeck({ state, saved, solo, onReset, takeFocus }: Em
       >
         {state === "empty-filter" ? (
           <>
-            <h2 id="names-empty-title" className="text-title font-bold text-ink">
+            <h2 id="names-empty-title" className={emptyTitleClass("glass")}>
               אין שמות שמתאימים לסינון הזה
             </h2>
             {/* Two ways out: change one filter, or clear them all. */}
@@ -66,7 +65,7 @@ export default function EmptyDeck({ state, saved, solo, onReset, takeFocus }: Em
           </>
         ) : (
           <>
-            <h2 id="names-empty-title" className="text-title font-bold text-ink">
+            <h2 id="names-empty-title" className={emptyTitleClass("glass")}>
               עברת על כל השמות.
               <br />
               בקרוב יתווספו עוד.

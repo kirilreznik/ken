@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import NestCard from "@/components/names/NestCard";
-import { Button, Glass } from "@/components/names/ui";
+import { Button, Glass, emptyTitleClass } from "@/components/names/ui";
+import { deckPanel, deckPanelWrap } from "./EmptyDeck";
 import { RECAP_NAMES, recapLine, type Pause } from "@/lib/names/launch";
 import { track } from "@/lib/names/track";
 
@@ -39,15 +40,15 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
   }, [pause, opened]);
 
   return (
-    <div ref={root} className="flex min-h-0 flex-1 flex-col pb-7">
+    <div ref={root} className={deckPanelWrap}>
       <Glass
         as="section"
         aria-labelledby="names-pause-title"
-        className="flex min-h-0 flex-1 flex-col items-center justify-center-safe gap-3.5 overflow-y-auto rounded-xl px-5.5 py-7 text-center [&>*]:shrink-0"
+        className={deckPanel}
       >
         {pause === "invite" ? (
           <>
-            <h2 id="names-pause-title" className="m-0 text-title font-bold text-ink">
+            <h2 id="names-pause-title" className={emptyTitleClass("glass")}>
               רוצה לבחור עם מישהו?
             </h2>
             <p className="m-0 text-intro text-ink-soft">
@@ -77,7 +78,7 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
           </>
         ) : (
           <>
-            <h2 id="names-pause-title" className="m-0 text-title font-bold text-ink">
+            <h2 id="names-pause-title" className={emptyTitleClass("glass")}>
               סיכום הסבב
             </h2>
             <p className="m-0 text-intro text-ink-soft">{recapLine(opened.votes, opened.saves)}</p>

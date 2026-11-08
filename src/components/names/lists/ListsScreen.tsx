@@ -8,7 +8,7 @@ import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
-import { Button, IconButton, collapseRow, openNameSheet, openSheet } from "@/components/names/ui";
+import { Button, IconButton, collapseRow, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet } from "@/components/names/ui";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
 import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
@@ -364,8 +364,8 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
 
   if (matches.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-surface px-4 py-6 text-center shadow-card">
-        <p className="m-0 text-card-title text-ink-soft">עוד אין התאמות.</p>
+      <div className={emptyPanelClass("card")}>
+        <p className={emptyTitleClass("card")}>עוד אין התאמות.</p>
         <p className="m-0 text-person text-ink-soft">
           {memberCount < 2
             ? "התאמה היא שם שגם מי שבוחר איתך שמר."
@@ -527,8 +527,8 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
 
   if (rows.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-surface px-4 py-6 text-center shadow-card">
-        <p className="m-0 text-card-title text-ink-soft">עוד לא נשמרו שמות.</p>
+      <div className={emptyPanelClass("card")}>
+        <p className={emptyTitleClass("card")}>עוד לא נשמרו שמות.</p>
         <Button variant="link" href={APP_PATH}>
           לבחירת שמות
         </Button>
@@ -596,14 +596,14 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
 function SoloMatches() {
   useEffect(() => track("invite_prompt", { placement: "matches_tab", action: "shown" }), []);
   return (
-    <div className="flex flex-col items-center gap-3 rounded-lg bg-surface px-5 py-7 text-center shadow-card">
+    <div className={emptyPanelClass("card")}>
       <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-full bg-peach-soft text-clay-deep">
         <Icon size={24}>
           <circle cx="9" cy="8" r="3.5" />
           <path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6" />
         </Icon>
       </span>
-      <h2 className="m-0 text-card-title text-ink">בוחרים ביחד?</h2>
+      <h2 className={emptyTitleClass("card")}>בוחרים ביחד?</h2>
       <p className="m-0 text-person text-ink-soft">
         אפשר להזמין את מי שבוחר איתך. כל אחד בוחר בטלפון שלו, ושם ששניכם שמרתם יופיע כאן כהתאמה.
       </p>

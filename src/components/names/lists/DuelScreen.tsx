@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
-import { Button, IconButton } from "@/components/names/ui";
+import { Button, IconButton, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import {
   currentPair,
@@ -204,8 +204,8 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
             <span className="sr-only">בטעינה</span>
           </div>
         ) : !duel || !p ? (
-          <div className="flex flex-col items-start gap-2 rounded-lg bg-surface px-4 py-5 shadow-card">
-            <p className="m-0 text-card-title">
+          <div className={emptyPanelClass("card")}>
+            <p className={emptyTitleClass("card")}>
               {source === "matches" ? "לדו־קרב צריך לפחות שתי התאמות." : "לדו־קרב צריך לפחות שני שמות ברשימה."}
             </p>
             <Button variant="link" href={APP_PATH}>

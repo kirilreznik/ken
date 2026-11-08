@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Button, Glass } from "@/components/names/ui";
+import { Button, Glass, emptyTitleClass } from "@/components/names/ui";
 import { DECK_LOAD_ERROR, DECK_LOADING_TEXT } from "@/lib/names/deck";
 import { deckPanel, deckPanelWrap } from "./EmptyDeck";
 
@@ -57,7 +57,7 @@ export function DeckLoadError({ onRetry, takeFocus }: { onRetry: () => void; tak
         <p role="status" className="sr-only">
           {`${DECK_LOAD_ERROR.title} ${DECK_LOAD_ERROR.lead}`}
         </p>
-        <h2 id="names-load-error-title" className="text-title font-bold text-ink">
+        <h2 id="names-load-error-title" className={emptyTitleClass("glass")}>
           {DECK_LOAD_ERROR.title}
         </h2>
         <p className="text-intro text-ink-soft">{DECK_LOAD_ERROR.lead}</p>
