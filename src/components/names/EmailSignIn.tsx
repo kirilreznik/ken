@@ -22,6 +22,7 @@ import {
   visibleSignInError,
 } from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
+import { CODE_RESENT_TEXT } from "@/lib/names/resend";
 import { getPref } from "@/lib/names/prefs";
 import { hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { getSupabase } from "@/lib/names/supabase";
@@ -46,7 +47,11 @@ export default function EmailSignIn() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [sentAt, setSentAt] = useState(0);
-  const [busy, setBusy] = useState(false);
+  // One request at a time, but each says its own thing: "שולחים…" on the resend link,
+  // "נכנסים…" only on the sign-in button (INT-G1-01).
+  const [pending, setPending] = useState<"send" | "verify" | null>(null);
+  const busy = pending !== null;
+  const [resent, setResent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaKey, setCaptchaKey] = useState(0);
@@ -90,8 +95,9 @@ export default function EmailSignIn() {
       setError(OFFLINE_MESSAGE);
       return false;
     }
-    setBusy(true);
+    setPending("send");
     setError(null);
+    setResent(false);
     try {
       const { error: err } = await supabase.auth.signInWithOtp({
         email: email.trim(),
@@ -102,6 +108,7 @@ export default function EmailSignIn() {
         return false;
       }
       setSentAt(Date.now());
+      setResent(step === "code");
       track("signin_code_sent", { resend: step === "code" });
       return true;
     } catch (err) {
@@ -113,7 +120,7 @@ export default function EmailSignIn() {
         setCaptchaToken(null);
         setCaptchaKey((k) => k + 1);
       }
-      setBusy(false);
+      setPending(null);
     }
   }
 
@@ -137,8 +144,9 @@ export default function EmailSignIn() {
       setError(OFFLINE_MESSAGE);
       return;
     }
-    setBusy(true);
+    setPending("verify");
     setError(null);
+    setResent(false);
     try {
       const { data, error: err } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: "email" });
       // On success the auth listener sets the user and the effect above routes on.
@@ -147,7 +155,7 @@ export default function EmailSignIn() {
     } catch (err) {
       failVerify(err);
     } finally {
-      setBusy(false);
+      setPending(null);
     }
   }
 
@@ -155,6 +163,7 @@ export default function EmailSignIn() {
     setStep("email");
     setCode("");
     setError(null);
+    setResent(false);
   }
 
   if (loading || user) return <AuthSkeleton />;
@@ -201,7 +210,7 @@ export default function EmailSignIn() {
           </div>
           {errorLine}
           <Turnstile key={captchaKey} onToken={setCaptchaToken} />
-          <Button type="submit" disabled={busy || sendBlocked} aria-busy={busy}>
+          <Button type="submit" disabled={busy || sendBlocked} aria-busy={pending === "send"}>
             {busy ? "שולחים…" : "שליחת קוד"}
           </Button>
         </form>
@@ -248,13 +257,25 @@ export default function EmailSignIn() {
           autoFocus
           inputRef={codeRef}
         />
-        {errorLine}
-        <Button type="submit" disabled={busy || code.length !== CODE_LENGTH} aria-busy={busy}>
-          {busy ? "נכנסים…" : "כניסה"}
+        {errorLine ??
+          (resent ? (
+            // Not a live region: ResendTimer's status says it with the new wait, once.
+            <p id="email-sign-in-sent" className="text-caption font-medium text-pretty text-ink-soft">
+              {CODE_RESENT_TEXT}
+            </p>
+          ) : null)}
+        <Button type="submit" disabled={busy || code.length !== CODE_LENGTH} aria-busy={pending === "verify"}>
+          {pending === "verify" ? "נכנסים…" : "כניסה"}
         </Button>
       </form>
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <ResendTimer sentAt={sentAt} onResend={() => void sendCode()} busy={busy || sendBlocked} />
+        <ResendTimer
+          sentAt={sentAt}
+          onResend={() => void sendCode()}
+          disabled={busy || sendBlocked}
+          sending={pending === "send"}
+          sentNote={resent ? CODE_RESENT_TEXT : undefined}
+        />
         <button
           type="button"
           onClick={changeAddress}
