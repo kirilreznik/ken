@@ -1,9 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { dismissToast, getToast, subscribeToast } from "@/lib/names/toast";
 
 const serverToast = () => null;
+
+const actionClass =
+  "inline-flex min-h-11 shrink-0 items-center rounded-pill px-3 underline underline-offset-4 focus-visible:outline-surface";
 
 /**
  * The one toast (showToast in src/lib/names/toast.ts): an ink pill near the bottom. The
@@ -23,20 +27,32 @@ export function ToastRegion() {
       {toast ? (
         <div
           key={toast.id}
-          className="names-toast-in pointer-events-auto flex min-h-11 max-w-md items-center gap-3 rounded-pill bg-ink py-1.5 ps-5 pe-2 text-body font-bold text-surface shadow-button"
+          // With a link too, the two controls drop under the message when they don't fit beside it.
+          className={`names-toast-in pointer-events-auto flex min-h-11 max-w-md items-center gap-x-3 bg-ink py-1.5 ps-5 pe-2 text-body font-bold text-surface shadow-button ${
+            toast.link ? "flex-wrap rounded-lg" : "rounded-pill"
+          }`}
         >
           <span className="py-1">{toast.message}</span>
-          {toast.action ? (
-            <button
-              type="button"
-              onClick={() => {
-                toast.action?.onAction();
-                dismissToast(toast.id);
-              }}
-              className="min-h-11 shrink-0 rounded-pill px-3 underline underline-offset-4 focus-visible:outline-surface"
-            >
-              {toast.action.label}
-            </button>
+          {toast.action || toast.link ? (
+            <span className="ms-auto flex shrink-0 items-center">
+              {toast.action ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    toast.action?.onAction();
+                    dismissToast(toast.id);
+                  }}
+                  className={actionClass}
+                >
+                  {toast.action.label}
+                </button>
+              ) : null}
+              {toast.link ? (
+                <Link href={toast.link.href} onClick={() => dismissToast(toast.id)} className={actionClass}>
+                  {toast.link.label}
+                </Link>
+              ) : null}
+            </span>
           ) : (
             <span aria-hidden="true" className="w-3" />
           )}

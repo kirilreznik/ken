@@ -22,7 +22,7 @@ import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
-import { addedText, listsTab, rowActionText, rowMeta, rowMetaText, rowUndoText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
+import { HIDDEN_LINK, addedText, listsTab, rowActionText, rowMeta, rowMetaText, rowUndoText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
 import { showToast } from "@/lib/names/toast";
 import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
@@ -253,7 +253,11 @@ export default function ListsScreen() {
                       showToast(rowUndoText(name));
                     }
                   : undefined;
-                showToast(rowActionText(name, action), undo ? { action: { label: "ביטול", onAction: undo } } : {});
+                // A hidden name leaves "שמרתי"; the toast links to where it went (IMP-C-G3-05).
+                showToast(rowActionText(name, action), {
+                  ...(undo ? { action: { label: "ביטול", onAction: undo } } : {}),
+                  ...(action === "hide" ? { link: HIDDEN_LINK } : {}),
+                });
               }}
               headingRef={headingRef}
               canOpen={canOpen}

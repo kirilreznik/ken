@@ -324,6 +324,8 @@ Confirm dialogs (`role="alertdialog"`) bound to `?dialog=<name>`; Escape, Back a
 
 ### Toast (`ToastRegion`, `src/lib/names/toast.ts`)
 The one toast: an ink pill near the bottom with `text-body` bold white text, an optional action ("ביטול"), `shadow-button`. Its `role="status"` region is always mounted, so screen readers hear every message; over a sheet with pinned buttons it sits just above them.
+A toast can also carry a link to where the result went, after the action: hiding a saved name from its row menu says "השם {name} הוסתר ולא יוצג יותר" with "ביטול" and "לשמות שהסתרתי" (`HIDDEN_LINK`). With a link the toast is `radius-lg` and the two controls drop under the message, at the end, when they don't fit beside it; a tap on the link closes the toast. A link keeps the toast up as long as an action does (8 s).
+The filters sheet's "שמות שהסתרתי" row has a `text-caption` `stone` line under it on how a name gets hidden (`HIDE_HINT`, the same line as the hidden screen's empty card), and the row is `aria-describedby` it.
 Reversible acts that leave no row to look at get the toast's undo instead of a confirm dialog: restoring a hidden name ("השם {name} יחזור לבחירה") and taking the chosen name back ("הבחירה בשם {name} בוטלה", then "השם {name} נבחר שוב"). The act's label says what it undoes ("ביטול הבחירה"), so "ביטול" on the toast reads as undo.
 
 ### Legal line (`auth/LegalLine.tsx`)

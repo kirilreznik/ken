@@ -21,6 +21,7 @@ import {
   type NameLength,
   type Sector,
 } from "@/lib/names/filters";
+import { HIDE_HINT } from "@/lib/names/lists";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { track } from "@/lib/names/track";
 import { THEME_IDS, THEME_LABELS, type ThemeId } from "@/lib/names/themes";
@@ -200,6 +201,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   const [draft, setDraft] = useState<Filters>(() => (userId ? getPref(userId, "filters") : defaultFilters()));
   const [picker, setPicker] = useState<Picker>(null);
   const pickerId = useId();
+  const hiddenHintId = useId();
 
   const set = <K extends keyof Filters>(key: K) => (value: Filters[K] | null) =>
     setDraft((d) => ({ ...d, [key]: value }));
@@ -311,17 +313,23 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
         </div>
       </div>
 
-      <Link
-        href="/names/hidden"
-        data-control
-        className="flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink"
-      >
-        <span>שמות שהסתרתי</span>
-        <span className="flex items-center gap-1.5 font-medium text-ink-soft">
-          <bdi>{hidden}</bdi>
-          <Chevron />
-        </span>
-      </Link>
+      <div className="flex flex-col gap-1.5">
+        <Link
+          href="/names/hidden"
+          data-control
+          aria-describedby={hiddenHintId}
+          className="flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink"
+        >
+          <span>שמות שהסתרתי</span>
+          <span className="flex items-center gap-1.5 font-medium text-ink-soft">
+            <bdi>{hidden}</bdi>
+            <Chevron />
+          </span>
+        </Link>
+        <p id={hiddenHintId} className="m-0 px-3.5 text-caption text-stone">
+          {HIDE_HINT}
+        </p>
+      </div>
     </BottomSheet>
   );
 }

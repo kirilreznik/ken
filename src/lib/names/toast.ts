@@ -3,8 +3,15 @@
 // the current one.
 
 export type ToastAction = { label: string; onAction: () => void };
-export type Toast = { id: number; message: string; action?: ToastAction };
-export type ToastOptions = { action?: ToastAction; /** ms; 0 keeps it until dismissed. */ duration?: number };
+/** A link after the action, to the screen where the result can be found ("לשמות שהסתרתי"). */
+export type ToastLink = { label: string; href: string };
+export type Toast = { id: number; message: string; action?: ToastAction; link?: ToastLink };
+export type ToastOptions = {
+  action?: ToastAction;
+  link?: ToastLink;
+  /** ms; 0 keeps it until dismissed. */
+  duration?: number;
+};
 
 export const TOAST_DURATION = 4000;
 // A toast with an action stays longer so there is time to reach the button.
@@ -31,8 +38,8 @@ export function getToast(): Toast | null {
 export function showToast(message: string, options: ToastOptions = {}): number {
   clearTimeout(timer);
   const id = nextId++;
-  current = { id, message, action: options.action };
-  const duration = options.duration ?? (options.action ? TOAST_ACTION_DURATION : TOAST_DURATION);
+  current = { id, message, action: options.action, link: options.link };
+  const duration = options.duration ?? (options.action || options.link ? TOAST_ACTION_DURATION : TOAST_DURATION);
   if (duration > 0) timer = setTimeout(() => dismissToast(id), duration);
   emit();
   return id;

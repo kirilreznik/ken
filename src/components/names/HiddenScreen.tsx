@@ -10,7 +10,7 @@ import { useVotes } from "@/components/names/useVotes";
 import VotesLoadFailed from "@/components/names/lists/VotesLoadFailed";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
-import { hiddenAgainText, hiddenNames, restoredText, rowMeta, rowMetaText } from "@/lib/names/lists";
+import { HIDE_HINT, hiddenAgainText, hiddenNames, restoredText, rowMeta, rowMetaText } from "@/lib/names/lists";
 import { showToast } from "@/lib/names/toast";
 import type { Vote } from "@/lib/names/types";
 
@@ -89,7 +89,7 @@ export default function HiddenScreen() {
         ) : hidden.length === 0 ? (
           <div className={emptyPanelClass("card")}>
             <h2 className={emptyTitleClass("card")}>אין כרגע שמות מוסתרים.</h2>
-            <p className={emptyLineClass()}>לחיצה ארוכה על ״דילוג״ בכרטיס מסתירה שם, והוא יופיע כאן.</p>
+            <p className={emptyLineClass()}>{HIDE_HINT}</p>
             <Button variant="link" href={APP_PATH}>
               לבחירת שמות
             </Button>

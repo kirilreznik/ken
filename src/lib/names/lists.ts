@@ -35,6 +35,12 @@ export function hiddenNames(votes: ReadonlyMap<string, Vote>): string[] {
   return hidden.reverse();
 }
 
+/** How a name gets hidden: the hidden screen's empty state and the filters sheet's hidden row. */
+export const HIDE_HINT = "לחיצה ארוכה על ״דילוג״ בכרטיס מסתירה שם, והוא יופיע כאן.";
+
+/** The toast link to the hidden names after a name is hidden from a list. */
+export const HIDDEN_LINK = { label: "לשמות שהסתרתי", href: "/names/hidden" } as const;
+
 /** Live region text after "החזרה". */
 export function restoredText(name: string): string {
   return `השם ${name} יחזור לבחירה`;
