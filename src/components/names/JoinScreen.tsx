@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AuthSkeleton } from "@/components/names/AuthGuard";
-import { useAuth } from "@/components/names/AuthProvider";
+import { AuthSkeleton, SignedOutView } from "@/components/names/AuthGuard";
+import { useAuth, useStoredSession } from "@/components/names/AuthProvider";
 import PreviewCard from "@/components/names/PreviewCard";
 import WelcomeActions from "@/components/names/WelcomeActions";
 import AuthLayout from "@/components/names/auth/AuthLayout";
@@ -50,6 +50,7 @@ function Outcome({ title, lead, children }: { title: string; lead: React.ReactNo
  */
 export default function JoinScreen({ code: rawCode }: { code: string }) {
   const { session, user, loading } = useAuth();
+  const stored = useStoredSession();
   const router = useRouter();
   const code = normalizeJoinCode(rawCode);
   const onboarded = hasAcceptedTerms(user);
@@ -83,13 +84,14 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
     };
   }, [loading, session, onboarded, userId, code, displayName, key]);
 
-  if (loading) return <AuthSkeleton />;
+  // Without a stored session the signed-out screens show at once, also in the server HTML.
+  if (loading && stored) return <AuthSkeleton />;
 
   const startHref = user ? nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, null) : APP_PATH;
 
   if (!code || outcome?.kind === "invalid") {
     const copy = JOIN_COPY.invalid;
-    return (
+    const invalid = (
       <Outcome title={copy.title} lead={copy.lead}>
         <p role="status" className="sr-only">
           {`${copy.title} ${copy.lead}`}
@@ -97,23 +99,26 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
         {session ? <Button href={startHref}>לבחירת שמות</Button> : <Button href={WELCOME_PATH}>לכניסה</Button>}
       </Outcome>
     );
+    return session ? invalid : <SignedOutView>{invalid}</SignedOutView>;
   }
 
   if (!session) {
     return (
-      <AuthLayout
-        title={JOIN_INVITED_TITLE}
-        lead={JOIN_INVITED_LEAD}
-        hero={
-          <>
-            {wordmark}
-            <PreviewCard />
-          </>
-        }
-        footer={<LegalLine />}
-      >
-        <WelcomeActions joinCode={code} />
-      </AuthLayout>
+      <SignedOutView>
+        <AuthLayout
+          title={JOIN_INVITED_TITLE}
+          lead={JOIN_INVITED_LEAD}
+          hero={
+            <>
+              {wordmark}
+              <PreviewCard />
+            </>
+          }
+          footer={<LegalLine />}
+        >
+          <WelcomeActions joinCode={code} />
+        </AuthLayout>
+      </SignedOutView>
     );
   }
 

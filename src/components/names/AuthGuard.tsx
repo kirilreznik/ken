@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { welcomeUrl } from "@/lib/names/auth";
 import { getPref } from "@/lib/names/prefs";
 import { ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
-import { useAuth } from "./AuthProvider";
+import { useAuth, useStoredSession } from "./AuthProvider";
 import { usePendingJoin } from "./auth/usePendingJoin";
 
 /** Calm full-screen placeholder while the session loads: canvas plus a faint card outline, so nothing jumps. */
@@ -37,9 +37,30 @@ export function RequireAuth({ children, allowWithoutTerms = false }: { children:
   return <>{children}</>;
 }
 
-/** Wraps welcome: a signed-in visitor goes on as FR-W6 says (onboarding, invite, intro or the app). */
+const subscribeNever = () => () => {};
+
+/**
+ * A signed-out screen rendered on the server. Until hydration it carries data-names-gate, which
+ * auth/StoredSessionHint hides when the device keeps a session, so a signed-in visitor never
+ * sees it paint before the redirect. After hydration the attribute is gone.
+ */
+export function SignedOutView({ children }: { children: React.ReactNode }) {
+  const hydrated = useSyncExternalStore(subscribeNever, () => true, () => false);
+  return (
+    <div className="contents" data-names-gate={hydrated ? undefined : ""}>
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Wraps welcome: a signed-in visitor goes on as FR-W6 says (onboarding, invite, intro or the app).
+ * Without a stored session the page shows at once, also in the server HTML; the skeleton only
+ * covers a session that is still loading.
+ */
 export function RedirectIfSignedIn({ children }: { children: React.ReactNode }) {
   const { session, user, loading } = useAuth();
+  const stored = useStoredSession();
   const router = useRouter();
   const join = usePendingJoin();
 
@@ -47,6 +68,6 @@ export function RedirectIfSignedIn({ children }: { children: React.ReactNode }) 
     if (!loading && session && user) router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
   }, [loading, session, user, join, router]);
 
-  if (loading || session) return <AuthSkeleton />;
-  return <>{children}</>;
+  if (session || (loading && stored)) return <AuthSkeleton />;
+  return <SignedOutView>{children}</SignedOutView>;
 }
