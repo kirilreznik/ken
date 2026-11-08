@@ -265,9 +265,10 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                           data-duel-pick={i === 0 ? "a" : "b"}
                           aria-describedby={m ? `duel-meta-${i}` : undefined}
                           onClick={() => choose(name)}
-                          className="flex min-h-[180px] flex-col items-center justify-center gap-1.5 rounded-xl bg-surface px-4 text-ink shadow-hero"
+                          className="@container flex min-h-[180px] flex-col items-center justify-center gap-1.5 rounded-xl bg-surface px-4 text-ink shadow-hero"
                         >
-                          <span className="text-duel-name break-words">{name}</span>
+                          {/* A narrow card (Page Zoom 150 %) steps the name down a size, and a name too long for a line breaks anywhere (NP-BUG-012). */}
+                          <span className="max-w-full text-center text-duel-name wrap-anywhere @max-[16rem]:text-hero-name">{name}</span>
                           {m ? (
                             <span aria-hidden="true" className="text-caption font-medium text-stone">
                               {m.short}
@@ -289,7 +290,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                   <h2 className="m-0 text-person font-bold">החמישייה עד עכשיו</h2>
                   <ol className="m-0 flex list-none flex-wrap gap-2 p-0">
                     {top.map((name, i) => (
-                      <li key={name} className="rounded-pill bg-ink px-3 py-1.5 text-caption font-bold text-surface">
+                      <li key={name} className="max-w-full rounded-pill bg-ink px-3 py-1.5 text-caption font-bold wrap-anywhere text-surface">
                         {i + 1}. {name}
                       </li>
                     ))}
