@@ -32,6 +32,13 @@
     background-color: var(--nest-canvas);
   }
 
+  /* An app, not a document (mobile-native §6): pulling past the top doesn't drag the whole
+   * screen down or reload it. Inner scrollers (sheets, the card) keep overscroll-contain. */
+  html:has(.nest-names),
+  body:has(.nest-names) {
+    overscroll-behavior-y: none;
+  }
+
   .nest-names {
     background-color: var(--nest-canvas);
     color: var(--nest-ink);

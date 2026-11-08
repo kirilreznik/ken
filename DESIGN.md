@@ -300,6 +300,7 @@ All in `src/components/names/ui/` unless noted. Fix a pattern in the shared comp
 - **IconButton**: 44 px round soft-glass button with an icon only; the Hebrew `aria-label` is required by its type. For close ("סגירה"), filters, background, settings, row menus.
 - **Pressed / disabled:** press scales to 0.95 in 150 ms (`motion-safe` only); disabled is 60% opacity. `touch-manipulation` on all.
 - **Controls aren't text:** one base rule in `names.css` gives every `button`, control role (`button`, `tab`, `switch`, `radio`, `menuitem`), checkbox/radio label and `a[data-control]` no text selection, no iOS long-press callout or drag, `touch-action: manipulation`, and the pointer cursor (not when disabled). A link that looks like a button or row carries `data-control` (`Button`/`IconButton` with `href` add it); inline text links stay content and keep their callout.
+- **No pull-to-refresh:** `html` and `body` get `overscroll-behavior-y: none` while a `/names` screen is mounted (`:has(.nest-names)`, so the landing keeps it). A pull past the top doesn't drag the screen down or reload it; inner scrollers (sheets, the card) use `overscroll-contain`.
 
 ### Decision buttons (`src/components/names/DecisionButtons.tsx`)
 Three equal pills, each with its word and icon, shared by the swipe screen's `ActionBar` and the detail sheet: "שמירה לרשימה" (ink, primary), "אהבתי מאוד" (peach-soft with `clay-deep`), "דילוג" (quiet white glass). In the sheet, the current vote shows as pressed with an ink ring and a check in place of the icon, so it isn't told by color.
