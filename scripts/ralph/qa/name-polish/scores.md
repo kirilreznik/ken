@@ -214,6 +214,18 @@ Measured by US-004 on 2026-11-07, `npm run build` at `b6ab9ca` (no code change s
 | Tap → sheet visible, 3 opens (ms) | `performance.measure` from the `pointerup` timestamp to the frame after `section[role=dialog] h2` is in the DOM (as `qa1-q.mjs`); 1st open loads the sheet chunk | 51, 50, 42 | 61, 50, 43 |
 | CLS over the whole run (swipes + 3 opens/closes) | same observer | 0 | 0 |
 
+## Self-audit performance (US-SA)
+
+Re-measured on 2026-11-08 with the same script (`shots/us004-size.mjs`) on the production build. The baseline was rebuilt from `87747d9` in a temporary worktree and reproduced 301,489 B exactly.
+
+| `/names` first-load JS (gzipped) | Bytes | Against baseline |
+|---|---|---|
+| US-004 baseline | 301,489 | 0 |
+| Before the self-audit (`fc32603`) | 306,717 | +5,228 (over the +3,072 budget by 2,156) |
+| After the self-audit (lazy background, report, survey sheets) | **300,633** | **−856** (within budget) |
+
+`/names/lists` 295,007 and `/names/welcome` 273,930 after (baseline 290,498 and 271,504; no budget on these). The growth was spread over the polish stories (deck, filters, toasts, auth copy); no single accident. The fix moves three tap-opened sheets out of the first load with `lazySheet()` (their code loads when the browser is idle, and the service worker precaches the chunks).
+
 ## Screens G1
 
 Baseline inventory of group 1 (Entry, PRD §6), taken by US-005 on 2026-11-07 before any polish, at `f9bedbe` (no app code change since the detail run). Audits and QA use this list of screens and states and these names.

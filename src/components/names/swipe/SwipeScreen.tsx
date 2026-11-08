@@ -3,14 +3,12 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
-import ReportSheet from "@/components/names/about/ReportSheet";
-import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
 import FiltersSheet from "@/components/names/FiltersSheet";
 import MatchSheet from "@/components/names/MatchSheet";
-import SurveySheet from "@/components/names/SurveySheet";
 import { closeSheet, openNameSheet } from "@/components/names/ui";
+import { lazySheet } from "@/components/names/lazySheet";
 import { useCards } from "@/components/names/useCards";
 import { usePrefJson } from "@/components/names/usePrefJson";
 import { useSpace } from "@/components/names/useSpace";
@@ -41,6 +39,11 @@ import SwipeFooter from "./SwipeFooter";
 import SwipeHeader from "./SwipeHeader";
 import SwipeKeys, { SWIPE_KEYS_ID } from "./SwipeKeys";
 import { dragClass, useSwipeDrag } from "./useSwipeDrag";
+
+// Opened from a tap or once (background, a report, the survey): out of the first load, loaded when idle.
+const BackgroundSheet = lazySheet("background", () => import("@/components/names/BackgroundSheet"));
+const ReportSheet = lazySheet("report", () => import("@/components/names/about/ReportSheet"));
+const SurveySheet = lazySheet("survey", () => import("@/components/names/SurveySheet"));
 
 const NO_MATCHES: readonly Match[] = [];
 const NO_TOTALS = { votes: 0, saves: 0, names: [] as string[] };
