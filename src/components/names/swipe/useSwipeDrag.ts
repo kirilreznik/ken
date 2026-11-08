@@ -49,8 +49,12 @@ function swallowNextClick() {
   const timer = window.setTimeout(done, 500);
 }
 
+/** The card is off its place (a drag, a fling, the snap back): the stack shows the back cards whole (names.css). */
+const moving = (el: HTMLElement, on: boolean) => el.toggleAttribute("data-moving", on);
+
 function paint(el: HTMLElement, transform: string, keep = 0, skip = 0, love = 0) {
   el.style.transform = transform;
+  moving(el, transform !== "");
   el.style.setProperty("--keep", String(keep));
   el.style.setProperty("--skip", String(skip));
   el.style.setProperty("--love", String(love));
@@ -133,11 +137,17 @@ export function useSwipeDrag({
     if (!node || !s?.mode) return;
     const from = node.style.transform;
     paint(node, "");
-    if (from && !reducedMotion()) node.animate([{ transform: from }, { transform: "none" }], { duration: 220, easing: "ease-out" });
+    if (!from || reducedMotion()) return;
+    moving(node, true);
+    node.animate([{ transform: from }, { transform: "none" }], { duration: 220, easing: "ease-out" }).finished.then(
+      () => !drag.current?.mode && moving(node, false),
+      () => {},
+    );
   };
 
   const fling = async (node: HTMLElement, kind: DragKind, dir: KeepDir, decision: Decision = kind) => {
     busy.current = true;
+    moving(node, true);
     const from = node.style.transform || "none";
     const frames = reducedMotion()
       ? [{ opacity: 1 }, { opacity: 0 }]

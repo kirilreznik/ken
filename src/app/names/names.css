@@ -358,6 +358,29 @@
   .nest-names .names-back-near {
     background-color: var(--nest-white-30);
   }
+  /* On a photo the current card is see-through, so the back cards paint only where they peek:
+   * the 28 px under the card (its 12 px gap plus the wrapper's 16 px) and the two bottom corners
+   * outside its curve. Masks keep only alpha, so the gradient colour doesn't matter. "ללא רקע"
+   * keeps them whole (the solid card hides them), and a moving card lifts the mask (CardStack). */
+  .nest-names .names-back-clip:where(:not([data-names-bg="none"] *)) {
+    --names-back-r: var(--nest-radius-xl);
+    mask-image:
+      linear-gradient(black, black),
+      radial-gradient(circle var(--names-back-r) at 100% 0, transparent calc(var(--names-back-r) - 0.5px), black var(--names-back-r)),
+      radial-gradient(circle var(--names-back-r) at 0 0, transparent calc(var(--names-back-r) - 0.5px), black var(--names-back-r));
+    mask-size:
+      100% 28px,
+      var(--names-back-r) var(--names-back-r),
+      var(--names-back-r) var(--names-back-r);
+    mask-position:
+      left 0 bottom 0,
+      left 0 bottom 28px,
+      right 0 bottom 28px;
+    mask-repeat: no-repeat;
+  }
+  .nest-names .names-stack:has([data-moving]) .names-back-clip {
+    mask-image: none;
+  }
   .nest-names [data-names-bg="none"] .names-back-far {
     background-color: var(--nest-sand);
     box-shadow: var(--nest-shadow-card);
