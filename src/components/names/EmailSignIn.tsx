@@ -7,6 +7,7 @@ import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
 import { Button, inputClass } from "@/components/names/ui";
 import CodeInput, { CODE_LENGTH } from "@/components/names/auth/CodeInput";
+import PanelNote from "@/components/names/auth/PanelNote";
 import ResendTimer from "@/components/names/auth/ResendTimer";
 import Turnstile, { captchaEnabled } from "@/components/names/auth/Turnstile";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
@@ -171,9 +172,9 @@ export default function EmailSignIn() {
   const backHref = withJoin(WELCOME_PATH, join);
   const shownError = visibleSignInError(error, online);
   const errorLine = shownError ? (
-    <p id="email-sign-in-error" role="alert" className="text-body font-medium text-pretty text-urgent">
+    <PanelNote icon="alert" id="email-sign-in-error" role="alert">
       {shownError}
-    </p>
+    </PanelNote>
   ) : null;
   const sendBlocked = captchaEnabled && !captchaToken;
 

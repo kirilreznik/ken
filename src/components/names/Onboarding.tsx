@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import PanelNote, { CAPTION_ERROR, ErrorMark } from "@/components/names/auth/PanelNote";
 import { Button, inputClass } from "@/components/names/ui";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { GENERIC_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
@@ -167,7 +168,12 @@ export default function Onboarding() {
             className={inputClass()}
           />
           <p id="display-name-hint" className="text-caption text-ink-soft">
-            {nameInvalid ? <strong className="font-bold text-urgent">צריך שם, עד 40 תווים. </strong> : null}
+            {nameInvalid ? (
+              <strong className={CAPTION_ERROR}>
+                <ErrorMark />
+                צריך שם, עד 40 תווים.{" "}
+              </strong>
+            ) : null}
             השם יוצג בבחירה משותפת.
           </p>
         </div>
@@ -224,9 +230,9 @@ export default function Onboarding() {
         </fieldset>
 
         {error ? (
-          <p id="onboarding-error" role="alert" className="text-body font-medium text-urgent">
+          <PanelNote icon="alert" id="onboarding-error" role="alert">
             {error}
-          </p>
+          </PanelNote>
         ) : null}
 
         <div className="flex flex-col gap-2">
@@ -239,7 +245,8 @@ export default function Onboarding() {
             {busy ? "שומרים…" : "התחלת בחירה"}
           </Button>
           {valid ? null : (
-            <p id="onboarding-missing" aria-live="polite" className={`text-center text-caption ${tried ? "font-bold text-urgent" : "text-ink-soft"}`}>
+            <p id="onboarding-missing" aria-live="polite" className={`text-center text-caption ${tried ? CAPTION_ERROR : "text-ink-soft"}`}>
+              {tried ? <ErrorMark /> : null}
               {MISSING_HINT}
             </p>
           )}

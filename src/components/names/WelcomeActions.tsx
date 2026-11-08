@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ConnectionNote from "@/components/names/ConnectionNote";
+import PanelNote from "@/components/names/auth/PanelNote";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { Button } from "@/components/names/ui";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
@@ -60,9 +61,9 @@ export default function WelcomeActions({ joinCode }: { joinCode?: string | null 
       <ConnectionNote />
       {/* ConnectionNote says it while offline; don't repeat it, or keep it once back online. */}
       {error && error !== OFFLINE_MESSAGE ? (
-        <p role="alert" className="text-body text-ink">
+        <PanelNote icon="alert" role="alert">
           {error}
-        </p>
+        </PanelNote>
       ) : null}
       <Button onClick={signInWithGoogle} disabled={busy} aria-busy={busy}>
         {/* me-1 adds to the pill's gap: 12 px between the mark and the label, as before. */}
