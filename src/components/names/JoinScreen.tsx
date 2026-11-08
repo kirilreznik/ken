@@ -118,10 +118,10 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
         title={JOIN_INVITED_TITLE}
         lead={JOIN_INVITED_LEAD}
         hero={
-          <div className="flex flex-col items-center gap-6">
+          <>
             {wordmark}
             <PreviewCard />
-          </div>
+          </>
         }
         footer={legalFooter}
       >

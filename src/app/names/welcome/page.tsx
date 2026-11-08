@@ -26,10 +26,10 @@ export default function WelcomePage() {
         title={TITLE}
         lead={PITCH}
         hero={
-          <div className="flex flex-col items-center gap-6">
-            <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized />
+          <>
+            <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />
             <PreviewCard />
-          </div>
+          </>
         }
         footer={
           <p className="names-glass-soft mx-auto w-fit rounded-lg px-4 py-1 text-center text-caption text-ink">
