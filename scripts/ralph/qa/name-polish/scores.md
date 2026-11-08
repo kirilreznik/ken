@@ -76,8 +76,47 @@ How the scores were made: the design-review sub-agent (A) scored each row from t
 
 ## After (re-score)
 
-| Group | Screen | Heuristic | Baseline | After | Change | Notes (backlog IDs) |
-|---|---|---|---|---|---|---|
+Same method, rows, columns, n/a rule and bands as the baseline (US-R1…R3, PRD §7). Each group has the after matrix, then the change per screen against its baseline row. Findings, finding status and new issues per group: `findings/R<n>-G<n>.md`.
+
+### G1 Entry (US-R1, 2026-11-08, at `f404077`; findings `findings/R1-G1.md`)
+
+| Screen (states) | H1 | H2 | H3 | H4 | H5 | H6 | H7 | H8 | H9 | H10 | Total | Band | Notes (backlog IDs) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| welcome (default, closed, expired), Persuade | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 3 | 3 | n/a | 24/32 (75 %) | Good | H9 up: expired notice with a clock note (NP-012), Google error as an alert note (NP-011); buttons above the fold (NP-001); preview peek cuts the intro line at 375 px and in Safari (NP-BUG-001); -22 owner (OD-007) |
+| sign-in, email step (valid, invalid) | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 30/40 (75 %) | Good | placeholder 5.7:1 (was 2.2:1, NP-053); error line with icon |
+| sign-in, code step (timer, wrong, resend) | 3 | 3 | 2 | 3 | 3 | 4 | 3 | 3 | 3 | 3 | 30/40 (75 %) | Good | H9 up: wrong-code copy matches the locked resend (NP-004); H3 still 2: Back skips the email step (NP-007, next-run) |
+| auth callback (loading, error) | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 3 | 3 | n/a | 21/28 (75 %) | Good | -20 one action on error (NP-019, next-run) |
+| onboarding | 3 | 3 | 2 | 3 | 4 | 3 | 3 | 3 | 3 | 3 | 30/40 (75 %) | Good | H5 up: names what's missing, optional box apart, stays busy (NP-026, NP-028); button says "שמירה והמשך" (NP-024); H3 still 2: no way out (OD-005, owner) |
+| intro (top, surname) | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 3 | 27/36 (75 %) | Good | H5 up: X keeps a typed surname (NP-029); H2 up: no "שניכם" (NP-025); field clear of the pinned button (NP-030) |
+| join, invited (signed out) | 3 | 3 | 3 | 3 | 3 | 3 | n/a | 3 | 3 | 3 | 27/36 (75 %) | Good | H4 up: shared legal line (NP-014); H2 up: copy (NP-025); buttons above the fold (NP-001) |
+| join outcomes (joined, expired, closed) | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 3 | 3 | 3 | 24/32 (75 %) | Good | H9/H10 up: expired says who to ask (NP-022); H2 up (NP-025); -18 owner (OD-006) |
+| invite (link ready, link failed) | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 3 | 30/40 (75 %) | Good | H2 up: copy (NP-025) |
+| offline | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 4 | 3 | n/a | 22/28 (79 %) | Good | H4/H8 up: wordmark, display title, primary button (NP-039) |
+| goodbye | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 4 | n/a | n/a | 19/24 (79 %) | Good | H8 up: wordmark (NP-038) |
+| 404 | 3 | 3 | 3 | 3 | n/a | 3 | n/a | 4 | 3 | n/a | 22/28 (79 %) | Good | H1/H4/H8/H9 up: photo, glass panel, lead and button (NP-039) |
+| unconfigured notice | 1 | 2 | 1 | 2 | n/a | 2 | n/a | 3 | 1 | n/a | 12/28 (43 %) | Poor | unchanged (NP-041, next-run); baseline row held, see below |
+| **G1 (sum of the rows)** | 37 | 38 | 35 | 38 | 22 | 39 | 15 | 42 | 31 | 21 | **318/432 (74 %)** | **Good** | |
+
+Change per screen (after − baseline):
+
+| Screen | Baseline | After | Change | Heuristics that moved |
+|---|---|---|---|---|
+| welcome | 23/32 (72 %) | 24/32 (75 %) | +1 | H9 2→3 |
+| sign-in, email step | 30/40 (75 %) | 30/40 (75 %) | 0 | none |
+| sign-in, code step | 29/40 (73 %) | 30/40 (75 %) | +1 | H9 2→3 |
+| auth callback | 21/28 (75 %) | 21/28 (75 %) | 0 | none |
+| onboarding | 29/40 (73 %) | 30/40 (75 %) | +1 | H5 3→4 |
+| intro | 25/36 (69 %) | 27/36 (75 %) | +2 | H2 2→3, H5 2→3 |
+| join, invited | 25/36 (69 %) | 27/36 (75 %) | +2 | H2 2→3, H4 2→3 |
+| join outcomes | 21/32 (66 %) | 24/32 (75 %) | +3 | H2 2→3, H9 2→3, H10 2→3 |
+| invite | 29/40 (73 %) | 30/40 (75 %) | +1 | H2 2→3 |
+| offline | 20/28 (71 %) | 22/28 (79 %) | +2 | H4 2→3, H8 3→4 |
+| goodbye | 18/24 (75 %) | 19/24 (79 %) | +1 | H8 3→4 |
+| 404 | 18/28 (64 %) | 22/28 (79 %) | +4 | H1 2→3, H4 2→3, H8 3→4, H9 2→3 |
+| unconfigured notice | 12/28 (43 %) | 12/28 (43 %) | 0 | none |
+| **G1** | **300/432 (69 %), Acceptable** | **318/432 (74 %), Good** | **+18** | no screen lower than its baseline |
+
+How the scores were made: as the baseline. The design-review sub-agent (A) scored each screen fresh from the after shots and the source, before reading the baseline findings; the detector sub-agent (B) ran `impeccable detect` on 31 G1 files (exit 0, `[]`) and the overlay on 8 signed-out pages (4 items, all false positives; the one real baseline item, the placeholder, now 5.69:1). Parent adjustment: A scored the unconfigured notice 11 (H4 1, H8 2, H6 2); `Unconfigured.tsx` and its evidence are byte-for-byte the baseline's, so the baseline row (12) is held: a 1-point move on unchanged code is scorer variance, not a regression. A read the Simulator shots of the signed-out states before they were retaken (see `findings/R1-G1.md`); its Safari-only items were dropped and the retaken shots were read by the parent.
 
 ## Baseline performance
 
