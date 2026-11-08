@@ -7,6 +7,7 @@ import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, empty
 import { useNameStats } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
+import VotesLoadFailed from "@/components/names/lists/VotesLoadFailed";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { hiddenAgainText, hiddenNames, restoredText, rowMeta, rowMetaText } from "@/lib/names/lists";
@@ -83,6 +84,8 @@ export default function HiddenScreen() {
           <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
             <span className="sr-only">בטעינה</span>
           </div>
+        ) : state?.loadFailed ? (
+          <VotesLoadFailed onRetry={() => void store?.reconcile()} />
         ) : hidden.length === 0 ? (
           <div className={emptyPanelClass("card")}>
             <h2 className={emptyTitleClass("card")}>אין כרגע שמות מוסתרים.</h2>

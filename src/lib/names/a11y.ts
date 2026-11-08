@@ -69,6 +69,7 @@ export function sheetVoteText(kind: Exclude<StatusKind, "undo">, name: string): 
 }
 
 /** aria-label of the "השמות שלי" pill in the swipe header (FR-W10). */
-export function savedLabel(count: number): string {
-  return `השמות שלי: ${count} נשמרו`;
+export function savedLabel(count: number | null): string {
+  // null: the votes couldn't be read (NP-073), so there is no count to say.
+  return count === null ? "השמות שלי" : `השמות שלי: ${count} נשמרו`;
 }

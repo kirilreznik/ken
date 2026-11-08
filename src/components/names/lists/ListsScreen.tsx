@@ -16,6 +16,7 @@ import { InstallHint, InstallSheet } from "@/components/names/pwa/Install";
 import { usePrefJson } from "@/components/names/usePrefJson";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
+import VotesLoadFailed from "./VotesLoadFailed";
 import type { Decision } from "@/components/names/DecisionButtons";
 import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
@@ -69,6 +70,7 @@ export default function ListsScreen() {
   useEffect(() => track("lists_tab", { tab }), [tab]);
   const rows = useMemo(() => savedRows(state?.votes ?? new Map()), [state?.votes]);
   const ready = !!(store && state?.ready);
+  const loadFailed = ready && !!state?.loadFailed;
   // Only names with a card open the sheet; names added by hand have nothing to show there.
   const deckNames = useMemo(() => new Set((cards ?? []).map((c) => c.stats.name)), [cards]);
   const canOpen = (name: string) => deckNames.has(name);
@@ -81,7 +83,7 @@ export default function ListsScreen() {
   const surname = surnameJson ? (JSON.parse(surnameJson) as string) : "";
 
   const tabs: { id: ListsTab; label: string }[] = [
-    { id: "saved", label: ready ? `שמרתי · ${rows.length}` : "שמרתי" },
+    { id: "saved", label: ready && !loadFailed ? `שמרתי · ${rows.length}` : "שמרתי" },
     { id: "matches", label: space.isShared && matches?.ready && matches.fetchedAt !== null ? `התאמות · ${matches.matches.length}` : "התאמות" },
     { id: "duel", label: "דו־קרב" },
   ];
@@ -235,6 +237,8 @@ export default function ListsScreen() {
           {tab === "saved" ? (
             <SavedPanel
               ready={ready}
+              loadFailed={loadFailed}
+              onRetry={() => void store?.reconcile()}
               rows={rows}
               names={names}
               onAction={(name, action) => {
@@ -491,6 +495,9 @@ function DuelLink({ title, from }: { title: string; from: "saved" | "matches" })
 type SavedPanelProps = ChooseProps & {
   onChoose: (row: SavedRow) => void;
   ready: boolean;
+  /** NP-073: the votes couldn't be read and nothing was cached. */
+  loadFailed: boolean;
+  onRetry: () => void;
   rows: SavedRow[];
   names: Map<string, NameStats> | null;
   onAction: (name: string, action: "remove" | "hide") => void;
@@ -498,7 +505,7 @@ type SavedPanelProps = ChooseProps & {
 };
 
 /** "שמרתי": loved first with "אהבתי מאוד", each row with sex tag, count, trend and its menu. */
-function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseLabel, onChoose }: SavedPanelProps) {
+function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, headingRef, canOpen, chooseLabel, onChoose }: SavedPanelProps) {
   const listRef = useRef<HTMLUListElement>(null);
   const focusAfter = useRef<number | null>(null);
 
@@ -527,6 +534,8 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
       </div>
     );
   }
+
+  if (loadFailed) return <VotesLoadFailed onRetry={onRetry} />;
 
   if (rows.length === 0) {
     return (

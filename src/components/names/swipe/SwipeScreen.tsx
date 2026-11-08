@@ -61,7 +61,7 @@ export default function SwipeScreen() {
   const [retried, setRetried] = useState(false);
   const { store, state } = useVotes(space.spaceId, userId);
   const matches = useMatches(space.spaceId, userId, space.isShared, state?.votes);
-  const sync = useSyncStatus(state?.pendingCount ?? 0);
+  const sync = useSyncStatus(state?.pendingCount ?? 0, state?.loadFailed ?? false);
   const { seen, setSeen } = useSeenMatches(userId);
   const newMatch = useMemo(() => (matches?.ready ? matchToShow(matches.matches, seen) : null), [matches, seen]);
 
@@ -248,7 +248,7 @@ export default function SwipeScreen() {
 
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto [@media(max-height:30rem)]:h-auto">
-      <SwipeHeader saved={savedCount} filtered={hasFilters(filters)} />
+      <SwipeHeader saved={state?.loadFailed ? null : savedCount} filtered={hasFilters(filters)} />
       <main className="flex min-h-0 flex-1 flex-col">
         {showSurvey ? <SurveyPrompt onDismiss={() => userId && setPref(userId, "survey", "dismissed")} /> : null}
         <SwipeKeys

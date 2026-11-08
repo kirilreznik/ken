@@ -104,5 +104,6 @@ describe("savedLabel", () => {
   it("states the saved count", () => {
     expect(savedLabel(0)).toBe("השמות שלי: 0 נשמרו");
     expect(savedLabel(12)).toBe("השמות שלי: 12 נשמרו");
+    expect(savedLabel(null)).toBe("השמות שלי");
   });
 });
