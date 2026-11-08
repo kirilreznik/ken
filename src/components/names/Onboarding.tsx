@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
 import PanelNote, { CAPTION_ERROR, ErrorMark } from "@/components/names/auth/PanelNote";
-import { Button, inputClass } from "@/components/names/ui";
+import { Button, checkboxClass, inputClass } from "@/components/names/ui";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { GENERIC_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
 import {
@@ -31,7 +31,7 @@ const MISSING_HINT = "אפשר להתחיל אחרי שממלאים שם ומא�
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
 
 const checkboxRow = "flex min-h-11 cursor-pointer items-start gap-3 py-1 text-body text-ink";
-const checkbox = "mt-0.5 size-6 shrink-0 cursor-pointer accent-ink";
+const checkbox = `mt-0.5 ${checkboxClass()}`;
 const legalLink = "font-bold underline underline-offset-2";
 
 function NewTabLink({ href, children }: { href: string; children: React.ReactNode }) {

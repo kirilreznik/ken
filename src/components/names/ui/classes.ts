@@ -74,6 +74,18 @@ export function inputClass(kind: InputKind = "line"): string {
   return `${FIELD} ${FIELD_KIND[kind]}`;
 }
 
+// Checkboxes (DESIGN.md "Checkboxes"): a drawn 24 px box with the fields' edge, stone on solid
+// surfaces and ink-soft on glass (≥ 3:1), an urgent edge while invalid and unchecked. Checked is
+// ink with a surface check mark (names.css .names-checkbox), so the state isn't told by color
+// alone. Focus keeps the global outline 2 px off the box: on the ink box an edge outline would vanish.
+export function checkboxClass(): string {
+  return [
+    "names-checkbox size-6 shrink-0 cursor-pointer appearance-none rounded-[calc(var(--radius-sm)/2)] border-2 border-stone in-[.names-glass]:border-ink-soft bg-surface",
+    "checked:border-ink checked:bg-ink aria-invalid:not-checked:border-urgent",
+    DISABLED,
+  ].join(" ");
+}
+
 // The pill is 29 px tall like the board; ::before stretches the hit area to 45 px tall and 8 px wider.
 const CHIP = "inline-flex items-center justify-center rounded-pill px-3 py-1.5 text-caption font-bold";
 const CHIP_OFF = "names-glass-soft names-chip-off text-ink in-data-[names-bg=none]:text-ink-soft";

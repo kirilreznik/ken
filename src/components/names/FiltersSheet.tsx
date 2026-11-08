@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import ThemeIcon from "@/components/names/ThemeIcon";
-import { BottomSheet, Button, closeSheet } from "@/components/names/ui";
+import { BottomSheet, Button, checkboxClass, closeSheet } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
@@ -298,7 +298,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
                   type="checkbox"
                   checked={customLength}
                   onChange={(e) => setCustomLength(e.target.checked)}
-                  className="size-6 shrink-0 cursor-pointer accent-ink"
+                  className={checkboxClass()}
                 />
                 מספר אותיות מותאם אישית
               </label>

@@ -338,6 +338,9 @@ The tall `BottomSheet` with sections in board order (surname, meaning, together,
 ### Inputs
 Every text field uses `inputClass()` (`ui/classes.ts`): `surface`, `radius-md`, 48 px tall, `text-intro` ink with `stone` placeholders, and a 1 px edge that reads at ≥ 3:1: `stone` on solid surfaces (sheets, cards), `ink-soft` on glass, where the photo behind can be darker. Read-only fields (the invite link) are `sand`. Invalid turns the edge `urgent` (`aria-invalid`). Focus is the global 2 px ink outline drawn on the field's own edge (`-outline-offset-1`, no floating second ring); a focused invalid field keeps an `urgent` outline. Kinds: `code` (the sign-in code's centered `text-title` digits), `multiline` (textareas; no resize grip on touch) and `link` (the read-only invite URL in `text-caption`, so it fits).
 
+### Checkboxes (`checkboxClass`)
+Onboarding's three consents and the filter sheet's "מספר אותיות מותאם אישית" use `checkboxClass()` (`ui/classes.ts`): a drawn 24 px box (`appearance: none`, half of `radius-sm`, so it never reads as a radio), `surface` fill and a 2 px edge at ≥ 3:1 like the fields: `stone` on solid surfaces, `ink-soft` on glass. Checked is an `ink` box with a `surface` tick (`names.css` `.names-checkbox`), so the state is told by the mark, not the color. Invalid and unchecked turns the edge `urgent`. The whole label row is the ≥ 44 px target; focus is the global 2 px ink outline 2 px off the box (on the ink box an outline on its edge would vanish).
+
 ### Navigation
 No tab bar. The swipe header's "השמות שלי" ink pill and the settings button lead to lists and settings; other screens have a `BackButton` and a title. Lists switches between "שמרתי", "התאמות" and "דו־קרב" with segments in the URL (`?tab=`).
 

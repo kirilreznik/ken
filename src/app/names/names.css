@@ -192,6 +192,25 @@
     border-color: transparent;
   }
 
+  /* The checkbox's check mark (checkboxClass): a surface-colored tick masked out of ::before,
+   * shown only when checked. The mask's own color doesn't matter, only its alpha. */
+  .nest-names .names-checkbox {
+    display: inline-grid;
+    place-content: center;
+  }
+  .nest-names .names-checkbox::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    background-color: var(--nest-surface);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+    visibility: hidden;
+  }
+  .nest-names .names-checkbox:checked::before {
+    visibility: visible;
+  }
+
   /* A well inside a glass card (the stat tiles, GlassFabric.dc.html .well). On "ללא רקע"
    * and on solid cards it's canvas without a border, as in Main.dc.html. */
   .nest-names .names-well {
