@@ -32,7 +32,8 @@ const wordmark = <Wordmark />;
 
 const checkboxRow = "flex min-h-11 cursor-pointer items-start gap-3 py-1 text-body text-ink";
 const checkbox = `mt-0.5 ${checkboxClass()}`;
-const legalLink = "font-bold underline underline-offset-2";
+// Each link owns a 44 px tall tap area on its own row, apart from the box's label (NP-027).
+const legalLink = "inline-flex min-h-11 items-center font-bold text-ink underline underline-offset-2";
 
 function NewTabLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -198,22 +199,26 @@ export default function Onboarding() {
               {ADULTS_ONLY}
             </p>
           </div>
-          <label className={checkboxRow}>
-            <input
-              ref={termsRef}
-              type="checkbox"
-              required
-              checked={form.termsAccepted}
-              onChange={(e) => update({ termsAccepted: e.target.checked })}
-              aria-invalid={termsInvalid || undefined}
-              aria-describedby={termsInvalid ? "onboarding-missing" : undefined}
-              className={checkbox}
-            />
-            <span>
-              קראתי ואני מסכים/ה ל<NewTabLink href="/names/terms">תנאי השימוש</NewTabLink> ול
+          <div className="flex flex-col">
+            <label className={checkboxRow}>
+              <input
+                ref={termsRef}
+                type="checkbox"
+                required
+                checked={form.termsAccepted}
+                onChange={(e) => update({ termsAccepted: e.target.checked })}
+                aria-invalid={termsInvalid || undefined}
+                aria-describedby={termsInvalid ? "onboarding-missing" : undefined}
+                className={checkbox}
+              />
+              <span>קראתי ואני מסכים/ה לתנאי השימוש ולמדיניות הפרטיות</span>
+            </label>
+            {/* Outside the label, so a tap near a link never ticks the box and a tap on the words never opens a tab. */}
+            <p className="-mt-1 flex flex-wrap gap-x-5 ps-9 text-caption">
+              <NewTabLink href="/names/terms">תנאי השימוש</NewTabLink>
               <NewTabLink href="/names/privacy">מדיניות הפרטיות</NewTabLink>
-            </span>
-          </label>
+            </p>
+          </div>
           {/* The optional opt-in is its own group, apart from the two required confirmations. */}
           <label className={`${checkboxRow} mt-2 border-t border-line pt-4`}>
             <input
