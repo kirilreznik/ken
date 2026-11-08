@@ -254,7 +254,7 @@ Each token sets size, line height and weight together (Tailwind `text-<name>`).
 
 A single column for a phone. The screen side gutter is `space-5` (`px-5`), narrowing to `px-3` under 22.5rem; card padding is `space-5`/`space-4`; gaps between card sections follow `space-3` (`gap-3`); chips and small controls sit `space-2` apart. Content is capped at `max-w-md` and centered on wider screens.
 
-The swipe screen is a fixed stack, top to bottom: header (title, background, filter and settings buttons, the "השמות שלי" pill), quick chips, the card stack (current card plus two peeking cards, −3° and +2°), the action bar (three equal decision pills and undo), and the status footer. The card never scrolls at 390 × 844; it is slim and points to the detail sheet.
+The swipe screen is a fixed stack, top to bottom: header (title, background, filter and settings buttons, the "השמות שלי" pill), quick chips, the card stack (current card plus two peeking cards, −3° and +2°), the action bar (three equal decision pills and undo), and the status footer (screen-reader only). The offline sync line is an opaque surface pill that floats just above the action bar, over the gap under the card, so its arrival and departure move nothing (CLS 0). The card never scrolls at 390 × 844; it is slim and points to the detail sheet.
 
 Sheets rise from the bottom over a scrim, with a handle, a title row (or a custom header), scrolling content and an optional pinned footer above the bottom safe area. The name sheet opens at `min(70dvh, content)` and drags to full height (`100dvh` minus the top safe area). From 768 px wide, sheets are a centered panel (max 480 px, up to 90vh) without detents.
 

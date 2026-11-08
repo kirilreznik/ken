@@ -298,17 +298,20 @@ export default function SwipeScreen() {
               <DeckSkeleton />
             )}
           </div>
-          <ActionBar
-            onKeep={fly("keep")}
-            onLove={fly("love")}
-            onSkip={fly("skip")}
-            onHide={fly("hidden")}
-            disabled={!current}
-            describedBy={SWIPE_KEYS_ID}
-            onUndo={undo}
-            canUndo={undoStack.length > 0 && !pause}
-          />
-          <SwipeFooter status={status} next={next} sync={sync} />
+          {/* The sync line floats above the action bar (SwipeFooter). */}
+          <div className="relative">
+            <ActionBar
+              onKeep={fly("keep")}
+              onLove={fly("love")}
+              onSkip={fly("skip")}
+              onHide={fly("hidden")}
+              disabled={!current}
+              describedBy={SWIPE_KEYS_ID}
+              onUndo={undo}
+              canUndo={undoStack.length > 0 && !pause}
+            />
+            <SwipeFooter status={status} next={next} sync={sync} />
+          </div>
         </SwipeKeys>
       </main>
       <BackgroundSheet />
