@@ -45,6 +45,8 @@ export const NAME_PARAM = "n";
 export const NAME_DEPTH_KEY = "nestNameDepth";
 /** The history.state key set when the first pushed name entry sits on a direct-link entry. */
 export const NAME_LINK_KEY = "nestNameOverLink";
+/** The history.state key holding the name the entry below shows, when this one was pushed over a name. */
+export const NAME_FROM_KEY = "nestNameFrom";
 
 /** `search` with the name sheet open on `name` (or closed when null), as "?…" or "". */
 export function nameSearch(search: string, name: string | null): string {
@@ -82,11 +84,21 @@ export interface LayerWindow {
   addEventListener(type: "popstate", listener: () => void, options: { once: true }): void;
 }
 
-function nameStack(state: unknown): { depth: number; overLink: boolean } {
-  if (!isPushedLayer(state, "sheet", NAME_SHEET)) return { depth: 0, overLink: false };
+function nameStack(state: unknown): { depth: number; overLink: boolean; from: string | null } {
+  if (!isPushedLayer(state, "sheet", NAME_SHEET)) return { depth: 0, overLink: false, from: null };
   const record = state as Record<string, unknown>;
   const depth = record[NAME_DEPTH_KEY];
-  return { depth: typeof depth === "number" && depth > 0 ? depth : 1, overLink: record[NAME_LINK_KEY] === true };
+  const from = record[NAME_FROM_KEY];
+  return {
+    depth: typeof depth === "number" && depth > 0 ? depth : 1,
+    overLink: record[NAME_LINK_KEY] === true,
+    from: typeof from === "string" && from ? from : null,
+  };
+}
+
+/** The name one Back returns to when `state` is a name entry pushed over another name (a similar name), else null. */
+export function previousName(state: unknown): string | null {
+  return nameStack(state).from;
 }
 
 function nameUrl(w: LayerWindow, name: string | null): string {
@@ -98,17 +110,17 @@ function nameUrl(w: LayerWindow, name: string | null): string {
 export function openNameIn(w: LayerWindow, name: string, options: { replace?: boolean } = {}): void {
   const current = readName(w.location.search);
   if (current === name || otherLayerOpen(w.location.search)) return;
-  const { depth, overLink } = nameStack(w.history.state);
+  const { depth, overLink, from } = nameStack(w.history.state);
   const marker = { [LAYER_STATE_KEY]: layerToken("sheet", NAME_SHEET) };
   if (options.replace) {
-    // Same place in the stack: the entry keeps its depth (an unpushed entry stays unpushed).
-    const state = depth > 0 ? { ...marker, [NAME_DEPTH_KEY]: depth, [NAME_LINK_KEY]: overLink } : null;
+    // Same place in the stack: the entry keeps its depth and the name below (an unpushed entry stays unpushed).
+    const state = depth > 0 ? { ...marker, [NAME_DEPTH_KEY]: depth, [NAME_LINK_KEY]: overLink, ...(from ? { [NAME_FROM_KEY]: from } : {}) } : null;
     w.history.replaceState(state, "", nameUrl(w, name));
     return;
   }
   // Over a direct link to the sheet (open, no entry of ours), closing must also clean that entry.
   const linkBelow = depth === 0 && current !== null;
-  const state = { ...marker, [NAME_DEPTH_KEY]: depth + 1, [NAME_LINK_KEY]: depth > 0 ? overLink : linkBelow };
+  const state = { ...marker, [NAME_DEPTH_KEY]: depth + 1, [NAME_LINK_KEY]: depth > 0 ? overLink : linkBelow, ...(current ? { [NAME_FROM_KEY]: current } : {}) };
   w.history.pushState(state, "", nameUrl(w, name));
 }
 

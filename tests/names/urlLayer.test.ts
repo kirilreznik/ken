@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { adoptNameLinkIn, closeNameIn, isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, nameSearch, openNameIn, otherLayerOpen, readName, type LayerWindow } from "@/lib/names/urlLayer";
+import { adoptNameLinkIn, closeNameIn, isPushedLayer, LAYER_STATE_KEY, layerSearch, layerToken, nameSearch, openNameIn, otherLayerOpen, previousName, readName, type LayerWindow } from "@/lib/names/urlLayer";
 
 describe("layerSearch", () => {
   it("adds the sheet param and keeps the rest", () => {
@@ -137,6 +137,25 @@ describe("openNameIn / closeNameIn", () => {
     expect(readName(w.location.search)).toBe("נועם");
     w.back();
     expect(w.location.search).toBe("");
+  });
+
+  it("a name pushed over another name remembers it; the first name and a closed sheet have none", () => {
+    const w = fakeWindow("/names");
+    expect(previousName(w.history.state)).toBeNull();
+    openNameIn(w, "נועם");
+    expect(previousName(w.history.state)).toBeNull();
+    openNameIn(w, "נעמה");
+    expect(previousName(w.history.state)).toBe("נועם");
+    openNameIn(w, "נוי", { replace: true });
+    expect(previousName(w.history.state)).toBe("נועם");
+    w.back();
+    expect(previousName(w.history.state)).toBeNull();
+  });
+
+  it("a name opened over a direct link remembers the linked name", () => {
+    const w = fakeWindow("/names?sheet=name&n=%D7%90");
+    openNameIn(w, "ב");
+    expect(previousName(w.history.state)).toBe("א");
   });
 
   it("opening the name already shown does nothing", () => {
