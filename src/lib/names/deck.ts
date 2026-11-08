@@ -98,3 +98,21 @@ export function hiddenCount(votes: ReadonlyMap<string, Vote>): number {
   for (const v of votes.values()) if (v === "hidden") n++;
   return n;
 }
+
+/**
+ * What stands where the card is: the pause panel, the card, an end state, the load error
+ * (the names data didn't arrive; it offers a retry) or, until the deck is built, the skeleton.
+ */
+export type DeckSlot = "pause" | "card" | "empty" | "error" | "loading";
+
+export function deckSlot(o: { paused: boolean; hasCard: boolean; deckState: DeckState | null; loadError: boolean }): DeckSlot {
+  if (o.paused) return "pause";
+  if (o.hasCard) return "card";
+  if (o.deckState && o.deckState !== "ok") return "empty";
+  return o.loadError ? "error" : "loading";
+}
+
+/** The deck's load error (same pattern as join's "ההצטרפות לא הצליחה." + "אפשר לנסות שוב."). */
+export const DECK_LOAD_ERROR = { title: "לא הצלחנו לטעון את השמות.", lead: "אפשר לנסות שוב." } as const;
+/** Read while the skeleton shows. */
+export const DECK_LOADING_TEXT = "השמות נטענים";

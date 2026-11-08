@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { buildCards } from "@/lib/names/card";
 import { loadContent, loadNames } from "@/lib/names/data";
 import type { Card, NameStats } from "@/lib/names/types";
@@ -28,9 +28,13 @@ function loadCards(): Promise<Card[]> {
   return cardsPromise;
 }
 
-/** The deck's cards (the names with content), or null while loading; `error` when the data couldn't load. */
-export function useCards(): { cards: Card[] | null; error: boolean } {
+/**
+ * The deck's cards (the names with content), or null while loading; `error` when the data
+ * couldn't load. `retry()` loads again (a failed load isn't cached).
+ */
+export function useCards(): { cards: Card[] | null; error: boolean; retry: () => void } {
   const [state, setState] = useState<{ cards: Card[] | null; error: boolean }>({ cards: null, error: false });
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let alive = true;
     loadCards().then(
@@ -40,8 +44,12 @@ export function useCards(): { cards: Card[] | null; error: boolean } {
     return () => {
       alive = false;
     };
+  }, [attempt]);
+  const retry = useCallback(() => {
+    setState({ cards: null, error: false });
+    setAttempt((n) => n + 1);
   }, []);
-  return state;
+  return { ...state, retry };
 }
 
 /** Births for every CBS name (list rows), or null while loading; `error` when the data couldn't load. */

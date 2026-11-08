@@ -19,6 +19,11 @@ type EmptyDeckProps = {
   takeFocus: boolean;
 };
 
+/** The end panel's shape, shared with the deck's load error (DeckLoad). */
+export const deckPanelWrap = "flex min-h-0 flex-1 flex-col pb-7";
+export const deckPanel =
+  "flex min-h-0 flex-1 flex-col items-center justify-center-safe gap-3.5 overflow-y-auto rounded-xl px-5.5 py-7 text-center [&>*]:shrink-0";
+
 /** Shown names on the all-decided panel; the rest are on "השמות שלי". */
 const SAVED_SHOWN = 10;
 
@@ -38,11 +43,11 @@ export default function EmptyDeck({ state, saved, solo, onReset, takeFocus }: Em
   }, [takeFocus]);
 
   return (
-    <div ref={root} className="flex min-h-0 flex-1 flex-col pb-7">
+    <div ref={root} className={deckPanelWrap}>
       <Glass
         as="section"
         aria-labelledby="names-empty-title"
-        className="flex min-h-0 flex-1 flex-col items-center justify-center-safe gap-3.5 overflow-y-auto rounded-xl px-5.5 py-7 text-center [&>*]:shrink-0"
+        className={deckPanel}
       >
         {state === "empty-filter" ? (
           <>

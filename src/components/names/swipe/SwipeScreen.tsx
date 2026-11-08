@@ -19,7 +19,7 @@ import { useSyncStatus } from "@/components/names/useSyncStatus";
 import { useVotes } from "@/components/names/useVotes";
 import { sheetVoteText, statusText } from "@/lib/names/a11y";
 import { markAppEntry } from "@/lib/names/appHistory";
-import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
+import { buildDeck, deckProgress, deckSlot, hashSeed } from "@/lib/names/deck";
 import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
 import { matchToShow, withSeen, type Match } from "@/lib/names/matches";
@@ -33,6 +33,7 @@ import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
 import AboutLink from "./AboutLink";
+import { DeckLoadError, DeckSkeleton } from "./DeckLoad";
 import EmptyDeck from "./EmptyDeck";
 import PausePanel from "./PausePanel";
 import SurveyPrompt from "./SurveyPrompt";
@@ -56,7 +57,8 @@ export default function SwipeScreen() {
   const { user } = useAuth();
   const userId = user?.id ?? null;
   const space = useSpace();
-  const { cards } = useCards();
+  const { cards, error: cardsError, retry: retryCards } = useCards();
+  const [retried, setRetried] = useState(false);
   const { store, state } = useVotes(space.spaceId, userId);
   const matches = useMatches(space.spaceId, userId, space.isShared, state?.votes);
   const sync = useSyncStatus(state?.pendingCount ?? 0);
@@ -130,7 +132,15 @@ export default function SwipeScreen() {
   const progress = deck && cards && filters ? deckProgress(cards, votes, filters, deck.cards.length) : null;
   // While paused nothing can be decided: the panel stands where the card was.
   const current = pause ? null : (deck?.cards[0] ?? null);
+  const slot = deckSlot({ paused: !!pause, hasCard: !!(deck && current && progress), deckState: deck?.state ?? null, loadError: cardsError });
   const method = useRef<DecideMethod>("swipe");
+
+  // A retry that worked: the button is gone, so focus (if it went with it) moves to the card.
+  useEffect(() => {
+    const active = document.activeElement;
+    if (slot !== "card" || !retried || (active && active !== document.body)) return;
+    document.querySelector<HTMLElement>("main article[tabindex='0']")?.focus();
+  }, [slot, retried]);
 
   // The deck ran out (all decided) or the filters left nothing: once each time it happens.
   const deckState = deck?.state ?? null;
@@ -249,9 +259,9 @@ export default function SwipeScreen() {
             drag.fly(key);
           }} className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 flex-col px-5 pt-1 max-[20rem]:min-h-100 max-[20rem]:px-3 [@media(max-height:30rem)]:min-h-100">
-            {pause ? (
+            {slot === "pause" && pause ? (
               <PausePanel key={pause} pause={pause} totals={totals} onContinue={endPause} />
-            ) : deck && current && progress ? (
+            ) : slot === "card" && deck && progress ? (
               <CardStack
                 cards={deck.cards}
                 enter={entered}
@@ -268,7 +278,7 @@ export default function SwipeScreen() {
                 onFocus={preloadNameDetail}
                 {...drag.card}
               />
-            ) : deck && deck.state !== "ok" ? (
+            ) : slot === "empty" && deck && deck.state !== "ok" ? (
               <EmptyDeck
                 state={deck.state}
                 saved={saved}
@@ -276,7 +286,17 @@ export default function SwipeScreen() {
                 onReset={resetFilters}
                 takeFocus={entered}
               />
-            ) : null}
+            ) : slot === "error" ? (
+              <DeckLoadError
+                takeFocus={retried}
+                onRetry={() => {
+                  setRetried(true);
+                  retryCards();
+                }}
+              />
+            ) : (
+              <DeckSkeleton />
+            )}
           </div>
           <ActionBar
             onKeep={fly("keep")}

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
 import contentFile from "./fixtures/name-content-sample.json";
 import { contentNames, parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
-import { buildDeck, deckCount, deckProgress, hiddenCount, hashSeed, mulberry32, shuffle } from "@/lib/names/deck";
+import { buildDeck, deckCount, deckProgress, deckSlot, hiddenCount, hashSeed, mulberry32, shuffle } from "@/lib/names/deck";
 import { defaultFilters, type FilterableCard } from "@/lib/names/filters";
 import { popularityBand, rankByLastYear, trend } from "@/lib/names/popularity";
 import { sexTag } from "@/lib/names/sex";
@@ -131,5 +131,21 @@ describe("deckCount and hiddenCount", () => {
     expect(deckCount(cards, none, defaultFilters())).toBe(cards.length);
     expect(hiddenCount(votes)).toBe(1);
     expect(hiddenCount(none)).toBe(0);
+  });
+});
+
+describe("deckSlot", () => {
+  const base = { paused: false, hasCard: false, deckState: null, loadError: false } as const;
+  it("shows the skeleton until the deck is built", () => {
+    expect(deckSlot(base)).toBe("loading");
+  });
+  it("shows the load error with its retry when the names data failed", () => {
+    expect(deckSlot({ ...base, loadError: true })).toBe("error");
+  });
+  it("keeps the pause, the card and the end states ahead of loading and errors", () => {
+    expect(deckSlot({ ...base, paused: true, hasCard: true, loadError: true })).toBe("pause");
+    expect(deckSlot({ ...base, hasCard: true, deckState: "ok" })).toBe("card");
+    expect(deckSlot({ ...base, deckState: "all-decided" })).toBe("empty");
+    expect(deckSlot({ ...base, deckState: "empty-filter" })).toBe("empty");
   });
 });
