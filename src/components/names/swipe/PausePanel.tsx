@@ -43,7 +43,7 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
       <Glass
         as="section"
         aria-labelledby="names-pause-title"
-        className="flex min-h-0 flex-1 flex-col items-center justify-center-safe gap-3.5 overflow-y-auto rounded-xl px-5.5 py-7 text-center"
+        className="flex min-h-0 flex-1 flex-col items-center justify-center-safe gap-3.5 overflow-y-auto rounded-xl px-5.5 py-7 text-center [&>*]:shrink-0"
       >
         {pause === "invite" ? (
           <>
