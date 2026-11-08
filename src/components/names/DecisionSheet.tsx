@@ -67,7 +67,7 @@ function Panel({ name, shared, onClear }: DecisionSheetProps & { name: string })
           </IconButton>
 
           <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
-            <p className="m-0 text-person font-bold text-clay-deep">{decisionTitle(shared)}</p>
+            <p className="m-0 text-person font-bold text-ink">{decisionTitle(shared)}</p>
             <Glass className="flex w-full flex-col items-center gap-2.5 rounded-xl px-6 py-8">
               <h2 lang="he" className="m-0 text-match-name break-words">
                 {name}
@@ -76,7 +76,7 @@ function Panel({ name, shared, onClear }: DecisionSheetProps & { name: string })
               <p id={lineId} className="m-0 text-match-line text-ink-soft">
                 מזל טוב. השם נשמר כאן, ואפשר לשנות אותו בכל רגע.
               </p>
-              {stats ? <p className="m-0 text-caption text-stone">{countLine(stats)}</p> : null}
+              {stats ? <p className="m-0 text-caption text-ink-soft">{countLine(stats)}</p> : null}
             </Glass>
           </div>
 

@@ -123,7 +123,7 @@ function MatchPanel({ match, cards, onSeen }: { match: Match; cards: readonly Ca
           </IconButton>
 
           <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
-            <p className="m-0 text-person font-bold text-clay-deep">יש התאמה</p>
+            <p className="m-0 text-person font-bold text-ink">יש התאמה</p>
             <Glass className="flex w-full flex-col items-center gap-2.5 rounded-xl px-6 py-8">
               <h2 lang="he" className="m-0 text-match-name break-words">
                 {display}
@@ -132,7 +132,7 @@ function MatchPanel({ match, cards, onSeen }: { match: Match; cards: readonly Ca
               <p id={lineId} className="m-0 text-match-line text-ink-soft">
                 {matchSheetLine(match)}
               </p>
-              {stats ? <p className="m-0 text-caption text-stone">{countLine(stats)}</p> : null}
+              {stats ? <p className="m-0 text-caption text-ink-soft">{countLine(stats)}</p> : null}
             </Glass>
           </div>
 

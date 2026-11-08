@@ -220,7 +220,7 @@ White and ink at fixed opacities for glass and overlays, from the token script: 
 
 **The Never Green Rule.** A match, a "done" or a chosen name is never shown in green and never celebrated with confetti (tasks/prd-names-pwa.md FR-W20, tasks/prd-name-detail.md §3.2.13).
 
-**The Clay Is Not Text Rule.** `clay` fills dots and small accents; text in a warm accent uses `clay-deep`.
+**The Clay Is Not Text Rule.** `clay` fills dots and small accents; text in a warm accent uses `clay-deep`. `clay-deep` text only sits on a light surface (glass, white, peach-soft), never on the bare photo: the match and decision sheets' eyebrows ("יש התאמה", "בחרתי שם") are bold `ink`, and the clay dot under the name is the moment's one accent.
 
 **The Text Never Turns White Rule.** Over any photo, including the user's own, text stays ink on glass; legibility comes from stronger glass and a scrim, not white text (tasks/prd-names-pwa.md §3.2.15).
 
@@ -274,7 +274,7 @@ Depth comes from glass over a photo, or from soft shadows on white when there is
 ### Glass panels
 - **Strong glass** (`names-glass`, `Glass` default): `glass-tint` fill, `glass-filter` blur and saturation, `glass-border`, `shadow-glass`. For sheets, the sign-in panel, menus, the secondary pill.
 - **Card glass** (`names-glass names-card-glass`): the name card and other reading panels (sign-in, intro); the whiter `glass-well-tint` fill and less saturation, so the photo reads as warm light behind a white card.
-- **Soft glass** (`names-glass-soft`, `Glass variant="soft"`): `glass-soft-tint`, `glass-soft-filter`, `glass-soft-border`. For round icon buttons, unselected chips, hint chips.
+- **Soft glass** (`names-glass-soft`, `Glass variant="soft"`): `glass-soft-tint`, `glass-soft-filter`, `glass-soft-border`. For round icon buttons, unselected chips, hint chips. The Nest app card is soft only inside a glass panel (recap, deck end); on the bare photo (decision sheet) it is a reading panel on card glass (`names-glass names-card-glass`), so its text keeps 4.5:1 over the photo's dark folds.
 - **Well** (`names-well`): a tile inside a glass card (the stat tiles), `glass-well-tint` and `glass-well-border`.
 - **Own photo** (`data-names-bg="own"`): stronger fills `glass-own-tint`, `glass-own-soft-tint`, `glass-own-well-tint`, plus a canvas-colored scrim whose strength follows the luminance under the card.
 
