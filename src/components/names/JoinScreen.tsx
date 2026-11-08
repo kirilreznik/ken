@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
@@ -9,6 +8,7 @@ import { useAuth } from "@/components/names/AuthProvider";
 import PreviewCard from "@/components/names/PreviewCard";
 import WelcomeActions from "@/components/names/WelcomeActions";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import LegalLine from "@/components/names/auth/LegalLine";
 import { Button } from "@/components/names/ui";
 import { APP_PATH, WELCOME_PATH } from "@/lib/names/auth";
 import { reportClientLog } from "@/lib/names/clientLog";
@@ -28,19 +28,6 @@ import { ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routin
 import { track } from "@/lib/names/track";
 
 const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
-
-const legalFooter = (
-  <p className="text-center text-caption text-ink-soft">
-    בהמשך מאשרים את{" "}
-    <Link href="/names/terms" className="font-bold text-ink underline underline-offset-2">
-      תנאי השימוש
-    </Link>{" "}
-    ו
-    <Link href="/names/privacy" className="font-bold text-ink underline underline-offset-2">
-      מדיניות הפרטיות
-    </Link>
-  </p>
-);
 
 function displayNameOf(metadata: Record<string, unknown> | undefined): string {
   const value = metadata?.display_name;
@@ -123,7 +110,7 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
             <PreviewCard />
           </>
         }
-        footer={legalFooter}
+        footer={<LegalLine />}
       >
         <WelcomeActions joinCode={code} />
       </AuthLayout>

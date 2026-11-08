@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { RedirectIfSignedIn } from "@/components/names/AuthGuard";
 import ClosedNotice from "@/components/names/ClosedNotice";
 import ExpiredNotice from "@/components/names/ExpiredNotice";
 import PreviewCard from "@/components/names/PreviewCard";
 import WelcomeActions from "@/components/names/WelcomeActions";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import LegalLine from "@/components/names/auth/LegalLine";
 
 const TITLE = "בחירת שם";
 const PITCH = "שם אחד בכל פעם, עם מספרים אמיתיים מהלמ\"ס. לבד או ביחד.";
@@ -31,18 +31,7 @@ export default function WelcomePage() {
             <PreviewCard />
           </>
         }
-        footer={
-          <p className="names-glass-soft mx-auto w-fit rounded-lg px-4 py-1 text-center text-caption text-ink">
-            בהמשך מאשרים את{" "}
-            <Link href="/names/terms" className="-my-3 inline-flex min-h-11 items-center font-bold text-ink underline underline-offset-2">
-              תנאי השימוש
-            </Link>{" "}
-            ו
-            <Link href="/names/privacy" className="-my-3 inline-flex min-h-11 items-center font-bold text-ink underline underline-offset-2">
-              מדיניות הפרטיות
-            </Link>
-          </p>
-        }
+        footer={<LegalLine />}
       >
         <ClosedNotice />
         <ExpiredNotice />

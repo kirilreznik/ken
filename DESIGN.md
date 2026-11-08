@@ -324,6 +324,9 @@ Confirm dialogs (`role="alertdialog"`) bound to `?dialog=<name>`; Escape, Back a
 ### Toast (`ToastRegion`, `src/lib/names/toast.ts`)
 The one toast: an ink pill near the bottom with `text-body` bold white text, an optional action ("ביטול"), `shadow-button`. Its `role="status"` region is always mounted, so screen readers hear every message; over a sheet with pinned buttons it sits just above them.
 
+### Legal line (`auth/LegalLine.tsx`)
+The line under the welcome and join panels ("בהמשך מאשרים את תנאי השימוש ומדיניות הפרטיות"): one element for both screens, a `names-glass` (strong) pill with `radius-lg`, `text-caption` `ink` text and bold underlined `ink` links, ≥ 4.5:1 over the photo's darkest fold. Each link owns a 44 px tall tap area (`-my-3 inline-flex min-h-11`) without growing the pill, and the "ו" stays with "מדיניות הפרטיות" when the line wraps at 320 px.
+
 ### Panel notes (`auth/PanelNote.tsx`)
 A notice inside the auth glass panel (offline, sign-ups closed, session expired) is a line, not a box: a 20 px drawn icon (offline, info, clock) and `text-body` medium `ink` text, ≥ 7.8:1 on the glass. It sits in the panel's `gap-6` above the buttons inside an always-mounted `role="status"` region (`display: contents`, so an empty one adds no gap).
 
