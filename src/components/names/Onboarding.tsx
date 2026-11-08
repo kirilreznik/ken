@@ -81,7 +81,9 @@ export default function Onboarding() {
     if (error) setError(null);
   }
 
+  // Busy ends only on a failure: after a save it stays on until the next screen replaces this one (NP-028).
   function fail(area: string, err: unknown) {
+    setBusy(false);
     if (isOffline()) {
       setError(OFFLINE_SAVE_MESSAGE);
       return;
@@ -133,8 +135,6 @@ export default function Onboarding() {
       router.replace(next === ONBOARDING_PATH ? "/names" : next);
     } catch (err) {
       fail("onboarding-save", err);
-    } finally {
-      setBusy(false);
     }
   }
 
@@ -247,7 +247,7 @@ export default function Onboarding() {
             {busy ? "שומרים…" : "שמירה והמשך"}
           </Button>
           {valid ? null : (
-            <p id="onboarding-missing" aria-live="polite" className={`text-center text-caption ${tried ? CAPTION_ERROR : "text-ink-soft"}`}>
+            <p id="onboarding-missing" aria-live="polite" className={`text-start text-caption ${tried ? CAPTION_ERROR : "text-ink-soft"}`}>
               {tried ? <ErrorMark /> : null}
               {missingHint(form)}
             </p>

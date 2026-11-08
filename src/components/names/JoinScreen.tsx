@@ -96,7 +96,7 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
     const invalid = (
       <Outcome title={copy.title} lead={copy.lead}>
         <p role="status" className="sr-only">
-          {`${copy.title} ${copy.lead}`}
+          {`${copy.title}. ${copy.lead}`}
         </p>
         {session ? <Button href={startHref}>{startLabel}</Button> : <Button href={WELCOME_PATH}>לכניסה</Button>}
       </Outcome>
@@ -142,7 +142,7 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
     return (
       <Outcome title={copy.title} lead={copy.lead}>
         <p role="status" className="sr-only">
-          {`${copy.title} ${copy.lead}`}
+          {`${copy.title}. ${copy.lead}`}
         </p>
         <Button onClick={() => setAttempt((n) => n + 1)}>ניסיון חוזר</Button>
       </Outcome>
@@ -162,7 +162,7 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
       }
     >
       <p role="status" className="sr-only">
-        {[copy.title, copy.lead, moved ? VOTES_MOVE_TEXT : ""].join(" ").trim()}
+        {[`${copy.title}.`, copy.lead, moved ? VOTES_MOVE_TEXT : ""].join(" ").trim()}
       </p>
       <Button href={startHref}>{startLabel}</Button>
     </Outcome>

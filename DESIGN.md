@@ -236,7 +236,7 @@ Each token sets size, line height and weight together (Tailwind `text-<name>`).
 - **Name** (`text-name`): the name on the swipe card and the detail sheet header, with `-1px` tracking.
 - **Match name** (`text-match-name`), **Duel name** (`text-duel-name`), **Hero name** (`text-hero-name`, the intro's small card illustration): the name at its moment sizes.
 - **Display** (`text-display`): photo hero headline. `text-display-xl` is the landing hero only and isn't used in `/names`.
-- **Title** (`text-title`): screen titles ("בחירת שם", "השמות שלי"), sheet titles.
+- **Title** (`text-title`): screen titles ("בחירת שם", "השמות שלי"), sheet titles. A title never ends with a period, even when it is a sentence ("הצטרפת", "החשבון נמחק"); the lead under it does. A screen-reader status that joins the two adds the period back between them.
 - **Section** (`text-section`) and **Row name** (`text-row-name`): section headings inside a screen; the name in a list row.
 - **Card title** (`text-card-title`): card and list-item titles, the surname line, the text-link button.
 - **Button** (`text-button`): large button labels. **Intro** (`text-intro`): the card's intro line, the decision pills. **Field** (`text-field`, 16 px): every text field; iOS Safari zooms the page into a focused field under 16 px and stays zoomed after the keyboard closes.

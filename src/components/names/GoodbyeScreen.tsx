@@ -5,6 +5,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import Wordmark from "@/components/names/auth/Wordmark";
 import { buttonClass } from "@/components/names/ui/classes";
 import { APP_PATH } from "@/lib/names/auth";
 import { DELETED_LEAD, DELETED_TITLE, subscribeAccountDeleted, wasAccountDeleted } from "@/lib/names/accountDeletion";
@@ -12,7 +13,7 @@ import { DELETED_LEAD, DELETED_TITLE, subscribeAccountDeleted, wasAccountDeleted
 /** The goodbye screen after account deletion (FR-W25), on the welcome frame, with the way back to the landing. */
 export function GoodbyeView() {
   return (
-    <AuthLayout title={DELETED_TITLE} lead={DELETED_LEAD}>
+    <AuthLayout title={DELETED_TITLE} lead={DELETED_LEAD} hero={<Wordmark />}>
       <p role="status" className="sr-only">
         {DELETED_TITLE}
       </p>

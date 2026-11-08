@@ -135,8 +135,12 @@ describe("join outcome copy", () => {
 
   it("covers a used link and says whom to ask", () => {
     expect(JOIN_COPY.invalid).toEqual({
-      title: "הקישור כבר לא בתוקף, או שכבר השתמשו בו.",
+      title: "הקישור כבר לא בתוקף, או שכבר השתמשו בו",
       lead: "אפשר לבקש קישור חדש ממי ששלח את ההזמנה.",
     });
+  });
+
+  it("writes titles without a period, like every other screen title", () => {
+    for (const { title } of Object.values(JOIN_COPY)) expect(title).not.toMatch(/\.$/);
   });
 });

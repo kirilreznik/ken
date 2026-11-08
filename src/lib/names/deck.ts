@@ -120,7 +120,7 @@ export function deckSlot(o: { paused: boolean; hasCard: boolean; deckState: Deck
   return o.loadError ? "error" : "loading";
 }
 
-/** The deck's load error (same pattern as join's "ההצטרפות לא הצליחה." + "אפשר לנסות שוב."). */
+/** The deck's load error (same pattern as join's "ההצטרפות לא הצליחה" + "אפשר לנסות שוב."). */
 export const DECK_LOAD_ERROR = { title: "לא הצלחנו לטעון את השמות.", lead: "אפשר לנסות שוב." } as const;
 /** Read while the skeleton shows. */
 export const DECK_LOADING_TEXT = "השמות נטענים";
