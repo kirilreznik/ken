@@ -1,8 +1,8 @@
 import Link from "next/link";
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
+import type { AnchorHTMLAttributes, ComponentPropsWithRef } from "react";
 import { buttonClass, iconButtonClass, type ButtonSize, type ButtonVariant } from "./classes";
 
-type ButtonAttrs = ButtonHTMLAttributes<HTMLButtonElement> & { href?: undefined };
+type ButtonAttrs = ComponentPropsWithRef<"button"> & { href?: undefined };
 type LinkAttrs = AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
 
 // The peach circle has no visible text, so it needs a Hebrew aria-label like IconButton.

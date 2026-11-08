@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef, ReactNode } from "react";
+import type { ComponentPropsWithRef, ReactNode, Ref } from "react";
 import { cardLabel } from "@/lib/names/a11y";
 import { cardHints } from "@/lib/names/cardHints";
 import type { Card } from "@/lib/names/types";
@@ -18,6 +18,8 @@ type NameCardProps = Omit<ComponentPropsWithRef<"article">, "children"> & {
   corner?: ReactNode;
   /** Shows "לכל הפרטים" at the end of the card (board 12); it opens the name sheet. */
   onDetails?: () => void;
+  /** On the "לכל הפרטים" button, e.g. the deck's sticky-toast lift (NP-BUG-011). */
+  detailsRef?: Ref<HTMLButtonElement>;
 };
 
 const stamp =
@@ -32,7 +34,7 @@ const stamp =
  * The swipe stamps (שמירה, דילוג, אהבתי מאוד) show through the --keep, --skip and --love CSS
  * variables (0..1) that the drag sets on the article, like the landing demo's .nd-stamp.
  */
-export default function NameCard({ card, position, total, surname, corner, onDetails, className = "", ...rest }: NameCardProps) {
+export default function NameCard({ card, position, total, surname, corner, onDetails, detailsRef, className = "", ...rest }: NameCardProps) {
   const { stats, content, derived } = card;
   const hints = cardHints(content);
   return (
@@ -65,7 +67,7 @@ export default function NameCard({ card, position, total, surname, corner, onDet
       <CardSexBar {...derived} />
       <CardStats stats={stats} {...derived} />
       {onDetails && (
-        <Button variant="secondary" size="md" aria-haspopup="dialog" onClick={onDetails} className="shrink-0 self-center">
+        <Button ref={detailsRef} variant="secondary" size="md" aria-haspopup="dialog" onClick={onDetails} className="shrink-0 self-center">
           לכל הפרטים
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0 ltr:-scale-x-100">
             <path d="M15 6l-6 6 6 6" />

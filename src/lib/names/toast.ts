@@ -5,7 +5,8 @@
 export type ToastAction = { label: string; onAction: () => void };
 /** A link after the action, to the screen where the result can be found ("לשמות שהסתרתי"). */
 export type ToastLink = { label: string; href: string };
-export type Toast = { id: number; message: string; action?: ToastAction; link?: ToastLink };
+/** sticky: shown until dismissed, so it sits clear of more controls (toastLift, NP-BUG-011). */
+export type Toast = { id: number; message: string; action?: ToastAction; link?: ToastLink; sticky: boolean };
 export type ToastOptions = {
   action?: ToastAction;
   link?: ToastLink;
@@ -40,9 +41,9 @@ export function getToast(): Toast | null {
 export function showToast(message: string, options: ToastOptions = {}): number {
   clearTimeout(timer);
   const id = nextId++;
-  current = { id, message, action: options.action, link: options.link };
   const duration = options.duration ?? (options.action || options.link ? TOAST_ACTION_DURATION : TOAST_DURATION);
   sticky = duration <= 0;
+  current = { id, message, action: options.action, link: options.link, sticky };
   if (duration > 0) timer = setTimeout(() => dismissToast(id), duration);
   emit();
   return id;

@@ -461,3 +461,26 @@
     display: none;
   }
 }
+
+/* The deck card (CardStack, a size container) never scrolls on a phone (NP-BUG-010): at short
+ * heights (320 × 568) the card drops parts the name sheet repeats, in this order, until the
+ * longest card fits with "לכל הפרטים" whole: the hint chips (the 2-line intro plus a chip row
+ * needs a 29rem stack), then the gaps tighten from 12 to 8 px (a 2-line card needs 27rem), then
+ * the intro keeps 1 line (25.75rem). Card parts: tag row, middle (name, intro, chips), sex bar,
+ * stats, button. Under 20rem wide or 30rem high the deck is content-sized (no container). */
+@container (height < 29rem) {
+  .nest-names .names-stack > article > :nth-child(2) > ul {
+    display: none;
+  }
+}
+@container (height < 27rem) {
+  .nest-names .names-stack > article,
+  .nest-names .names-stack > article > :nth-child(2) {
+    row-gap: calc(var(--spacing) * 2);
+  }
+}
+@container (height < 25.75rem) {
+  .nest-names .names-stack > article > :nth-child(2) > p {
+    -webkit-line-clamp: 1;
+  }
+}

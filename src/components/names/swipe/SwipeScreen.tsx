@@ -61,6 +61,8 @@ export default function SwipeScreen() {
   const userId = user?.id ?? null;
   const space = useSpace();
   const barRef = useToastLift();
+  // "עדכון זמין" stays until tapped: it waits above the card's "לכל הפרטים", not on it (NP-BUG-011).
+  const detailsRef = useToastLift({ sticky: true });
   const { cards, error: cardsError, retry: retryCards } = useCards();
   const [retried, setRetried] = useState(false);
   const { store, state } = useVotes(space.spaceId, userId);
@@ -281,6 +283,7 @@ export default function SwipeScreen() {
                 aria-describedby={SWIPE_KEYS_ID}
                 corner={<AboutLink />}
                 onDetails={openDetails("button")}
+                detailsRef={detailsRef}
                 onKeyDown={onCardKeyDown}
                 // A touch or focus on the card may become a tap: start loading the sheet's code.
                 onPointerDownCapture={preloadNameDetail}

@@ -56,4 +56,11 @@ describe("toast store", () => {
     dismissToast(id);
     expect(getToast()).toBeNull();
   });
+
+  it("marks only a toast that stays until dismissed as sticky (it sits clear of the card's button)", () => {
+    showToast("עדכון זמין", { action: { label: "רענון", onAction: () => {} }, duration: 0 });
+    expect(getToast()?.sticky).toBe(true);
+    showToast("נשמר", { action: { label: "ביטול", onAction: () => {} } });
+    expect(getToast()?.sticky).toBe(false);
+  });
 });

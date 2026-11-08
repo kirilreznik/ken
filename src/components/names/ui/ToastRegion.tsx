@@ -14,7 +14,8 @@ const actionClass =
  * role="status" region is always mounted so screen readers announce each new message, and
  * it stays usable while a sheet makes the rest of the page inert. It sits just above pinned
  * controls: a sheet's footer, the deck's action bar, the duel's "עצירה" (--names-toast-lift,
- * useToastLift in ./toastLift).
+ * useToastLift in ./toastLift); one that stays until dismissed also above the deck card's
+ * "לכל הפרטים" (--names-toast-lift-sticky).
  */
 export function ToastRegion() {
   const toast = useSyncExternalStore(subscribeToast, getToast, serverToast);
@@ -23,7 +24,11 @@ export function ToastRegion() {
       role="status"
       aria-live="polite"
       data-names-layer-keep
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-60 flex justify-center px-5 pb-[var(--names-toast-lift,max(1.5rem,env(safe-area-inset-bottom)))]"
+      className={`pointer-events-none fixed inset-x-0 bottom-0 z-60 flex justify-center px-5 ${
+        toast?.sticky
+          ? "pb-[var(--names-toast-lift-sticky,max(1.5rem,env(safe-area-inset-bottom)))]"
+          : "pb-[var(--names-toast-lift,max(1.5rem,env(safe-area-inset-bottom)))]"
+      }`}
     >
       {toast ? (
         <div
