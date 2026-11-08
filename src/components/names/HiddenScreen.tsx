@@ -1,15 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, IconButton } from "@/components/names/ui";
+import { Button, IconButton, collapseRow } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
-import { hiddenNames, restoredText, rowMeta, rowMetaText } from "@/lib/names/lists";
+import { hiddenAgainText, hiddenNames, restoredText, rowMeta, rowMetaText } from "@/lib/names/lists";
+import { showToast } from "@/lib/names/toast";
 import type { Vote } from "@/lib/names/types";
 
 /**
@@ -22,7 +23,6 @@ export default function HiddenScreen() {
   const space = useSpace();
   const { names } = useNameStats();
   const { store, state } = useVotes(space.spaceId, user?.id ?? null);
-  const [status, setStatus] = useState("");
   const listRef = useRef<HTMLUListElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const focusAfter = useRef<number | null>(null);
@@ -44,11 +44,19 @@ export default function HiddenScreen() {
     target?.focus();
   }, [hidden]);
 
-  const restore = (name: string, index: number) => {
+  // The row closes first (NP-137); the toast's "ביטול" hides the name again.
+  const restore = (name: string, index: number, row: HTMLElement | null) => {
     if (!store) return;
-    focusAfter.current = index;
-    store.removeVote(name);
-    setStatus(restoredText(name));
+    const custom = state?.votes.get(name)?.custom ?? false;
+    collapseRow(row, () => {
+      focusAfter.current = index;
+      store.removeVote(name);
+      const undo = () => {
+        store.setVote(name, "hidden", custom);
+        showToast(hiddenAgainText(name));
+      };
+      showToast(restoredText(name), { action: { label: "ביטול", onAction: undo } });
+    });
   };
 
   const back = () => {
@@ -100,7 +108,7 @@ export default function HiddenScreen() {
                       </>
                     ) : null}
                   </div>
-                  <Button variant="secondary" size="md" data-restore="" aria-label={`החזרה של ${name}`} onClick={() => restore(name, i)}>
+                  <Button variant="secondary" size="md" data-restore="" aria-label={`החזרה של ${name}`} onClick={(event) => restore(name, i, event.currentTarget.closest("li"))}>
                     החזרה
                   </Button>
                 </li>
@@ -109,9 +117,6 @@ export default function HiddenScreen() {
           </ul>
         )}
 
-        <p role="status" className="sr-only">
-          {status}
-        </p>
       </main>
     </div>
   );

@@ -40,6 +40,11 @@ export function restoredText(name: string): string {
   return `השם ${name} יחזור לבחירה`;
 }
 
+/** Toast text after "ביטול" on a restore: the name is hidden again. */
+export function hiddenAgainText(name: string): string {
+  return `השם ${name} הוסתר שוב`;
+}
+
 /** The segments of "השמות שלי" (`?tab=`). */
 export type ListsTab = "saved" | "matches" | "duel";
 
@@ -74,6 +79,11 @@ export function savedRows(votes: ReadonlyMap<string, { vote: Vote; custom?: bool
 /** Live region text after a row menu action. */
 export function rowActionText(name: string, action: "remove" | "hide"): string {
   return action === "remove" ? `השם ${name} הוסר מהרשימה` : `השם ${name} הוסתר ולא יוצג יותר`;
+}
+
+/** Toast text after "ביטול" on a row menu action: the name is back in "שמרתי". */
+export function rowUndoText(name: string): string {
+  return `השם ${name} חזר לרשימה`;
 }
 
 /** Live region / toast text after "הוספת שם". */

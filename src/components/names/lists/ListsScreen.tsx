@@ -8,7 +8,7 @@ import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
-import { Button, IconButton, openNameSheet, openSheet } from "@/components/names/ui";
+import { Button, IconButton, collapseRow, openNameSheet, openSheet } from "@/components/names/ui";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
 import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
@@ -21,7 +21,7 @@ import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
-import { addedText, listsTab, rowActionText, rowMeta, rowMetaText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
+import { addedText, listsTab, rowActionText, rowMeta, rowMetaText, rowUndoText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
 import { showToast } from "@/lib/names/toast";
 import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
@@ -236,9 +236,17 @@ export default function ListsScreen() {
               names={names}
               onAction={(name, action) => {
                 if (!store) return;
+                const previous = state?.votes.get(name);
                 if (action === "remove") store.removeVote(name);
                 else store.setVote(name, "hidden");
-                setStatus(rowActionText(name, action));
+                // Like "דילוג" in the sheet: the toast says what happened, "ביטול" puts the old vote back.
+                const undo = previous
+                  ? () => {
+                      store.setVote(name, previous.vote, previous.custom);
+                      showToast(rowUndoText(name));
+                    }
+                  : undefined;
+                showToast(rowActionText(name, action), undo ? { action: { label: "ביטול", onAction: undo } } : {});
               }}
               headingRef={headingRef}
               canOpen={canOpen}
@@ -500,6 +508,14 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
     target?.focus();
   }, [rows, headingRef]);
 
+  // The row closes first (NP-137), then the vote changes and the row goes from the data.
+  const leave = (index: number, name: string, action: "remove" | "hide") => {
+    collapseRow(listRef.current?.children[index] as HTMLElement | undefined, () => {
+      focusAfter.current = index;
+      onAction(name, action);
+    });
+  };
+
   if (!ready) {
     return (
       <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
@@ -560,14 +576,8 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
                 name={row.name}
                 chooseLabel={chooseLabel(row.name)}
                 onChoose={() => onChoose(row)}
-                onRemove={() => {
-                  focusAfter.current = i;
-                  onAction(row.name, "remove");
-                }}
-                onHide={() => {
-                  focusAfter.current = i;
-                  onAction(row.name, "hide");
-                }}
+                onRemove={() => leave(i, row.name, "remove")}
+                onHide={() => leave(i, row.name, "hide")}
               />
             </li>
           );
