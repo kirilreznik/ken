@@ -23,6 +23,7 @@ import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
 import { HIDDEN_LINK, addedText, listsTab, rowActionText, rowMeta, rowMetaText, rowUndoText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
+import { MATCHES_LOAD_FAILED_TITLE } from "@/lib/names/offline";
 import { showToast } from "@/lib/names/toast";
 import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
@@ -120,7 +121,8 @@ export default function ListsScreen() {
 
   const online = useOnline();
   // The matches the duel can use: the last fetched list, or the cache while offline.
-  const matchesLoaded = !space.isShared || (!!matches?.ready && (matches.fetchedAt !== null || !online));
+  // A failed first fetch counts as loaded with no matches, so the duel from "שמרתי" still runs (NP-074).
+  const matchesLoaded = !space.isShared || (!!matches?.ready && (matches.fetchedAt !== null || !online || matches.failed));
   const matchNames = useMemo(() => (space.isShared && matches ? matches.matches.map((m) => m.name) : []), [space.isShared, matches]);
   const customNames = useMemo(() => new Set(rows.filter((r) => r.custom).map((r) => r.name)), [rows]);
 
@@ -274,6 +276,7 @@ export default function ListsScreen() {
             <MatchesPanel
               userId={user?.id ?? null}
               state={matches}
+              onRetry={() => matches?.refresh()}
               memberCount={space.members.length}
               names={names}
               canOpen={canOpen}
@@ -314,6 +317,7 @@ type ChooseProps = {
 type MatchesPanelProps = ChooseProps & {
   userId: string | null;
   state: MatchesState | null;
+  onRetry: () => void;
   memberCount: number;
   names: Map<string, NameStats> | null;
   onChoose: (name: string) => void;
@@ -324,7 +328,7 @@ type MatchesPanelProps = ChooseProps & {
  * "{n} שמרו" from 3 up, a heart when someone loved it (never who), the last update time
  * while offline. Nothing about anyone's skips.
  */
-function MatchesPanel({ userId, state, memberCount, names, canOpen, chooseLabel, onChoose }: MatchesPanelProps) {
+function MatchesPanel({ userId, state, onRetry, memberCount, names, canOpen, chooseLabel, onChoose }: MatchesPanelProps) {
   const online = useOnline();
   // The day to compare the last update with; the screen isn't open across midnight for long.
   const [openedAt] = useState(() => Date.now());
@@ -333,6 +337,16 @@ function MatchesPanel({ userId, state, memberCount, names, canOpen, chooseLabel,
     !online && state?.fetchedAt != null ? (
       <p className="m-0 text-caption text-stone">{updatedText(state.fetchedAt, openedAt)}</p>
     ) : null;
+
+  // A failed first fetch says so (the store retries on focus and every 60 s), never a skeleton forever.
+  if (state?.ready && state.fetchedAt === null && online && state.failed) {
+    return (
+      <>
+        {intro}
+        <VotesLoadFailed title={MATCHES_LOAD_FAILED_TITLE} onRetry={onRetry} />
+      </>
+    );
+  }
 
   // Before the first fetch an empty list is only "no cache yet"; offline it's all there is.
   if (!state?.ready || (state.fetchedAt === null && online)) {

@@ -26,11 +26,12 @@ const row = (name: string, matched_at: string, kept = 2, loved = 0): Row => ({
 });
 
 function fakeClient(rows: Row[] = []) {
-  const server = { rows, fail: false };
+  const server = { rows, fail: false, error: false };
   const rpc = vi.fn(async (fn: string, args: unknown) => {
     void fn;
     void args;
     if (server.fail) throw new TypeError("Failed to fetch");
+    if (server.error) return { data: null, error: { message: "boom", code: "500" } };
     return { data: [...server.rows], error: null };
   });
   return { client: { rpc } as unknown as SupabaseClient, rpc, server };
@@ -125,6 +126,25 @@ describe("matches store", () => {
     const cleared = createMatchesStore({ spaceId, userId, shared: true, client: offline.client });
     await cleared.load();
     expect(cleared.getState()).toMatchObject({ ready: true, matches: [], fetchedAt: null });
+  });
+
+  it("NP-074: a failed request sets failed (fetchedAt stays null); the next success clears it", async () => {
+    const fake = fakeClient([row("זיו", "2026-11-01T10:00:00Z")]);
+    fake.server.error = true;
+    const { store } = makeStore(fake.client);
+    await store.load();
+    expect(store.getState()).toMatchObject({ ready: true, matches: [], fetchedAt: null, failed: true });
+
+    fake.server.error = false;
+    fake.server.fail = true;
+    await store.refresh();
+    expect(store.getState().failed).toBe(true);
+
+    fake.server.fail = false;
+    await store.refresh();
+    expect(store.getState()).toMatchObject({ failed: false, fetchedAt: 1_000 });
+    expect(store.getState().matches.map((m) => m.name)).toEqual(["זיו"]);
+    await store.dispose();
   });
 
   it("a space of one makes no calls and has no matches", async () => {

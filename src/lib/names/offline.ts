@@ -18,6 +18,9 @@ export const VOTES_LOAD_FAILED_TEXT = "לא הצלחנו לטעון את הבח�
 /** The same failure where a list would be (saved, hidden): in place of its empty state. */
 export const LIST_LOAD_FAILED = { title: "לא הצלחנו לטעון את הרשימה.", lead: "מנסים שוב מעצמנו בעוד רגע." } as const;
 
+/** NP-074: the "התאמות" tab when `name_matches` failed and there's no cache. */
+export const MATCHES_LOAD_FAILED_TITLE = "לא הצלחנו לטעון את ההתאמות.";
+
 /**
  * The footer's sync line, or null when there is nothing to say. `stuck` = queued votes
  * have waited online for SYNC_STUCK_MS; `loadFailed` = the votes couldn't be read (NP-073).

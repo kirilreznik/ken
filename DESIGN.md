@@ -353,6 +353,8 @@ Every empty or end state uses `emptyPanelClass(surface)` (`ui/classes.ts`): a ce
 
 When the votes couldn't be read on a device with no cache (`loadFailed` in the vote store, retried every 30 s), an empty list would be a lie: "שמרתי" and "שמות שהסתרתי" show `lists/VotesLoadFailed` instead (the same card, "לא הצלחנו לטעון את הרשימה." + "מנסים שוב מעצמנו בעוד רגע." + "ניסיון חוזר", title and line in a `contents` status region), the "שמרתי" tab and the deck's "השמות שלי" pill drop their count, and the deck's sync line says "לא הצלחנו לטעון את הבחירות. מנסים שוב." The deck stays usable (offline-first).
 
+The same card stands in for "התאמות" when `name_matches` failed online with no cache (`failed` in the matches store, retried on focus and every 60 s; NP-074): title "לא הצלחנו לטעון את ההתאמות.", the tab drops its count, and the duel counts the failure as "no matches" so the duel from "שמרתי" still runs (no source toggle). Never a skeleton that can't end.
+
 ### Checkboxes (`checkboxClass`)
 Onboarding's three consents and the filter sheet's "מספר אותיות מותאם אישית" use `checkboxClass()` (`ui/classes.ts`): a drawn 24 px box (`appearance: none`, half of `radius-sm`, so it never reads as a radio), `surface` fill and a 2 px edge at ≥ 3:1 like the fields: `stone` on solid surfaces, `ink-soft` on glass. Checked is an `ink` box with a `surface` tick (`names.css` `.names-checkbox`), so the state is told by the mark, not the color. Invalid and unchecked turns the edge `urgent`. The whole label row is the ≥ 44 px target; focus is the global 2 px ink outline 2 px off the box (on the ink box an outline on its edge would vanish).
 
