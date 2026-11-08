@@ -23,7 +23,8 @@ type PausePanelProps = {
 export default function PausePanel({ pause, totals, onContinue }: PausePanelProps) {
   const root = useRef<HTMLDivElement>(null);
 
-  // Focus follows the card that was swiped away, so keyboard and screen-reader users land here.
+  // Focus follows the card that was swiped away, so keyboard and screen-reader users land here;
+  // the main button is described by the panel's lines, so the reason is read with it.
   useEffect(() => {
     const active = document.activeElement;
     const el = root.current;
@@ -51,14 +52,15 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
             <h2 id="names-pause-title" className={emptyTitleClass("glass")}>
               רוצה לבחור עם מישהו?
             </h2>
-            <p className="m-0 text-intro text-ink-soft">
+            <p id="names-pause-lead" className="m-0 text-intro text-ink-soft">
               כבר שמרת 5 שמות. אפשר להזמין מישהו נוסף: הבחירה נעשית בנפרד, בכל טלפון, ושם שנשמר אצל שניים או יותר הופך להתאמה.
             </p>
-            <p className="m-0 text-person text-ink-soft">על מה דילגת נשאר רק אצלך.</p>
+            <p id="names-pause-note" className="m-0 text-person text-ink-soft">על מה דילגת נשאר רק אצלך.</p>
             <Button
               size="md"
               href="/names/invite"
               data-autofocus=""
+              aria-describedby="names-pause-lead names-pause-note"
               onClick={() => {
                 track("invite_prompt", { placement: "fifth_save", action: "invite" });
                 onContinue();
@@ -81,7 +83,7 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
             <h2 id="names-pause-title" className={emptyTitleClass("glass")}>
               סיכום הסבב
             </h2>
-            <p className="m-0 text-intro text-ink-soft">{recapLine(opened.votes, opened.saves)}</p>
+            <p id="names-pause-lead" className="m-0 text-intro text-ink-soft">{recapLine(opened.votes, opened.saves)}</p>
             {opened.names.length > 0 ? (
               <ol aria-label="שמות ששמרת בסבב הזה" className="m-0 flex list-none flex-wrap justify-center gap-1.5 p-0">
                 {opened.names.slice(0, RECAP_NAMES).map((name) => (
@@ -95,6 +97,7 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
               <Button
                 size="md"
                 data-autofocus=""
+                aria-describedby="names-pause-lead"
                 onClick={() => {
                   track("recap_cta", { action: "continue" });
                   onContinue();

@@ -8,6 +8,7 @@ import {
   countSession,
   decideLabel,
   decisionTitle,
+  pauseAfterVote,
   pauseToShow,
   recapLine,
   sessionTotals,
@@ -95,5 +96,27 @@ describe("copy", () => {
     expect(clearChoiceLabel("נועה")).toBe("ביטול הבחירה בשם נועה");
     expect(choiceClearedText("נועה")).toBe("הבחירה בשם נועה בוטלה");
     expect(choiceRestoredText("נועה")).toBe("השם נועה נבחר שוב");
+  });
+});
+
+describe("pauseAfterVote", () => {
+  const base = { solo: true, savedCount: 4, invitePromptShown: false, sessionId: "s1", sessionVotes: 3, recapSession: null };
+  const stored = (vote: StoredVote["vote"], min: number, custom = false): StoredVote => ({ name: "x", vote, updatedAt: at(min), custom });
+
+  it("sees the 5th save before the store does", () => {
+    expect(pauseAfterVote(base, { previous: undefined, saves: true, startedAt: start })).toBe("invite");
+    expect(pauseAfterVote(base, { previous: undefined, saves: false, startedAt: start })).toBeNull();
+    // Re-saving a name that was already saved adds nothing.
+    expect(pauseAfterVote(base, { previous: stored("keep", 20), saves: true, startedAt: start })).toBeNull();
+  });
+
+  it("sees the 30th decision of the session", () => {
+    const input = { ...base, savedCount: 0, sessionVotes: RECAP_VOTES - 1 };
+    expect(pauseAfterVote(input, { previous: undefined, saves: false, startedAt: start })).toBe("recap");
+    // A name decided earlier in this session is counted already.
+    expect(pauseAfterVote(input, { previous: stored("pass", 20), saves: false, startedAt: start })).toBeNull();
+    // One decided before the session started is new to it.
+    expect(pauseAfterVote(input, { previous: stored("pass", 0), saves: false, startedAt: start })).toBe("recap");
+    expect(pauseAfterVote(input, { previous: undefined, saves: false, startedAt: null })).toBeNull();
   });
 });

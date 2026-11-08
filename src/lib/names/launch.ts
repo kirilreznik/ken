@@ -58,6 +58,25 @@ export function pauseToShow(input: PauseInput): Pause | null {
   return null;
 }
 
+/**
+ * The pause a decision on `name` opens, if any: `pauseToShow` with the counts as they will be
+ * once the vote is stored. The swipe screen reads it before the store updates, so the status
+ * line doesn't name a next card the pause is about to cover.
+ */
+export function pauseAfterVote(
+  input: PauseInput,
+  vote: { previous: StoredVote | undefined; saves: boolean; startedAt: number | null },
+): Pause | null {
+  const { previous, saves, startedAt } = vote;
+  const wasSaved = !!previous && saved(previous);
+  const counted = !!previous && !previous.custom && startedAt !== null && time(previous.updatedAt) >= startedAt;
+  return pauseToShow({
+    ...input,
+    savedCount: input.savedCount - Number(wasSaved) + Number(saves),
+    sessionVotes: input.sessionVotes + Number(startedAt !== null && !counted && !previous?.custom),
+  });
+}
+
 /** The session count after seeing session `id` (a new id is one more session). */
 export function countSession(prev: { last: string | null; count: number }, id: string): { last: string; count: number } {
   return prev.last === id ? { last: id, count: Math.max(prev.count, 1) } : { last: id, count: prev.count + 1 };

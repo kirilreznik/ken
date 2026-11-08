@@ -23,7 +23,7 @@ import { buildDeck, deckProgress, deckSlot, hashSeed } from "@/lib/names/deck";
 import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
 import { matchToShow, withSeen, type Match } from "@/lib/names/matches";
-import { RECAP_VOTES, countSession, pauseToShow, sessionTotals, surveyDue, type Pause } from "@/lib/names/launch";
+import { RECAP_VOTES, countSession, pauseAfterVote, pauseToShow, sessionTotals, surveyDue, type Pause } from "@/lib/names/launch";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { showToast } from "@/lib/names/toast";
 import { currentSessionInfo, track } from "@/lib/names/track";
@@ -111,10 +111,8 @@ export default function SwipeScreen() {
   const solo = !space.loading && !space.error && space.members.length === 1;
   // A pause comes only after a decision in this visit (`entered`), never on opening the app,
   // and stays until it is answered (endPause writes the prefs that turn it off).
-  const pause: Pause | null =
-    userId && entered
-      ? pauseToShow({ solo, savedCount, invitePromptShown, sessionId, sessionVotes: totals.votes, recapSession })
-      : null;
+  const pauseInput = { solo, savedCount, invitePromptShown, sessionId, sessionVotes: totals.votes, recapSession };
+  const pause: Pause | null = userId && entered ? pauseToShow(pauseInput) : null;
   const endPause = () => {
     if (!userId) return;
     if (pause === "invite") setPref(userId, "invitePromptShown", true);
@@ -174,7 +172,13 @@ export default function SwipeScreen() {
     setEntered(true);
     setStatus(statusText(kind, name));
     // Focus stays on the button, so screen-reader users hear the next name without going back to the card.
-    setNext(deck?.cards[1]?.stats.name ?? null);
+    // Not when this decision opens a pause: the panel covers the next card, and focus moves to it.
+    const opensPause = pauseAfterVote(pauseInput, {
+      previous: storedVotes?.get(name),
+      saves: isSaved(kind),
+      startedAt: session?.startedAt ?? null,
+    });
+    setNext(opensPause ? null : (deck?.cards[1]?.stats.name ?? null));
   };
 
   const openDetails = (source: "tap" | "button" | "key") => () => {
