@@ -220,6 +220,12 @@ export function duelSource(
   return savedCount < 2 && matchCount >= 2 ? "matches" : "saved";
 }
 
+/** The duel's empty card: the rule, and how many the list has when it has one (COPY-G3-02). */
+export function duelTooFewText(source: DuelSource, count: number): string {
+  if (source === "matches") return count === 1 ? "לדו־קרב צריך לפחות שתי התאמות, ויש אחת." : "לדו־קרב צריך לפחות שתי התאמות.";
+  return count === 1 ? "לדו־קרב צריך לפחות שני שמות ברשימה, ויש בה אחד." : "לדו־קרב צריך לפחות שני שמות ברשימה.";
+}
+
 export function roundText(p: DuelProgress): string {
   return `סיבוב ${p.round} מתוך ${p.total}`;
 }

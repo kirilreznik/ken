@@ -120,9 +120,12 @@ const EMPTY_PANEL_SURFACE: Record<EmptyPanelSurface, string> = {
 };
 
 const EMPTY_TITLE: Record<EmptyPanelSurface, string> = {
-  glass: "m-0 text-title font-bold text-ink",
-  card: "m-0 text-card-title text-ink",
+  glass: "m-0 text-balance text-title font-bold text-ink",
+  card: "m-0 text-balance text-card-title text-ink",
 };
+
+// The line under the title: what fills the list, balanced so no one-word last line.
+const EMPTY_LINE = "m-0 text-balance text-person text-ink-soft";
 
 export function emptyPanelClass(surface: EmptyPanelSurface): string {
   return `${EMPTY_PANEL} ${EMPTY_PANEL_SURFACE[surface]}`;
@@ -130,4 +133,8 @@ export function emptyPanelClass(surface: EmptyPanelSurface): string {
 
 export function emptyTitleClass(surface: EmptyPanelSurface): string {
   return EMPTY_TITLE[surface];
+}
+
+export function emptyLineClass(): string {
+  return EMPTY_LINE;
 }

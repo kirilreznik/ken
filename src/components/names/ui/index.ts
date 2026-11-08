@@ -1,5 +1,5 @@
 export { Glass } from "./Glass";
-export { checkboxClass, emptyPanelClass, emptyTitleClass, inputClass } from "./classes";
+export { checkboxClass, emptyLineClass, emptyPanelClass, emptyTitleClass, inputClass } from "./classes";
 export { Button, IconButton } from "./Button";
 export { Chip } from "./Chip";
 export { BottomSheet } from "./BottomSheet";

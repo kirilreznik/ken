@@ -5,6 +5,7 @@ import {
   deserialize,
   duelAnnouncement,
   duelSource,
+  duelTooFewText,
   isDone,
   pick,
   progress,
@@ -238,5 +239,14 @@ describe("source and resume (FR-W21)", () => {
     expect(duelAnnouncement(s)).toBe(`סיבוב 1 מתוך 1: ${pair.a} או ${pair.b}`);
     const done = pick(s, "תמר");
     expect(duelAnnouncement(done)).toBe("הדו־קרב הסתיים. 1. תמר, 2. לביא");
+  });
+});
+
+describe("too few names (COPY-G3-02)", () => {
+  it("says the rule, and the count when the list has one", () => {
+    expect(duelTooFewText("saved", 0)).toBe("לדו־קרב צריך לפחות שני שמות ברשימה.");
+    expect(duelTooFewText("saved", 1)).toBe("לדו־קרב צריך לפחות שני שמות ברשימה, ויש בה אחד.");
+    expect(duelTooFewText("matches", 0)).toBe("לדו־קרב צריך לפחות שתי התאמות.");
+    expect(duelTooFewText("matches", 1)).toBe("לדו־קרב צריך לפחות שתי התאמות, ויש אחת.");
   });
 });

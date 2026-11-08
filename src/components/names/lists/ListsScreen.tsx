@@ -8,7 +8,7 @@ import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
-import { Button, IconButton, collapseRow, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet } from "@/components/names/ui";
+import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet } from "@/components/names/ui";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
 import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
@@ -122,6 +122,15 @@ export default function ListsScreen() {
   const matchNames = useMemo(() => (space.isShared && matches ? matches.matches.map((m) => m.name) : []), [space.isShared, matches]);
   const customNames = useMemo(() => new Set(rows.filter((r) => r.custom).map((r) => r.name)), [rows]);
 
+  // From the duel's too-few card the person stays in the duel, which starts once there are two.
+  const add = (name: string, custom: boolean) => {
+    if (!store) return;
+    store.setVote(name, "keep", custom);
+    if (tab !== "saved" && tab !== "duel") selectTab("saved");
+    setStatus(addedText(name));
+    showToast(addedText(name));
+  };
+
   if (tab === "duel") {
     return (
       <>
@@ -137,7 +146,9 @@ export default function ListsScreen() {
         onBack={(source) => selectTab(source === "matches" && space.isShared ? "matches" : "saved")}
         chooseLabel={(name) => decideLabel(space.isShared, name)}
         onChoose={(name, _source, rank) => choose(name, "duel", { custom: customNames.has(name), rank })}
+        onAddName={() => openSheet("add-name")}
       />
+      <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
       {decision}
       </>
     );
@@ -166,14 +177,6 @@ export default function ListsScreen() {
     } else {
       showToast(message);
     }
-  };
-
-  const add = (name: string, custom: boolean) => {
-    if (!store) return;
-    store.setVote(name, "keep", custom);
-    if (tab !== "saved") selectTab("saved");
-    setStatus(addedText(name));
-    showToast(addedText(name));
   };
 
   return (
@@ -365,8 +368,8 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
   if (matches.length === 0) {
     return (
       <div className={emptyPanelClass("card")}>
-        <p className={emptyTitleClass("card")}>עוד אין התאמות.</p>
-        <p className="m-0 text-person text-ink-soft">
+        <h2 className={emptyTitleClass("card")}>עוד אין התאמות.</h2>
+        <p className={emptyLineClass()}>
           {memberCount < 2
             ? "התאמה היא שם שגם מי שבוחר איתך שמר."
             : memberCount > 2
@@ -528,7 +531,8 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
   if (rows.length === 0) {
     return (
       <div className={emptyPanelClass("card")}>
-        <p className={emptyTitleClass("card")}>עוד לא נשמרו שמות.</p>
+        <h2 className={emptyTitleClass("card")}>עוד אין שמות שמורים.</h2>
+        <p className={emptyLineClass()}>שמות ששומרים או אוהבים בכרטיסים יופיעו כאן.</p>
         <Button variant="link" href={APP_PATH}>
           לבחירת שמות
         </Button>
@@ -604,7 +608,7 @@ function SoloMatches() {
         </Icon>
       </span>
       <h2 className={emptyTitleClass("card")}>בוחרים ביחד?</h2>
-      <p className="m-0 text-person text-ink-soft">
+      <p className={emptyLineClass()}>
         אפשר להזמין את מי שבוחר איתך. כל אחד בוחר בטלפון שלו, ושם ששניכם שמרתם יופיע כאן כהתאמה.
       </p>
       <p className="m-0 text-caption text-stone">על מה כל אחד דילג נשאר פרטי. השמות ששמרת עוברים איתך.</p>

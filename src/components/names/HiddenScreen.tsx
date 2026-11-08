@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, IconButton, collapseRow, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
+import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
@@ -85,7 +85,11 @@ export default function HiddenScreen() {
           </div>
         ) : hidden.length === 0 ? (
           <div className={emptyPanelClass("card")}>
-            <p className={emptyTitleClass("card")}>אין שמות מוסתרים</p>
+            <h2 className={emptyTitleClass("card")}>אין כרגע שמות מוסתרים.</h2>
+            <p className={emptyLineClass()}>לחיצה ארוכה על ״דילוג״ בכרטיס מסתירה שם, והוא יופיע כאן.</p>
+            <Button variant="link" href={APP_PATH}>
+              לבחירת שמות
+            </Button>
           </div>
         ) : (
           <ul ref={listRef} aria-label="שמות מוסתרים" className="m-0 list-none overflow-hidden rounded-lg bg-surface p-0 shadow-card">

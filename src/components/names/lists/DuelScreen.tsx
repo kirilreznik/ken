@@ -8,6 +8,7 @@ import {
   deserialize,
   duelAnnouncement,
   duelSource,
+  duelTooFewText,
   isDone,
   pick,
   progress,
@@ -65,6 +66,8 @@ type DuelScreenProps = {
   /** "בחרנו בשם X" on the finished ranking (the decision moment). */
   onChoose: (name: string, from: DuelSource, rank: number) => void;
   chooseLabel: (name: string) => string;
+  /** "הוספת שם" on the too-few card: opens the add-name sheet over the duel. */
+  onAddName: () => void;
 };
 
 /**
@@ -72,7 +75,7 @@ type DuelScreenProps = {
  * with 2+ matches) until a ranked top 5. Every pick is saved to the duelState pref, so
  * "עצירה" or a reload resumes where it stopped.
  */
-export default function DuelScreen({ userId, from, ready, savedNames, matchNames, names, customNames, onSource, onBack, onChoose, chooseLabel }: DuelScreenProps) {
+export default function DuelScreen({ userId, from, ready, savedNames, matchNames, names, customNames, onSource, onBack, onChoose, chooseLabel, onAddName }: DuelScreenProps) {
   const saved = useSavedDuel(userId);
   const [seed, setSeed] = useState(randomSeed);
   // The duel in play once a pick is made: it keeps going even if the list changes meanwhile.
@@ -205,12 +208,17 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
           </div>
         ) : !duel || !p ? (
           <div className={emptyPanelClass("card")}>
-            <p className={emptyTitleClass("card")}>
-              {source === "matches" ? "לדו־קרב צריך לפחות שתי התאמות." : "לדו־קרב צריך לפחות שני שמות ברשימה."}
-            </p>
-            <Button variant="link" href={APP_PATH}>
-              לבחירת שמות
-            </Button>
+            <h2 className={emptyTitleClass("card")}>{duelTooFewText(source, list.length)}</h2>
+            <div className="flex flex-wrap justify-center gap-x-6">
+              <Button variant="link" href={APP_PATH}>
+                לבחירת שמות
+              </Button>
+              {source === "saved" && list.length === 1 ? (
+                <Button variant="link" onClick={onAddName}>
+                  הוספת שם
+                </Button>
+              ) : null}
+            </div>
           </div>
         ) : (
           <>
