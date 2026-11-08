@@ -85,9 +85,23 @@ describe("buildDeck", () => {
   });
 
   it("is 'empty-filter' when undecided names exist but none match", () => {
+    // No name starts with a final letter: nothing matches, decided or not.
+    const f = { ...defaultFilters(), letter: "ץ" };
+    expect(cards.some((c) => c.stats.name.startsWith("ץ"))).toBe(false);
+    expect(buildDeck(cards, none, f, seed1)).toEqual({ state: "empty-filter", cards: [] });
     const votes = new Map<string, Vote>(cards.filter((c) => c.stats.name !== "אלה").map((c) => [c.stats.name, "keep"]));
-    const deck = buildDeck(cards, votes, { ...defaultFilters(), letter: "ת" }, seed1);
-    expect(deck).toEqual({ state: "empty-filter", cards: [] });
+    expect(buildDeck(cards, votes, f, seed1)).toEqual({ state: "empty-filter", cards: [] });
+  });
+
+  it("is 'filter-done' when names match the filters but all of them are decided", () => {
+    const f = { ...defaultFilters(), letter: "א" };
+    const inFilter = cards.filter((c) => c.stats.name.startsWith("א")).map((c) => c.stats.name);
+    expect(inFilter.length).toBeGreaterThan(0);
+    const votes = new Map<string, Vote>(inFilter.map((n, i) => [n, i % 2 ? "hidden" : "keep"]));
+    expect(buildDeck(cards, votes, f, seed1)).toEqual({ state: "filter-done", cards: [] });
+    // One undecided name in the filter: the deck has a card again.
+    votes.delete(inFilter[0]);
+    expect(buildDeck(cards, votes, f, seed1).state).toBe("ok");
   });
 
   it("is 'all-decided' when every name has a vote, filters or not", () => {
@@ -147,5 +161,6 @@ describe("deckSlot", () => {
     expect(deckSlot({ ...base, hasCard: true, deckState: "ok" })).toBe("card");
     expect(deckSlot({ ...base, deckState: "all-decided" })).toBe("empty");
     expect(deckSlot({ ...base, deckState: "empty-filter" })).toBe("empty");
+    expect(deckSlot({ ...base, deckState: "filter-done" })).toBe("empty");
   });
 });

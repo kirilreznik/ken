@@ -3,9 +3,11 @@ import type { Vote } from "./types";
 
 /**
  * "ok": there are cards to swipe. "empty-filter": undecided names exist but none match the
- * filters. "all-decided": every name has a vote (keep, love, skip or hidden).
+ * filters. "filter-done": names match the filters, but every one of them has a vote, while
+ * undecided names are left outside them. "all-decided": every name has a vote (keep, love,
+ * skip or hidden).
  */
-export type DeckState = "ok" | "empty-filter" | "all-decided";
+export type DeckState = "ok" | "empty-filter" | "filter-done" | "all-decided";
 
 export interface Deck<T extends FilterableCard> {
   state: DeckState;
@@ -69,7 +71,13 @@ export function buildDeck<T extends FilterableCard>(
     if (i > 0) remaining.unshift(...remaining.splice(i, 1));
   }
   const state: DeckState =
-    remaining.length > 0 ? "ok" : undecided.length > 0 ? "empty-filter" : "all-decided";
+    remaining.length > 0
+      ? "ok"
+      : undecided.length === 0
+        ? "all-decided"
+        : cards.some((c) => matches(c, filters))
+          ? "filter-done"
+          : "empty-filter";
   return { state, cards: remaining };
 }
 

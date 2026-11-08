@@ -142,11 +142,12 @@ export default function SwipeScreen() {
     document.querySelector<HTMLElement>("main article[tabindex='0']")?.focus();
   }, [slot, retried]);
 
-  // The deck ran out (all decided) or the filters left nothing: once each time it happens.
+  // The deck ran out (all decided) or the filters left nothing (none match, or all of those
+  // are decided: both are the filter_empty event): once each time it happens.
   const deckState = deck?.state ?? null;
   useEffect(() => {
     if (deckState === "all-decided") track("deck_exhausted", { votes: votes.size });
-    else if (deckState === "empty-filter" && filters) {
+    else if ((deckState === "empty-filter" || deckState === "filter-done") && filters) {
       track("filter_empty", {
         sex: sexToken(filters.sex),
         popularity: filters.popularity !== null,

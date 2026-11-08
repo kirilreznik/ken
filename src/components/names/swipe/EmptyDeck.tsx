@@ -5,8 +5,11 @@ import NestCard from "@/components/names/NestCard";
 import { Button, openSheet, Glass, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
 
 type EmptyDeckProps = {
-  /** "empty-filter": undecided names exist but none match; "all-decided": every name has a vote. */
-  state: "empty-filter" | "all-decided";
+  /**
+   * "empty-filter": undecided names exist but none match; "filter-done": every name that
+   * matches is decided; "all-decided": every name has a vote.
+   */
+  state: "empty-filter" | "filter-done" | "all-decided";
   /** Saved names (loved first) for the all-decided list. */
   saved: readonly string[];
   /** The space has one member: offer the invite link. */
@@ -28,7 +31,7 @@ const SAVED_SHOWN = 10;
 
 /**
  * The deck's end states (FR-W14, the demo's .nd-empty): a glass panel where the card was.
- * The empty filter offers "איפוס סינון"; at the end of the deck it lists the saved names and
+ * The empty or finished filter offers "איפוס סינון"; at the end of the deck it lists the saved names and
  * links to "השמות שלי" and, when solo, to the invite screen.
  */
 export default function EmptyDeck({ state, saved, solo, onReset, takeFocus }: EmptyDeckProps) {
@@ -48,10 +51,10 @@ export default function EmptyDeck({ state, saved, solo, onReset, takeFocus }: Em
         aria-labelledby="names-empty-title"
         className={deckPanel}
       >
-        {state === "empty-filter" ? (
+        {state !== "all-decided" ? (
           <>
             <h2 id="names-empty-title" className={emptyTitleClass("glass")}>
-              אין שמות שמתאימים לסינון הזה
+              {state === "filter-done" ? "עברת על כל השמות בסינון הזה." : "אין שמות שמתאימים לסינון הזה"}
             </h2>
             {/* Two ways out: change one filter, or clear them all. */}
             <div className="flex flex-wrap justify-center gap-2">
