@@ -5,7 +5,6 @@ import { Button, IconButton, emptyPanelClass, emptyTitleClass } from "@/componen
 import { APP_PATH } from "@/lib/names/auth";
 import {
   currentPair,
-  deserialize,
   duelAnnouncement,
   duelSource,
   duelTooFewText,
@@ -14,9 +13,13 @@ import {
   progress,
   ranking,
   resumeOrStart,
+  readDuelSaves,
   roundText,
+  savedDuel,
   sourceOf,
   start,
+  withDuel,
+  type DuelSaves,
   type DuelSource,
   type DuelState,
 } from "@/lib/names/duel";
@@ -36,14 +39,14 @@ function Icon({ size = 20, children, className }: { size?: number; children: Rea
 
 const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
 
-/** The saved duel (the duelState pref) as a stable JSON snapshot. */
-function useSavedDuel(userId: string | null): DuelState | null {
+/** The saved duels (the duelState pref, one per source) as a stable JSON snapshot. */
+function useSavedDuels(userId: string | null): DuelSaves | null {
   const json = useSyncExternalStore(
     subscribePrefs,
     () => (userId ? JSON.stringify(getPref(userId, "duelState")) : "null"),
     () => "null",
   );
-  return useMemo(() => deserialize(json), [json]);
+  return useMemo(() => readDuelSaves(JSON.parse(json)), [json]);
 }
 
 const SOURCES: { id: DuelSource; label: string }[] = [
@@ -72,11 +75,11 @@ type DuelScreenProps = {
 
 /**
  * FR-W21 "דו־קרב" (board 6, E16 FR-13): two names at a time from "שמרתי" (or from "התאמות"
- * with 2+ matches) until a ranked top 5. Every pick is saved to the duelState pref, so
- * "עצירה" or a reload resumes where it stopped.
+ * with 2+ matches) until a ranked top 5. Every pick is saved to the duelState pref, one duel per
+ * source, so "עצירה", a reload or a switch to the other list and back resumes where it stopped.
  */
 export default function DuelScreen({ userId, from, ready, savedNames, matchNames, names, customNames, onSource, onBack, onChoose, chooseLabel, onAddName }: DuelScreenProps) {
-  const saved = useSavedDuel(userId);
+  const saves = useSavedDuels(userId);
   const [seed, setSeed] = useState(randomSeed);
   // The duel in play once a pick is made: it keeps going even if the list changes meanwhile.
   const [pinned, setPinned] = useState<DuelState | null>(null);
@@ -84,7 +87,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
   const headingRef = useRef<HTMLHeadingElement>(null);
   const resultRef = useRef<HTMLHeadingElement>(null);
 
-  const source = duelSource(from, saved, savedNames.length, matchNames.length);
+  const source = duelSource(from, savedDuel(saves), savedNames.length, matchNames.length);
   const list = source === "matches" ? matchNames : savedNames;
   const canToggle = matchNames.length >= 2;
 
@@ -92,7 +95,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
     pinned && sourceOf(pinned) === source
       ? { state: pinned, restarted: false }
       : list.length >= 2
-        ? resumeOrStart(saved, source, list, seed)
+        ? resumeOrStart(savedDuel(saves, source), source, list, seed)
         : null;
   const duel = resolved?.state ?? null;
   const done = duel ? isDone(duel) : false;
@@ -104,7 +107,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
 
   const save = (state: DuelState) => {
     setPinned(state);
-    if (userId) setPref(userId, "duelState", state);
+    if (userId) setPref(userId, "duelState", withDuel(getPref(userId, "duelState"), state));
   };
 
   const choose = (name: string) => {

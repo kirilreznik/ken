@@ -92,14 +92,14 @@ describe("get/set round trip", () => {
     setPref(U, "background", "own");
     setPref(U, "introSeen", true);
     setPref(U, "seenMatches", ["נועם", "יעל"]);
-    setPref(U, "duelState", duel);
+    setPref(U, "duelState", { last: "saved", saved: duel });
     setPref(U, "installHintDismissed", true);
     expect(getPref(U, "surname")).toBe("כהן");
     expect(getPref(U, "filters")).toEqual(filters);
     expect(getPref(U, "background")).toBe("own");
     expect(getPref(U, "introSeen")).toBe(true);
     expect(getPref(U, "seenMatches")).toEqual(["נועם", "יעל"]);
-    expect(getPref(U, "duelState")).toEqual(duel);
+    expect(getPref(U, "duelState")).toEqual({ last: "saved", saved: duel });
     expect(getPref(U, "installHintDismissed")).toBe(true);
   });
 
@@ -161,6 +161,14 @@ describe("safe parse", () => {
     expect(getPref(U, "duelState")).toBeNull();
     raw("duelState", "null");
     expect(getPref(U, "duelState")).toBeNull();
+    raw("duelState", JSON.stringify({ last: "saved", saved: { version: 2 } }));
+    expect(getPref(U, "duelState")).toBeNull();
+  });
+
+  it("reads a single saved duel as the duel of its source", () => {
+    const duel = { ...start(["נועם", "יעל", "אריאל"], 7), source: "matches" as const };
+    raw("duelState", JSON.stringify(duel));
+    expect(getPref(U, "duelState")).toEqual({ last: "matches", matches: duel });
   });
 });
 
