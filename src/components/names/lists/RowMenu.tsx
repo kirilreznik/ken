@@ -24,7 +24,8 @@ function Icon({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * A "שמרתי" row's menu (FR-W18): "הסרה מהרשימה" and "לא להציג יותר". Same behavior as the
+ * A "שמרתי" row's menu (FR-W18): "הסרה מהרשימה" and "לא להציג יותר" (not for a name the user
+ * added: it was never in the deck, so there's nothing to stop showing). Same behavior as the
  * skip menu: focus goes to the first item, arrows move, Escape returns focus, Tab or a tap
  * outside close it. It opens under its button, or above it when it wouldn't fit below (a row near the
  * bottom of the screen), and wraps a long label instead of running past the page's edge.

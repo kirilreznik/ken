@@ -582,7 +582,7 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
                 chooseLabel={chooseLabel(row.name)}
                 onChoose={() => onChoose(row)}
                 onRemove={() => leave(i, row.name, "remove")}
-                onHide={() => leave(i, row.name, "hide")}
+                onHide={row.custom ? undefined : () => leave(i, row.name, "hide")}
               />
             </li>
           );
