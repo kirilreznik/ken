@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { RedirectIfSignedIn } from "@/components/names/AuthGuard";
 import ClosedNotice from "@/components/names/ClosedNotice";
 import ExpiredNotice from "@/components/names/ExpiredNotice";
@@ -8,6 +7,7 @@ import WelcomeActions from "@/components/names/WelcomeActions";
 import AuthLayout from "@/components/names/auth/AuthLayout";
 import LegalLine from "@/components/names/auth/LegalLine";
 import StoredSessionHint from "@/components/names/auth/StoredSessionHint";
+import Wordmark from "@/components/names/auth/Wordmark";
 
 const TITLE = "בחירת שם";
 const PITCH = "שם אחד בכל פעם, עם מספרים אמיתיים מהלמ\"ס. לבד או ביחד.";
@@ -30,7 +30,7 @@ export default function WelcomePage() {
           lead={PITCH}
           hero={
             <>
-              <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />
+              <Wordmark />
               <PreviewCard />
             </>
           }

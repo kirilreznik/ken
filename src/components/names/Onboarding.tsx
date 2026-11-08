@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
 import PanelNote, { CAPTION_ERROR, ErrorMark } from "@/components/names/auth/PanelNote";
+import Wordmark from "@/components/names/auth/Wordmark";
 import { Button, checkboxClass, inputClass } from "@/components/names/ui";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { GENERIC_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
@@ -28,7 +28,7 @@ const OFFLINE_SAVE_MESSAGE = "אין חיבור לאינטרנט. אפשר לש�
 const ADULTS_ONLY = "השירות מיועד מגיל 18 ומעלה.";
 const MISSING_HINT = "אפשר להתחיל אחרי שממלאים שם ומאשרים את שני הסעיפים הראשונים.";
 
-const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
+const wordmark = <Wordmark />;
 
 const checkboxRow = "flex min-h-11 cursor-pointer items-start gap-3 py-1 text-body text-ink";
 const checkbox = `mt-0.5 ${checkboxClass()}`;
