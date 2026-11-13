@@ -265,7 +265,9 @@ export function duelTooFewText(source: DuelSource, count: number): string {
 }
 
 export function roundText(p: DuelProgress): string {
-  return `סיבוב ${formatCount(p.round)} מתוך ${formatCount(p.total)}`;
+  // The total is the most rounds left, so it's an estimate until the last one (NP-165).
+  const about = p.round < p.total ? "כ־" : "";
+  return `סיבוב ${formatCount(p.round)} מתוך ${about}${formatCount(p.total)}`;
 }
 
 /** What a screen reader hears after a pick: the new round and its two names, or the end. */

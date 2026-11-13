@@ -65,10 +65,10 @@ The `lenses` column lists the first run's finding IDs. A finding `<LENS>-<G>-NN`
 | NP-097 | Duel stop toast doesn't cover the result's link | G3 | duel → stop → reopen | P3 | XS | NP-UX-008 | lists/DuelScreen.tsx | Dismiss the toast when the duel reopens | Stop then reopen within 4 s: link tappable | US-NP097 | todo |
 | NP-163 | Duel has its own page title | G3 | duel | P3 | XS | A11Y-G3-04 | lists/DuelScreen.tsx | Set document.title while mounted, restore on unmount | document.title | US-NP163 | todo |
 | NP-164 | Duel card details read once | G3 | duel rounds | P3 | XS | A11Y-G3-07 | lists/DuelScreen.tsx | hidden instead of sr-only on the description span | ariaSnapshot | US-NP164 | todo |
-| NP-165 | Duel counter: no shift, gone when done | G3 | duel | P3 | XS | IMP-C-G3-11 | lists/DuelScreen.tsx | Hide when done; estimate while the total can change | Shots | US-NP165 | todo |
-| NP-166 | Duel's top-five chips aren't toggles | G3 | duel mid-way | P3 | XS | IMP-C-G3-13 | lists/DuelScreen.tsx | hintChipClass look | Shot | US-NP166 | todo |
-| NP-168 | Duel blob only behind cards | G3 | duel few, loading | P3 | XS | ELEV-G3-03 | lists/DuelScreen.tsx | Render the blob only with a pair or result | Shots | US-NP168 | todo |
-| NP-161 | Duel: a double tap records one pick | G3 | duel rounds | P3 | S | IMP-A-G3-03 | lists/DuelScreen.tsx | Ignore a pick within ~300 ms or key by pair | Double tap: one round advances | US-NP161 | todo |
+| NP-165 | Duel counter: no shift, gone when done | G3 | duel | P3 | XS | IMP-C-G3-11 | lists/DuelScreen.tsx | Hide when done; estimate while the total can change | Shots | US-NP165 | done |
+| NP-166 | Duel's top-five chips aren't toggles | G3 | duel mid-way | P3 | XS | IMP-C-G3-13 | lists/DuelScreen.tsx | hintChipClass look | Shot | US-NP166 | done |
+| NP-168 | Duel blob only behind cards | G3 | duel few, loading | P3 | XS | ELEV-G3-03 | lists/DuelScreen.tsx | Render the blob only with a pair or result | Shots | US-NP168 | done |
+| NP-161 | Duel: a double tap records one pick | G3 | duel rounds | P3 | S | IMP-A-G3-03 | lists/DuelScreen.tsx | Ignore a pick within ~300 ms or key by pair | Double tap: one round advances | US-NP161 | done |
 | NP-167 | Duel result: #1 stands out, names open their sheet | G3 | duel done | P3 | S | IMP-C-G3-14 | lists/DuelScreen.tsx | RowName buttons; #1 in text-section; tighter gaps | Shot; tap opens the sheet | US-NP167 | todo |
 | NP-169 | Duel in landscape shows both names | G3 | duel landscape | P3 | S | PRO-G3-03 | lists/DuelScreen.tsx | Two columns under a short-height query | Simulator landscape shot | US-NP169 | todo |
 | NP-006 | Fields are read-only while their request is in flight | G1 | sign-in email and code steps | P3 | XS | INT-G1-02 | EmailSignIn.tsx, auth/CodeInput.tsx | readOnly={busy} on the email input and the code input | Slow mocked send: typing in the field does nothing until the answer | US-NP006 | todo |

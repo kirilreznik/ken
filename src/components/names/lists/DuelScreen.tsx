@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
 import { Button, IconButton, emptyPanelClass, emptyTitleClass, linkClass, segmentClass, segmentGroupClass, useToastLift } from "@/components/names/ui";
+import { hintChipClass } from "@/components/names/ui/classes";
 import { DuelSkeleton } from "./ListSkeleton";
 import { APP_PATH } from "@/lib/names/auth";
 import { formatCount } from "@/lib/names/card";
@@ -114,8 +115,11 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
     if (userId) setPref(userId, "duelState", withDuel(getPref(userId, "duelState"), state));
   };
 
-  const choose = (name: string) => {
-    if (!duel) return;
+  // A double tap on a card records one pick, not one on the next pair it never showed (NP-161).
+  const lastPick = useRef(0);
+  const choose = (name: string, at: number) => {
+    if (!duel || at - lastPick.current < 300) return;
+    lastPick.current = at;
     const next = pick(duel, name);
     save(next);
     if (duel.picks === 0) track("duel_started", { from: source, size: duel.names.length });
@@ -162,11 +166,14 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
 
   return (
     <div data-names-bg="none" className="relative isolate min-h-dvh bg-canvas">
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
-          <div className="absolute top-65 inset-x-0 mx-auto size-70 rounded-pill bg-peach opacity-20 blur-(--nest-blob-blur)" />
+      {/* The glow lights the cards or the ranking only; the few-names and loading states stay plain (NP-168). */}
+      {ready && duel && p ? (
+        <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+          <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
+            <div className="absolute top-65 inset-x-0 mx-auto size-70 rounded-pill bg-peach opacity-20 blur-(--nest-blob-blur)" />
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col gap-5 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
@@ -178,7 +185,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
           <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title outline-none">
             דו־קרב
           </h1>
-          {p && ready ? <span className="text-caption font-bold text-ink-soft tabular-nums">{roundText(p)}</span> : null}
+          {p && ready && !done ? <span className="text-caption font-bold text-ink-soft tabular-nums">{roundText(p)}</span> : null}
         </header>
 
         {canToggle && ready ? (
@@ -264,7 +271,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                           type="button"
                           data-duel-pick={i === 0 ? "a" : "b"}
                           aria-describedby={m ? `duel-meta-${i}` : undefined}
-                          onClick={() => choose(name)}
+                          onClick={(event) => choose(name, event.timeStamp)}
                           className="@container flex min-h-[180px] flex-col items-center justify-center gap-1.5 rounded-xl bg-surface px-4 text-ink shadow-hero"
                         >
                           {/* A narrow card (Page Zoom 150 %) steps the name down a size, and a name too long for a line breaks anywhere (NP-BUG-012). */}
@@ -290,7 +297,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                   <h2 className="m-0 text-person font-bold">החמישייה עד עכשיו</h2>
                   <ol className="m-0 flex list-none flex-wrap gap-2 p-0">
                     {top.map((name, i) => (
-                      <li key={name} className="max-w-full rounded-pill bg-ink px-3 py-1.5 text-caption font-bold wrap-anywhere text-surface">
+                      <li key={name} className={`max-w-full wrap-anywhere ${hintChipClass()}`}>
                         {i + 1}. {name}
                       </li>
                     ))}
