@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createStore, delMany, get, keys, set, type UseStore } from "idb-keyval";
+import { formatCount } from "./card";
 import { getSupabase } from "./supabase";
 
 /**
@@ -249,7 +250,7 @@ export function createMatchesStore({
 
 /** "{n} שמרו" for a match kept by 3 or more (FR-W19); null for two, the usual case. */
 export function keptByText(match: Match): string | null {
-  return match.keptByCount >= 3 ? `${match.keptByCount} שמרו` : null;
+  return match.keptByCount >= 3 ? `${formatCount(match.keptByCount)} שמרו` : null;
 }
 
 /** The line under the name on the match sheet (board 4). */

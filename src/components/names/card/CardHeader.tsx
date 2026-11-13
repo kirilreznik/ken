@@ -31,7 +31,7 @@ export default function CardHeader({ name, niqqud, sexTag, position, total, surn
         <span className={tagClass()}>{sexTag}</span>
         <div className="flex items-center gap-1">
           {position != null && total != null && (
-            <span className="text-caption text-ink-soft in-data-[names-bg=none]:text-stone">
+            <span className="text-caption text-ink-soft tabular-nums in-data-[names-bg=none]:text-stone">
               {positionText(position, total)}
             </span>
           )}

@@ -1,3 +1,4 @@
+import { formatCount } from "./card";
 import { hasAnyTheme, type ThemeId } from "./themes";
 import type { CardDerived, NameStats, PopularityBand, SexTag, TrendWord } from "./types";
 
@@ -141,5 +142,5 @@ export function clampRange(min: number, max: number): LetterRange {
 
 /** The filters sheet's apply button (FR-W16). */
 export function applyLabel(n: number): string {
-  return n === 1 ? "הצגת שם אחד" : `הצגת ${n} שמות`;
+  return n === 1 ? "הצגת שם אחד" : `הצגת ${formatCount(n)} שמות`;
 }

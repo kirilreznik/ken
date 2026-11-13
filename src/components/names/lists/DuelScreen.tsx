@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type Keyboa
 import { Button, IconButton, emptyPanelClass, emptyTitleClass, linkClass, segmentClass, segmentGroupClass, useToastLift } from "@/components/names/ui";
 import { DuelSkeleton } from "./ListSkeleton";
 import { APP_PATH } from "@/lib/names/auth";
+import { formatCount } from "@/lib/names/card";
 import {
   currentPair,
   duelAnnouncement,
@@ -177,7 +178,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
           <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title outline-none">
             דו־קרב
           </h1>
-          {p && ready ? <span className="text-caption font-bold text-ink-soft">{roundText(p)}</span> : null}
+          {p && ready ? <span className="text-caption font-bold text-ink-soft tabular-nums">{roundText(p)}</span> : null}
         </header>
 
         {canToggle && ready ? (
@@ -200,7 +201,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                     onKeyDown={onToggleKey}
                     className={segmentClass(checked)}
                   >
-                    {s.id === "saved" ? `${s.label} · ${savedNames.length}` : `${s.label} · ${matchNames.length}`}
+                    {s.id === "saved" ? `${s.label} ·\u00a0${formatCount(savedNames.length)}` : `${s.label} ·\u00a0${formatCount(matchNames.length)}`}
                   </button>
                 );
               })}

@@ -2,6 +2,8 @@
 // queued count); online it only shows when queued votes are stuck, so a normal flush
 // (a few hundred ms after each swipe) doesn't flash it.
 
+import { formatCount } from "./card";
+
 /** How long queued votes wait online before the footer mentions them. */
 export const SYNC_STUCK_MS = 5000;
 
@@ -9,7 +11,7 @@ export const OFFLINE_TEXT = "אין חיבור";
 
 /** "בחירה אחת ממתינה לסנכרון" / "3 בחירות ממתינות לסנכרון". */
 export function pendingText(pending: number): string {
-  return pending === 1 ? "בחירה אחת ממתינה לסנכרון" : `${pending} בחירות ממתינות לסנכרון`;
+  return pending === 1 ? "בחירה אחת ממתינה לסנכרון" : `${formatCount(pending)} בחירות ממתינות לסנכרון`;
 }
 
 /** NP-073: online, nothing cached and the votes read failed; the store retries every 30 s. */

@@ -6,6 +6,7 @@ import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import ThemeIcon from "@/components/names/ThemeIcon";
 import { BottomSheet, Button, FADE_PRESS, ROW_PRESS, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
+import { formatCount } from "@/lib/names/card";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
   RANGE_MAX,
@@ -242,11 +243,11 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       }
       footer={
         <>
-          <Button className="w-full" onClick={apply} disabled={n === null} aria-disabled={n === 0 || undefined}>
+          <Button className="w-full tabular-nums" onClick={apply} disabled={n === null} aria-disabled={n === 0 || undefined}>
             {n === null ? "הצגת שמות" : n === 0 ? "אין שמות שמתאימים" : applyLabel(n)}
           </Button>
           <p role="status" className="sr-only">
-            {n === null ? "" : `${n} שמות מתאימים`}
+            {n === null ? "" : n === 1 ? "שם אחד מתאים" : `${formatCount(n)} שמות מתאימים`}
           </p>
         </>
       }

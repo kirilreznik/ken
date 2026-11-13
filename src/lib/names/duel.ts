@@ -1,3 +1,4 @@
+import { formatCount } from "./card";
 import { mulberry32 } from "./deck";
 
 /** The duel ends in a ranked list of at most this many names (E16 FR-13). */
@@ -264,7 +265,7 @@ export function duelTooFewText(source: DuelSource, count: number): string {
 }
 
 export function roundText(p: DuelProgress): string {
-  return `סיבוב ${p.round} מתוך ${p.total}`;
+  return `סיבוב ${formatCount(p.round)} מתוך ${formatCount(p.total)}`;
 }
 
 /** What a screen reader hears after a pick: the new round and its two names, or the end. */

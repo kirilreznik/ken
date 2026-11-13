@@ -1,3 +1,4 @@
+import { formatCount } from "./card";
 import type { Card, CardDerived } from "./types";
 
 /** The intro ends with a full stop; drop it so the label doesn't read ".,". */
@@ -71,5 +72,5 @@ export function sheetVoteText(kind: Exclude<StatusKind, "undo">, name: string): 
 /** aria-label of the "השמות שלי" pill in the swipe header (FR-W10). */
 export function savedLabel(count: number | null): string {
   // null: the votes couldn't be read (NP-073), so there is no count to say.
-  return count === null ? "השמות שלי" : `השמות שלי: ${count} נשמרו`;
+  return count === null ? "השמות שלי" : count === 1 ? "השמות שלי: שם אחד נשמר" : `השמות שלי: ${formatCount(count)} נשמרו`;
 }

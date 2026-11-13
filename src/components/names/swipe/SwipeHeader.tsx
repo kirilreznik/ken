@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { IconButton, dotClass, openSheet } from "@/components/names/ui";
 import { PRESS } from "@/components/names/ui/classes";
 import { savedLabel } from "@/lib/names/a11y";
+import { formatCount } from "@/lib/names/card";
 
 function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
   return (
@@ -67,7 +68,7 @@ export default function SwipeHeader({ saved, filtered = false }: { saved: number
         <Icon size={18}>
           <path d="M6 4h12v16l-6-4-6 4z" />
         </Icon>
-        {saved === null ? null : <bdi>{saved}</bdi>}
+        {saved === null ? null : <bdi className="tabular-nums">{formatCount(saved)}</bdi>}
       </Link>
     </header>
   );

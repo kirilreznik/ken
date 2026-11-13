@@ -22,6 +22,7 @@ import type { Decision } from "@/components/names/DecisionButtons";
 import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
+import { formatCount } from "@/lib/names/card";
 import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
 import { HIDDEN_LINK, addedText, listsTab, rowActionText, rowMeta, rowMetaText, rowUndoText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
 import { MATCHES_LOAD_FAILED_TITLE } from "@/lib/names/offline";
@@ -85,8 +86,8 @@ export default function ListsScreen() {
   const surname = surnameJson ? (JSON.parse(surnameJson) as string) : "";
 
   const tabs: { id: ListsTab; label: string }[] = [
-    { id: "saved", label: ready && !loadFailed ? `שמרתי · ${rows.length}` : "שמרתי" },
-    { id: "matches", label: space.isShared && matches?.ready && matches.fetchedAt !== null ? `התאמות · ${matches.matches.length}` : "התאמות" },
+    { id: "saved", label: ready && !loadFailed ? `שמרתי ·\u00a0${formatCount(rows.length)}` : "שמרתי" },
+    { id: "matches", label: space.isShared && matches?.ready && matches.fetchedAt !== null ? `התאמות ·\u00a0${formatCount(matches.matches.length)}` : "התאמות" },
     { id: "duel", label: "דו־קרב" },
   ];
 
