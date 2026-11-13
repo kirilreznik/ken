@@ -52,6 +52,8 @@ type BottomSheetProps = SheetHeading & {
 
 // Dragging the handle down this far (px) closes the sheet (or changes a tall sheet's height).
 const DRAG_CLOSE = DETENT_DRAG;
+// A pause this long (ms) between the last move and letting go means it wasn't a flick.
+const FLICK_HOLD_MS = 100;
 // Full height of a tall sheet: the screen minus the top safe area.
 const FULL_HEIGHT = "calc(100dvh - env(safe-area-inset-top))";
 // 28 px under the content (board 3), more on phones with a home indicator.
@@ -68,7 +70,7 @@ const SELECT_GUARD_MS = 600;
 // A tall sheet settling after a handle drag (new detent or snap back), as the slide-in eases.
 const SETTLE = { duration: DURATION_FAST, easing: EASE_OUT } as const;
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-// PRD 3.2.4: from 768 px a tall sheet is a centered panel (max 480 px wide, 90vh) without detents.
+// PRD 3.2.4: from 768 px a tall sheet is a centered panel (max 480 px wide, 90dvh) without detents.
 const DESKTOP = "(min-width: 768px)";
 const desktop = () => window.matchMedia(DESKTOP).matches;
 /** A new `key` in an open sheet starts it over: content at the top, focus on [data-autofocus]. */
@@ -121,7 +123,8 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
   useEffect(dismissScreenToast, []);
   useContentReset(panel, scroller, contentKey);
   // `detents`: a tall sheet on a phone; on desktop its handle only drags down to close.
-  const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean; detents: boolean } | null>(null);
+  // `at`/`velocity`: the last move's time and the drag's speed in px/ms (down > 0), for flicks (NP-106).
+  const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean; detents: boolean; at: number; velocity: number } | null>(null);
   // Down: the panel moves down by `offset` px. Up (tall sheets only): it grows to `height` px.
   const [offset, setOffset] = useState(0);
   const [height, setHeight] = useState<number | null>(null);
@@ -179,13 +182,19 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     if (event.button !== 0) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     const startHeight = panel.current?.getBoundingClientRect().height ?? 0;
-    drag.current = { startY: event.clientY, startHeight, dy: 0, moved: false, detents: tall && !desktop() };
+    drag.current = { startY: event.clientY, startHeight, dy: 0, moved: false, detents: tall && !desktop(), at: event.timeStamp, velocity: 0 };
   }
 
   function onPointerMove(event: PointerEvent<HTMLButtonElement>) {
     if (!drag.current) return;
     const raw = event.clientY - drag.current.startY;
     const dy = drag.current.detents ? raw : Math.max(0, raw);
+    const elapsed = event.timeStamp - drag.current.at;
+    if (elapsed > 0) {
+      // Smoothed so one jittery sample doesn't make or break a flick.
+      drag.current.velocity = 0.2 * drag.current.velocity + (0.8 * (dy - drag.current.dy)) / elapsed;
+      drag.current.at = event.timeStamp;
+    }
     drag.current.dy = dy;
     // Raw: a drag up on a sheet without detents doesn't move it, but it isn't a tap either.
     if (Math.abs(raw) > 6) drag.current.moved = true;
@@ -193,10 +202,16 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     setHeight(dy < 0 ? drag.current.startHeight - dy : null);
   }
 
-  function onPointerEnd() {
+  function onPointerEnd(event: PointerEvent<HTMLButtonElement>) {
     if (!drag.current) return;
-    const { dy, moved, detents: detented } = drag.current;
-    const next = detented ? detentAfterDrag(detent, dy, DRAG_CLOSE) : dy >= DRAG_CLOSE ? "close" : detent;
+    const { dy, moved, detents: detented, at } = drag.current;
+    // A hold before letting go isn't a flick.
+    const velocity = event.timeStamp - at > FLICK_HOLD_MS ? 0 : drag.current.velocity;
+    const next = detented
+      ? detentAfterDrag(detent, dy, DRAG_CLOSE, velocity)
+      : detentAfterDrag("70", dy, DRAG_CLOSE, velocity) === "close"
+        ? "close"
+        : detent;
     if (next === "close") close();
     else {
       if (tall && moved && panel.current) {
@@ -209,7 +224,20 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
       setHeight(null);
     }
     // A drag isn't a tap: keep `moved` so the click that follows pointerup is ignored.
-    drag.current = moved ? { startY: 0, startHeight: 0, dy: 0, moved, detents: detented } : null;
+    drag.current = moved ? { startY: 0, startHeight: 0, dy: 0, moved, detents: detented, at: 0, velocity: 0 } : null;
+  }
+
+  // The browser took the pointer (scroll, system gesture): the sheet goes back to where it was, never closes (NP-105).
+  function onPointerCancel() {
+    if (!drag.current) return;
+    const { dy, moved } = drag.current;
+    if (tall && moved && panel.current) {
+      settleFrom.current = { height: panel.current.getBoundingClientRect().height, offset: Math.max(0, dy) };
+      setSettles((count) => count + 1);
+    }
+    setOffset(0);
+    setHeight(null);
+    drag.current = null;
   }
 
   function onHandleClick() {
@@ -259,7 +287,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerEnd}
-          onPointerCancel={onPointerEnd}
+          onPointerCancel={onPointerCancel}
           onClick={onHandleClick}
           className="relative z-10 mx-auto -mb-1.75 flex h-11 w-24 shrink-0 cursor-grab touch-none justify-center rounded-pill pt-3 active:cursor-grabbing"
         >
@@ -300,8 +328,8 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
 
 function heightClass(tall: boolean, detent: Detent): string {
   if (!tall) return "max-h-[calc(100dvh-2.5rem)]";
-  // Desktop: a centered panel with all corners round, as high as its content up to 90vh.
-  const panel = "md:h-auto md:max-h-[90vh] md:max-w-[480px] md:rounded-xl";
+  // Desktop: a centered panel with all corners round, as high as its content up to 90dvh (NP-050).
+  const panel = "md:h-auto md:max-h-[90dvh] md:max-w-[480px] md:rounded-xl";
   return detent === "full"
     ? `h-[calc(100dvh-env(safe-area-inset-top))] ${panel}`
     : `max-h-[70dvh] ${panel}`;
