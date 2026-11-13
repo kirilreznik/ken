@@ -42,11 +42,18 @@ export const NAMES_EVENTS = {
   custom_name_added: "A name was added by hand.",
   report_sent: "A mistake in a name was reported.",
   about_opened: "The about sheet of a name opened.",
-  detail_opened: "The name sheet opened. {source: 'tap' | 'button' | 'key' | 'list' | 'similar' | 'link'}",
+  detail_opened: "The name sheet opened. {source: 'tap' | 'button' | 'key' | 'list' | 'similar' | 'link' | 'search' | 'twins'}",
   detail_closed: "The name sheet closed. {seconds, full: whether it was dragged to full height}",
   detail_section_seen: "A section of the name sheet scrolled into view, once per open. {section: 'numbers' | 'similar' | 'story'}",
   detail_similar_tap: "A similar name was opened from the name sheet.",
   detail_surname_add: "The name sheet's 'add a surname' link was used.",
+  search_open: "The search sheet opened.",
+  search_result_open: "A search result was opened. {rank, length: characters typed}",
+  search_no_result: "A search found nothing (after a pause in typing). {length, latin}",
+  latin_copied: "A Latin spelling was copied from the name sheet. {kind: 'he' | 'intl'}",
+  relative_applied: "The filters were applied with 'על שם קרוב משפחה'. {letter, meaning, older: found in the Yiddish/Ladino table, names}",
+  twins_changed: "The 'מצפים לתאומים' switch changed in settings. {twins}",
+  twin_opened: "A twin suggestion was opened from the name sheet.",
   background_changed: "The background was changed. {background}",
   install_prompt: "The install offer was used. {mode, outcome}",
   opt_in_changed: "The launch-updates switch changed in settings. {opt_in}",
@@ -63,6 +70,8 @@ export const NAMES_EVENTS = {
   space_leave_failed: "Leaving a shared space failed. {reason}",
   survey_prompt: "The beta survey prompt on the swipe screen. {action: 'shown' | 'open' | 'dismiss'}",
   survey_submitted: "The beta survey was sent; the closed answers ride along. {disappointed, stage, nest_app, audience, useful, sessions, votes}",
+  guest_prompt: "A sign-in card in a guest's deck (every 20 decisions) or the wall at 100. {kind: 'nudge' | 'wall', action: 'shown' | 'signin' | 'later', votes}",
+  guest_votes_imported: "A guest signed in and their device votes moved into the account. {votes}",
   // account_deleted is written by the database when an account goes (its own events go with it).
 } as const;
 

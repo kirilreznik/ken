@@ -1,0 +1,93 @@
+/* Base styles for the public name pages (/baby-names). Imported once, from
+ * src/app/baby-names/layout.tsx, after src/styles/nest-tokens.css. Next doesn't unload
+ * stylesheets on client navigation, so every rule is scoped to the .nest-seo wrapper.
+ * Colors, sizes and type come from the Nest tokens; nothing is hard-coded here. */
+
+/* Same Heebo files and ranges as /names and the landing. */
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 500 800;
+  font-display: swap;
+  src: url("/landing/heebo-hebrew.woff2") format("woff2");
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+
+@font-face {
+  font-family: "Heebo";
+  font-style: normal;
+  font-weight: 500 800;
+  font-display: swap;
+  src: url("/landing/heebo-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+
+@layer base {
+  body:has(.nest-seo) {
+    background-color: var(--nest-canvas);
+  }
+
+  .nest-seo {
+    background-color: var(--nest-canvas);
+    color: var(--nest-ink);
+    font-family: var(--nest-font-sans);
+    font-size: var(--nest-text-intro);
+    line-height: var(--nest-text-intro-line-height);
+    font-weight: var(--nest-text-body-weight);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .nest-seo :focus-visible {
+    outline: 2px solid var(--nest-ink);
+    outline-offset: 2px;
+  }
+
+  .nest-seo ::selection {
+    background-color: var(--nest-peach-soft);
+    color: var(--nest-ink);
+  }
+
+  .nest-seo summary {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /* The frosted panel of the brand, solid where backdrop-filter is missing or transparency is reduced. */
+  .nest-seo .seo-glass {
+    background-color: color-mix(in srgb, var(--nest-surface) 78%, transparent);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    backdrop-filter: blur(18px) saturate(1.4);
+    border: 1px solid var(--nest-line);
+    box-shadow: var(--nest-shadow-card);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nest-seo .seo-glass {
+      background-color: var(--nest-surface);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .nest-seo .seo-glass {
+      background-color: var(--nest-surface);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+
+  /* The warm wash behind the hero: peach into canvas, decorative only. */
+  .nest-seo .seo-hero {
+    background:
+      radial-gradient(120% 90% at 85% 0%, var(--nest-peach-soft) 0%, transparent 60%),
+      radial-gradient(90% 70% at 0% 30%, var(--nest-peach-pale) 0%, transparent 70%),
+      var(--nest-canvas);
+  }
+
+  /* Chart lines keep their width when the SVG stretches to the container. */
+  .nest-seo .seo-chart :where(line, polyline) {
+    vector-effect: non-scaling-stroke;
+  }
+}

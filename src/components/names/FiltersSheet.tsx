@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
+import RelativeSection from "@/components/names/RelativeSection";
 import ThemeIcon from "@/components/names/ThemeIcon";
 import { BottomSheet, Button, ChevronIcon, FADE_PRESS, ROW_PRESS, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
@@ -22,6 +23,7 @@ import {
 } from "@/lib/names/filters";
 import { HIDE_HINT } from "@/lib/names/lists";
 import { getPref, setPref } from "@/lib/names/prefs";
+import { matchRelative } from "@/lib/names/relative";
 import { track } from "@/lib/names/track";
 import { THEME_IDS, THEME_LABELS, type ThemeId } from "@/lib/names/themes";
 import type { Card, PopularityBand, SexTag, TrendWord, Vote } from "@/lib/names/types";
@@ -142,7 +144,7 @@ function ThemeGroup({ value, onChange }: { value: ThemeId[] | null; onChange: (v
 type Picker = "letter" | "length" | null;
 
 /**
- * "סינון" (board 3, FR-W16): sex chips, theme chips (several at once), popularity and trend
+ * "סינון" (board 3, FR-W16): "על שם קרוב משפחה" (RelativeSection), sex chips, theme chips (several at once), popularity and trend
  * chips, first letter and length (or a custom letter range)
  * pickers, "שמות שהסתרתי ({n})" and the apply button with the live count. Changes are a draft
  * until "הצגת {n} שמות" saves them to the device pref; closing the sheet another way drops them.
@@ -164,6 +166,8 @@ function FiltersGate(props: FiltersSheetProps) {
 function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   const [draft, setDraft] = useState<Filters>(() => (userId ? getPref(userId, "filters") : defaultFilters()));
   const [picker, setPicker] = useState<Picker>(null);
+  // "איפוס" starts the relative's field over too.
+  const [resets, setResets] = useState(0);
   const pickerId = useId();
   const hiddenHintId = useId();
 
@@ -182,6 +186,10 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
     if (n === 0) return;
     if (userId) {
       if (getPref(userId, "filters").sex !== draft.sex) track("filter_sex", { sex: sexToken(draft.sex) });
+      if (draft.relative) {
+        const older = matchRelative(draft.relative.name, cards ?? []).older !== null;
+        track("relative_applied", { letter: draft.relative.letter, meaning: draft.relative.meaning, older, names: draft.relative.names.length });
+      }
       setPref(userId, "filters", draft);
     }
     closeSheet("filters");
@@ -190,6 +198,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   function reset() {
     setDraft(defaultFilters());
     setPicker(null);
+    setResets((n) => n + 1);
   }
 
   const customLength = draft.letterRange !== null;
@@ -233,6 +242,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
         </>
       }
     >
+      <RelativeSection key={resets} cards={cards} value={draft.relative} onChange={set("relative")} />
       <ChipGroup legend="לבן או לבת" options={SEX} value={draft.sex} onChange={set("sex")} />
       <ThemeGroup value={draft.themes} onChange={set("themes")} />
       <ChipGroup legend="כמה נפוץ" options={BANDS} value={draft.popularity} onChange={set("popularity")} />

@@ -15,17 +15,28 @@ function minified(file) {
   return JSON.stringify(JSON.parse(readFileSync(file, "utf8")));
 }
 
+/** `names` of a built per-name file in srcDir, or {} when it isn't there. */
+function perName(srcDir, file) {
+  const path = resolve(srcDir, file);
+  return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")).names : {};
+}
+
 /**
- * The card content with each name's theme tags (name-themes.json, when present) added as
- * `themes`, so the app loads one file.
+ * The card content with each name's theme tags (name-themes.json), Latin spellings
+ * (name-latin.json) and meaning groups (name-meanings.json) added as `themes`, `latin` and
+ * `meanings`, so the app loads one file. Each file is optional.
  */
 function contentWithThemes(srcDir) {
   const content = JSON.parse(readFileSync(resolve(srcDir, "name-content.json"), "utf8"));
-  const themesFile = resolve(srcDir, "name-themes.json");
-  if (!existsSync(themesFile)) return JSON.stringify(content);
-  const themes = JSON.parse(readFileSync(themesFile, "utf8")).names;
-  for (const [name, ids] of Object.entries(themes)) {
-    if (content.names[name]) content.names[name].themes = ids;
+  const extras = [
+    ["themes", perName(srcDir, "name-themes.json")],
+    ["latin", perName(srcDir, "name-latin.json")],
+    ["meanings", perName(srcDir, "name-meanings.json")],
+  ];
+  for (const [field, values] of extras) {
+    for (const [name, value] of Object.entries(values)) {
+      if (content.names[name]) content.names[name][field] = value;
+    }
   }
   return JSON.stringify(content);
 }

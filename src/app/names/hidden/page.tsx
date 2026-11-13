@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { RequireAuth } from "@/components/names/AuthGuard";
+import { AllowGuest } from "@/components/names/AuthGuard";
 import HiddenScreen from "@/components/names/HiddenScreen";
 
 export const metadata: Metadata = {
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 /** FR-W22: the hidden names, each with "החזרה". */
 export default function HiddenPage() {
   return (
-    <RequireAuth>
+    <AllowGuest>
       <HiddenScreen />
-    </RequireAuth>
+    </AllowGuest>
   );
 }

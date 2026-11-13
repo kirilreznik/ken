@@ -26,7 +26,7 @@ export const TOAST_DURATION = 4000;
 // A toast with an action stays longer so there is time to reach the button.
 export const TOAST_ACTION_DURATION = 8000;
 // The exit (names.css .names-toast[data-leaving], --nest-duration-fade).
-const TOAST_EXIT = 160;
+export const TOAST_EXIT = 160;
 
 let current: Toast | null = null;
 // Shown until dismissed ("עדכון זמין"): it outlives the screen it came up on.

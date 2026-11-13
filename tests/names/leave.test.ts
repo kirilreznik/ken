@@ -6,9 +6,9 @@ const client = (result: unknown) => ({ rpc: () => ({ abortSignal: async () => re
 
 describe("leave a shared space", () => {
   it("names who stays, or says it neutrally", () => {
-    expect(leaveBody(["נועה"])).toContain("ההתאמות עם נועה יימחקו");
+    expect(leaveBody(["נועה"])).toContain("ההתאמות עם \u2068נועה\u2069 יימחקו");
     expect(leaveBody([""])).toContain("ההתאמות עם מי שבוחר איתך יימחקו");
-    expect(leaveBody(["נועה", "דן"])).toContain("נועה, דן");
+    expect(leaveBody(["נועה", "דן"])).toContain("\u2068נועה\u2069, \u2068דן\u2069");
   });
 
   it("reads names_leave errors", () => {

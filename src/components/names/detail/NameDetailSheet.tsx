@@ -16,6 +16,7 @@ import { track } from "@/lib/names/track";
 import { NAME_PARAM, NAME_SHEET, previousName, readName } from "@/lib/names/urlLayer";
 import type { Card, Vote } from "@/lib/names/types";
 import FactsSection from "./FactsSection";
+import LatinSection from "./LatinSection";
 import MeaningSection from "./MeaningSection";
 import NumbersSection from "./NumbersSection";
 import SexSection from "./SexSection";
@@ -23,6 +24,7 @@ import SimilarSection from "./SimilarSection";
 import SourceSection from "./SourceSection";
 import SurnameSection from "./SurnameSection";
 import TogetherSection from "./TogetherSection";
+import TwinsSection from "./TwinsSection";
 
 const DETENTS = ["70", "full"] as const;
 // Half a section in view counts as seen (sections are shorter than twice the 70% sheet).
@@ -135,6 +137,7 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Nam
       }
     >
       <div ref={setBody} data-detail-body className="flex flex-col gap-5">
+        <LatinSection latin={card.content.latin} />
         <SurnameSection name={card.stats.name} surname={surname} />
         <MeaningSection
           intro={card.content.intro}
@@ -150,6 +153,7 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Nam
             <SexSection {...card.derived} />
             <FactsSection stats={card.stats} rank={rank} />
             <SimilarSection similar={similar} onOpen={openSimilar} />
+            <TwinsSection card={card} cards={cards} votes={votes} details={details.details} />
             <SourceSection />
           </>
         ) : null}

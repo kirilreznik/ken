@@ -1,5 +1,6 @@
 import { readDuelSaves, type DuelSaves } from "./duel";
 import { clampRange, defaultFilters, type Filters, type NameLength } from "./filters";
+import { readRelative } from "./relative";
 import { isThemeId } from "./themes";
 import type { SpaceMember } from "./space";
 import type { PopularityBand, SexTag, TrendWord } from "./types";
@@ -32,6 +33,8 @@ export interface Prefs {
   survey: "done" | "dismissed" | null;
   /** The name marked "בחרנו", per space (device only). */
   chosen: { spaceId: string; name: string } | null;
+  /** "מצפים לתאומים" in settings: pair suggestions in the name sheet and a "זוגות" tab (twins.ts). */
+  twins: boolean;
 }
 
 export type PrefKey = keyof Prefs;
@@ -72,6 +75,7 @@ function readFilters(raw: unknown): Filters {
     out.letterRange = clampRange(range.min as number, range.max as number);
     out.length = null;
   }
+  out.relative = readRelative(r.relative);
   return out;
 }
 
@@ -116,6 +120,7 @@ const readers: { [K in PrefKey]: (raw: unknown) => Prefs[K] } = {
       ? { spaceId: r.spaceId, name: r.name }
       : null;
   },
+  twins: bool,
 };
 
 export function defaultPref<K extends PrefKey>(key: K): Prefs[K] {

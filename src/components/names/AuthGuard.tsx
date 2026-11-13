@@ -1,11 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
 import { welcomeUrl } from "@/lib/names/auth";
 import { getPref } from "@/lib/names/prefs";
 import { ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
-import { useAuth, useStoredSession } from "./AuthProvider";
+import { GuestAllowed, useAuth, useStoredSession } from "./AuthProvider";
 import { usePendingJoin } from "./auth/usePendingJoin";
 
 /** Calm full-screen placeholder while the session loads: canvas plus a faint card outline, so nothing jumps. */
@@ -35,6 +35,28 @@ export function RequireAuth({ children, allowWithoutTerms = false }: { children:
 
   if (loading || !session || blocked) return <AuthSkeleton />;
   return <>{children}</>;
+}
+
+/**
+ * Wraps the pages a visitor may use before signing in (the swipe screen and their lists):
+ * signed out, they run as a guest with votes on the device (lib/names/guest.ts). A session
+ * without accepted terms still goes to onboarding, and an expired session to welcome.
+ */
+export function AllowGuest({ children }: { children: React.ReactNode }) {
+  const { session, user, loading, expired } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const blocked = !!session && !hasAcceptedTerms(user);
+  const signedOutAfterExpiry = !session && expired;
+
+  useEffect(() => {
+    if (loading) return;
+    if (signedOutAfterExpiry) router.replace(welcomeUrl(pathname, { expired }));
+    else if (blocked) router.replace(ONBOARDING_PATH);
+  }, [loading, signedOutAfterExpiry, blocked, expired, pathname, router]);
+
+  if (loading || blocked || signedOutAfterExpiry) return <AuthSkeleton />;
+  return <GuestAllowed>{children}</GuestAllowed>;
 }
 
 const subscribeNever = () => () => {};

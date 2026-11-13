@@ -95,8 +95,8 @@ function fullHeightPx(host: HTMLElement): number {
 const FADE_PX = 24;
 function fadeMask(more: { top: boolean; bottom: boolean }): string | undefined {
   if (!more.top && !more.bottom) return undefined;
-  const top = more.top ? `transparent 0, #000 ${FADE_PX}px` : "#000 0";
-  const bottom = more.bottom ? `#000 calc(100% - ${FADE_PX}px), transparent 100%` : "#000 100%";
+  const top = more.top ? `transparent 0, black ${FADE_PX}px` : "black 0";
+  const bottom = more.bottom ? `black calc(100% - ${FADE_PX}px), transparent 100%` : "black 100%";
   return `linear-gradient(to bottom, ${top}, ${bottom})`;
 }
 function edgesOf(el: HTMLElement) {

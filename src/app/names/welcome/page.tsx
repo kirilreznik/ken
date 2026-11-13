@@ -38,7 +38,7 @@ export default function WelcomePage() {
         >
           <ClosedNotice />
           <ExpiredNotice />
-          <WelcomeActions />
+          <WelcomeActions guestLink />
         </AuthLayout>
       </RedirectIfSignedIn>
     </>

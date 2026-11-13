@@ -68,10 +68,19 @@ The swiper is **code only** (owner, 2026-11-04). The Nest app's password sign-up
 
 **Done when:** a swiper code email (Confirm signup and Magic Link) shows only the code; a Nest app sign-up still gets its confirmation link.
 
-Note: sign-ups off (3.3) applies to the Nest app too, since both use the same project.
+Note: the sign-up gate (3.3) applies to the Nest app too, since both use the same project.
 
-### 3.3 Sign-ups switch
-Authentication → Sign In / Providers → **Allow new users to sign up**: keep **off** until the privacy policy and terms are reviewed (step 12). Accounts created by an admin (the QA users) still work while it's off. The PWA shows a "not open yet" message when a new person tries to sign in. Turn it on at public launch.
+### 3.3 Sign-ups: invite links only (2026-11-13)
+Owner decision 2026-11-13: anyone who arrives through an in-app invite link (`/names/join/{code}`) may create an account; everyone else still gets the "not open yet" message. The gate is a Supabase **Before User Created** hook from pregnancy-manager migration `0012_names_invite_signups.sql` (email sign-in carries the code in user metadata; Google sign-in gets an IP pass first, valid an hour, from `names_signup_pass`). The invite must still be unused and unexpired. Setup, in this order:
+
+1. Apply `0012_names_invite_signups.sql` to the EU project (SQL editor; never `supabase db push`).
+2. Authentication → Hooks → **Before User Created** → Postgres → schema `public`, function `names_before_user_created` → enable.
+3. Authentication → Sign In / Providers → turn **on** "Allow new users to sign up". (Doing this before step 2 opens sign-ups to everyone.)
+
+Same project as the Nest app, so the hook gates its sign-ups too. To let one person in without a link: `insert into public.names_signup_allowlist (email) values ('their@email');`. Accounts made with the admin API pass when created with `app_metadata: { names_allow: true }` (or allowlist the address first). To close everything again, turn the switch in step 3 off. At public launch: disable the hook (step 2), keep the switch on.
+
+### 3.3.1 Guest mode needs open sign-ups (2026-11-13)
+Owner decision 2026-11-13: visitors swipe up to 100 names as guests, then must sign in, and anyone may create an account at that point. Open sign-ups by **disabling the Before User Created hook** (Authentication → Hooks); keep "Allow new users to sign up" on. Invite links keep working. While the hook is still on, a guest without an invite who reaches the wall gets the "not open yet" message.
 
 ### 3.4 Rate limits
 Authentication → Rate Limits, after step 7 (custom SMTP) is in place:
@@ -193,7 +202,7 @@ NAMES_QA_EMAIL_3=delivered+names-qa-3@resend.dev
 
 These are Resend test addresses: mail to them is accepted and never delivered, so a sign-in screen test never bounces or reaches a real person. Ralph never reads an inbox: it gets each code from the Supabase admin API (`generate_link`, which returns the 6-digit `email_otp` without sending mail) using the secret key.
 
-5. Create the three QA users (Supabase → Authentication → Users → Add user → Create new user, one per address above, **Auto Confirm User** on, no password needed), or let US-000 create them with the admin API. They work while sign-ups are off.
+5. Create the three QA users (Supabase → Authentication → Users → Add user → Create new user, one per address above, **Auto Confirm User** on, no password needed), or let US-000 create them with the admin API. They work while sign-ups are off; with the invite-only hook on (3.3), allowlist their addresses first or create them with `app_metadata: { names_allow: true }`.
 
 **Done when:** `npm run dev` serves `http://localhost:3000` and `scripts/ralph/.env.test.local` exists.
 
@@ -218,7 +227,7 @@ Ralph writes Hebrew drafts at `/names/privacy` and `/names/terms`, marked "טי�
 3. Replace the text in `src/content/names-legal/` (see the PRD) and remove the "טיוטה" banner by setting `LEGAL_DRAFT = false` there.
 4. Translate the 4 email templates that are still Supabase's English defaults (Authentication → Emails: **Invite user**, **Change email address**, **Reset password**, **Reauthentication**) into short Hebrew in the same Nest style as the code email, keeping their `{{ .ConfirmationURL }}` / `{{ .Token }}` variables. The swiper and the Nest app don't send them today, but nothing in English should go out after launch.
 5. Set `PREGNANCY_WAITLIST_WEBHOOK_URL` and `PREGNANCY_WAITLIST_WEBHOOK_TOKEN` in Vercel (Production + Preview). The landing waitlist reads them, and they were missing on 2026-11-04, so sign-ups the "not open yet" message sends to `/#waitlist` aren't forwarded anywhere.
-6. Turn on **Allow new users to sign up** (step 3.3).
+6. Open sign-ups to everyone: disable the Before User Created hook (step 3.3); the switch is already on.
 
 ## 13. Owner checks after the run (things Ralph can't do)
 

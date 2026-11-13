@@ -1,4 +1,5 @@
 import { formatCount } from "./card";
+import { matchesRelative, type RelativeFilter } from "./relative";
 import { hasAnyTheme, type ThemeId } from "./themes";
 import type { CardDerived, NameStats, PopularityBand, SexTag, TrendWord } from "./types";
 
@@ -29,6 +30,8 @@ export interface Filters {
   themes: ThemeId[] | null;
   /** "מספר אותיות מותאם": when set, `length` is null. */
   letterRange: LetterRange | null;
+  /** "על שם קרוב משפחה" (relative.ts). */
+  relative: RelativeFilter | null;
 }
 
 export const DEFAULT_FILTERS: Readonly<Filters> = Object.freeze({
@@ -39,6 +42,7 @@ export const DEFAULT_FILTERS: Readonly<Filters> = Object.freeze({
   length: null,
   themes: null,
   letterRange: null,
+  relative: null,
 });
 
 export function defaultFilters(): Filters {
@@ -95,6 +99,7 @@ export function matches(card: FilterableCard, filters: Filters): boolean {
     const { min, max } = filters.letterRange;
     if (n < min || (max < RANGE_MAX && n > max)) return false;
   }
+  if (filters.relative !== null && !matchesRelative(stats.name, filters.relative)) return false;
   return true;
 }
 

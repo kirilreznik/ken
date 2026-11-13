@@ -13,7 +13,7 @@ describe("FactsSection (FR-D15)", () => {
     expect(html).toContain("grid-cols-3");
     expect(html.match(/names-well/g)).toHaveLength(3);
     expect(html).toContain('<bdi dir="ltr">48,793</bdi>');
-    expect(html).toContain('<bdi dir="ltr">#2</bdi>');
+    expect(html).toContain('מקום <bdi dir="ltr">2</bdi>');
     expect(html).toContain('פי <bdi dir="ltr">3.3</bdi>');
     expect(render(years(100, 70), 2)).toContain('<bdi dir="ltr">30%</bdi> פחות');
   });

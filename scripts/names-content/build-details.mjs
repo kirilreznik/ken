@@ -45,7 +45,13 @@ const HEB_NUM = `[${HEB}]{1,3}[׳'״"]?[${HEB}]?`;
 const CHAPTER_VERSE = new RegExp(
   `(?:^|[^${HEB}])(?:פרק|פרקים|פסוק|פסוקים)(?![${HEB}])|\\d+\\s*:\\s*\\d+|(?:${BOOK_NAMES.join("|")})\\s+${HEB_NUM}\\s*,\\s*${HEB_NUM}(?![${HEB}])`,
 );
-const BIBLE_WORDS = /תנ["״]ך|בספר|בתורה|בנביאים/;
+// "בספר" but not "בספרד" (in Spain), which many stories of Spanish names use.
+const BIBLE_WORDS = /תנ["״]ך|בספר(?!ד)|בתורה|בנביאים/;
+
+/** Whether a story names the Bible as a source (then the card should have a checked verse). */
+export function mentionsBible(story) {
+  return BIBLE_WORDS.test(story);
+}
 
 /** The failure rules a story breaks (empty when it's fine). */
 export function storyProblems(story) {
@@ -119,7 +125,7 @@ export function buildDetails({ batches, cards, births, known }) {
       if (story === null) nullStories.push({ name, note: entry?.storyNote ?? "(no note)" });
       else {
         for (const p of storyProblems(story)) failures.push(`${at}: ${p}`);
-        if (BIBLE_WORDS.test(story) && !cards[name].bible) warnings.push(`${name}: story mentions the Bible but the card has no checked verse`);
+        if (mentionsBible(story) && !cards[name].bible) warnings.push(`${name}: story mentions the Bible but the card has no checked verse`);
         const overlap = introOverlap(story, cards[name].intro);
         if (overlap > OVERLAP_MAX) warnings.push(`${name}: story shares ${Math.round(overlap * 100)}% of its words with the intro`);
       }

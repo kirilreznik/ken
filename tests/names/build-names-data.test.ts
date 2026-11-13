@@ -47,6 +47,16 @@ describe("build-names-data", () => {
     expect(readFileSync(join(paths.outDir, manifest.details), "utf8")).toBe(JSON.stringify(details));
   });
 
+  it("adds Latin spellings and meaning groups to the card content", () => {
+    const paths = setup(names, content);
+    writeFileSync(join(paths.srcDir, "name-latin.json"), JSON.stringify({ names: { "זיו": { he: "Ziv" }, "אחר": { he: "x" } } }));
+    writeFileSync(join(paths.srcDir, "name-meanings.json"), JSON.stringify({ names: { "זיו": ["light"] } }));
+    const manifest = build(paths);
+    const out = JSON.parse(readFileSync(join(paths.outDir, manifest.content), "utf8"));
+    expect(out.names["זיו"]).toEqual({ niqqud: "זִיו", intro: "אור", people: [], latin: { he: "Ziv" }, meanings: ["light"] });
+    expect(out.names["אחר"]).toBeUndefined();
+  });
+
   it("publishes an empty details file when name-details.json is missing", () => {
     const paths = setup(names, content);
     const manifest = build(paths);

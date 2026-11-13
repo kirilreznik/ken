@@ -726,7 +726,8 @@
    "intro": "אלמה בספרדית ובאיטלקית היא נשמה. בעברית נשמעת בה גם העלמה."
   },
   "מיאל": {
-   "hold": "Origin unclear (Mia + El, or another source); owner to decide the intro."
+   "niqqud": "מִיאֵל",
+   "intro": "מיאל, שם עברי חדש. כנראה 'מי כאל'."
   },
   "תהילה": {
    "niqqud": "תְּהִלָּה",
@@ -883,7 +884,8 @@
    "intro": "בערבית ובעברית עבד הוא עובד ומשרת. בשמות ערביים הוא בא לרוב מתוך 'עבד אללה', משרתו של אלוהים."
   },
   "לני": {
-   "hold": "Origin unclear for a Hebrew-sector unisex name; owner to decide the intro."
+   "niqqud": "לֵנִי",
+   "intro": "לני, שם קצר וחדש שניתן לבנים ולבנות. אולי מן 'לי', ואולי צורה קצרה של הלן."
   },
   "דבורה": {
    "niqqud": "דְּבוֹרָה",
@@ -1115,7 +1117,11 @@
    "intro": "מלאק בערבית הוא מלאך. שם שניתן לבנים ולבנות."
   },
   "אלין": {
-   "hold": "Several possible origins (French Aline, Arabic, Turkish); owner to choose the intro."
+   "niqqud": "אלין",
+   "intro": "אלין, שם בינלאומי, כנראה מן השם הצרפתי אלין (Aline).",
+   "themes": [
+    "international"
+   ]
   },
   "גבריאל": {
    "niqqud": "גַּבְרִיאֵל",
@@ -1328,7 +1334,11 @@
    "intro": "סמא בערבית היא השמיים."
   },
   "מיקה": {
-   "hold": "Several possible origins (Japanese, Finnish, short for Michal); owner to choose the intro."
+   "niqqud": "מִיקָה",
+   "intro": "מיקה, שם קצר שנשמע בכמה שפות. בעברית גם צורת חיבה של מיכל ומיכאל.",
+   "themes": [
+    "international"
+   ]
   },
   "רועי": {
    "niqqud": "רוֹעִי",
@@ -1546,7 +1556,8 @@
    }
   },
   "שייה": {
-   "hold": "Origin unclear (Yiddish form?); owner to decide the intro."
+   "niqqud": "שַׁיָּה",
+   "intro": "שייה, כנראה מלשון שי: מתנה."
   },
   "סול": {
    "niqqud": "סוֹל",
@@ -1831,7 +1842,12 @@
    }
   },
   "סאן": {
-   "hold": "Origin unclear; owner to decide the intro."
+   "niqqud": "סָאן",
+   "intro": "סאן, 'שמש' באנגלית (Sun).",
+   "themes": [
+    "international",
+    "fire"
+   ]
   },
   "טל": {
    "niqqud": "טַל",
@@ -1875,7 +1891,12 @@
    "intro": "מאסה בערבית היא יהלום."
   },
   "ריי": {
-   "hold": "English Ray or another origin; owner to decide the intro."
+   "niqqud": "רֵיי",
+   "intro": "ריי, שם אנגלי, צורה קצרה של ריימונד. גם 'קרן אור' באנגלית.",
+   "themes": [
+    "international",
+    "fire"
+   ]
   },
   "יחיאל": {
    "niqqud": "יְחִיאֵל",
@@ -1896,7 +1917,11 @@
    "intro": "פאטמה, שם ערבי עתיק. זה שמה של בתו של הנביא מוחמד."
   },
   "פיגא": {
-   "hold": "Yiddish name; meaning (bird or fig) not certain; owner to confirm."
+   "niqqud": "פֵיגָא",
+   "intro": "פיגא, שם ביידיש. כנראה מן 'פייגל': ציפור.",
+   "themes": [
+    "animals"
+   ]
   },
   "עמיחי": {
    "niqqud": "עַמִּיחַי",
@@ -1907,7 +1932,11 @@
    "intro": "אוסיד בערבית הוא אריה צעיר."
   },
   "הילי": {
-   "hold": "Origin unclear; owner to decide the intro."
+   "niqqud": "הִילִי",
+   "intro": "הילי, שם עברי חדש, כנראה מלשון הילה: אור סביב.",
+   "themes": [
+    "fire"
+   ]
   },
   "איאן": {
    "hold": "Several possible origins (Scottish Ian, Arabic); owner to choose the intro."

@@ -54,6 +54,12 @@ describe("cardLabel", () => {
     );
   });
 
+  it("skips an empty intro", () => {
+    const zeev = byName.get("זיו")!;
+    const card = { ...zeev, content: { ...zeev.content, intro: "" }, derived: { ...zeev.derived, trend: null } };
+    expect(cardLabel(card)).toBe("זיו, מתאים לכולם, ניתן ל־302 תינוקות ב־2024, לפרטים נוספים: הקשה");
+  });
+
   it("omits the trend when it is null", () => {
     const card = { ...byName.get("זיו")!, derived: { ...byName.get("זיו")!.derived, trend: null } };
     expect(cardLabel(card)).toBe("זיו, מתאים לכולם, זיו הוא אור, זוהר וברק. שם קצר שניתן לבנים ולבנות, ניתן ל־302 תינוקות ב־2024, לפרטים נוספים: הקשה");
@@ -87,16 +93,17 @@ describe("statusText", () => {
     expect(statusText("love", name)).toBe(`השם ${name} נשמר, ראשון ברשימה`);
     expect(statusText("hidden", name)).toBe(`השם ${name} לא יוצג שוב`);
     expect(statusText("skip", name)).toBe(`דילוג על ${name}`);
-    expect(statusText("undo", name)).toBe(`בוטל: ${name}`);
+    expect(statusText("undo", name)).toBe(`ההחלטה על ${name} בוטלה`);
   });
 });
 
 describe("sheetVoteText", () => {
   it("names the choice and the name", () => {
-    expect(sheetVoteText("keep", "זיו")).toBe("נשמר: זיו");
-    expect(sheetVoteText("love", "זיו")).toBe("אהבתי מאוד: זיו");
-    expect(sheetVoteText("skip", "זיו")).toBe("דילוג: זיו");
-    expect(sheetVoteText("hidden", "זיו")).toBe("דילוג: זיו");
+    // The same sentence as the deck's status (NP-128).
+    expect(sheetVoteText("keep", "זיו")).toBe("השם זיו נשמר");
+    expect(sheetVoteText("love", "זיו")).toBe("השם זיו נשמר, ראשון ברשימה");
+    expect(sheetVoteText("skip", "זיו")).toBe("דילוג על זיו");
+    expect(sheetVoteText("hidden", "זיו")).toBe("השם זיו לא יוצג שוב");
   });
 });
 

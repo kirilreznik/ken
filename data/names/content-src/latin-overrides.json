@@ -1,0 +1,12 @@
+{
+  "_about": "Academy-rule spellings the script can't derive from the niqqud (how the name is said differs from its pointing, or a borrowed name). Each entry: the spelling and why. Read by scripts/names-content/build-latin.mjs.",
+  "names": {
+    "מרדכי": { "he": "Mordekhai", "reason": "The hataf kamats under ד is said e (Mordekhai)." },
+    "יששכר": { "he": "Yisakhar", "reason": "The second ש is not said." },
+    "קטרין": { "he": "Katrin", "reason": "Borrowed name said with a, not a kamats katan." },
+    "קתרין": { "he": "Katrin", "reason": "Borrowed name said with a, not a kamats katan." },
+    "טשארנא": { "he": "Tsharna", "reason": "טש is one sound here; no vowel between them." },
+    "אושן": { "he": "Oshen", "reason": "Borrowed (Ocean): the last syllable is said with e." },
+    "מייקל": { "he": "Maikel", "reason": "Borrowed (Michael, English): said Maikel." }
+  }
+}

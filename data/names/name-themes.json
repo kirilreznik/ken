@@ -440,6 +440,9 @@
   "הדס": [
    "nature"
   ],
+  "אלין": [
+   "international"
+  ],
   "גבריאל": [
    "strength",
    "bible",
@@ -510,6 +513,9 @@
   "צפורה": [
    "bible",
    "animals"
+  ],
+  "מיקה": [
+   "international"
   ],
   "נחמן": [
    "joy"
@@ -691,6 +697,10 @@
   "בתיה": [
    "bible"
   ],
+  "סאן": [
+   "fire",
+   "international"
+  ],
   "טל": [
    "water"
   ],
@@ -704,11 +714,21 @@
    "joy",
    "international"
   ],
+  "ריי": [
+   "fire",
+   "international"
+  ],
   "אליאב": [
    "bible"
   ],
+  "פיגא": [
+   "animals"
+  ],
   "עמיחי": [
    "israel"
+  ],
+  "הילי": [
+   "fire"
   ],
   "ליאור": [
    "fire"
@@ -741,6 +761,9 @@
   "אלימלך": [
    "bible"
   ],
+  "שילת": [
+   "israel"
+  ],
   "קדם": [
    "special"
   ],
@@ -758,6 +781,9 @@
   ],
   "יוכבד": [
    "bible"
+  ],
+  "עמליה": [
+   "international"
   ],
   "פאר": [
    "beauty"
@@ -806,6 +832,9 @@
   "מתן": [
    "joy"
   ],
+  "אוריאן": [
+   "fire"
+  ],
   "רונה": [
    "poetry",
    "joy"
@@ -838,6 +867,9 @@
   "שון": [
    "international"
   ],
+  "ארין": [
+   "international"
+  ],
   "נגב": [
    "israel",
    "land"
@@ -847,6 +879,9 @@
   ],
   "אמרי": [
    "poetry"
+  ],
+  "ירין": [
+   "joy"
   ],
   "טומי": [
    "international"
@@ -868,12 +903,19 @@
    "strength",
    "animals"
   ],
+  "איב": [
+   "international"
+  ],
   "הילל": [
    "fire"
   ],
   "אסף": [
    "poetry",
    "bible"
+  ],
+  "ארייה": [
+   "strength",
+   "animals"
   ],
   "פנינה": [
    "beauty"
@@ -891,6 +933,9 @@
   ],
   "טום": [
    "international"
+  ],
+  "מנור": [
+   "fire"
   ],
   "מרום": [
    "special"
@@ -911,6 +956,9 @@
   "סיני": [
    "land",
    "bible"
+  ],
+  "אורין": [
+   "fire"
   ],
   "איילת": [
    "fire",
@@ -953,6 +1001,10 @@
   "ענר": [
    "special",
    "bible"
+  ],
+  "קאי": [
+   "water",
+   "international"
   ],
   "אילן": [
    "nature"
@@ -1015,8 +1067,17 @@
   "אלקנה": [
    "bible"
   ],
+  "היילי": [
+   "international"
+  ],
   "אחינועם": [
    "bible"
+  ],
+  "בילא": [
+   "beauty"
+  ],
+  "אמור": [
+   "international"
   ],
   "נח": [
    "bible"
@@ -1034,8 +1095,14 @@
   "לב": [
    "special"
   ],
+  "מילי": [
+   "international"
+  ],
   "נורי": [
    "fire"
+  ],
+  "אריאן": [
+   "international"
   ],
   "אלכס": [
    "international"
@@ -1045,6 +1112,9 @@
   ],
   "קורן": [
    "fire"
+  ],
+  "לירי": [
+   "poetry"
   ],
   "גילה": [
    "joy"
@@ -1084,6 +1154,9 @@
   "מטר": [
    "water"
   ],
+  "ריין": [
+   "joy"
+  ],
   "יונה": [
    "bible",
    "animals"
@@ -1122,6 +1195,10 @@
    "international"
   ],
   "אלינור": [
+   "international"
+  ],
+  "לאו": [
+   "animals",
    "international"
   ],
   "ברק": [
@@ -1167,8 +1244,14 @@
   "סתיו": [
    "nature"
   ],
+  "לאל": [
+   "bible"
+  ],
   "עזרא": [
    "bible"
+  ],
+  "אסיה": [
+   "international"
   ],
   "יער": [
    "nature"
@@ -1202,6 +1285,9 @@
   ],
   "נוי": [
    "beauty"
+  ],
+  "סאלי": [
+   "international"
   ],
   "אוליביה": [
    "international",
@@ -1256,6 +1342,9 @@
   "חנוך": [
    "bible"
   ],
+  "פראדל": [
+   "joy"
+  ],
   "שחרי": [
    "fire"
   ],
@@ -1280,6 +1369,9 @@
   "דקל": [
    "nature"
   ],
+  "מיי": [
+   "international"
+  ],
   "רן": [
    "joy"
   ],
@@ -1293,6 +1385,9 @@
   "איילת השחר": [
    "fire"
   ],
+  "מיליה": [
+   "international"
+  ],
   "נחמיה": [
    "bible"
   ],
@@ -1301,6 +1396,9 @@
   ],
   "טלי": [
    "water"
+  ],
+  "ליאנה": [
+   "nature"
   ],
   "אפק": [
    "israel",
@@ -1346,6 +1444,9 @@
   "גרשון": [
    "bible"
   ],
+  "תאי": [
+   "fire"
+  ],
   "ציון": [
    "israel"
   ],
@@ -1370,6 +1471,9 @@
   "מיאור": [
    "fire"
   ],
+  "מינה": [
+   "international"
+  ],
   "אביאור": [
    "fire"
   ],
@@ -1391,6 +1495,10 @@
   ],
   "רביד": [
    "beauty"
+  ],
+  "לורין": [
+   "international",
+   "nature"
   ],
   "דגן": [
    "nature"
@@ -1461,6 +1569,18 @@
   "עמרם": [
    "bible"
   ],
+  "לורי": [
+   "international"
+  ],
+  "איילין": [
+   "international"
+  ],
+  "מירן": [
+   "poetry"
+  ],
+  "טאי": [
+   "international"
+  ],
   "ריו": [
    "water",
    "international"
@@ -1483,6 +1603,9 @@
   ],
   "זכריה": [
    "bible"
+  ],
+  "ליר": [
+   "poetry"
   ],
   "אלינוי": [
    "beauty"
@@ -1524,11 +1647,17 @@
   "אנדי": [
    "international"
   ],
+  "שריי": [
+   "bible"
+  ],
   "נצר": [
    "nature"
   ],
   "אשחר": [
    "nature"
+  ],
+  "אולי": [
+   "international"
   ],
   "יוני": [
    "animals"
@@ -1547,6 +1676,9 @@
    "nature"
   ],
   "מלאני": [
+   "international"
+  ],
+  "דון": [
    "international"
   ],
   "אשל": [
@@ -1602,6 +1734,16 @@
    "israel",
    "land"
   ],
+  "אוולין": [
+   "international"
+  ],
+  "בל": [
+   "beauty",
+   "international"
+  ],
+  "עיינה": [
+   "water"
+  ],
   "נוהר": [
    "fire"
   ],
@@ -1622,11 +1764,17 @@
    "fire",
    "water"
   ],
+  "דיאן": [
+   "international"
+  ],
   "אליקים": [
    "bible"
   ],
   "גולדי": [
    "beauty"
+  ],
+  "גוליה": [
+   "international"
   ],
   "נהורה": [
    "fire"
@@ -1698,9 +1846,15 @@
   "עוזיאל": [
    "strength"
   ],
+  "רונאל": [
+   "poetry"
+  ],
   "מליסה": [
    "animals",
    "international"
+  ],
+  "לידר": [
+   "poetry"
   ],
   "שלהבת": [
    "fire"
@@ -1718,6 +1872,9 @@
   "נהר": [
    "water"
   ],
+  "שינא": [
+   "beauty"
+  ],
   "נס": [
    "special"
   ],
@@ -1728,6 +1885,9 @@
    "israel"
   ],
   "טבע": [
+   "nature"
+  ],
+  "כנה": [
    "nature"
   ],
   "דפנה": [
@@ -1774,6 +1934,9 @@
   ],
   "לוקה": [
    "international"
+  ],
+  "דיה": [
+   "animals"
   ],
   "תור": [
    "animals"
@@ -1827,6 +1990,10 @@
   "יעלי": [
    "animals"
   ],
+  "ניקה": [
+   "strength",
+   "international"
+  ],
   "מנואל": [
    "international"
   ],
@@ -1841,6 +2008,12 @@
    "international"
   ],
   "אור-יה": [
+   "fire"
+  ],
+  "תאיה": [
+   "international"
+  ],
+  "בראנדל": [
    "fire"
   ],
   "סיון": [
@@ -1908,13 +2081,25 @@
   "תלם": [
    "land"
   ],
+  "אלני": [
+   "international"
+  ],
+  "ליו": [
+   "animals"
+  ],
   "קיארה": [
    "fire",
    "international"
   ],
+  "פראדי": [
+   "joy"
+  ],
   "מון": [
    "fire",
    "international"
+  ],
+  "מילוא": [
+   "land"
   ],
   "מיטל": [
    "water"
@@ -1953,6 +2138,9 @@
    "international",
    "nature"
   ],
+  "דוריאן": [
+   "international"
+  ],
   "יקירה": [
    "joy"
   ],
@@ -1961,6 +2149,9 @@
   ],
   "אמבר": [
    "beauty"
+  ],
+  "זאן": [
+   "international"
   ],
   "נחלה": [
    "land"
@@ -1981,6 +2172,13 @@
   "שמש": [
    "fire"
   ],
+  "פארי": [
+   "beauty"
+  ],
+  "אריא": [
+   "strength",
+   "animals"
+  ],
   "תאו": [
    "international"
   ],
@@ -1989,6 +2187,9 @@
   ],
   "נהרי": [
    "water"
+  ],
+  "מאודי": [
+   "international"
   ],
   "ענבל": [
    "poetry"
@@ -2064,6 +2265,9 @@
   "קמיל": [
    "international"
   ],
+  "טמסגן": [
+   "international"
+  ],
   "לי-ים": [
    "water"
   ],
@@ -2080,6 +2284,12 @@
   ],
   "נוב": [
    "bible"
+  ],
+  "שיין": [
+   "beauty"
+  ],
+  "רנאל": [
+   "poetry"
   ],
   "זרח": [
    "fire",
@@ -2112,6 +2322,9 @@
   "איליין": [
    "international"
   ],
+  "נל": [
+   "international"
+  ],
   "סטערנא": [
    "fire"
   ],
@@ -2133,11 +2346,2090 @@
   "רונה-לי": [
    "joy"
   ],
+  "ג'יה": [
+   "international"
+  ],
   "אל-ים": [
    "water"
   ],
+  "עורי": [
+   "poetry"
+  ],
   "לי-נס": [
    "special"
+  ],
+  "שרון": [
+   "israel",
+   "land"
+  ],
+  "רונית": [
+   "poetry",
+   "joy"
+  ],
+  "מורן": [
+   "nature"
+  ],
+  "ילנה": [
+   "international"
+  ],
+  "רונן": [
+   "poetry",
+   "joy"
+  ],
+  "איריס": [
+   "nature"
+  ],
+  "מרינה": [
+   "water",
+   "international"
+  ],
+  "גלית": [
+   "water"
+  ],
+  "בוריס": [
+   "strength",
+   "international"
+  ],
+  "שירן": [
+   "poetry",
+   "joy"
+  ],
+  "אולגה": [
+   "international"
+  ],
+  "ולדימיר": [
+   "international"
+  ],
+  "סבטלנה": [
+   "fire",
+   "international"
+  ],
+  "נורית": [
+   "nature"
+  ],
+  "טטיאנה": [
+   "international"
+  ],
+  "רויטל": [
+   "water"
+  ],
+  "דמיטרי": [
+   "international"
+  ],
+  "נטליה": [
+   "international"
+  ],
+  "יבגני": [
+   "international"
+  ],
+  "לאוניד": [
+   "animals",
+   "international"
+  ],
+  "יוליה": [
+   "international"
+  ],
+  "אורנה": [
+   "nature"
+  ],
+  "יפעת": [
+   "fire",
+   "beauty"
+  ],
+  "עינת": [
+   "water"
+  ],
+  "סיגל": [
+   "nature"
+  ],
+  "שלומית": [
+   "bible"
+  ],
+  "סמדר": [
+   "nature"
+  ],
+  "רינת": [
+   "poetry",
+   "joy"
+  ],
+  "ויקטור": [
+   "strength",
+   "international"
+  ],
+  "אינה": [
+   "international"
+  ],
+  "אירית": [
+   "nature"
+  ],
+  "סרגיי": [
+   "international"
+  ],
+  "אילנית": [
+   "nature"
+  ],
+  "עינב": [
+   "nature"
+  ],
+  "רומן": [
+   "international"
+  ],
+  "גלינה": [
+   "international"
+  ],
+  "סיגלית": [
+   "nature"
+  ],
+  "קארין": [
+   "international"
+  ],
+  "אמנון": [
+   "bible"
+  ],
+  "מקסים": [
+   "international"
+  ],
+  "אולג": [
+   "international"
+  ],
+  "לריסה": [
+   "international"
+  ],
+  "אלינה": [
+   "international"
+  ],
+  "יבגניה": [
+   "international"
+  ],
+  "מירה": [
+   "international"
+  ],
+  "כרמלה": [
+   "israel"
+  ],
+  "רוית": [
+   "water"
+  ],
+  "זיוה": [
+   "fire"
+  ],
+  "קרין": [
+   "international"
+  ],
+  "כרמית": [
+   "nature"
+  ],
+  "רוברט": [
+   "international"
+  ],
+  "אלן": [
+   "international"
+  ],
+  "שרונה": [
+   "israel"
+  ],
+  "מרי": [
+   "international"
+  ],
+  "ארקדי": [
+   "international"
+  ],
+  "אושרת": [
+   "joy"
+  ],
+  "פבל": [
+   "international"
+  ],
+  "יאנה": [
+   "international"
+  ],
+  "פולינה": [
+   "international"
+  ],
+  "שירז": [
+   "poetry"
+  ],
+  "ריטה": [
+   "international"
+  ],
+  "הרצל": [
+   "israel"
+  ],
+  "סוזן": [
+   "international",
+   "nature"
+  ],
+  "עירית": [
+   "nature"
+  ],
+  "דניס": [
+   "international"
+  ],
+  "עידית": [
+   "land"
+  ],
+  "ויטלי": [
+   "international"
+  ],
+  "כוכבה": [
+   "fire"
+  ],
+  "אלדד": [
+   "bible"
+  ],
+  "סוניה": [
+   "international"
+  ],
+  "אלנה": [
+   "international"
+  ],
+  "אנדריי": [
+   "international"
+  ],
+  "עפרה": [
+   "animals"
+  ],
+  "עמיר": [
+   "nature"
+  ],
+  "אנסטסיה": [
+   "international"
+  ],
+  "ליזה": [
+   "international"
+  ],
+  "ציונה": [
+   "israel"
+  ],
+  "עופרה": [
+   "animals"
+  ],
+  "ירדנה": [
+   "israel",
+   "water"
+  ],
+  "לבנה": [
+   "fire"
+  ],
+  "אושרית": [
+   "joy"
+  ],
+  "קלרה": [
+   "fire",
+   "international"
+  ],
+  "אביבית": [
+   "nature"
+  ],
+  "עוזי": [
+   "strength"
+  ],
+  "אבירם": [
+   "bible"
+  ],
+  "ניצה": [
+   "nature"
+  ],
+  "דקלה": [
+   "nature"
+  ],
+  "נירית": [
+   "nature"
+  ],
+  "סנדרה": [
+   "international"
+  ],
+  "דלית": [
+   "nature"
+  ],
+  "מרטין": [
+   "international"
+  ],
+  "ימית": [
+   "water"
+  ],
+  "ארתור": [
+   "international"
+  ],
+  "דיקלה": [
+   "nature"
+  ],
+  "ששון": [
+   "joy"
+  ],
+  "רגינה": [
+   "international"
+  ],
+  "ורה": [
+   "international"
+  ],
+  "גדי": [
+   "animals"
+  ],
+  "סמי": [
+   "international"
+  ],
+  "לינור": [
+   "fire"
+  ],
+  "ולריה": [
+   "strength",
+   "international"
+  ],
+  "פיליפ": [
+   "international"
+  ],
+  "ורוניקה": [
+   "international"
+  ],
+  "יונית": [
+   "animals"
+  ],
+  "דגנית": [
+   "nature"
+  ],
+  "סימונה": [
+   "international"
+  ],
+  "נירה": [
+   "land"
+  ],
+  "קורין": [
+   "international"
+  ],
+  "קטי": [
+   "international"
+  ],
+  "אידה": [
+   "international"
+  ],
+  "קרינה": [
+   "international"
+  ],
+  "ולנטינה": [
+   "strength",
+   "international"
+  ],
+  "זהבית": [
+   "beauty"
+  ],
+  "סטיבן": [
+   "international"
+  ],
+  "הלנה": [
+   "fire",
+   "international"
+  ],
+  "בטי": [
+   "international"
+  ],
+  "אוקסנה": [
+   "international"
+  ],
+  "בת חן": [
+   "beauty"
+  ],
+  "ויקי": [
+   "international"
+  ],
+  "ג'סיקה": [
+   "international"
+  ],
+  "ליז": [
+   "international"
+  ],
+  "פזית": [
+   "beauty"
+  ],
+  "זויה": [
+   "international"
+  ],
+  "חופית": [
+   "water",
+   "animals"
+  ],
+  "אורנית": [
+   "nature"
+  ],
+  "חלי": [
+   "beauty"
+  ],
+  "מוניקה": [
+   "international"
+  ],
+  "דורה": [
+   "international"
+  ],
+  "רענן": [
+   "nature"
+  ],
+  "אופירה": [
+   "beauty"
+  ],
+  "לורה": [
+   "international",
+   "nature"
+  ],
+  "ישראלה": [
+   "israel"
+  ],
+  "אופל": [
+   "beauty"
+  ],
+  "טניה": [
+   "international"
+  ],
+  "סוזי": [
+   "international"
+  ],
+  "הנרי": [
+   "international"
+  ],
+  "יניר": [
+   "land"
+  ],
+  "סטפני": [
+   "international"
+  ],
+  "איזבלה": [
+   "international"
+  ],
+  "אבלין": [
+   "international"
+  ],
+  "ארטיום": [
+   "international"
+  ],
+  "אושרה": [
+   "joy"
+  ],
+  "לינה": [
+   "international"
+  ],
+  "אדי": [
+   "international"
+  ],
+  "ציפי": [
+   "animals"
+  ],
+  "אבירן": [
+   "poetry"
+  ],
+  "ברברה": [
+   "international"
+  ],
+  "ליסה": [
+   "international"
+  ],
+  "אילונה": [
+   "international"
+  ],
+  "פאני": [
+   "international"
+  ],
+  "עדית": [
+   "beauty"
+  ],
+  "פרלה": [
+   "beauty"
+  ],
+  "קטרין": [
+   "international"
+  ],
+  "אניטה": [
+   "international"
+  ],
+  "ג'רמי": [
+   "international"
+  ],
+  "ניקיטה": [
+   "international"
+  ],
+  "שנהב": [
+   "special",
+   "beauty"
+  ],
+  "צדוק": [
+   "bible"
+  ],
+  "סטפן": [
+   "international"
+  ],
+  "אירנה": [
+   "international"
+  ],
+  "גילת": [
+   "joy"
+  ],
+  "סוזנה": [
+   "international",
+   "nature"
+  ],
+  "איזבל": [
+   "international"
+  ],
+  "פלורה": [
+   "international",
+   "nature"
+  ],
+  "ורדית": [
+   "nature"
+  ],
+  "אורפז": [
+   "fire",
+   "beauty"
+  ],
+  "רביב": [
+   "water"
+  ],
+  "אדית": [
+   "international"
+  ],
+  "מוניק": [
+   "international"
+  ],
+  "קסניה": [
+   "international"
+  ],
+  "סברינה": [
+   "international"
+  ],
+  "פטר": [
+   "international"
+  ],
+  "חנית": [
+   "strength"
+  ],
+  "אלברטו": [
+   "international"
+  ],
+  "לואיס": [
+   "international"
+  ],
+  "רוזי": [
+   "international",
+   "nature"
+  ],
+  "רקפת": [
+   "nature"
+  ],
+  "לנה": [
+   "international"
+  ],
+  "קלאודיה": [
+   "international"
+  ],
+  "הלה": [
+   "international"
+  ],
+  "קטיה": [
+   "international"
+  ],
+  "איבון": [
+   "international"
+  ],
+  "קארן": [
+   "international"
+  ],
+  "אריקה": [
+   "international"
+  ],
+  "מריו": [
+   "international"
+  ],
+  "פאולה": [
+   "international"
+  ],
+  "טימור": [
+   "strength",
+   "international"
+  ],
+  "צפריר": [
+   "special"
+  ],
+  "חבצלת": [
+   "nature"
+  ],
+  "ירמיהו": [
+   "bible"
+  ],
+  "דרורה": [
+   "animals"
+  ],
+  "קריסטינה": [
+   "international"
+  ],
+  "תימור": [
+   "nature"
+  ],
+  "מגי": [
+   "international"
+  ],
+  "ליפז": [
+   "beauty"
+  ],
+  "פיטר": [
+   "international"
+  ],
+  "מייק": [
+   "international"
+  ],
+  "יערית": [
+   "nature"
+  ],
+  "ליליאנה": [
+   "international",
+   "nature"
+  ],
+  "רשל": [
+   "international"
+  ],
+  "קרלוס": [
+   "international"
+  ],
+  "עתליה": [
+   "bible"
+  ],
+  "פרי": [
+   "nature"
+  ],
+  "יום": [
+   "special"
+  ],
+  "זמירה": [
+   "poetry"
+  ],
+  "חמדה": [
+   "beauty"
+  ],
+  "רוזליה": [
+   "international",
+   "nature"
+  ],
+  "חמוטל": [
+   "bible"
+  ],
+  "יזהר": [
+   "fire"
+  ],
+  "אנטוני": [
+   "international"
+  ],
+  "ג'ואל": [
+   "international"
+  ],
+  "אשרת": [
+   "joy"
+  ],
+  "צביקה": [
+   "animals"
+  ],
+  "סטיב": [
+   "international"
+  ],
+  "צופית": [
+   "animals"
+  ],
+  "סשה": [
+   "international"
+  ],
+  "קרולינה": [
+   "international"
+  ],
+  "אדריאנה": [
+   "international"
+  ],
+  "סנדי": [
+   "international"
+  ],
+  "ארנה": [
+   "nature"
+  ],
+  "שושי": [
+   "nature"
+  ],
+  "כריסטינה": [
+   "international"
+  ],
+  "אבידן": [
+   "bible"
+  ],
+  "עובד": [
+   "bible"
+  ],
+  "קתרין": [
+   "international"
+  ],
+  "מרקו": [
+   "international"
+  ],
+  "כלנית": [
+   "nature"
+  ],
+  "דודי": [
+   "joy"
+  ],
+  "ג'ק": [
+   "international"
+  ],
+  "גדליהו": [
+   "bible"
+  ],
+  "ג'ונתן": [
+   "international"
+  ],
+  "רמה": [
+   "land"
+  ],
+  "קלי": [
+   "international"
+  ],
+  "מורין": [
+   "international"
+  ],
+  "ארן": [
+   "nature"
+  ],
+  "ריצ'רד": [
+   "international"
+  ],
+  "אופרי": [
+   "animals"
+  ],
+  "שם": [
+   "bible"
+  ],
+  "גניה": [
+   "nature"
+  ],
+  "רוברטו": [
+   "international"
+  ],
+  "אראלה": [
+   "animals"
+  ],
+  "רווית": [
+   "water"
+  ],
+  "תובל": [
+   "bible"
+  ],
+  "נרקיס": [
+   "nature"
+  ],
+  "זבולון": [
+   "bible"
+  ],
+  "ליזי": [
+   "international"
+  ],
+  "אליסיה": [
+   "international"
+  ],
+  "דומיניק": [
+   "international"
+  ],
+  "אניה": [
+   "international"
+  ],
+  "פביאן": [
+   "international"
+  ],
+  "ארינה": [
+   "international"
+  ],
+  "ראול": [
+   "international"
+  ],
+  "נינט": [
+   "international"
+  ],
+  "תומס": [
+   "international"
+  ],
+  "אלקה": [
+   "international"
+  ],
+  "בשמת": [
+   "bible"
+  ],
+  "גיתית": [
+   "poetry"
+  ],
+  "ליגל": [
+   "water"
+  ],
+  "גלילה": [
+   "israel"
+  ],
+  "אמנדה": [
+   "international"
+  ],
+  "אודט": [
+   "international"
+  ],
+  "שאנל": [
+   "international"
+  ],
+  "בן-ציון": [
+   "israel"
+  ],
+  "צמח": [
+   "nature"
+  ],
+  "קוראל": [
+   "water",
+   "international"
+  ],
+  "זמיר": [
+   "poetry",
+   "animals"
+  ],
+  "דונה": [
+   "international"
+  ],
+  "אלזה": [
+   "international"
+  ],
+  "עזריה": [
+   "bible"
+  ],
+  "ליעוז": [
+   "strength"
+  ],
+  "אלמז": [
+   "beauty"
+  ],
+  "ימימה": [
+   "bible"
+  ],
+  "שירית": [
+   "poetry"
+  ],
+  "ניראל": [
+   "land"
+  ],
+  "סיימון": [
+   "international"
+  ],
+  "הילאי": [
+   "fire"
+  ],
+  "הילית": [
+   "fire"
+  ],
+  "אוריאנה": [
+   "fire",
+   "international"
+  ],
+  "דרורית": [
+   "animals"
+  ],
+  "כוכב": [
+   "fire"
+  ],
+  "גנית": [
+   "nature"
+  ],
+  "אשלי": [
+   "international",
+   "nature"
+  ],
+  "בקי": [
+   "international"
+  ],
+  "ליזט": [
+   "international"
+  ],
+  "מלכיאל": [
+   "bible"
+  ],
+  "נטשה": [
+   "international"
+  ],
+  "לאונרדו": [
+   "animals",
+   "international"
+  ],
+  "נופית": [
+   "land"
+  ],
+  "סבסטיאן": [
+   "international"
+  ],
+  "תדהר": [
+   "nature"
+  ],
+  "מילן": [
+   "international"
+  ],
+  "גמליאל": [
+   "bible"
+  ],
+  "טירן": [
+   "special",
+   "water"
+  ],
+  "צאלה": [
+   "nature"
+  ],
+  "אנבל": [
+   "international"
+  ],
+  "פלורנס": [
+   "international",
+   "nature"
+  ],
+  "שחק": [
+   "special"
+  ],
+  "ניק": [
+   "international"
+  ],
+  "דיאגו": [
+   "international"
+  ],
+  "מרגרט": [
+   "beauty",
+   "international"
+  ],
+  "שושן": [
+   "nature"
+  ],
+  "צהלה": [
+   "joy"
+  ],
+  "קרלה": [
+   "international"
+  ],
+  "מרין": [
+   "water",
+   "international"
+  ],
+  "פיבי": [
+   "fire",
+   "international"
+  ],
+  "ריצרד": [
+   "international"
+  ],
+  "דיצה": [
+   "joy"
+  ],
+  "נטעלי": [
+   "nature"
+  ],
+  "רנית": [
+   "poetry"
+  ],
+  "ברנדה": [
+   "international"
+  ],
+  "אליצור": [
+   "bible"
+  ],
+  "הלית": [
+   "fire"
+  ],
+  "יהורם": [
+   "bible"
+  ],
+  "קלייר": [
+   "fire",
+   "international"
+  ],
+  "עירא": [
+   "bible"
+  ],
+  "ויולט": [
+   "international",
+   "nature"
+  ],
+  "לטיסיה": [
+   "joy",
+   "international"
+  ],
+  "חובב": [
+   "bible"
+  ],
+  "סלע": [
+   "strength",
+   "land"
+  ],
+  "יפת": [
+   "bible"
+  ],
+  "ג'ולייט": [
+   "international"
+  ],
+  "שנאל": [
+   "international"
+  ],
+  "אשד": [
+   "water"
+  ],
+  "מידד": [
+   "bible"
+  ],
+  "אולה": [
+   "international"
+  ],
+  "גרציה": [
+   "beauty",
+   "international"
+  ],
+  "הינדל": [
+   "animals"
+  ],
+  "אתל": [
+   "international"
+  ],
+  "צוריה": [
+   "land"
+  ],
+  "רהב": [
+   "strength"
+  ],
+  "תניה": [
+   "international"
+  ],
+  "רימונה": [
+   "nature"
+  ],
+  "פנינית": [
+   "beauty"
+  ],
+  "מיגל": [
+   "international"
+  ],
+  "לייב": [
+   "animals"
+  ],
+  "ג'יימס": [
+   "international"
+  ],
+  "אדלינה": [
+   "international"
+  ],
+  "אייזיק": [
+   "international"
+  ],
+  "נטע-לי": [
+   "nature"
+  ],
+  "שקמה": [
+   "nature"
+  ],
+  "אמוץ": [
+   "strength"
+  ],
+  "קרנית": [
+   "fire"
+  ],
+  "שונית": [
+   "special",
+   "water"
+  ],
+  "ראומה": [
+   "bible"
+  ],
+  "ערד": [
+   "israel"
+  ],
+  "נדיר": [
+   "special"
+  ],
+  "עירד": [
+   "bible"
+  ],
+  "טלילה": [
+   "water"
+  ],
+  "ניקי": [
+   "international"
+  ],
+  "טיראן": [
+   "special",
+   "water"
+  ],
+  "עמירה": [
+   "nature"
+  ],
+  "אדמון": [
+   "nature"
+  ],
+  "מרון": [
+   "israel",
+   "land"
+  ],
+  "וויליאם": [
+   "international"
+  ],
+  "נוית": [
+   "beauty"
+  ],
+  "הדרה": [
+   "beauty"
+  ],
+  "דברת": [
+   "israel"
+  ],
+  "חווה": [
+   "bible"
+  ],
+  "סלעית": [
+   "land",
+   "animals"
+  ],
+  "מורג": [
+   "land"
+  ],
+  "שרלוט": [
+   "international"
+  ],
+  "סרג'יו": [
+   "international"
+  ],
+  "אוולינה": [
+   "international"
+  ],
+  "גניפר": [
+   "international"
+  ],
+  "ליבת": [
+   "joy"
+  ],
+  "חסידה": [
+   "animals"
+  ],
+  "סווטלנה": [
+   "fire",
+   "international"
+  ],
+  "צורית": [
+   "land"
+  ],
+  "נבות": [
+   "bible"
+  ],
+  "נירן": [
+   "land"
+  ],
+  "סביון": [
+   "nature"
+  ],
+  "אמציה": [
+   "strength",
+   "bible"
+  ],
+  "ליקה": [
+   "international"
+  ],
+  "חזקיה": [
+   "strength",
+   "bible"
+  ],
+  "זיוית": [
+   "fire"
+  ],
+  "נעמן": [
+   "bible"
+  ],
+  "גני": [
+   "nature"
+  ],
+  "ג'יין": [
+   "international"
+  ],
+  "עמינדב": [
+   "bible"
+  ],
+  "נאורה": [
+   "fire"
+  ],
+  "יפעה": [
+   "fire",
+   "beauty"
+  ],
+  "איידן": [
+   "fire",
+   "international"
+  ],
+  "גתית": [
+   "poetry"
+  ],
+  "אביחיל": [
+   "strength",
+   "bible"
+  ],
+  "אוראן": [
+   "fire"
+  ],
+  "צפניה": [
+   "bible"
+  ],
+  "נהרה": [
+   "fire"
+  ],
+  "פייגל": [
+   "animals"
+  ],
+  "טים": [
+   "international"
+  ],
+  "לארה": [
+   "international"
+  ],
+  "שירת": [
+   "poetry"
+  ],
+  "בוני": [
+   "beauty",
+   "international"
+  ],
+  "ליבנה": [
+   "nature"
+  ],
+  "דימה": [
+   "international"
+  ],
+  "שטרנא": [
+   "fire"
+  ],
+  "ויולטה": [
+   "international",
+   "nature"
+  ],
+  "אגנס": [
+   "international"
+  ],
+  "ניקו": [
+   "international"
+  ],
+  "פולי": [
+   "international"
+  ],
+  "אלירון": [
+   "poetry"
+  ],
+  "קייט": [
+   "international"
+  ],
+  "ישורון": [
+   "poetry"
+  ],
+  "יגיל": [
+   "joy"
+  ],
+  "תרזה": [
+   "international"
+  ],
+  "לחן": [
+   "poetry"
+  ],
+  "אוניל": [
+   "strength"
+  ],
+  "קלריס": [
+   "international"
+  ],
+  "יטל": [
+   "water"
+  ],
+  "רשף": [
+   "fire"
+  ],
+  "לוסיאנה": [
+   "fire",
+   "international"
+  ],
+  "גלאור": [
+   "fire",
+   "water"
+  ],
+  "חדווה": [
+   "joy"
+  ],
+  "צמרת": [
+   "nature"
+  ],
+  "יהונדב": [
+   "bible"
+  ],
+  "אופאל": [
+   "beauty"
+  ],
+  "חוליו": [
+   "international"
+  ],
+  "דייגו": [
+   "international"
+  ],
+  "גסיקה": [
+   "international"
+  ],
+  "פועה": [
+   "bible"
+  ],
+  "הינדי": [
+   "animals"
+  ],
+  "תמנע": [
+   "israel",
+   "bible"
+  ],
+  "יוראי": [
+   "water"
+  ],
+  "גליל": [
+   "israel",
+   "land"
+  ],
+  "ניצנה": [
+   "nature"
+  ],
+  "אחווה": [
+   "joy"
+  ],
+  "יתיר": [
+   "israel"
+  ],
+  "שיקמה": [
+   "nature"
+  ],
+  "ארזה": [
+   "nature"
+  ],
+  "יונדב": [
+   "bible"
+  ],
+  "צרלס": [
+   "international"
+  ],
+  "הרצליה": [
+   "israel"
+  ],
+  "אלכסה": [
+   "international"
+  ],
+  "אתגר": [
+   "strength"
+  ],
+  "קרל": [
+   "international"
+  ],
+  "גדיאל": [
+   "bible"
+  ],
+  "לירית": [
+   "poetry"
+  ],
+  "מרגנית": [
+   "nature"
+  ],
+  "תמוז": [
+   "fire"
+  ],
+  "סתוית": [
+   "nature"
+  ],
+  "מריאנו": [
+   "international"
+  ],
+  "יעלת חן": [
+   "animals",
+   "beauty"
+  ],
+  "אשרי": [
+   "joy"
+  ],
+  "דובי": [
+   "animals"
+  ],
+  "אבישלום": [
+   "bible"
+  ],
+  "גיה": [
+   "international"
+  ],
+  "דבורית": [
+   "animals"
+  ],
+  "מקונן": [
+   "international"
+  ],
+  "צוק": [
+   "special",
+   "land"
+  ],
+  "צרויה": [
+   "bible"
+  ],
+  "גינת": [
+   "nature"
+  ],
+  "נוריה": [
+   "fire"
+  ],
+  "פיי": [
+   "international"
+  ],
+  "גאלה": [
+   "joy",
+   "international"
+  ],
+  "אליעז": [
+   "strength"
+  ],
+  "מצדה": [
+   "israel"
+  ],
+  "גיליה": [
+   "joy"
+  ],
+  "זילפה": [
+   "bible"
+  ],
+  "ניה": [
+   "international"
+  ],
+  "דינור": [
+   "fire"
+  ],
+  "איטן": [
+   "strength"
+  ],
+  "אודיל": [
+   "international"
+  ],
+  "מקסין": [
+   "international"
+  ],
+  "וולטר": [
+   "international"
+  ],
+  "פלור": [
+   "international",
+   "nature"
+  ],
+  "נופיה": [
+   "land"
+  ],
+  "ברקאי": [
+   "fire"
+  ],
+  "קרן-אור": [
+   "fire"
+  ],
+  "פאולו": [
+   "international"
+  ],
+  "רמונה": [
+   "international"
+  ],
+  "מרטינה": [
+   "international"
+  ],
+  "זמר": [
+   "poetry"
+  ],
+  "אשכול": [
+   "nature"
+  ],
+  "גרמי": [
+   "international"
+  ],
+  "תמירה": [
+   "nature"
+  ],
+  "טלמור": [
+   "water"
+  ],
+  "נטף": [
+   "nature"
+  ],
+  "אדירה": [
+   "strength"
+  ],
+  "ראדא": [
+   "joy",
+   "international"
+  ],
+  "אנוש": [
+   "bible"
+  ],
+  "מקסימיליאן": [
+   "international"
+  ],
+  "אימי": [
+   "international"
+  ],
+  "משכית": [
+   "beauty"
+  ],
+  "יואש": [
+   "bible"
+  ],
+  "אנגל": [
+   "international"
+  ],
+  "שבח": [
+   "poetry"
+  ],
+  "צבר": [
+   "israel",
+   "nature"
+  ],
+  "אלסיה": [
+   "international"
+  ],
+  "אבינדב": [
+   "bible"
+  ],
+  "יאשיהו": [
+   "bible"
+  ],
+  "פרננדה": [
+   "international"
+  ],
+  "מגל": [
+   "land"
+  ],
+  "טל-אור": [
+   "fire",
+   "water"
+  ],
+  "אלפרדו": [
+   "international"
+  ],
+  "שחם": [
+   "strength",
+   "land"
+  ],
+  "יודפת": [
+   "israel"
+  ],
+  "סנאית": [
+   "nature"
+  ],
+  "דונלד": [
+   "international"
+  ],
+  "חוף": [
+   "water"
+  ],
+  "עזי": [
+   "strength"
+  ],
+  "אוצר": [
+   "special"
+  ],
+  "אלבה": [
+   "fire",
+   "international"
+  ],
+  "יון": [
+   "international"
+  ],
+  "תאה": [
+   "international"
+  ],
+  "ארנית": [
+   "nature"
+  ],
+  "יכין": [
+   "bible"
+  ],
+  "ריצארד": [
+   "international"
+  ],
+  "גת": [
+   "nature"
+  ],
+  "נובה": [
+   "fire",
+   "international"
+  ],
+  "פוריה": [
+   "israel"
+  ],
+  "טרויה": [
+   "international"
+  ],
+  "אבגיל": [
+   "joy"
+  ],
+  "לי-און": [
+   "strength"
+  ],
+  "יהלומית": [
+   "beauty"
+  ],
+  "רוויה": [
+   "water"
+  ],
+  "ווביט": [
+   "beauty"
+  ],
+  "כנען": [
+   "israel"
+  ],
+  "גורן": [
+   "land"
+  ],
+  "אליעם": [
+   "bible"
+  ],
+  "נואית": [
+   "beauty"
+  ],
+  "גפנית": [
+   "nature"
+  ],
+  "יובב": [
+   "bible"
+  ],
+  "אליעוז": [
+   "strength"
+  ],
+  "צהלי": [
+   "joy"
+  ],
+  "אתאל": [
+   "international"
+  ],
+  "אושיק": [
+   "joy"
+  ],
+  "צלילה": [
+   "poetry"
+  ],
+  "שיריי": [
+   "poetry"
+  ],
+  "ולדי": [
+   "international"
+  ],
+  "עוגן": [
+   "water"
+  ],
+  "בת אור": [
+   "fire"
+  ],
+  "קטלינה": [
+   "international"
+  ],
+  "אושן": [
+   "water",
+   "international"
+  ],
+  "פלד": [
+   "strength"
+  ],
+  "שלהב": [
+   "fire"
+  ],
+  "עוזיה": [
+   "strength"
+  ],
+  "ויקה": [
+   "international"
+  ],
+  "אוליבייה": [
+   "international",
+   "nature"
+  ],
+  "פארן": [
+   "israel",
+   "land"
+  ],
+  "עמיטל": [
+   "water"
+  ],
+  "הילור": [
+   "fire"
+  ],
+  "רקיע": [
+   "special"
+  ],
+  "תות": [
+   "nature"
+  ],
+  "איבונה": [
+   "international"
+  ],
+  "תלתן": [
+   "nature"
+  ],
+  "תאנה": [
+   "israel",
+   "nature"
+  ],
+  "ג'ורג'יה": [
+   "international"
+  ],
+  "שפר": [
+   "beauty"
+  ],
+  "קתי": [
+   "international"
+  ],
+  "לאוני": [
+   "animals"
+  ],
+  "הד": [
+   "special"
+  ],
+  "הראלה": [
+   "land"
+  ],
+  "אנטונלה": [
+   "international"
+  ],
+  "גאות": [
+   "water"
+  ],
+  "צדף": [
+   "water"
+  ],
+  "אשבל": [
+   "bible"
+  ],
+  "נגבה": [
+   "israel"
+  ],
+  "סייפן": [
+   "nature"
+  ],
+  "זאבה": [
+   "animals"
+  ],
+  "שיר-לי": [
+   "poetry"
+  ],
+  "אורנת": [
+   "nature"
+  ],
+  "מגד": [
+   "land"
+  ],
+  "נריאל": [
+   "fire"
+  ],
+  "יפרח": [
+   "nature"
+  ],
+  "רוזטה": [
+   "international",
+   "nature"
+  ],
+  "יהושפט": [
+   "bible"
+  ],
+  "ארמין": [
+   "international"
+  ],
+  "ברקן": [
+   "nature"
+  ],
+  "שפיר": [
+   "beauty"
+  ],
+  "אנפה": [
+   "water",
+   "animals"
+  ],
+  "יפי": [
+   "beauty"
+  ],
+  "צהל": [
+   "joy"
+  ],
+  "אונית": [
+   "strength"
+  ],
+  "אליטל": [
+   "water"
+  ],
+  "עלוה": [
+   "nature"
+  ],
+  "ויק": [
+   "international"
+  ],
+  "טימותי": [
+   "international"
+  ],
+  "נצחונה": [
+   "strength"
+  ],
+  "סנונית": [
+   "animals"
+  ],
+  "גזית": [
+   "land"
+  ],
+  "גוי": [
+   "international"
+  ],
+  "גונתן": [
+   "international"
+  ],
+  "אבימלך": [
+   "bible"
+  ],
+  "אורורה": [
+   "fire",
+   "international"
+  ],
+  "אלונית": [
+   "nature"
+  ],
+  "גיין": [
+   "international"
+  ],
+  "אורדן": [
+   "fire"
+  ],
+  "אביצור": [
+   "strength"
+  ],
+  "גמא": [
+   "water",
+   "nature"
+  ],
+  "דנאור": [
+   "fire"
+  ],
+  "רננית": [
+   "joy"
+  ],
+  "דיתה": [
+   "international"
+  ],
+  "אנטוניה": [
+   "international"
+  ],
+  "אביאם": [
+   "water"
+  ],
+  "בריטני": [
+   "international"
+  ],
+  "ענן": [
+   "water",
+   "nature"
+  ],
+  "אדלי": [
+   "international"
+  ],
+  "מענית": [
+   "land"
+  ],
+  "צוקית": [
+   "land"
+  ],
+  "ג'ובאני": [
+   "international"
+  ],
+  "חצב": [
+   "nature"
+  ],
+  "שיבולת": [
+   "land",
+   "nature"
+  ],
+  "מדיסון": [
+   "international"
+  ],
+  "קארל": [
+   "international"
+  ],
+  "שר-אל": [
+   "poetry"
+  ],
+  "ויאולה": [
+   "international",
+   "nature"
+  ],
+  "רביבה": [
+   "water"
+  ],
+  "סתונית": [
+   "nature"
+  ],
+  "אודטה": [
+   "international"
+  ],
+  "אבינר": [
+   "fire",
+   "bible"
+  ],
+  "אחיהוד": [
+   "bible"
+  ],
+  "טיליה": [
+   "nature"
+  ],
+  "משואה": [
+   "fire"
+  ],
+  "לוצ'יה": [
+   "fire",
+   "international"
+  ],
+  "נאית": [
+   "beauty"
+  ],
+  "בן-עמי": [
+   "bible"
+  ],
+  "לפיד": [
+   "fire"
+  ],
+  "סחלב": [
+   "nature"
+  ],
+  "תירוש": [
+   "land"
+  ],
+  "הלגה": [
+   "international"
+  ],
+  "ברוש": [
+   "nature"
+  ],
+  "שקדיה": [
+   "nature"
+  ],
+  "יסעור": [
+   "special"
+  ],
+  "אביאסף": [
+   "bible"
+  ],
+  "טל-שחר": [
+   "water"
+  ],
+  "יורית": [
+   "water"
+  ],
+  "הרדוף": [
+   "nature"
+  ],
+  "נץ": [
+   "animals"
+  ],
+  "שלף": [
+   "bible"
+  ],
+  "בשן": [
+   "land"
+  ],
+  "דגניה": [
+   "israel",
+   "land"
+  ],
+  "עזית": [
+   "strength"
+  ],
+  "אבטמו": [
+   "international"
+  ],
+  "אורים": [
+   "fire"
+  ],
+  "זניה": [
+   "nature"
+  ],
+  "ניו": [
+   "international"
+  ],
+  "אליפז": [
+   "bible"
+  ],
+  "שירטל": [
+   "poetry",
+   "water"
+  ],
+  "מדבר": [
+   "land"
+  ],
+  "צארלס": [
+   "international"
+  ],
+  "פולג": [
+   "water"
+  ],
+  "מכבית": [
+   "israel"
+  ],
+  "עלווה": [
+   "nature"
+  ],
+  "תקומה": [
+   "israel"
+  ],
+  "אבני": [
+   "land"
+  ],
+  "מיו": [
+   "international"
+  ],
+  "ארמינה": [
+   "international"
+  ],
+  "יצהל": [
+   "joy"
+  ],
+  "נאות": [
+   "nature"
+  ],
+  "לואיג'י": [
+   "international"
+  ],
+  "אלישיה": [
+   "international"
+  ],
+  "אטד": [
+   "nature"
+  ],
+  "גושוע": [
+   "international"
+  ],
+  "יופיה": [
+   "beauty"
+  ],
+  "אדירם": [
+   "strength"
+  ],
+  "אלמגור": [
+   "israel",
+   "land"
+  ],
+  "נוילי": [
+   "beauty"
+  ],
+  "מלכיאור": [
+   "fire"
+  ],
+  "דיאה": [
+   "international"
+  ],
+  "גפנה": [
+   "nature"
+  ],
+  "בנגמין": [
+   "international"
+  ],
+  "לי-עוז": [
+   "strength"
+  ],
+  "גן-יה": [
+   "nature"
+  ],
+  "שירי-לי": [
+   "poetry"
   ]
  }
 }

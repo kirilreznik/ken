@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { parseDetails, type RawDetailsFile } from "@/lib/names/data";
 // @ts-expect-error plain .mjs script without types
-import { buildDetails, readBatches, report, storyProblems } from "../../scripts/names-content/build-details.mjs";
+import { buildDetails, mentionsBible, readBatches, report, storyProblems } from "../../scripts/names-content/build-details.mjs";
 
 describe("parseDetails", () => {
   it("keeps a normal entry as written", () => {
@@ -87,6 +87,11 @@ describe("build-details", () => {
     const out = build("details-ok");
     expect(out.drops).toEqual(["אריאל → אראל: no card in the deck"]);
     expect(out.names["אריאל"].similar).not.toContain("אראל");
+  });
+
+  it("counts a Bible source mention but not the word for Spain", () => {
+    expect(mentionsBible("בספר שמות מסופר על המיילדות.")).toBe(true);
+    expect(mentionsBible("השם נפוץ בספרד ובאמריקה הלטינית.")).toBe(false);
   });
 
   it("warns on missing entries, Bible mentions without a checked verse and intro overlap", () => {

@@ -5,10 +5,13 @@ import ConnectionNote from "@/components/names/ConnectionNote";
 import PanelNote from "@/components/names/auth/PanelNote";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { Button } from "@/components/names/ui";
+import { buttonClass } from "@/components/names/ui/classes";
+import { APP_PATH } from "@/lib/names/auth";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import { OFFLINE_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
 import { GOOGLE_FAILED_MESSAGE, oauthRedirectTo } from "@/lib/names/routing";
+import { requestSignupPass } from "@/lib/names/signupPass";
 import { getSupabase } from "@/lib/names/supabase";
 import { track } from "@/lib/names/track";
 
@@ -16,8 +19,11 @@ export const EMAIL_SIGN_IN_PATH = "/names/sign-in/email";
 
 const GOOGLE_NEXT_STEP = "אפשר לנסות שוב או להיכנס עם קוד במייל.";
 
-/** The two sign-in buttons of FR-W1 (no SMS, PRD 3.1.3). The join screen passes its code, which isn't in ?join=. */
-export default function WelcomeActions({ joinCode }: { joinCode?: string | null }) {
+/**
+ * The two sign-in buttons of FR-W1 (no SMS, PRD 3.1.3). The join screen passes its code, which isn't in ?join=.
+ * `guestLink` (welcome only) adds "continue without an account" to the swipe screen as a guest.
+ */
+export default function WelcomeActions({ joinCode, guestLink = false }: { joinCode?: string | null; guestLink?: boolean }) {
   const pending = usePendingJoin();
   const join = joinCode ?? pending;
   const [busy, setBusy] = useState(false);
@@ -49,6 +55,8 @@ export default function WelcomeActions({ joinCode }: { joinCode?: string | null 
     setError(null);
     track("signin_started", { method: "google" });
     try {
+      // A new account through an invite link needs this pass (Google can't carry the code).
+      await requestSignupPass(supabase, join);
       const { error: err } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo: oauthRedirectTo(process.env.NEXT_PUBLIC_SITE_URL, window.location.origin, join) },
@@ -84,6 +92,13 @@ export default function WelcomeActions({ joinCode }: { joinCode?: string | null 
         </svg>
         כניסה עם קוד במייל
       </Button>
+      {/* A full load, not a client navigation: an expired session's state starts over as a guest.
+          Not while an invite is pending: joining a space needs an account. */}
+      {guestLink && !join ? (
+        <a href={APP_PATH} data-control className={buttonClass("link")}>
+          להמשיך בלי חשבון
+        </a>
+      ) : null}
     </div>
   );
 }

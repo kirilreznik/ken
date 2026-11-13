@@ -2,7 +2,8 @@
  "_about": "Batch 3 (E16b): the next 260 names given in 2024, drafted by Claude for owner spot-checks.",
  "names": {
   "לוריא": {
-   "hold": "Also a family name (Luria); owner to decide the intro."
+   "niqqud": "לוּרְיָא",
+   "intro": "לוריא, גם שם משפחה, כמו של האר\"י, רבי יצחק לוריא."
   },
   "דורון": {
    "niqqud": "דּוֹרוֹן",
@@ -37,7 +38,11 @@
    ]
   },
   "לירי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לִירִי",
+   "intro": "לירי, מלשון לירה, כלי נגינה. גם 'שירי' באנגלית (lyric).",
+   "themes": [
+    "poetry"
+   ]
   },
   "גילה": {
    "niqqud": "גִּילָה",
@@ -85,7 +90,8 @@
    ]
   },
   "ליאה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לִיאָה",
+   "intro": "ליאה, צורה של לאה."
   },
   "יאקות": {
    "niqqud": "יַאקוּת",
@@ -148,7 +154,8 @@
    "intro": "אל־רועי: אלוהים הוא הרועה שלי."
   },
   "מיילי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מיילי",
+   "intro": "מיילי, שם חדש, כנראה צורה של מילי."
   },
   "אדהם": {
    "niqqud": "אַדְהַם",
@@ -228,7 +235,11 @@
    ]
   },
   "ריין": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "ריין",
+   "intro": "ריין, שם קצר וחדש, כנראה מלשון רינה ורן: שיר ושמחה.",
+   "themes": [
+    "joy"
+   ]
   },
   "קדר": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -285,7 +296,8 @@
    }
   },
   "אליאנה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אליאנה",
+   "intro": "אליאנה, שם חדש, כנראה מן 'אלי' ו'אנה': אלוהים ענה לי."
   },
   "ג'ולאן": {
    "niqqud": "גּ'וֹלַאן",
@@ -405,7 +417,12 @@
    "intro": "סלים בערבית הוא שלם ובריא."
   },
   "לאו": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לֵאוֹ",
+   "intro": "לאו, שם בינלאומי מלטינית: 'אריה'.",
+   "themes": [
+    "international",
+    "animals"
+   ]
   },
   "ברק": {
    "niqqud": "בָּרָק",
@@ -568,7 +585,8 @@
    }
   },
   "איטה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אִיטָה",
+   "intro": "איטה, שם ביידיש, כנראה צורה של יהודית."
   },
   "גבע": {
    "niqqud": "גֶּבַע",
@@ -644,10 +662,21 @@
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "שיאל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "שַׁיאֵל",
+   "intro": "שיאל, 'שי אל': מתנה מאלוהים."
   },
   "לאל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לָאֵל",
+   "intro": "לאל, 'לאלוהים'. בתנ\"ך, אביו של אליסף.",
+   "bible": {
+    "quote": "אליסף בן לאל",
+    "book": "Numbers",
+    "ch": 3,
+    "v": 24
+   },
+   "themes": [
+    "bible"
+   ]
   },
   "עזרא": {
    "niqqud": "עֶזְרָא",
@@ -671,7 +700,11 @@
    "intro": "רם, גבוה ונעלה."
   },
   "אסיה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אַסְיָה",
+   "intro": "אסיה, צורה רוסית קצרה של אנסטסיה. גם שם של יבשת.",
+   "themes": [
+    "international"
+   ]
   },
   "יער": {
    "niqqud": "יַעַר",
@@ -841,7 +874,11 @@
    "intro": "סמיר בערבית הוא חבר לשיחות ערב."
   },
   "סאלי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "סָאלִי",
+   "intro": "סאלי, שם אנגלי, צורת חיבה של שרה.",
+   "themes": [
+    "international"
+   ]
   },
   "אכרם": {
    "niqqud": "אַכְּרַם",
@@ -976,7 +1013,8 @@
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "הענא": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "הענא",
+   "intro": "הענא, שם ביידיש, צורה של חנה."
   },
   "אשירה": {
    "niqqud": "אָשִׁירָה",
@@ -1005,7 +1043,8 @@
    ]
   },
   "ליהי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לִיהִי",
+   "intro": "ליהי, 'לי היא'. שם עברי חדש."
   },
   "מייס": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -1074,7 +1113,8 @@
    ]
   },
   "לי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לִי",
+   "intro": "לי, 'שלי'. שם קצר שניתן לבנים ולבנות."
   },
   "חגי": {
    "niqqud": "חַגַּי",
@@ -1119,10 +1159,12 @@
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "אל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אֵל",
+   "intro": "אל, אלוהים. שם קצר מאוד."
   },
   "סימא": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "סִימָא",
+   "intro": "סימא, מארמית: 'אוצר'."
   },
   "תכלת": {
    "niqqud": "תְּכֵלֶת",
@@ -1151,7 +1193,8 @@
    ]
   },
   "ליבר": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לִיבֶּר",
+   "intro": "ליבר, שם ביידיש, מן 'ליב': אהוב."
   },
   "חוסאם": {
    "niqqud": "חֻסַאם",
@@ -1181,7 +1224,11 @@
    ]
   },
   "פראדל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "פראדל",
+   "intro": "פראדל, שם ביידיש, כנראה צורת חיבה של פרידה: 'שמחה'.",
+   "themes": [
+    "joy"
+   ]
   },
   "סיליה": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -1262,7 +1309,8 @@
    ]
   },
   "פסיה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "פֶּסְיָה",
+   "intro": "פסיה, שם ביידיש, כנראה צורה של בתיה."
   },
   "מינא": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -1304,7 +1352,8 @@
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "מלי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מָלִי",
+   "intro": "מלי, צורת חיבה של מלכה או אמליה."
   },
   "נסים": {
    "hold": "Hebrew (miracles) or Arabic (breeze); owner to choose."
@@ -1357,7 +1406,8 @@
    ]
   },
   "הניה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "הַנְיָה",
+   "intro": "הניה, צורת חיבה של חנה."
   },
   "סלמה": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -1374,7 +1424,11 @@
    ]
   },
   "מיי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מֵיי",
+   "intro": "מיי, 'מאי' באנגלית. גם צורת חיבה של מרים.",
+   "themes": [
+    "international"
+   ]
   },
   "שאהין": {
    "niqqud": "שָׁאהִין",
@@ -1482,7 +1536,8 @@
    ]
   },
   "אלעאי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אִלְעַאי",
+   "intro": "אלעאי, שמו של חכם בתלמוד, רבי אלעאי."
   },
   "ליית'": {
    "niqqud": "לַיְת'",
@@ -1493,7 +1548,11 @@
    ]
   },
   "מיליה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מִילְיָה",
+   "intro": "מיליה, כנראה צורה של אמיליה.",
+   "themes": [
+    "international"
+   ]
   },
   "אוסלין": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -1557,7 +1616,11 @@
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "ליאנה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לִיאָנָה",
+   "intro": "ליאנה, צמח מטפס ביערות טרופיים. גם צורה של שמות כמו ג'וליאנה.",
+   "themes": [
+    "nature"
+   ]
   },
   "אפק": {
    "niqqud": "אֲפֵק",
@@ -1612,7 +1675,8 @@
    ]
   },
   "לאיה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לאיה",
+   "intro": "לאיה, כנראה צורה של לאה."
   },
   "ג'ית": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -1676,10 +1740,12 @@
    ]
   },
   "מירל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מִירְל",
+   "intro": "מירל, שם ביידיש, צורת חיבה של מרים."
   },
   "מורי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מוֹרִי",
+   "intro": "מורי, 'המורה שלי'."
   },
   "קמה": {
    "niqqud": "קָמָה",

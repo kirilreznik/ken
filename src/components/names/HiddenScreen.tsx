@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
-import { useAuth } from "@/components/names/AuthProvider";
+import { useUserId } from "@/components/names/AuthProvider";
 import { Button, ChevronIcon, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
 import { ListSkeleton } from "@/components/names/lists/ListSkeleton";
 import { useNameStats } from "@/components/names/useCards";
@@ -21,10 +21,10 @@ import type { Vote } from "@/lib/names/types";
  */
 export default function HiddenScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const userId = useUserId();
   const space = useSpace();
   const { names } = useNameStats();
-  const { store, state } = useVotes(space.spaceId, user?.id ?? null);
+  const { store, state } = useVotes(space.spaceId, userId);
   const listRef = useRef<HTMLUListElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const focusAfter = useRef<number | null>(null);

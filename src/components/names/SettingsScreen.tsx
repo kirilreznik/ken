@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
+import DisplaySettings from "@/components/names/DisplaySettings";
 import { Button, ChevronIcon, Dialog, IconButton, ROW_PRESS, closeDialog, inputClass, openDialog } from "@/components/names/ui";
 import { InstallSheet, useInstall } from "@/components/names/pwa/Install";
 import { useSpace } from "@/components/names/useSpace";
@@ -356,6 +357,8 @@ export default function SettingsScreen() {
             </li>
           </ul>
         </Section>
+
+        <DisplaySettings userId={user?.id ?? null} />
 
         <Section title="בחירה משותפת">
           <ul className={card}>

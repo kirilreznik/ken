@@ -6,8 +6,8 @@
 |---|---|---|
 | `samples.json` | The 10 hand-written E16 sample cards | Owner review |
 | `batch-NNN.json` | Drafted cards (niqqud, intro, Bible reference), most popular names first | Rendered from `scripts/names-content/drafts/batch-NNN.py` |
-| `people.json` | Known people per name, from Wikidata only | `scripts/names-content/fetch-people.mjs` |
-| `people-exclude.json` | People the owner flagged (QIDs); never shown | Owner |
+| `people.json` | Known people per name, from Wikidata only (2026-11-13 run, every pick read by hand; see PEOPLE-REPORT.md) | `scripts/names-content/fetch-people.mjs` |
+| `people-exclude.json` | People never shown on a card (QID, name, reason) | Owner / reviewer |
 | `themes.json` | Theme lists for the "נושאים" filter (one list per theme; `unisex` is computed from CBS) | AI draft, owner review |
 | `THEMES.md` | Every theme's names and the names with none, for review | `scripts/names-content/build-themes.mjs` |
 | `sectors.json` | Births per name in the Jewish sector vs all sectors (CBS) | `scripts/names-content/build-sectors.mjs` |
@@ -20,7 +20,7 @@
 
 ```bash
 python3 scripts/names-content/drafts/batch-001.py      # render a drafted batch to JSON
-node scripts/names-content/fetch-people.mjs --only 1    # Wikidata people (needs query.wikidata.org)
+node scripts/names-content/fetch-people.mjs              # Wikidata people (needs query.wikidata.org; the cloud sandbox is blocked, so run it from a Mac or reuse the browser method in the script header)
 node scripts/names-content/build-content.mjs            # check Bible refs, build name-content.json
 node scripts/names-content/spot-check.mjs 1             # sample for the owner
 node scripts/names-content/build-themes.mjs             # check theme lists, build ../name-themes.json + THEMES.md
@@ -34,6 +34,14 @@ node scripts/names-content/build-themes.mjs             # check theme lists, bui
 - **Niqqud**: its letters must match the name, apart from the vowel letters ו and י.
 - An entry with `hold` is left out of the deck until the owner decides (unclear origin or meaning).
 - **Jewish-sector rule** (owner decision 2026-11-13, `scripts/names-content/sector.mjs`): the deck keeps a name only when most babies ever given it were in the CBS Jewish sector, or when since 2000 at least 100 Jewish babies got it and they are at least 10% of its births (shared names such as לין, איה, אדם). Exceptions go in `sector-overrides.json`. `build-themes` and `build-details` skip the names it leaves out.
+
+## Batches 8–13: site-listed names (2026-11-13)
+
+Batches 1–7 cover every name given 5+ times in 2024. Batches 8–13 add the 905 CBS names below that cutoff that pass the Jewish-sector rule and are listed on at least one Israeli baby-name site (israelibaby, baby-land, materna, pampers; scanned 2026-11-13 for name strings only, never their meanings). Order: names on 2+ sites first, then by births since 2000.  Their stories and similar names are in details batches 21–38 (below).
+
+## Held names resolved (2026-11-13)
+
+Owner decision: no Jewish-sector name stays held. Every name that was held for an unclear origin (169 in batches 1–7, 113 in batches 8–13) gets a card from `scripts/names-content/drafts/resolved.py`, which `hold()` and `bare()` in `_lib.py` look up first. Those intros are Claude's best effort: "כנראה" / "אולי" mark a guess, and a name with an uncertain reading keeps no niqqud (the card shows it as written).
 
 ## Writing rules (E16 spec §2)
 
@@ -52,7 +60,9 @@ One short, neutral line on the origin and literal meaning. No claims about luck,
 
 ## Batches
 
-20 batches, deck names ordered by 2024 births (most first, ties by name): batch 1 = names 1–65, batch 2 = 66–130, …, batch 20 = the last 60. `node scripts/names-content/details-batches.mjs N` prints batch N (`name<TAB>births`; `| cut -f1` for just the names), so every batch uses the same split. All 1,295 deck names are covered: 1,276 stories and 19 null stories (see the report).
+20 batches, deck names ordered by 2024 births (most first, ties by name): batch 1 = names 1–65, batch 2 = 66–130, …, batch 20 = the last 60. `node scripts/names-content/details-batches.mjs N` prints batch N (`name<TAB>births`; `| cut -f1` for just the names), so every batch uses the same split. All 1,295 deck names are covered: 1,276 stories and 19 null stories (see the report). (432 of those entries are for names the Jewish-sector rule later left out of the deck, so the build skips them.)
+
+Batches 21–38 (2026-11-13) cover the 1,074 names added to the deck by card batches 8–13 and the held-name resolution, ordered by births since 2000 (most first), 60 per batch and 54 in batch 38. They follow the same rules; a guess says כנראה or אולי, and a story that names the Bible only does so when the card has a checked verse. The deck now has 1,937 names, all covered, with no warnings.
 
 ## Steps
 
@@ -69,5 +79,5 @@ npm run names:data                                          # publish as public/
 
 - **Story:** 2 to 4 sentences, 140–480 characters, Hebrew, gender-neutral, plain register. What the name means, its language, how it is formed and where it appears; builds on the card's intro without repeating it. No births, ranks or trends, no famous people, no quotes or chapter/verse references, no `!` or `?`, no claims about luck, character, religion or who gives the name. A Bible person or place only when the card has a checked verse or the intro already names it. When the meaning isn't well established: a shorter story about the word, or `story: null` with an English `storyNote`.
 - **Similar names:** forms of the same name only: girls' and boys' forms, real short forms, other spellings, names built on the same word. Not names that only sound or look alike; when unsure, leave it out. Deck names only, never the name itself, 0–6 per name. The candidate rules (`similar-rules.mjs`, tested in `tests/names/similar.test.ts`): same consonants without ו/י and a final ה/א, a feminine ending, ±־אל / ־יה / יהו־ / אלי־, doubled ו/י.
-- **The build fails** (exit 1) on a story outside 140–480 characters, `!` or `?`, a quote mark, a chapter/verse pattern or a digit other than a 4-digit year in a story, a similar name that is the name itself or not a known name, a details name that isn't a deck name, and a name in two batches. It **warns** in the report on a deck name with no entry, a Bible mention without a checked verse, and a story sharing more than 60% of its words with the intro. A similar name that is a CBS name but has no card is dropped with a report line. Then it fills symmetry (A lists B, so B lists A), re-sorts each list by 2024 births and caps it at 6. Tested in `tests/names/details.test.ts`.
+- **The build fails** (exit 1) on a story outside 140–480 characters, `!` or `?`, a quote mark, a chapter/verse pattern or a digit other than a 4-digit year in a story, a similar name that is the name itself or not a known name, a details name that isn't a deck name, and a name in two batches. It **warns** in the report on a deck name with no entry, a Bible mention without a checked verse ("בספר" counts, "בספרד" doesn't), and a story sharing more than 60% of its words with the intro. A similar name that is a CBS name but has no card is dropped with a report line. Then it fills symmetry (A lists B, so B lists A), re-sorts each list by 2024 births and caps it at 6. Tested in `tests/names/details.test.ts`.
 - The app also removes the user's hidden names from the similar list (`similarForDisplay` in `src/lib/names/detail.ts`).

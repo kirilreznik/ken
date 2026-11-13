@@ -16,9 +16,9 @@ describe("rowMeta", () => {
     expect(rowMeta(names.get("אריאל"))?.sexTag).toBe("מתאים לכולם");
   });
 
-  it("uses the all-time line for a name with no recent births", () => {
+  it("adds the all-time count when 2024 is under 5", () => {
     const old: NameStats = { name: "ישן", m: 54_321, f: 12, s: "J" };
-    expect(rowMeta(old)).toEqual({ sexTag: "בן", count: "ניתן לכ־54,000 מאז 1949", trend: null });
+    expect(rowMeta(old)).toEqual({ sexTag: "בן", count: "פחות מ־5 ב־2024, כ־54,000 מאז 1949", trend: null });
   });
 
   it("is null for a custom name", () => {
@@ -88,7 +88,7 @@ describe("savedRows", () => {
 describe("list texts", () => {
   it("says what happened to the name", () => {
     expect(rowActionText("תמר", "remove")).toBe("השם תמר הוסר מהרשימה");
-    expect(rowActionText("תמר", "hide")).toBe("השם תמר הוסתר ולא יוצג יותר");
+    expect(rowActionText("תמר", "hide")).toBe("השם תמר לא יוצג שוב");
     expect(addedText("אוריה")).toBe("השם אוריה נוסף לרשימה");
   });
   it("says what the undo put back", () => {

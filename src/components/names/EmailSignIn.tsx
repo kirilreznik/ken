@@ -34,6 +34,7 @@ import { useAuth } from "./AuthProvider";
 import ConnectionNote from "./ConnectionNote";
 import { useOnline } from "./useMatches";
 import { track } from "@/lib/names/track";
+import { signupData } from "@/lib/names/signupPass";
 
 const wordmark = <Wordmark />;
 
@@ -114,7 +115,7 @@ export default function EmailSignIn() {
     try {
       const { error: err } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        options: { shouldCreateUser: true, captchaToken: captchaToken ?? undefined },
+        options: { shouldCreateUser: true, captchaToken: captchaToken ?? undefined, data: signupData(join) },
       });
       if (err) {
         fail("sign-in-email-send", err);

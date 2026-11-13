@@ -37,7 +37,9 @@ describe("names data files", () => {
       const card = content.get(name)!;
       expect(names.has(name), name).toBe(true);
       expect(card.niqqud, name).toMatch(/[\u05D0-\u05EA]/);
-      expect(card.intro.length, name).toBeGreaterThan(5);
+      // A bare card (unclear name kept as written, owner 2026-11-13) has no intro and no niqqud guess.
+      if (card.intro === "") expect(card.niqqud, name).toBe(name);
+      else expect(card.intro.length, name).toBeGreaterThan(5);
       if (card.bible) {
         expect(card.bible.text.length, name).toBeGreaterThan(0);
         expect(card.bible.ref.length, name).toBeGreaterThan(0);
