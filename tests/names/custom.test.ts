@@ -34,7 +34,7 @@ describe("validateCustomName", () => {
 
   it("rejects empty input", () => {
     for (const input of ["", "   ", "ָ"]) {
-      expect(validateCustomName(input, names, none)).toEqual({ ok: false, error: "empty", message: "צריך לכתוב שם" });
+      expect(validateCustomName(input, names, none)).toEqual({ ok: false, error: "empty", message: "צריך לכתוב שם." });
     }
   });
 
@@ -50,7 +50,7 @@ describe("validateCustomName", () => {
     expect(validateCustomName("א".repeat(21), names, none)).toEqual({
       ok: false,
       error: "too-long",
-      message: "עד 20 תווים",
+      message: "השם ארוך מדי. אפשר עד 20 תווים.",
     });
   });
 
@@ -60,7 +60,7 @@ describe("validateCustomName", () => {
 
   it("rejects a name already on the list", () => {
     const myList = ["יעל", 'ש"י'];
-    expect(validateCustomName("יעל", names, myList)).toEqual({ ok: false, error: "duplicate", message: "כבר ברשימה" });
+    expect(validateCustomName("יעל", names, myList)).toEqual({ ok: false, error: "duplicate", message: "השם הזה כבר ברשימה ״שמרתי״." });
     expect(validateCustomName("יָעֵל ", names, myList)).toMatchObject({ error: "duplicate" });
     expect(validateCustomName("ש״י", names, myList)).toMatchObject({ error: "duplicate" });
   });

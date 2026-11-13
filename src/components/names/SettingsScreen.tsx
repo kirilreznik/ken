@@ -116,7 +116,9 @@ export default function SettingsScreen() {
     const supabase = getSupabase();
     if (!user || !supabase || savingName) return;
     if (!nameValid) {
-      setNameError(`צריך שם, עד ${DISPLAY_NAME_MAX} תווים.`);
+      setNameError(
+        name.trim() === "" ? "צריך לכתוב שם." : `השם ארוך מדי. אפשר עד ${DISPLAY_NAME_MAX} תווים.`,
+      );
       return;
     }
     if (!changed) return;
