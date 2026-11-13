@@ -2,7 +2,7 @@
 
 import Image, { type StaticImageData } from "next/image";
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
-import { useAuth } from "@/components/names/AuthProvider";
+import { useUserId } from "@/components/names/AuthProvider";
 import { useBackgroundChoice } from "@/components/names/ScreenBackground";
 import { BottomSheet, Button } from "@/components/names/ui";
 import { photoUrl } from "@/lib/names/background";
@@ -103,8 +103,7 @@ export default function BackgroundSheet() {
 }
 
 function BackgroundOptions() {
-  const { user } = useAuth();
-  const userId = user?.id ?? null;
+  const userId = useUserId();
   const current = useBackgroundChoice();
   const ownThumb = useOwnThumb(userId);
   const hasOwn = !!ownThumb;

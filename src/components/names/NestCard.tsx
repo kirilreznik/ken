@@ -58,6 +58,9 @@ export default function NestCard({ placement }: { placement: NestCardPlacement }
     }
   }
 
+  // The card's opt-in saves to the account: a guest has none yet.
+  if (!user) return null;
+
   return (
     // On the decision sheet the card sits on the bare photo, so it reads on card glass like the
     // name card; in the recap and deck-end panels it's already on glass and stays soft.

@@ -17,14 +17,13 @@ import { getPref, subscribePrefs, type Background } from "@/lib/names/prefs";
 import fabric from "../../../public/landing/names-fabric.webp";
 import notebook from "../../../public/landing/names-notebook.webp";
 import nursery from "../../../public/landing/names-nursery.webp";
-import { useAuth } from "./AuthProvider";
+import { useUserId } from "./AuthProvider";
 
 const PHOTOS: Record<PhotoBackground, StaticImageData> = { fabric, notebook, nursery };
 
 /** The signed-in user's background choice (FR-W17), following changes made anywhere. */
 export function useBackgroundChoice(): Background {
-  const { user } = useAuth();
-  const userId = user?.id ?? null;
+  const userId = useUserId();
   return useSyncExternalStore(
     subscribePrefs,
     () => (userId ? getPref(userId, "background") : "fabric"),
@@ -119,10 +118,10 @@ interface ScreenBackgroundProps {
  * makes the glass whiter. Children sit in a centered column of max 480 px inside the safe area.
  */
 export default function ScreenBackground({ background, blobs = "main", children }: ScreenBackgroundProps) {
-  const { user } = useAuth();
+  const userId = useUserId();
   const saved = useBackgroundChoice();
   const choice = background ?? saved;
-  const own = useOwnPhoto(user?.id ?? null, choice === "own");
+  const own = useOwnPhoto(userId, choice === "own");
   const ownPhoto = own === "loading" ? null : own;
   const shown: Background | null =
     choice === "own" && own === "loading" ? null : effectiveBackground(choice, !!ownPhoto?.url);

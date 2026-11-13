@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import { useAuth } from "@/components/names/AuthProvider";
+import { useUserId } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
@@ -57,19 +57,19 @@ function Icon({ size = 20, children, className }: { size?: number; children: Rea
 export default function ListsScreen() {
   const router = useRouter();
   const params = useSearchParams();
-  const { user } = useAuth();
+  const userId = useUserId();
   const space = useSpace();
   const { names } = useNameStats();
   const { cards } = useCards();
-  const { store, state } = useVotes(space.spaceId, user?.id ?? null);
-  const matches = useMatches(space.spaceId, user?.id ?? null, space.isShared, state?.votes);
+  const { store, state } = useVotes(space.spaceId, userId);
+  const matches = useMatches(space.spaceId, userId, space.isShared, state?.votes);
   const [status, setStatus] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const twins = usePrefJson(user?.id ?? null, "twins") === "true";
+  const twins = usePrefJson(userId, "twins") === "true";
   const asked = listsTab(params.get("tab"));
   const tab = asked === "pairs" && !twins ? "saved" : asked;
-  const { chosen, choose, clear } = useChosen(user?.id ?? null, space.spaceId, space.isShared);
+  const { chosen, choose, clear } = useChosen(userId, space.spaceId, space.isShared);
   const decision = <DecisionSheet name={chosen} shared={space.isShared} onClear={() => clear("sheet")} />;
   useEffect(() => track("lists_tab", { tab }), [tab]);
   const rows = useMemo(() => savedRows(state?.votes ?? new Map()), [state?.votes]);
@@ -85,7 +85,7 @@ export default function ListsScreen() {
     for (const [name, v] of state?.votes ?? []) map.set(name, v.vote);
     return map;
   }, [state?.votes]);
-  const surnameJson = usePrefJson(user?.id ?? null, "surname");
+  const surnameJson = usePrefJson(userId, "surname");
   const surname = surnameJson ? (JSON.parse(surnameJson) as string) : "";
 
   const tabs: { id: ListsTab; label: string }[] = [
@@ -145,7 +145,7 @@ export default function ListsScreen() {
     return (
       <>
       <DuelScreen
-        userId={user?.id ?? null}
+        userId={userId}
         from={params.get("from")}
         ready={ready && matchesLoaded}
         savedNames={rows.map((r) => r.name)}
@@ -218,7 +218,7 @@ export default function ListsScreen() {
 
         {chosen ? <ChosenBanner name={chosen} shared={space.isShared} onOpen={() => openSheet("decision")} onClear={() => clear("lists")} /> : null}
 
-        {ready ? <InstallHint userId={user?.id ?? null} voteCount={state?.votes.size ?? 0} /> : null}
+        {ready ? <InstallHint userId={userId} voteCount={state?.votes.size ?? 0} /> : null}
 
         <div role="tablist" aria-label="רשימות" className="grid auto-cols-fr grid-flow-col gap-1 rounded-pill border border-line bg-surface p-1">
           {tabs.map((t) => {
@@ -284,7 +284,7 @@ export default function ListsScreen() {
             <SoloMatches />
           ) : (
             <MatchesPanel
-              userId={user?.id ?? null}
+              userId={userId}
               state={matches}
               onRetry={() => matches?.refresh()}
               memberCount={space.members.length}

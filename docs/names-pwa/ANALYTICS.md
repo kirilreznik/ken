@@ -65,7 +65,12 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
 | `nest_card_shown` / `nest_card_tap` | the Nest app card (recap, decision, deck end) | `placement`, `opted_in` / `action` (opt_in, learn) |
 | `decision_made` / `decision_cleared` | "בחרנו שם" | `from` (duel, saved, matches), `shared`, `custom`, `rank` / `from` |
 | `space_left` / `space_leave_failed` | leaving a shared space in settings | `members` / `reason` |
+| `guest_prompt` | a guest's sign-in card (every 20 decisions) or the wall at 100 | `kind` (nudge, wall), `action` (shown, signin, later), `votes` |
+| `guest_votes_imported` | a guest signed in; their device votes moved into the account | `votes` |
 | `survey_prompt` / `survey_submitted` | the beta survey | `action` / closed answers as tokens (`disappointed`, `stage`, `nest_app`), `audience`/`useful` as answered-or-not, `votes`, `sessions` |
+
+Guests: events without a user key are signed-out visitors (one `device_id` per browser). Guest → account
+conversion = devices with `guest_prompt` that later have `guest_votes_imported`.
 
 Nest card tap rate = `nest_card_tap` (action opt_in) ÷ `nest_card_shown` where `opted_in` is false;
 compare it with the onboarding opt-in rate (review §8, kill-assumption 3).
