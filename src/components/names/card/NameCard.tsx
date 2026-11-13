@@ -23,7 +23,7 @@ type NameCardProps = Omit<ComponentPropsWithRef<"article">, "children"> & {
 };
 
 const stamp =
-  "pointer-events-none absolute top-5.5 rounded-sm border-3 border-current bg-white-75 px-3 py-1 text-stamp";
+  "pointer-events-none absolute top-5.5 rounded-sm border-3 border-current bg-surface px-3 py-1 text-stamp opacity-0";
 
 /**
  * A whole name card (E16 FR-5a, slim per FR-D19 / board 12), one glass article in this order:
@@ -31,8 +31,8 @@ const stamp =
  * ("מהתנ״ך", known people; labels, not controls), the boys/girls bar, the number tiles and,
  * with onDetails, the "לכל הפרטים" button. Empty sections are left out.
  * It scrolls inside itself only when the content can't fit (200% zoom, 320 px).
- * The swipe stamps (שמירה, דילוג, אהבתי מאוד) show through the --keep, --skip and --love CSS
- * variables (0..1) that the drag sets on the article, like the landing demo's .nd-stamp.
+ * The swipe stamps (שמירה, דילוג, אהבתי מאוד) are opaque and hidden; the drag sets each one's
+ * opacity (0..1) directly, found by its data-stamp (NP-093).
  */
 export default function NameCard({ card, position, total, surname, corner, onDetails, detailsRef, className = "", ...rest }: NameCardProps) {
   const { stats, content, derived } = card;
@@ -74,15 +74,16 @@ export default function NameCard({ card, position, total, surname, corner, onDet
           </svg>
         </Button>
       )}
-      <span aria-hidden="true" className={`${stamp} end-5 -rotate-12 text-ink opacity-[var(--keep,0)]`}>
+      <span aria-hidden="true" data-stamp="keep" className={`${stamp} end-5 -rotate-12 text-ink`}>
         שמירה
       </span>
-      <span aria-hidden="true" className={`${stamp} start-5 rotate-12 text-ink-soft opacity-[var(--skip,0)]`}>
+      <span aria-hidden="true" data-stamp="skip" className={`${stamp} start-5 rotate-12 text-ink-soft`}>
         דילוג
       </span>
       <span
         aria-hidden="true"
-        className={`${stamp} inset-x-0 top-[40%] mx-auto w-max text-clay-deep opacity-[var(--love,0)]`}
+        data-stamp="love"
+        className={`${stamp} inset-x-0 top-[40%] mx-auto w-max text-clay-deep`}
       >
         אהבתי מאוד
       </span>

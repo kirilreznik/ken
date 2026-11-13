@@ -61,12 +61,18 @@ function swallowNextClick() {
 /** The card is off its place (a drag, a fling, the snap back): the stack shows the back cards whole (names.css). */
 const moving = (el: HTMLElement, on: boolean) => el.toggleAttribute("data-moving", on);
 
+/** Sets one swipe stamp's opacity on the span itself, so only the stamp repaints (NP-093). */
+function stamp(el: HTMLElement, kind: DragKind, value: number) {
+  const span = el.querySelector<HTMLElement>(`[data-stamp="${kind}"]`);
+  if (span) span.style.opacity = value ? String(value) : "";
+}
+
 function paint(el: HTMLElement, transform: string, keep = 0, skip = 0, love = 0) {
   el.style.transform = transform;
   moving(el, transform !== "");
-  el.style.setProperty("--keep", String(keep));
-  el.style.setProperty("--skip", String(skip));
-  el.style.setProperty("--love", String(love));
+  stamp(el, "keep", keep);
+  stamp(el, "skip", skip);
+  stamp(el, "love", love);
 }
 
 /**
@@ -216,7 +222,7 @@ export function useSwipeDrag({
     const frames = reducedMotion()
       ? [{ opacity: 1 }, { opacity: 0 }]
       : [{ transform: from }, { transform: flingTo(kind, dir), opacity: 0.4 }];
-    if (kind === "love" && !reducedMotion()) copy.style.setProperty("--love", "1");
+    if (kind === "love" && !reducedMotion()) stamp(copy, "love", 1);
     const timing = release
       ? flingTiming(
           flingDistance(kind, release.dx, release.dy, copy.offsetWidth, copy.offsetHeight),
