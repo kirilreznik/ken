@@ -15,9 +15,11 @@ type DialogProps = {
   description: ReactNode;
   /** The action buttons; mark the safe one (usually "ביטול") with data-autofocus. */
   children: ReactNode;
+  /** While a request runs, Escape and the scrim don't close it (the result would be lost). */
+  busy?: boolean;
 };
 
-/** Confirm dialog (role alertdialog) bound to ?dialog=. Escape, Back and the scrim cancel. */
+/** Confirm dialog (role alertdialog) bound to ?dialog=. Escape, Back and the scrim cancel (Escape and the scrim not while busy). */
 export function Dialog(props: DialogProps) {
   // useSearchParams needs a Suspense boundary on prerendered routes (Next 16).
   return (
@@ -37,11 +39,13 @@ function DialogGate(props: DialogProps) {
   return createPortal(<DialogPanel {...props} closing={closing} onClosed={onClosed} />, host);
 }
 
-function DialogPanel({ name, title, description, children, closing, onClosed }: DialogProps & { closing: boolean; onClosed: () => void }) {
+function DialogPanel({ name, title, description, children, busy, closing, onClosed }: DialogProps & { closing: boolean; onClosed: () => void }) {
   const panel = useRef<HTMLElement>(null);
   const titleId = useId();
   const descriptionId = useId();
-  const close = () => closeDialog(name);
+  const close = () => {
+    if (!busy) closeDialog(name);
+  };
   const onKeyDown = useModal(panel, close, !closing);
 
   return (

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { leaveBody, leaveReason, leaveSpace } from "@/lib/names/leave";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const client = (result: unknown) => ({ rpc: async () => result }) as unknown as SupabaseClient;
+const client = (result: unknown) => ({ rpc: () => ({ abortSignal: async () => result }) }) as unknown as SupabaseClient;
 
 describe("leave a shared space", () => {
   it("names who stays, or says it neutrally", () => {

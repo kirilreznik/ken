@@ -417,7 +417,7 @@ export default function SettingsScreen() {
       </main>
 
       <InstallSheet />
-      <Dialog name={LEAVE_DIALOG} title={LEAVE_TITLE} description={leaveBody(others)}>
+      <Dialog name={LEAVE_DIALOG} title={LEAVE_TITLE} description={leaveBody(others)} busy={leaving}>
         {leaveError ? (
           <p role="alert" className="m-0 text-caption font-bold text-urgent">
             {leaveError}
@@ -426,11 +426,11 @@ export default function SettingsScreen() {
         <Button onClick={() => void confirmLeave()} aria-disabled={leaving} aria-busy={leaving}>
           {leaving ? "יוצאים…" : "יציאה מהבחירה המשותפת"}
         </Button>
-        <Button variant="secondary" data-autofocus="" onClick={() => closeDialog(LEAVE_DIALOG)}>
+        <Button variant="secondary" data-autofocus="" onClick={() => !leaving && closeDialog(LEAVE_DIALOG)}>
           ביטול
         </Button>
       </Dialog>
-      <Dialog name={DELETE_DIALOG} title={DELETE_TITLE} description={DELETE_BODY}>
+      <Dialog name={DELETE_DIALOG} title={DELETE_TITLE} description={DELETE_BODY} busy={deleting}>
         {deleteError ? (
           <p role="alert" className="m-0 text-caption font-bold text-urgent">
             {deleteError}
@@ -440,7 +440,7 @@ export default function SettingsScreen() {
           <Trash />
           {deleting ? "מוחקים…" : "מחיקה לצמיתות"}
         </Button>
-        <Button variant="secondary" data-autofocus="" onClick={() => closeDialog(DELETE_DIALOG)}>
+        <Button variant="secondary" data-autofocus="" onClick={() => !deleting && closeDialog(DELETE_DIALOG)}>
           ביטול
         </Button>
       </Dialog>

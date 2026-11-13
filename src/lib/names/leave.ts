@@ -5,6 +5,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { REQUEST_TIMEOUT_MS } from "./accountDeletion";
 import { clearInviteCache } from "./invite";
 import { removePref, setPref } from "./prefs";
 import { clearSpaceCache } from "./space";
@@ -39,7 +40,7 @@ export function leaveReason(err: unknown): string {
 export async function leaveSpace(client: SupabaseClient): Promise<LeaveResult> {
   if (typeof navigator !== "undefined" && navigator.onLine === false) return { kind: "offline" };
   try {
-    const { data, error } = await client.rpc("names_leave");
+    const { data, error } = await client.rpc("names_leave").abortSignal(AbortSignal.timeout(REQUEST_TIMEOUT_MS));
     if (error) {
       const reason = leaveReason(error);
       return reason === "not_shared" ? { kind: "not-shared" } : { kind: "error", reason };
