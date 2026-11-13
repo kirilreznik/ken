@@ -231,7 +231,7 @@ describe("chartKeyStep", () => {
 describe("babies", () => {
   it("formats the count, singular for one", () => {
     expect(babies(1)).toBe("תינוק אחד");
-    expect(babies(0)).toBe("0 תינוקות");
+    expect(babies(0)).toBe("אף תינוק");
     expect(babies(2099)).toBe("2,099 תינוקות");
   });
 });
@@ -248,7 +248,7 @@ describe("chartLabel", () => {
       "מספר התינוקות בכל שנה, 2000 עד 2024. ב־2000: תינוק אחד, ב־2024: תינוק אחד. השיא ב־2001.",
     );
     expect(chartLabel({ y: Array<number>(25).fill(0) })).toBe(
-      "מספר התינוקות בכל שנה, 2000 עד 2024. ב־2000: 0 תינוקות, ב־2024: 0 תינוקות.",
+      "מספר התינוקות בכל שנה, 2000 עד 2024. ב־2000: אף תינוק, ב־2024: אף תינוק.",
     );
   });
 

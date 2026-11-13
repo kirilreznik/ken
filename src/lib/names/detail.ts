@@ -170,7 +170,8 @@ export function chartModel(
 }
 
 /** "{n} תינוקות" with thousands separators, "תינוק אחד" for one. */
-export const babies = (n: number) => (n === 1 ? "תינוק אחד" : `${fmt.format(n)} תינוקות`);
+// A year with no births reads "אף תינוק", not "0 תינוקות" (NP-115).
+export const babies = (n: number) => (n === 0 ? "אף תינוק" : n === 1 ? "תינוק אחד" : `${fmt.format(n)} תינוקות`);
 
 /**
  * The chart point an arrow key moves to (index 0 = FIRST_TREND_YEAR). The SVG is LTR, so Left is
