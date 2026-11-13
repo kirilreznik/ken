@@ -15,6 +15,8 @@ import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import {
   INVALID_EMAIL_MESSAGE,
   OFFLINE_MESSAGE,
+  RATE_LIMIT_CLEAR_MS,
+  RATE_LIMIT_MESSAGE,
   type AuthErrorKind,
   clearsCode,
   handleAuthError,
@@ -62,6 +64,13 @@ export default function EmailSignIn() {
     if (loading || !user) return;
     router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
   }, [loading, user, join, router]);
+
+  // The rate-limit line goes once the wait is over (NP-035); a new address or send clears it sooner.
+  useEffect(() => {
+    if (error !== RATE_LIMIT_MESSAGE) return;
+    const timer = window.setTimeout(() => setError((e) => (e === RATE_LIMIT_MESSAGE ? null : e)), RATE_LIMIT_CLEAR_MS);
+    return () => window.clearTimeout(timer);
+  }, [error]);
 
   // Back online, "no connection" is stale: drop it (while offline ConnectionNote says it instead).
   useEffect(() => {
