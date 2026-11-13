@@ -99,7 +99,7 @@ function Panel({ votes, sessions, onDone }: SurveySheetProps) {
     const supabase = getSupabase();
     if (sending || !supabase) return;
     if (!hasAnswer(answer)) {
-      setError("אפשר לענות על שאלה אחת לפחות, או לסגור.");
+      setError("צריך לענות על שאלה אחת לפחות. אפשר גם לסגור בלי לשלוח.");
       return;
     }
     setSending(true);
@@ -131,7 +131,7 @@ function Panel({ votes, sessions, onDone }: SurveySheetProps) {
             </p>
           ) : null}
           <Button type="submit" form={FORM_ID} className="w-full" aria-busy={sending} aria-disabled={sending}>
-            {sending ? "שולחים…" : "שליחה"}
+            {sending ? "שולחים…" : "שליחת התשובות"}
           </Button>
         </div>
       }

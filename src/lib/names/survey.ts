@@ -40,7 +40,7 @@ export const Q_STAGE = {
     { value: "none", label: "עוד אין היריון" },
     { value: "to20", label: "עד שבוע 20" },
     { value: "after20", label: "אחרי שבוע 20" },
-    { value: "born", label: "התינוק כבר נולד" },
+    { value: "born", label: "אחרי הלידה" },
     { value: "other", label: "הבחירה בשביל מישהו אחר" },
   ] satisfies Choice<Stage>[],
 };
