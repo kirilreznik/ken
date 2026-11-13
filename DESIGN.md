@@ -240,10 +240,12 @@ Each token sets size, line height and weight together (Tailwind `text-<name>`).
 - **Section** (`text-section`) and **Row name** (`text-row-name`): section headings inside a screen; the name in a list row.
 - **Card title** (`text-card-title`): card and list-item titles, the surname line, the text-link button.
 - **Button** (`text-button`): large button labels. **Intro** (`text-intro`): the card's intro line, the decision pills. **Field** (`text-field`, 16 px): every text field; iOS Safari zooms the page into a focused field under 16 px and stays zoomed after the keyboard closes.
-- **Body** (`text-body`): running text in cards and sheets, the toast, the base size of `.nest-names`. **Quote** (`text-quote`), **Ref** (`text-ref`), **Person** (`text-person`): the verse, its reference and a known-person row; `text-person` also sets the "השמות שלי" pill.
-- **Note** (`text-note`), **Match line** (`text-match-line`), **Stat** (`text-stat`, the number in a stat tile), **Stamp** (`text-stamp`, the swipe stamps), **Peek** (`text-peek`, the name on the farther peeking card).
-- **Caption** (`text-caption`): metadata, chip labels, the card's position line.
-- **Tag** (`text-tag`) and **Label** (`text-label`): the sex tag, section labels in the detail sheet, small badges.
+- **Body** (`text-body`): running text in cards and sheets, the toast, menu and settings rows, the base size of `.nest-names`. **Quote** (`text-quote`): the verse.
+- **Person** (`text-person`, 13 px): the app's small label. A known-person row, the "השמות שלי" pill, and also segments, field labels, eyebrows ("יש התאמה"), quiet links, empty-panel lines and list metadata. Reach for it for any small label on a control or above a field.
+- **Ref** (`text-ref`, 12 px): small meta. The verse's reference and a fact's source, and also the card's stat and boys/girls bar labels and the background sheet's option labels.
+- **Note** (`text-note`), **Match line** (`text-match-line`), **Stat** (`text-stat`, the number in a stat tile), **Stamp** (`text-stamp`, the swipe stamps), **Peek** (`text-peek`, the name on the farther peeking card; the filters sheet's letter-range row also uses it, bold).
+- **Caption** (`text-caption`): metadata, chip labels, the card's position line, hints under rows and fields.
+- **Tag** (`text-tag`) and **Label** (`text-label`): the sex tag (`tagClass("sm")`) and the "חדש" badge (`tagClass("xs")`). Section labels come in two looks by surface: `text-tag` `ink-soft` in sheets (`detail/Section`), `text-label` `stone` over a settings group.
 
 ### Named Rules
 **The Token-Only Type Rule.** No literal font size anywhere in names code; `tests/names/designGuard.test.ts` fails the build on one. A genuinely new style is a new token in the token script.
@@ -252,7 +254,7 @@ Each token sets size, line height and weight together (Tailwind `text-<name>`).
 
 ## Layout
 
-A single column for a phone. The screen side gutter is `space-5` (`px-5`), narrowing to `px-3` under 22.5rem; card padding is `space-5`/`space-4`; gaps between card sections follow `space-3` (`gap-3`); chips and small controls sit `space-2` apart. Content is capped at `max-w-md` and centered on wider screens.
+A single column for a phone. The screen side gutter is `space-5` (`px-5`), narrowing to `px-3` under 22.5rem; card padding is `space-5`/`space-4`; gaps between card sections follow `space-3` (`gap-3`); chips and small controls sit `space-2` apart. Content is capped at `max-w-content` (`content-max`, 480 px) and centered on wider screens; never a literal `max-w-[480px]`.
 
 The swipe screen is a fixed stack, top to bottom: header (title, background, filter and settings buttons, the "השמות שלי" pill), quick chips, the card stack (current card plus two peeking cards, −3° and +2°), the action bar (three equal decision pills and undo), and the status footer (screen-reader only). The offline sync line is an opaque surface pill that floats just above the action bar, over the gap under the card, so its arrival and departure move nothing (CLS 0). The card never scrolls at 390 × 844; it is slim and points to the detail sheet.
 
@@ -376,6 +378,33 @@ While the names data loads, the card's room shows `DeckSkeleton`: the card's gla
 Onboarding's three consents and the filter sheet's "מספר אותיות מותאם אישית" use `checkboxClass()` (`ui/classes.ts`): a drawn 24 px box (`appearance: none`, half of `radius-sm`, so it never reads as a radio), `surface` fill and a 2 px edge at ≥ 3:1 like the fields: `stone` on solid surfaces, `ink-soft` on glass. Checked is an `ink` box with a `surface` tick (`names.css` `.names-checkbox`), so the state is told by the mark, not the color. Invalid and unchecked turns the edge `urgent`. The whole label row is the ≥ 44 px target; focus is the global 2 px ink outline 2 px off the box (on the ink box an outline on its edge would vanish). A box whose words name documents (onboarding's terms) keeps its label plain and puts the links on their own row under it (`ps-9`, `text-caption`, each `linkClass("inline", "none")`): inline links in a wrapping label can't own 44 px without covering the next line's words, so a tap meant for the box would open a tab.
 
 Onboarding keeps the two required confirmations (age, terms) together and sets the optional updates opt-in apart below a `border-line` hairline (`mt-2 pt-4`). The line under the button names what is still missing (`missingHint`, `lib/names/onboarding.ts`): "אפשר להמשיך אחרי שממלאים שם, מאשרים גיל ומסכימים לתנאים.", shortening as items are done; never counts boxes. After a submit, an invalid age or terms box is `aria-describedby` that line too.
+
+### Secondary press (`FADE_PRESS`, `ROW_PRESS`)
+Links, rows and tiles don't scale. `FADE_PRESS` dims to 70% on any background (text links, the filters sheet's rows); `ROW_PRESS` takes a `sand` fill (rows and tiles on white: settings rows, list rows). Neither changes while disabled.
+
+### Segments (`segmentGroupClass`, `segmentClass`)
+The lists tabs and the duel's source toggle: a white pill group (`surface`, `line` border, `p-1`, `gap-1`) with equal columns. Each segment is ≥ 44 px, `text-person` bold; selected is `ink` with `surface` text, unselected `ink-soft` with a `sand` hover. Tabs carry `aria-selected` (or the toggle `aria-pressed`), so the state isn't told by color alone.
+
+### Tags and the dot (`tagClass`, `dotClass`)
+A tag is a `peach-soft` pill with `clay-deep` text: `sm` (`text-tag`) for the sex tag on the card and the detail header, `xs` (`text-label`) for the "חדש" badge in a list row. Not a control. The dot is a 10 px `clay` circle (`dotClass`) beside an eyebrow (intro, match, decision), a list row or the new-match badge; it always sits next to words, never says something alone.
+
+### Loading skeletons (`skeletonClass`)
+Static bars, no shimmer (nothing to reduce for motion): `canvas` is `sand` on the canvas and white cards, `glass` is a well inside a glass card (`DeckSkeleton`). The container carries `aria-busy` and an sr-only line on what loads; the real content replaces the skeleton in place.
+
+### Menus (`lists/RowMenu`, `swipe/SkipButton`)
+Strong-glass `radius-md` panel, `p-1.5`, opening with `names-menu-in` (reduced motion: no scale). Items are `role="menuitem"` rows: ≥ 44 px, `px-3.5`, `radius-sm`, `text-body` bold `ink`, an optional 20 px icon at the start, `sand` on hover and on keyboard focus. Escape and a tap outside close it and return focus to the trigger.
+
+### Settings rows (`SettingsScreen.tsx`)
+Groups are white `radius-lg` `shadow-card` cards with a `text-label` `stone` heading above them. Rows are split by a `line` hairline; each action row is ≥ 56 px, `px-4 py-3`, `text-body` bold `ink` with `ROW_PRESS`, and a `stone` chevron at the end when it leads to another screen (mirrored in LTR). A row's state or value sits in words under its title, never only in a color.
+
+### Icons
+Inline SVG, 24 × 24 viewBox, `stroke="currentColor"`, 2 px stroke with round caps and joins (Feather/Lucide family), `aria-hidden` and drawn at 18–24 px (16 px inside caption lines, `ErrorMark`). The control carries the Hebrew `aria-label`, not the icon. Direction-bearing icons (chevrons, back) flip with `ltr:-scale-x-100` so they point the way of the reading direction.
+
+### Page shell
+Every full screen (settings, lists, hidden, invite, about, legal, the auth screens through `AuthLayout`) is a `main` column: `mx-auto w-full max-w-content`, `px-5`, top padding `env(safe-area-inset-top)` plus 16 px and bottom padding `env(safe-area-inset-bottom)` plus 24 px. Screens with a back button put a `BackButton` and the `text-title` title in one header row.
+
+### Full-screen moments (`MatchSheet`, `DecisionSheet`)
+A match or the final decision takes the whole screen instead of a sheet: a fixed layer (`data-names-layer`, `z-40`, `bg-canvas` under the screen background) that scrolls inside itself (`overscroll-contain`), bound to `?sheet=` like a sheet so Back closes it, with the same modal focus trap. Inside: the clay-dot eyebrow, the name at its moment size (`text-match-name`), a reading panel on card glass, and one primary action.
 
 ### Navigation
 No tab bar. The swipe header's "השמות שלי" ink pill and the settings button lead to lists and settings; other screens have a `BackButton` and a title. Lists switches between "שמרתי", "התאמות" and "דו־קרב" with segments in the URL (`?tab=`).
