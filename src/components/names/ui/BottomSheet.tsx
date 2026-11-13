@@ -73,6 +73,48 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
 // PRD 3.2.4: from 768 px a tall sheet is a centered panel (max 480 px wide, 90dvh) without detents.
 const DESKTOP = "(min-width: 768px)";
 const desktop = () => window.matchMedia(DESKTOP).matches;
+// Past its limit the panel follows the finger less and less, then springs back on release (NP-108).
+const RUBBER = 0.55;
+const RUBBER_MAX = 120;
+const rubberband = (overshoot: number) => (overshoot * RUBBER_MAX * RUBBER) / (RUBBER_MAX + RUBBER * overshoot);
+/** FULL_HEIGHT in px (the safe-area inset only resolves in CSS). */
+function fullHeightPx(host: HTMLElement): number {
+  const probe = document.createElement("div");
+  probe.style.cssText = `position:fixed;visibility:hidden;height:${FULL_HEIGHT}`;
+  host.appendChild(probe);
+  const px = probe.getBoundingClientRect().height;
+  probe.remove();
+  return px;
+}
+// The scrolling content fades over this many px at an edge with more beyond it (NP-109).
+const FADE_PX = 24;
+function fadeMask(more: { top: boolean; bottom: boolean }): string | undefined {
+  if (!more.top && !more.bottom) return undefined;
+  const top = more.top ? `transparent 0, #000 ${FADE_PX}px` : "#000 0";
+  const bottom = more.bottom ? `#000 calc(100% - ${FADE_PX}px), transparent 100%` : "#000 100%";
+  return `linear-gradient(to bottom, ${top}, ${bottom})`;
+}
+/** Which edges of the scroller have content past them; follows scrolling and resizes. */
+function useScrollEdges(scroller: RefObject<HTMLDivElement | null>) {
+  const [more, setMore] = useState({ top: false, bottom: false });
+  const update = useCallback(() => {
+    const el = scroller.current;
+    if (!el) return;
+    const top = el.scrollTop > 1;
+    const bottom = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+    setMore((m) => (m.top === top && m.bottom === bottom ? m : { top, bottom }));
+  }, [scroller]);
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    for (const child of Array.from(el.children)) observer.observe(child);
+    return () => observer.disconnect();
+  }, [scroller, update]);
+  return { more, update };
+}
 /** A new `key` in an open sheet starts it over: content at the top, focus on [data-autofocus]. */
 function useContentReset(panel: RefObject<HTMLElement | null>, scroller: RefObject<HTMLDivElement | null>, key: string | undefined) {
   const shown = useRef(key);
@@ -118,14 +160,17 @@ type PanelProps = BottomSheetProps & {
 export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, closeButton = false, footer, detents, onDetent, contentKey, closing = false, onClosed, children }: PanelProps) {
   const panel = useRef<HTMLElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
+  const edges = useScrollEdges(scroller);
   const footerRef = useToastLift({ layer: true });
   useToastLayer();
   useEffect(dismissScreenToast, []);
   useContentReset(panel, scroller, contentKey);
   // `detents`: a tall sheet on a phone; on desktop its handle only drags down to close.
   // `at`/`velocity`: the last move's time and the drag's speed in px/ms (down > 0), for flicks (NP-106).
-  const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean; detents: boolean; at: number; velocity: number } | null>(null);
-  // Down: the panel moves down by `offset` px. Up (tall sheets only): it grows to `height` px.
+  // `full`: a tall sheet's full height in px, where its growth turns into a rubber band (NP-108).
+  const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean; detents: boolean; at: number; velocity: number; full: number } | null>(null);
+  // Down: the panel moves down by `offset` px. Up: a tall sheet grows to `height` px; past its
+  // limit (full height, or where it is for other sheets) it rubber-bands up (negative `offset`).
   const [offset, setOffset] = useState(0);
   const [height, setHeight] = useState<number | null>(null);
   const [detent, setDetent] = useState<Detent>("70");
@@ -182,13 +227,16 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     if (event.button !== 0) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     const startHeight = panel.current?.getBoundingClientRect().height ?? 0;
-    drag.current = { startY: event.clientY, startHeight, dy: 0, moved: false, detents: tall && !desktop(), at: event.timeStamp, velocity: 0 };
+    const detented = tall && !desktop();
+    const full = detented && layer.current ? fullHeightPx(layer.current) : 0;
+    drag.current = { startY: event.clientY, startHeight, dy: 0, moved: false, detents: detented, at: event.timeStamp, velocity: 0, full };
   }
 
   function onPointerMove(event: PointerEvent<HTMLButtonElement>) {
     if (!drag.current) return;
     const raw = event.clientY - drag.current.startY;
-    const dy = drag.current.detents ? raw : Math.max(0, raw);
+    const { detents: detented, startHeight, full } = drag.current;
+    const dy = detented ? raw : Math.max(0, raw);
     const elapsed = event.timeStamp - drag.current.at;
     if (elapsed > 0) {
       // Smoothed so one jittery sample doesn't make or break a flick.
@@ -198,8 +246,17 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     drag.current.dy = dy;
     // Raw: a drag up on a sheet without detents doesn't move it, but it isn't a tap either.
     if (Math.abs(raw) > 6) drag.current.moved = true;
-    setOffset(Math.max(0, dy));
-    setHeight(dy < 0 ? drag.current.startHeight - dy : null);
+    if (raw >= 0) {
+      setOffset(dy);
+      setHeight(null);
+    } else if (detented) {
+      const grown = startHeight - raw;
+      setHeight(Math.min(grown, Math.max(full, startHeight)));
+      setOffset(grown > full ? -rubberband(grown - Math.max(full, startHeight)) : 0);
+    } else {
+      setOffset(-rubberband(-raw));
+      setHeight(null);
+    }
   }
 
   function onPointerEnd(event: PointerEvent<HTMLButtonElement>) {
@@ -215,7 +272,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     if (next === "close") close();
     else {
       if (tall && moved && panel.current) {
-        settleFrom.current = { height: panel.current.getBoundingClientRect().height, offset: Math.max(0, dy) };
+        settleFrom.current = { height: panel.current.getBoundingClientRect().height, offset };
         setSettles((count) => count + 1);
       }
       setDetent(next);
@@ -224,15 +281,15 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
       setHeight(null);
     }
     // A drag isn't a tap: keep `moved` so the click that follows pointerup is ignored.
-    drag.current = moved ? { startY: 0, startHeight: 0, dy: 0, moved, detents: detented, at: 0, velocity: 0 } : null;
+    drag.current = moved ? { startY: 0, startHeight: 0, dy: 0, moved, detents: detented, at: 0, velocity: 0, full: 0 } : null;
   }
 
   // The browser took the pointer (scroll, system gesture): the sheet goes back to where it was, never closes (NP-105).
   function onPointerCancel() {
     if (!drag.current) return;
-    const { dy, moved } = drag.current;
+    const { moved } = drag.current;
     if (tall && moved && panel.current) {
-      settleFrom.current = { height: panel.current.getBoundingClientRect().height, offset: Math.max(0, dy) };
+      settleFrom.current = { height: panel.current.getBoundingClientRect().height, offset };
       setSettles((count) => count + 1);
     }
     setOffset(0);
@@ -268,13 +325,10 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
         }}
         data-names-bg="none"
         data-detent={tall ? detent : undefined}
-        style={
-          height !== null
-            ? { height, maxHeight: FULL_HEIGHT }
-            : offset
-              ? { transform: `translateY(${offset}px)` }
-              : undefined
-        }
+        style={{
+          ...(height !== null ? { height, maxHeight: FULL_HEIGHT } : null),
+          ...(offset ? { transform: `translateY(${offset}px)` } : null),
+        }}
         className={`${closing ? "names-sheet-out" : "names-sheet-in"} relative mx-auto flex w-full max-w-lg flex-col rounded-t-xl bg-surface text-ink outline-none ${heightClass(tall, detent)} ${offset || height !== null || tall ? "" : "transition-transform duration-(--nest-duration-fast)"}`}
       >
         <button
@@ -294,7 +348,11 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
           <span aria-hidden="true" className="h-1.25 w-10 rounded-pill bg-line" />
         </button>
         {header ? <div className="shrink-0 px-5 pb-3">{header(titleId)}</div> : null}
-        <div ref={scroller} className={`flex min-h-0 flex-col gap-5 ${tall ? "flex-1" : ""} overflow-y-auto overscroll-contain px-5 ${footer ? "pb-5" : SAFE_BOTTOM}`}>
+        <div
+          ref={scroller}
+          onScroll={edges.update}
+          style={{ maskImage: fadeMask(edges.more), WebkitMaskImage: fadeMask(edges.more) }}
+          className={`flex min-h-0 flex-col gap-5 ${tall ? "flex-1" : ""} overflow-y-auto overscroll-contain px-5 ${footer ? "pb-5" : SAFE_BOTTOM}`}>
           {header ? null : (
             <div className="flex min-h-11 items-center justify-between gap-3">
               <h2 id={titleId} className="text-title">
