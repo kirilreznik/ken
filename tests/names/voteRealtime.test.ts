@@ -14,6 +14,7 @@ function fakeClient(rows: Row[] = []) {
   let status: ((s: string) => void) | null = null;
   let filter: unknown = null;
   let hold: Promise<void> | null = null;
+  let readHold: Promise<void> | null = null;
   const removeChannel = vi.fn(async () => "ok");
   const channelObj = {
     on: (_type: string, f: unknown, h: Handler) => {
@@ -44,7 +45,9 @@ function fakeClient(rows: Row[] = []) {
         eq: () => query,
         order: async () => {
           reads.count += 1;
-          return { data: [...server.rows], error: null };
+          const data = [...server.rows];
+          if (readHold) await readHold;
+          return { data, error: null };
         },
       };
       return query;
@@ -60,6 +63,15 @@ function fakeClient(rows: Row[] = []) {
     filter: () => filter,
     push: (payload: Record<string, unknown>) => handler?.(payload),
     reconnect: () => status?.("SUBSCRIBED"),
+    /** Reads take the server copy now and answer on release. */
+    holdReads: () => {
+      let release = () => {};
+      readHold = new Promise<void>((r) => (release = r));
+      return () => {
+        readHold = null;
+        release();
+      };
+    },
     holdWrites: () => {
       let release = () => {};
       hold = new Promise<void>((r) => (release = r));
@@ -303,6 +315,31 @@ describe("realtime", () => {
     await store.flush();
     expect(fake.writes).toHaveLength(1);
     expect(store.getState().pendingCount).toBe(0);
+  });
+
+  it("a read sent before an undo doesn't bring the undone vote back once the delete has landed", async () => {
+    stubBrowser();
+    const fake = fakeClient();
+    const { store } = makeStore(fake.client);
+    await store.load();
+    store.setVote("גבריאל", "skip");
+    await store.flush();
+    const skipAt = fake.writes.at(-1)!.split(":").slice(3).join(":");
+    fake.server.rows = [{ name: "גבריאל", vote: "skip", custom: false, updated_at: skipAt }];
+    const release = fake.holdReads();
+    const read = store.reconcile(); // e.g. the page became visible again
+    store.removeVote("גבריאל"); // undo
+    await store.flush();
+    expect(store.getState().pendingCount).toBe(0);
+    fake.server.rows = [];
+    release();
+    await read;
+    expect(store.getState().votes.has("גבריאל")).toBe(false);
+
+    // A vote made on another device after the undo still arrives.
+    fake.server.rows = [{ name: "גבריאל", vote: "love", custom: false, updated_at: "2026-11-04T12:00:00Z" }];
+    await store.reconcile();
+    expect(voteOf(store, "גבריאל")).toBe("love");
   });
 
   it("a vote not yet on the server survives a re-read", async () => {

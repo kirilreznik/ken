@@ -40,7 +40,7 @@ Every route lives under `src/app/names/`. Signed-out visitors to an app route go
 
 Anything else under `/names/` reaches `src/app/names/not-found.tsx` through the catch-all `[...missing]`. Only welcome, about, privacy and terms are indexable; every other route sets `robots: noindex`.
 
-Filters, background, about, match, report, install and add-name are **sheets** over the current screen, opened with `?sheet=<name>` so Back closes them (`src/lib/names/urlLayer.ts`, `SHEETS`); dialogs use `?dialog=`.
+Filters, background, about, match, report, install, add-name, survey, decision and the name sheet are **sheets** over the current screen, opened with `?sheet=<name>` so Back closes them (`src/lib/names/urlLayer.ts`, `SHEETS`); dialogs use `?dialog=`. The name sheet also carries the name: `?sheet=name&n=<name>` ([Name detail sheet](#name-detail-sheet)).
 
 ## Auth
 
@@ -71,7 +71,7 @@ Each decision becomes an outbox item (`upsert` with the vote, or `delete` when u
 
 `public/names/sw.js`, hand-written, no build step. `RegisterWorker` (in the names layout) registers it in production builds only, with scope `/names`; `next.config.ts` sends `Service-Worker-Allowed: /names` so the worker can control `/names` itself. It is separate from `public/sw.js`, the self-removing worker that clears the old Ken PWA.
 
-- Precached on install: the shell pages (`/names`, welcome, lists, intro, sign-in/email, offline) and every `/_next/static/*` file their HTML references (scripts, CSS, and chunks named in the RSC payload), so a shell page never opened online still runs offline; the hashed data files named in `manifest.json`, the background photos, the Heebo fonts and the icons.
+- Precached on install: the shell pages (`/names`, welcome, lists, intro, sign-in/email, offline) and every `/_next/static/*` file their HTML references (scripts, CSS, and chunks named in the RSC payload, plus the `static/chunks/…` files those scripts load lazily, such as the name sheet), so a shell page never opened online still runs offline; the hashed data files named in `manifest.json` (names, content, details), the background photos, the Heebo fonts and the icons.
 - Cache-first: `/_next/static/*`, `/_next/image`, `/landing/*`, `/names/data/*`, `/names/icons/*`, `/names/brand/*`.
 - Network-first with cache fallback: `/names*` navigations (a page with no cached copy gets `/names/offline`) and `/names/data/manifest.json`.
 - Never cached: `/api/*`, `/names/auth/callback`, other origins (Supabase), non-GET requests.
@@ -121,6 +121,36 @@ In `scripts/ralph/qa/names-pwa/` (tracked; `shots/` and `.auth/` are gitignored)
 
 QA user 1 is stored un-onboarded: to shoot app pages, set its onboarding `user_metadata` with the admin API, log in again, and reset it afterwards (to clear a key, PUT it as `null`; metadata merges).
 
+## Name detail sheet
+
+"פרטי השם" (boards 12–15, plan and decisions in [`tasks/prd-name-detail.md`](../../tasks/prd-name-detail.md)): a tall bottom sheet with everything about one name, opened from the swipe card or a Lists row. The swipe card itself is slim (no verse, no people, intro clamped to 2 lines, hint chips from `cardHints`, a "לכל הפרטים" button) so it never scrolls and swipe-up works on every card.
+
+**Files**
+
+| Where | What |
+| --- | --- |
+| `src/components/names/detail/LazyNameDetailSheet.tsx` | what the screens import: renders nothing and loads no sheet code until the URL asks for `?sheet=name`, then stays mounted; `preloadNameDetail()` |
+| `src/components/names/detail/NameDetailSheet.tsx` | the sheet: header, sections in board order, pinned `DecisionButtons`, visit analytics |
+| `src/components/names/detail/*Section.tsx` | surname, meaning (intro + story), together (match badge), numbers (`YearChart`), boys/girls, facts, similar, source; `Section` is the shared label + spacing, `DetailsPending` the loading/offline line |
+| `src/components/names/DecisionButtons.tsx` | "שמירה" / "אהבתי מאוד" / "דילוג", shared with the swipe screen's `ActionBar` |
+| `src/components/names/ui/BottomSheet.tsx`, `ui/detents.ts` | tall sheet: custom header, pinned footer, `detents={["70", "full"]}`, `onDetent` |
+| `src/components/names/useNameDetails.ts` | `useNameDetails({ enabled })`: details state shared by every sheet (`idle` / `loading` / `ready` / `error`) |
+| `src/lib/names/detail.ts` | pure logic: 2024 rank (`rankMap`, `rank2024`), `compare2000`, `allTimeBirths`, `factTiles`, `chartModel` and chart keys/label, `similarForDisplay` (deck names only, hidden names removed, max 6), `togetherFor` (match badge) |
+| `src/lib/names/cardHints.ts` | the card's hint chips; kept apart from `detail.ts` so the swipe bundle doesn't pull the sheet's logic |
+| `src/lib/names/detailVisit.ts` | `createDetailVisits()`: one `detail_closed` per visit and one `detail_section_seen` per section and name |
+| `src/lib/names/gesture.ts` | `isTap` (`TAP_SLOP_PX` 10, `TAP_MAX_MS` 400) |
+| `src/lib/names/keys.ts` | `isOpenKey`: Enter or Space on the focused card |
+
+Tests: `tests/names/{detail,detailVisit,details,gesture,urlLayer,bottomSheet,serviceWorker}.test.ts` and the build tests under [Swapping the card content](#swapping-the-card-content-e16b).
+
+**URL layer.** `?sheet=name&n=<name>` (URL-encoded Hebrew), `NAME_SHEET` / `NAME_PARAM` / `readName` in `urlLayer.ts`. `openNameSheet(name)` pushes an entry, so Back closes the sheet; a similar name pushes another one over it (Back returns to the previous name) and `closeSheet` goes back past every name entry in a row. A direct link becomes the clean page plus one pushed entry (`adoptNameLink`), so Back and "סגירה" both end on the page. An `n` that isn't a deck name drops the layer by replacing the URL. The sheet never opens over another sheet or dialog (`otherLayerOpen`), and a card replaced by a session pause can't be tapped. About and report open over it and keep `n`; Back reopens the name sheet at 70%.
+
+**Data loading.** Everything on the card (stats, intro, verse, people) is already in memory. Stories and similar names are in `data/names/name-details.json`, published as `/names/data/details.<hash>.json` and named in `manifest.json`. `loadDetails()` (`src/lib/names/data.ts`) fetches it the first time a sheet opens, keeps it in memory, and forgets a failed load so the next open retries; `parseDetails` checks each entry. Meanwhile the other sections render and story/similar show a quiet placeholder; when it fails, the offline line. The sheet's code is its own lazy chunk: the screens call `preloadNameDetail()` on pointerdown and focus of a card or row; if the chunk can't load (offline, never cached), the layer closes with the toast "אין חיבור לאינטרנט…" and the next tap tries again. Measure the swipe screen's first load with `node scripts/ralph/qa/name-detail/shots/us072-size.mjs` (gitignored); never import `detail/*` or `lib/names/detail` from card or swipe code.
+
+**Gestures.** On the card (`swipe/useSwipeDrag.ts`), a press that never started a drag (8 px) and comes up within 10 px and 400 ms is a tap and opens the sheet; a tap on a button or link inside the card is left to it, and a tap during a fling does nothing. In the sheet, the handle drags between the 70% detent and full height (100dvh minus the top safe area); a drag down from 70% closes it, as do ✕, a scrim tap, Escape and Back. Content scrolls inside at either height; the decision buttons stay pinned above the safe area. From 768 px it is a centered panel (max 480 px, up to 90vh) with no detents. Motion: up 260 ms ease-out, down 200 ms ease-in, a 160 ms fade with reduced motion (`src/app/names/names.css`). Deciding in the sheet goes through the screen's `decide()` (one vote path): for the top card the sheet closes (replace) and the card flies as with the buttons; for another name the vote is saved, the sheet stays open with the choice pressed, plus a toast and a live-region line. On Lists the current vote shows as pressed and a change updates the list.
+
+**Analytics.** `detail_opened {source: tap | button | key | list | similar | link}`, `detail_closed {seconds, full}`, `detail_section_seen {section: numbers | similar | story}` (IntersectionObserver, half in view), `detail_similar_tap`, `detail_surname_add`, and `vote` with `method: "detail"`. Definitions in `NAMES_EVENTS` (`src/lib/names/track.ts`) and [`ANALYTICS.md`](ANALYTICS.md). No name, surname or vote text in any prop; the surname never leaves the device.
+
 ## Swapping the card content (E16b)
 
 The deck is "the names that have content": `buildCards` (`src/lib/names/card.ts`) makes a card for each entry in `name-content.json` that also exists in `names.json`, in file order. To ship content for more (or all) names:
@@ -129,7 +159,8 @@ The deck is "the names that have content": `buildCards` (`src/lib/names/card.ts`
 2. Run `npm run names:data` (or just build): a new content hash means browsers and the service worker fetch the new file; nothing else needs a bump.
 3. Keep `זיו` in the file, or change `PreviewCard.tsx`: the welcome screen's preview card is that name.
 4. Update the tests that read the real file and assume ten names: `tests/names/deck.test.ts`, `filters.test.ts`, `card.test.ts`, `data.test.ts`, `sex.test.ts`, `a11y.test.ts`.
-5. Watch the size. The content file is 1.8 KB for ten names and is loaded whole on the swipe screen and precached by the worker; for thousands of entries, split it or load it per card instead.
+5. Watch the size. The content file is loaded whole on the swipe screen and precached by the worker; for many more entries, split it or load it per card instead.
+6. The name sheet's details file, `data/names/name-details.json` (`{ "names": { "<name>": { "story": "<text>" | null, "similar": ["<name>", ...] } } }`, `NameDetail` in `types.ts`), is built from `data/names/content-src/details-NNN.json` by `node scripts/names-content/build-details.mjs`, never by hand (see [its README](../../data/names/content-src/README.md)). Every deck name should have an entry; a name without one shows no story and no similar names. `build-names-data.mjs` publishes it as `details.<hash>.json` (an empty file when it doesn't exist yet). After adding or renaming deck names, rerun `similar-candidates.mjs` and the details build; the build fails on a details name that is no longer in the deck. Tests: `tests/names/details.test.ts`, `build-names-data.test.ts`.
 
 ## Design tokens
 

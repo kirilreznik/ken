@@ -11,7 +11,7 @@ interface CardHeaderProps {
   total?: number;
   /** The user's surname from the device prefs; the full name line shows only when set. */
   surname?: string | null;
-  /** The card's words (intro, verse, people): centred with the name in the space above the numbers. */
+  /** The card's words (intro, hint chips): centred with the name in the space above the numbers. */
   children?: ReactNode;
   /** A small control at the end of the top row, e.g. the swipe screen's "על הנתונים" button. */
   corner?: ReactNode;

@@ -3,6 +3,13 @@ import { callbackUrl, normalizeJoinCode } from "./join";
 
 export const ONBOARDING_PATH = "/names/onboarding";
 export const INTRO_PATH = "/names/intro";
+/** The intro opened from the name sheet's "הוספת שם משפחה" (FR-D8); it returns with Back. */
+export const SURNAME_PATH = `${INTRO_PATH}?from=name`;
+
+/** Whether the intro was opened from the name sheet (its search string, with or without "?"). */
+export function introFromSheet(search: string): boolean {
+  return new URLSearchParams(search).get("from") === "name";
+}
 
 export const GOOGLE_FAILED_MESSAGE = "הכניסה עם Google לא הצליחה";
 

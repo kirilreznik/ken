@@ -9,6 +9,9 @@
  *   the cards repeat the name for screen readers.
  * - Clarity records page URLs, so it doesn't start on a URL that carries an invite code or a
  *   sign-in token: /names/join/{code}, /names/auth/*, or any query parameter outside SAFE_PARAMS.
+ * - Once running, Clarity follows pushState and uploads each new URL, and the name sheet pushes
+ *   ?n=<name>. Its `drop` setting (clarity-js: every uploaded URL goes through it) turns the
+ *   values of DROP_PARAMS into "*na*"; the loader adds them to the tag's "start" config.
  */
 
 /** Query parameters that never carry anything personal (all are fixed tokens). */
@@ -28,6 +31,18 @@ export function clarityAllowed(pathname: string, search: string): boolean {
   return true;
 }
 
+/** Parameters whose values Clarity never uploads (the name sheet's baby name). */
+export const DROP_PARAMS = ["n"] as const;
+
+/** A queued Clarity call; "start" with a config gets DROP_PARAMS added to its `drop` list. */
+export function withDropParams(args: unknown[]): unknown[] {
+  const [command, config, ...rest] = args;
+  if (command !== "start" || !config || typeof config !== "object") return args;
+  const own = (config as { drop?: unknown }).drop;
+  const drop = [...new Set([...(Array.isArray(own) ? own : []), ...DROP_PARAMS])];
+  return [command, { ...config, drop }, ...rest];
+}
+
 type ClarityFn = ((...args: unknown[]) => void) & { q?: unknown[][] };
 
 let loaded = false;
@@ -39,7 +54,7 @@ export function loadClarity(id: string): void {
   const w = window as unknown as { clarity?: ClarityFn };
   if (!w.clarity) {
     const fn: ClarityFn = (...args: unknown[]) => {
-      (fn.q ??= []).push(args);
+      (fn.q ??= []).push(withDropParams(args));
     };
     w.clarity = fn;
   }

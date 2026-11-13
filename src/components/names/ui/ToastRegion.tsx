@@ -8,7 +8,8 @@ const serverToast = () => null;
 /**
  * The one toast (showToast in src/lib/names/toast.ts): an ink pill near the bottom. The
  * role="status" region is always mounted so screen readers announce each new message, and
- * it stays usable while a sheet makes the rest of the page inert.
+ * it stays usable while a sheet makes the rest of the page inert. Over a sheet with pinned
+ * buttons it sits just above them (--names-toast-lift, set by BottomSheet).
  */
 export function ToastRegion() {
   const toast = useSyncExternalStore(subscribeToast, getToast, serverToast);
@@ -17,7 +18,7 @@ export function ToastRegion() {
       role="status"
       aria-live="polite"
       data-names-layer-keep
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-60 flex justify-center px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-60 flex justify-center px-5 pb-[var(--names-toast-lift,max(1.5rem,env(safe-area-inset-bottom)))]"
     >
       {toast ? (
         <div

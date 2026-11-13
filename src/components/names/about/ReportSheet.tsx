@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useRef, useState, type FormEvent } from "react";
 import { BottomSheet, Button, closeSheet } from "@/components/names/ui";
+import { useSearchParams } from "next/navigation";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { isOffline } from "@/lib/names/authErrors";
 import { sendClientLog } from "@/lib/names/clientLog";
@@ -16,10 +17,13 @@ import {
   validateReport,
 } from "@/lib/names/report";
 import { track } from "@/lib/names/track";
+import { NAME_PARAM } from "@/lib/names/urlLayer";
 
 type ReportSheetProps = {
   /** The card the report is about; null on /names/about, where the name is an optional field. */
   name: string | null;
+  /** Names `n` may hold: opened from the name sheet (?sheet=report&n=…), the report is about that name. */
+  knownNames?: ReadonlySet<string>;
 };
 
 const FORM_ID = "report-form";
@@ -50,11 +54,13 @@ export default function ReportSheet(props: ReportSheetProps) {
   );
 }
 
-function Gate(props: ReportSheetProps) {
-  return useLayerOpen("sheet", "report") ? <Panel {...props} /> : null;
+function Gate({ name, knownNames }: ReportSheetProps) {
+  const linked = useSearchParams().get(NAME_PARAM);
+  const open = useLayerOpen("sheet", "report");
+  return open ? <Panel name={linked && knownNames?.has(linked) ? linked : name} /> : null;
 }
 
-function Panel({ name }: ReportSheetProps) {
+function Panel({ name }: { name: string | null }) {
   const [typedName, setTypedName] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);

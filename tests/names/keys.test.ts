@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isMenuKey, SWIPE_KEYS_HINT, swipeKey } from "@/lib/names/keys";
+import { isMenuKey, isOpenKey, SWIPE_KEYS_HINT, swipeKey } from "@/lib/names/keys";
 
 describe("swipeKey", () => {
   it("maps K, L, S, Z and Backspace", () => {
@@ -31,7 +31,7 @@ describe("swipeKey", () => {
   });
   it("hint lists every shortcut", () => {
     expect(SWIPE_KEYS_HINT).toBe(
-      "קיצורי מקלדת: K שמירה, L אהבתי מאוד, S דילוג, Z ביטול. על דילוג, מקש התפריט או Shift+F10: דילוג ולא להציג שוב",
+      "קיצורי מקלדת: K שמירה, L אהבתי מאוד, S דילוג, Z ביטול. על דילוג, מקש התפריט או Shift+F10: דילוג ולא להציג שוב. על הכרטיס, Enter או רווח: פרטי השם",
     );
   });
 });
@@ -46,5 +46,26 @@ describe("isMenuKey", () => {
     expect(isMenuKey({ key: "F10", shiftKey: true, ctrlKey: true })).toBe(false);
     expect(isMenuKey({ key: "ContextMenu", metaKey: true })).toBe(false);
     expect(isMenuKey({ key: "s" })).toBe(false);
+  });
+});
+
+describe("isOpenKey", () => {
+  it("accepts Enter and Space", () => {
+    expect(isOpenKey({ key: "Enter" })).toBe(true);
+    expect(isOpenKey({ key: " " })).toBe(true);
+    expect(isOpenKey({ key: "Spacebar" })).toBe(true);
+  });
+  it("ignores modifiers, repeats and the swipe keys", () => {
+    expect(isOpenKey({ key: "Enter", shiftKey: true })).toBe(false);
+    expect(isOpenKey({ key: "Enter", ctrlKey: true })).toBe(false);
+    expect(isOpenKey({ key: " ", metaKey: true })).toBe(false);
+    expect(isOpenKey({ key: " ", altKey: true })).toBe(false);
+    expect(isOpenKey({ key: "Enter", repeat: true })).toBe(false);
+    expect(isOpenKey({ key: "k" })).toBe(false);
+    expect(isOpenKey({ key: "Backspace" })).toBe(false);
+  });
+  it("never overlaps a swipe shortcut", () => {
+    expect(swipeKey({ key: "Enter", code: "Enter" })).toBeNull();
+    expect(swipeKey({ key: " ", code: "Space" })).toBeNull();
   });
 });

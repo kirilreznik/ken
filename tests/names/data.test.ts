@@ -62,7 +62,12 @@ describe("names data files", () => {
 
 describe("loadNames / loadContent", () => {
   const files: Record<string, unknown> = {
-    "/names/data/manifest.json": { names: "names.abc.json", content: "content.def.json", builtAt: "x" },
+    "/names/data/manifest.json": {
+      names: "names.abc.json",
+      content: "content.def.json",
+      details: "details.ghi.json",
+      builtAt: "x",
+    },
     "/names/data/names.abc.json": rawNames,
     "/names/data/content.def.json": rawContent,
     "/names/data/names.json": rawNames,

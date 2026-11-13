@@ -6,6 +6,7 @@ import {
   dragStart,
   dragStyle,
   flingTo,
+  isTap,
   keepDir,
   type Decision,
   type DragKind,
@@ -13,12 +14,40 @@ import {
   type KeepDir,
 } from "@/lib/names/gesture";
 
-type Drag = { id: number; x: number; y: number; t: number; dir: KeepDir; mode: DragMode | null; dx: number; dy: number };
+type Drag = {
+  id: number;
+  x: number;
+  y: number;
+  t: number;
+  dir: KeepDir;
+  mode: DragMode | null;
+  dx: number;
+  dy: number;
+  /** It went down on a control inside the card ("i", "לכל הפרטים"): a tap there is the control's. */
+  onControl: boolean;
+};
+
+const CONTROLS = "button, a, [role=button]";
 
 /** Classes for the dragged card: the demo's grab cursor, and no text selection while dragging. */
 export const dragClass = "cursor-grab select-none active:cursor-grabbing";
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** Drops the click that follows a tap (touch sends it after pointerup), if one comes soon. */
+function swallowNextClick() {
+  const stop = (e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    done();
+  };
+  const done = () => {
+    window.removeEventListener("click", stop, true);
+    window.clearTimeout(timer);
+  };
+  window.addEventListener("click", stop, true);
+  const timer = window.setTimeout(done, 500);
+}
 
 function paint(el: HTMLElement, transform: string, keep = 0, skip = 0, love = 0) {
   el.style.transform = transform;
@@ -41,17 +70,31 @@ function paint(el: HTMLElement, transform: string, keep = 0, skip = 0, love = 0)
  * focusable (it sits between the chips and the actions in the tab order), and when it had focus
  * the next card takes it, so keyboard users stay on the card; `holdFocus()` does the same
  * before an undo brings the previous card back.
+ *
+ * A press that never started a drag and comes up as a tap (PRD 3.2.2: `isTap`) calls `onTap`,
+ * unless it went down on a control inside the card or a fling is running. The click the
+ * browser sends after that tap is swallowed, so it can't land on whatever `onTap` opened.
  */
-export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decision: Decision) => void; disabled?: boolean }) {
+export function useSwipeDrag({
+  onDecide,
+  onTap,
+  disabled = false,
+}: {
+  onDecide: (decision: Decision) => void;
+  onTap?: () => void;
+  disabled?: boolean;
+}) {
   const el = useRef<HTMLElement | null>(null);
   const drag = useRef<Drag | null>(null);
   const busy = useRef(false);
   const refocus = useRef(false);
   const observer = useRef<ResizeObserver | null>(null);
   const decide = useRef(onDecide);
+  const tap = useRef(onTap);
   useEffect(() => {
     decide.current = onDecide;
-  }, [onDecide]);
+    tap.current = onTap;
+  }, [onDecide, onTap]);
 
   const ref = useCallback((node: HTMLElement | null) => {
     observer.current?.disconnect();
@@ -106,7 +149,8 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decisi
       // The card was replaced mid-flight.
     }
     if (el.current !== node) return;
-    refocus.current = document.activeElement === node;
+    // Focus on the card or a control in it (the name sheet gives it back to "לכל הפרטים") moves to the next card.
+    refocus.current = node.contains(document.activeElement);
     decide.current(decision);
     busy.current = false;
   };
@@ -115,7 +159,18 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decisi
     // A press that never became a drag (it left the card before capture) is replaced, so the
     // card can't get stuck with a dead pending press that blocks the buttons and keys.
     if (disabled || busy.current || e.button > 0 || drag.current?.mode) return;
-    drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), dir: keepDir(), mode: null, dx: 0, dy: 0 };
+    const control = e.target instanceof Element ? e.target.closest(CONTROLS) : null;
+    drag.current = {
+      id: e.pointerId,
+      x: e.clientX,
+      y: e.clientY,
+      t: performance.now(),
+      dir: keepDir(),
+      mode: null,
+      dx: 0,
+      dy: 0,
+      onControl: !!control && control !== e.currentTarget && e.currentTarget.contains(control),
+    };
   };
 
   const onPointerMove = (e: PointerEvent<HTMLElement>) => {
@@ -141,6 +196,11 @@ export function useSwipeDrag({ onDecide, disabled = false }: { onDecide: (decisi
     if (!s || e.pointerId !== s.id) return;
     if (!s.mode) {
       drag.current = null;
+      const tapped = isTap(e.clientX - s.x, e.clientY - s.y, performance.now() - s.t);
+      if (tapped && !s.onControl && !busy.current && !disabled && tap.current) {
+        swallowNextClick();
+        tap.current();
+      }
       return;
     }
     const kind = dragOutcome(s.mode, s.dx, s.dy, performance.now() - s.t, s.dir);

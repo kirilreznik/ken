@@ -154,17 +154,22 @@ export function isNewer(a: string, b: string): boolean {
  * Merges the server copy into the local votes: per name the later change wins, and queued
  * changes stay on top. A local vote the server doesn't have is kept only when it was made
  * after `since` (the read started before it reached the server); older ones were deleted
- * on another device.
+ * on another device. A server vote the user removed here after it was written (`removed`: name
+ * to removal time) stays removed: a read sent before an undo can answer after the undo's
+ * delete has landed and left the outbox, with the vote still in it.
  */
 export function mergeRemote(
   local: ReadonlyMap<string, StoredVote>,
   remote: ReadonlyMap<string, StoredVote>,
   outbox: readonly OutboxItem[],
   since: number,
+  removed: ReadonlyMap<string, string> = new Map(),
 ): Map<string, StoredVote> {
   const merged = new Map<string, StoredVote>();
   for (const [name, r] of remote) {
     const l = local.get(name);
+    const gone = removed.get(name);
+    if (!l && gone && !isNewer(r.updatedAt, gone)) continue;
     merged.set(name, l && isNewer(l.updatedAt, r.updatedAt) ? l : r);
   }
   for (const [name, l] of local) {
@@ -358,7 +363,7 @@ export function createVoteStore({
       if (error || !data || disposed) return false;
       const remote = new Map<string, StoredVote>();
       for (const row of data as VoteRow[]) remote.set(row.name, toStored(row));
-      votes = mergeRemote(votes, remote, outbox, since);
+      votes = mergeRemote(votes, remote, outbox, since, removedAt);
       persist();
       emit();
       return true;

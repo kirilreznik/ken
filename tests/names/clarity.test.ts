@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clarityAllowed, clarityProjectId } from "@/lib/names/clarity";
+import { clarityAllowed, clarityProjectId, withDropParams } from "@/lib/names/clarity";
 
 describe("clarityProjectId", () => {
   it("accepts a Clarity project id only", () => {
@@ -27,5 +27,23 @@ describe("clarityAllowed", () => {
 
   it("stays off the rest of the site", () => {
     expect(clarityAllowed("/pregnancy", "")).toBe(false);
+  });
+});
+
+describe("withDropParams", () => {
+  it("adds the name parameter to the tag's start config, keeping its own drop list", () => {
+    expect(withDropParams(["start", { projectId: "abc123", track: true }])).toEqual([
+      "start",
+      { projectId: "abc123", track: true, drop: ["n"] },
+    ]);
+    expect(withDropParams(["start", { projectId: "abc123", drop: ["x", "n"] }])).toEqual([
+      "start",
+      { projectId: "abc123", drop: ["x", "n"] },
+    ]);
+  });
+
+  it("leaves every other call alone", () => {
+    expect(withDropParams(["set", "C_IS", "0"])).toEqual(["set", "C_IS", "0"]);
+    expect(withDropParams(["start"])).toEqual(["start"]);
   });
 });

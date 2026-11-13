@@ -41,7 +41,7 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
 | `signin_started` / `signin_code_sent` / `signin_failed` / `signin_completed` | sign-in steps | `method`, `step`, `resend`, `new_user` |
 | `onboarding_completed` | onboarding saved | `opt_in`, `joining` |
 | `first_vote` | first decision in a space | |
-| `vote` | every decision | `vote`, `method` (swipe/button/key), `shared`, `position` |
+| `vote` | every decision | `vote`, `method` (swipe/button/key/detail), `shared`, `position` |
 | `vote_undone` | ביטול | |
 | `deck_exhausted` | no names left | `votes` |
 | `filter_empty` | filters left nothing | `sex` and which sheet filters are on |
@@ -53,6 +53,9 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
 | `lists_tab` | a tab of השמות שלי | `tab` |
 | `duel_started` / `duel_completed` | duel | `from`, `size`, `picks` |
 | `custom_name_added`, `report_sent`, `about_opened` | | `in_data` |
+| `detail_opened` / `detail_closed` | the name sheet (tap on the card, לכל הפרטים, Enter, a list row, a similar name, a direct link) | `source` (tap, button, key, list, similar, link) / `seconds`, `full` (dragged to full height); one `detail_closed` per visit, which ends when no name is left in the URL (the about and report sheets and similar names stay inside it) |
+| `detail_section_seen` | half of a section of the name sheet scrolled into view, once per name shown in a visit | `section` (numbers, similar, story) |
+| `detail_similar_tap`, `detail_surname_add` | a similar name opened, the "add a surname" link used | |
 | `background_changed` | | `background` |
 | `install_prompt` | install offer used | `mode`, `outcome` |
 | `opt_in_changed`, `display_name_changed`, `signed_out` | settings | `opt_in` |

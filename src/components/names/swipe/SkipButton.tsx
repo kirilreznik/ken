@@ -11,6 +11,8 @@ type SkipButtonProps = {
   onHide: () => void;
   disabled: boolean;
   className: string;
+  /** Sets aria-pressed (the name sheet shows the current vote); left out on the swipe screen. */
+  pressed?: boolean;
   describedBy?: string;
   children: ReactNode;
 };
@@ -21,7 +23,7 @@ type SkipButtonProps = {
  * שוב". The menu takes focus; Escape, Tab or a tap outside close it. A long press never also
  * skips.
  */
-export default function SkipButton({ onSkip, onHide, disabled, className, describedBy, children }: SkipButtonProps) {
+export default function SkipButton({ onSkip, onHide, disabled, className, pressed, describedBy, children }: SkipButtonProps) {
   const [menu, setMenu] = useState(false);
   const open = menu && !disabled;
   const press = useRef<Press | null>(null);
@@ -98,6 +100,7 @@ export default function SkipButton({ onSkip, onHide, disabled, className, descri
         aria-label="דילוג"
         aria-describedby={describedBy}
         aria-disabled={disabled || undefined}
+        aria-pressed={pressed}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}

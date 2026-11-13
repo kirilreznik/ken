@@ -235,6 +235,19 @@
   }
 }
 
+/* A tall sheet slides out (PRD 3.2.12); `to` only, so a sheet dragged down leaves from there. */
+@keyframes names-sheet-out {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes names-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes names-dialog-in {
   from {
     opacity: 0;
@@ -254,6 +267,39 @@
 
   .nest-names .names-dialog-in {
     animation: names-dialog-in 200ms ease-out;
+  }
+
+  .nest-names .names-sheet-out {
+    animation: names-sheet-out 200ms ease-in forwards;
+  }
+
+  .nest-names .names-scrim-out {
+    animation: names-fade-out 200ms ease-in forwards;
+  }
+
+  /* Desktop (PRD 3.2.4): the tall sheet is a centered panel, so it comes and goes like a dialog. */
+  @media (min-width: 768px) {
+    .nest-names [data-detent].names-sheet-in {
+      animation: names-dialog-in 200ms ease-out;
+    }
+
+    .nest-names [data-detent].names-sheet-out {
+      animation: names-fade-out 200ms ease-in forwards;
+    }
+  }
+}
+
+/* Reduced motion: sheets fade in and out in 160 ms, no slide (PRD 3.2.12). Unlayered and after
+ * the reduced-motion switch-off above, so these win over it. */
+@media (prefers-reduced-motion: reduce) {
+  .nest-names .names-sheet-in,
+  .nest-names .names-scrim-in {
+    animation: names-fade-in 160ms ease-out !important;
+  }
+
+  .nest-names .names-sheet-out,
+  .nest-names .names-scrim-out {
+    animation: names-fade-out 160ms ease-in forwards !important;
   }
 }
 

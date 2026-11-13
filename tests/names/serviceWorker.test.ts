@@ -10,7 +10,7 @@ type Listener = (event: Record<string, unknown>) => void;
 
 /** Runs sw.js against a stub worker scope and an in-memory Cache API. */
 function loadWorker(
-  manifest = { names: "names.abc.json", content: "content.def.json" },
+  manifest: Record<string, string> = { names: "names.abc.json", content: "content.def.json", details: "details.ghi.json" },
   pages: Record<string, string> = {},
 ) {
   const listeners: Record<string, Listener> = {};
@@ -111,6 +111,7 @@ describe("public/names/sw.js", () => {
       "/names/data/manifest.json",
       "/names/data/names.abc.json",
       "/names/data/content.def.json",
+      "/names/data/details.ghi.json",
       "/landing/names-fabric.webp",
       "/landing/names-notebook.webp",
       "/landing/names-nursery.webp",
@@ -130,10 +131,24 @@ describe("public/names/sw.js", () => {
         '<script>self.__next_f.push([1,"I:[\\"/_next/static/chunks/lazy.js\\"]"])</script>',
     });
     await sw.fire("install");
-    const statics = [...(sw.stores.get("nest-names-static-v2")?.keys() ?? [])].map((k) => new URL(k).pathname);
+    const statics = [...(sw.stores.get("nest-names-static-v4")?.keys() ?? [])].map((k) => new URL(k).pathname);
     expect(statics).toEqual(
       expect.arrayContaining(["/_next/static/chunks/a.css", "/_next/static/chunks/intro.js", "/_next/static/chunks/lazy.js"]),
     );
+  });
+
+  it("precaches the chunks a precached script loads on demand, following them", async () => {
+    const sw = loadWorker(undefined, {
+      "/names": '<script src="/_next/static/chunks/swipe.js" async></script>',
+      "/_next/static/chunks/swipe.js": 'e.l(["static/chunks/sheet.js"])',
+      "/_next/static/chunks/sheet.js": '["static/chunks/chart.js","static/chunks/swipe.js"]',
+    });
+    await sw.fire("install");
+    const statics = [...(sw.stores.get("nest-names-static-v4")?.keys() ?? [])].map((k) => new URL(k).pathname);
+    expect(statics).toEqual(
+      expect.arrayContaining(["/_next/static/chunks/swipe.js", "/_next/static/chunks/sheet.js", "/_next/static/chunks/chart.js"]),
+    );
+    expect(sw.fetched.filter((url) => url.endsWith("/swipe.js"))).toHaveLength(1);
   });
 
   it("deletes old names caches on activate and leaves other caches alone", async () => {
@@ -168,6 +183,25 @@ describe("public/names/sw.js", () => {
     sw.fetched.length = 0;
     expect(await (await sw.onFetch("/_next/static/chunks/app.js"))?.text()).toBe("net");
     expect(sw.fetched).toHaveLength(0);
+  });
+
+  it("serves the precached details file cache-first, also offline", async () => {
+    const sw = loadWorker();
+    await sw.fire("install");
+    const statics = [...(sw.stores.get("nest-names-static-v4")?.keys() ?? [])].map((k) => new URL(k).pathname);
+    expect(statics).toContain("/names/data/details.ghi.json");
+    sw.fetched.length = 0;
+    sw.setOffline(true);
+    expect(await (await sw.onFetch("/names/data/details.ghi.json"))?.text()).toBe("ok");
+    expect(sw.fetched).toHaveLength(0);
+  });
+
+  it("precaches only the data files the manifest names", async () => {
+    const sw = loadWorker({ names: "names.abc.json", content: "content.def.json" });
+    await sw.fire("install");
+    const keys = [...sw.stores.values()].flatMap((s) => [...s.keys()]).map((k) => new URL(k).pathname);
+    expect(keys.filter((k) => k.startsWith("/names/data/details"))).toEqual([]);
+    expect(keys).toContain("/names/data/names.abc.json");
   });
 
   it("serves /names pages network-first with the cached page as the offline fallback", async () => {

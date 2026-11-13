@@ -50,12 +50,20 @@ export function iconButtonClass(): string {
 }
 
 // The pill is 29 px tall like the board; ::before stretches the hit area to 45 px tall and 8 px wider.
+const CHIP = "inline-flex items-center justify-center rounded-pill px-3 py-1.5 text-caption font-bold";
+const CHIP_OFF = "names-glass-soft names-chip-off text-ink in-data-[names-bg=none]:text-ink-soft";
+
 export function chipClass(selected: boolean): string {
   return [
-    "relative inline-flex items-center justify-center rounded-pill px-3 py-1.5 text-caption font-bold",
+    `relative ${CHIP}`,
     "before:absolute before:-inset-x-1 before:-inset-y-2 before:content-['']",
-    selected ? "border border-ink bg-ink text-surface" : "names-glass-soft names-chip-off text-ink in-data-[names-bg=none]:text-ink-soft",
+    selected ? "border border-ink bg-ink text-surface" : CHIP_OFF,
     PRESS,
     DISABLED,
   ].join(" ");
+}
+
+// A label in the unselected chip's look that isn't a control (the card's hint chips, board 12).
+export function hintChipClass(): string {
+  return `${CHIP} ${CHIP_OFF}`;
 }

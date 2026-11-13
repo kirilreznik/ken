@@ -4,20 +4,26 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
+import AboutSheet from "@/components/names/about/AboutSheet";
+import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
-import { Button, IconButton, openSheet } from "@/components/names/ui";
+import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
+import { Button, IconButton, openNameSheet, openSheet } from "@/components/names/ui";
 import { useChosen } from "@/components/names/useChosen";
-import { useNameStats } from "@/components/names/useCards";
+import { useCards, useNameStats } from "@/components/names/useCards";
 import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
 import { InstallHint, InstallSheet } from "@/components/names/pwa/Install";
+import { usePrefJson } from "@/components/names/usePrefJson";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
+import type { Decision } from "@/components/names/DecisionButtons";
+import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
 import { addedText, listsTab, rowActionText, rowMeta, rowMetaText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
 import { showToast } from "@/lib/names/toast";
-import type { NameStats } from "@/lib/names/types";
+import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
 import DuelScreen from "./DuelScreen";
 import RowMenu from "./RowMenu";
@@ -25,6 +31,13 @@ import { decideLabel } from "@/lib/names/launch";
 import { track } from "@/lib/names/track";
 
 const LISTS_PATH = "/names/lists";
+const NO_MATCHES: readonly Match[] = [];
+
+// FR-D4: a row's name opens the same "פרטי השם" sheet as the swipe card.
+function openDetails(name: string) {
+  openNameSheet(name);
+  track("detail_opened", { source: "list" });
+}
 
 function Icon({ size = 20, children, className }: { size?: number; children: ReactNode; className?: string }) {
   return (
@@ -44,6 +57,7 @@ export default function ListsScreen() {
   const { user } = useAuth();
   const space = useSpace();
   const { names } = useNameStats();
+  const { cards } = useCards();
   const { store, state } = useVotes(space.spaceId, user?.id ?? null);
   const matches = useMatches(space.spaceId, user?.id ?? null, space.isShared, state?.votes);
   const [status, setStatus] = useState("");
@@ -55,6 +69,16 @@ export default function ListsScreen() {
   useEffect(() => track("lists_tab", { tab }), [tab]);
   const rows = useMemo(() => savedRows(state?.votes ?? new Map()), [state?.votes]);
   const ready = !!(store && state?.ready);
+  // Only names with a card open the sheet; names added by hand have nothing to show there.
+  const deckNames = useMemo(() => new Set((cards ?? []).map((c) => c.stats.name)), [cards]);
+  const canOpen = (name: string) => deckNames.has(name);
+  const votes = useMemo(() => {
+    const map = new Map<string, Vote>();
+    for (const [name, v] of state?.votes ?? []) map.set(name, v.vote);
+    return map;
+  }, [state?.votes]);
+  const surnameJson = usePrefJson(user?.id ?? null, "surname");
+  const surname = surnameJson ? (JSON.parse(surnameJson) as string) : "";
 
   const tabs: { id: ListsTab; label: string }[] = [
     { id: "saved", label: ready ? `שמרתי · ${rows.length}` : "שמרתי" },
@@ -118,6 +142,31 @@ export default function ListsScreen() {
       </>
     );
   }
+
+  // PRD 3.2.6: a choice in the name sheet changes the vote through the store; the sheet stays
+  // open with the new choice pressed, and the toast (outside the sheet's inert page) says it.
+  // "דילוג" on a saved name takes it out of "שמרתי"; the toast's "ביטול" puts the old vote back.
+  const decideInSheet = (name: string, kind: Decision) => {
+    if (!store) return;
+    const previous = state?.votes.get(name);
+    if (previous?.vote === kind) return;
+    track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null });
+    store.setVote(name, kind, previous?.custom ?? false);
+    const message = sheetVoteText(kind, name);
+    setStatus(message);
+    const wasSaved = previous && (previous.vote === "keep" || previous.vote === "love");
+    if (kind === "skip" && wasSaved) {
+      const restore = () => {
+        store.setVote(name, previous.vote, previous.custom);
+        const back = sheetVoteText(previous.vote, name);
+        setStatus(back);
+        showToast(back);
+      };
+      showToast(message, { action: { label: "ביטול", onAction: restore } });
+    } else {
+      showToast(message);
+    }
+  };
 
   const add = (name: string, custom: boolean) => {
     if (!store) return;
@@ -192,6 +241,7 @@ export default function ListsScreen() {
                 setStatus(rowActionText(name, action));
               }}
               headingRef={headingRef}
+              canOpen={canOpen}
               chooseLabel={(name) => decideLabel(space.isShared, name)}
               onChoose={(row) => choose(row.name, "saved", { custom: row.custom })}
             />
@@ -207,6 +257,7 @@ export default function ListsScreen() {
               state={matches}
               memberCount={space.members.length}
               names={names}
+              canOpen={canOpen}
               chooseLabel={(name) => decideLabel(space.isShared, name)}
               onChoose={(name) => choose(name, "matches")}
             />
@@ -218,6 +269,17 @@ export default function ListsScreen() {
         </p>
       </main>
       <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
+      <NameDetailSheet
+        cards={cards}
+        surname={surname}
+        matches={space.isShared ? (matches?.matches ?? NO_MATCHES) : NO_MATCHES}
+        memberCount={space.members.length}
+        votes={votes}
+        onDecide={decideInSheet}
+      />
+      {/* The name sheet's source links: both keep `n`, so closing them comes back to it. */}
+      <AboutSheet hasName />
+      <ReportSheet name={null} knownNames={deckNames} />
       {decision}
       <InstallSheet />
     </div>
@@ -226,6 +288,8 @@ export default function ListsScreen() {
 
 type ChooseProps = {
   chooseLabel: (name: string) => string;
+  /** Whether the row's name has a card, so it opens the name sheet. */
+  canOpen: (name: string) => boolean;
 };
 
 type MatchesPanelProps = ChooseProps & {
@@ -241,7 +305,7 @@ type MatchesPanelProps = ChooseProps & {
  * "{n} שמרו" from 3 up, a heart when someone loved it (never who), the last update time
  * while offline. Nothing about anyone's skips.
  */
-function MatchesPanel({ userId, state, memberCount, names, chooseLabel, onChoose }: MatchesPanelProps) {
+function MatchesPanel({ userId, state, memberCount, names, canOpen, chooseLabel, onChoose }: MatchesPanelProps) {
   const online = useOnline();
   // The day to compare the last update with; the screen isn't open across midnight for long.
   const [openedAt] = useState(() => Date.now());
@@ -267,7 +331,7 @@ function MatchesPanel({ userId, state, memberCount, names, chooseLabel, onChoose
     <>
       {intro}
       {updated}
-      <MatchRows userId={userId} matches={state.matches} memberCount={memberCount} names={names} chooseLabel={chooseLabel} onChoose={onChoose} />
+      <MatchRows userId={userId} matches={state.matches} memberCount={memberCount} names={names} canOpen={canOpen} chooseLabel={chooseLabel} onChoose={onChoose} />
     </>
   );
 }
@@ -280,7 +344,7 @@ type MatchRowsProps = ChooseProps & {
   onChoose: (name: string) => void;
 };
 
-function MatchRows({ userId, matches, memberCount, names, chooseLabel, onChoose }: MatchRowsProps) {
+function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, onChoose }: MatchRowsProps) {
   const { seen, setSeen } = useSeenMatches(userId);
   // "חדש" marks matches this device hadn't shown before the list opened (or that came in since).
   const [seenAtOpen] = useState(() => new Set(seen));
@@ -322,7 +386,7 @@ function MatchRows({ userId, matches, memberCount, names, chooseLabel, onChoose 
           const kept = keptByText(match);
           return (
             <li key={match.name} className="flex items-center gap-3 border-b border-line py-3.5 ps-4 pe-2 last:border-b-0">
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <RowName onOpen={canOpen(match.name) ? () => openDetails(match.name) : undefined}>
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                   <span className="text-row-name break-words">{match.name}</span>
                   {!seenAtOpen.has(match.name) ? (
@@ -351,7 +415,7 @@ function MatchRows({ userId, matches, memberCount, names, chooseLabel, onChoose 
                     <span className="sr-only">{rowMetaText(meta)}</span>
                   </>
                 ) : null}
-              </div>
+              </RowName>
               {kept ? <span className="flex-none text-caption font-bold text-ink-soft">{kept}</span> : null}
               <RowMenu name={match.name} onChoose={() => onChoose(match.name)} chooseLabel={chooseLabel(match.name)} />
             </li>
@@ -360,6 +424,31 @@ function MatchRows({ userId, matches, memberCount, names, chooseLabel, onChoose 
       </ul>
       {matches.length >= 2 ? <DuelLink title="דו־קרב בין ההתאמות" from="matches" /> : null}
     </>
+  );
+}
+
+/**
+ * The name part of a row. With `onOpen` (the name has a card) it's a button that opens the
+ * name sheet, same look; without it, plain text (custom names have no sheet).
+ */
+function RowName({ onOpen, children }: { onOpen?: () => void; children: ReactNode }) {
+  const className = "flex min-w-0 flex-1 flex-col gap-0.5";
+  if (!onOpen) return <div className={className}>{children}</div>;
+  return (
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      // Safari doesn't focus a tapped button; focus it so the sheet gives focus back to this row.
+      onPointerDown={preloadNameDetail}
+      onFocus={preloadNameDetail}
+      onClick={(event) => {
+        event.currentTarget.focus({ preventScroll: true });
+        onOpen();
+      }}
+      className={`${className} min-h-11 justify-center rounded-sm text-start`}>
+      {children}
+      <span className="sr-only">, {DETAILS_HINT}</span>
+    </button>
   );
 }
 
@@ -397,7 +486,7 @@ type SavedPanelProps = ChooseProps & {
 };
 
 /** "שמרתי": loved first with "אהבתי מאוד", each row with sex tag, count, trend and its menu. */
-function SavedPanel({ ready, rows, names, onAction, headingRef, chooseLabel, onChoose }: SavedPanelProps) {
+function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseLabel, onChoose }: SavedPanelProps) {
   const listRef = useRef<HTMLUListElement>(null);
   const focusAfter = useRef<number | null>(null);
 
@@ -438,7 +527,7 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, chooseLabel, onC
           const meta = row.custom ? null : rowMeta(names?.get(row.name));
           return (
             <li key={row.name} className="flex items-center gap-3 border-b border-line py-3.5 ps-4 pe-2 last:border-b-0">
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <RowName onOpen={!row.custom && canOpen(row.name) ? () => openDetails(row.name) : undefined}>
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                   <span className="text-row-name break-words">{row.name}</span>
                   {row.vote === "love" ? (
@@ -466,7 +555,7 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, chooseLabel, onC
                 ) : row.custom ? (
                   <span className="text-caption text-stone">שם שהוספתי</span>
                 ) : null}
-              </div>
+              </RowName>
               <RowMenu
                 name={row.name}
                 chooseLabel={chooseLabel(row.name)}

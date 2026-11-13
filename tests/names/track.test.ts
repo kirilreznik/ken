@@ -73,6 +73,13 @@ describe("NAMES_EVENTS", () => {
   it("has only names the server accepts", () => {
     for (const name of Object.keys(NAMES_EVENTS)) expect(name).toMatch(/^[a-z][a-z0-9_]{1,47}$/);
   });
+
+  it("has the name sheet events, and detail as a vote method", () => {
+    for (const name of ["detail_opened", "detail_closed", "detail_section_seen", "detail_similar_tap", "detail_surname_add"]) {
+      expect(NAMES_EVENTS).toHaveProperty(name);
+    }
+    expect(NAMES_EVENTS.vote).toContain("'detail'");
+  });
 });
 
 describe("track", () => {
@@ -159,6 +166,23 @@ describe("track", () => {
     await flush();
     const auth = fetchMock.mock.calls.map(([, init]) => ((init as RequestInit).headers as Record<string, string>).Authorization);
     expect(auth).toEqual(["Bearer old-token", "Bearer anon-key"]);
+  });
+
+  it("queues the name sheet events with their props and drops a name in them", () => {
+    track("detail_opened", { source: "similar", name: "זיו" } as never);
+    track("detail_closed", { seconds: 12, full: true, surname: "כהן" } as never);
+    track("detail_section_seen", { section: "story" });
+    track("detail_similar_tap");
+    track("detail_surname_add");
+    track("vote", { vote: "love", method: "detail" });
+    expect(queuedForTests().map((e) => [e.event, e.props])).toEqual([
+      ["detail_opened", { source: "similar" }],
+      ["detail_closed", { seconds: 12, full: true }],
+      ["detail_section_seen", { section: "story" }],
+      ["detail_similar_tap", {}],
+      ["detail_surname_add", {}],
+      ["vote", { vote: "love", method: "detail" }],
+    ]);
   });
 
   it("does nothing when switched off", () => {

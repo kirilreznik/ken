@@ -204,3 +204,7 @@ Not part of E16. Turns the 10-name sample into the full deck by generating `name
 - **Known people (0–2):** taken from **Wikidata, never generated**, because invented people are the most harmful possible mistake here. Wikidata is CC0. Query: humans whose given name (P735) matches the Hebrew name, with a Hebrew Wikipedia article, ranked by number of Wikipedia sitelinks. Exclude politicians (occupation politician, or holding a political position), military commanders, and anyone flagged by the owner. The one-line `what` is drafted from the Hebrew Wikipedia lead and kept factual. Living people are named only by their public role.
 - **Weighted deck (FR-9)** switches on once the full list is in.
 - **QA:** the owner checks a random sample of 100 entries across all three parts. If more than 5 need changes, fix the prompt or query and check again. The report button (FR-14) catches the rest.
+
+## Addendum (2026-11): name detail sheet
+
+Tapping a card, its "לכל הפרטים" button, or a saved or matched name in Lists opens "פרטי השם", a tall bottom sheet with the name's meaning and story, Bible verse, known people, a match badge (matches only), the year chart, boys/girls, facts, similar names, the source, and the keep / love / skip buttons. The swipe card became slim (no verse and people, intro on 2 lines) so it never scrolls and swipe-up works on every card. Decisions, content rules and stories: [`tasks/prd-name-detail.md`](../../tasks/prd-name-detail.md); code and data: README, "Name detail sheet".

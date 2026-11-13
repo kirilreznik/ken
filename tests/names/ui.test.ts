@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buttonClass, chipClass, glassClass, iconButtonClass } from "@/components/names/ui/classes";
+import { DETENT_DRAG, detentAfterDrag } from "@/components/names/ui/detents";
 
 describe("glass primitives classes", () => {
   it("maps glass variants to the names.css classes", () => {
@@ -51,5 +52,32 @@ describe("glass primitives classes", () => {
   it("uses no raw colors, physical sides or pixel font sizes", () => {
     const all = [buttonClass("primary"), buttonClass("secondary"), buttonClass("peach"), buttonClass("link"), iconButtonClass(), chipClass(true), chipClass(false)].join(" ");
     expect(all).not.toMatch(/#[0-9a-f]{3,8}|rgb|\b(ml|mr|pl|pr|left|right)-|text-\[\d/i);
+  });
+});
+
+describe("tall sheet detents", () => {
+  it("drags up from 70% to full and stays at full", () => {
+    expect(detentAfterDrag("70", -DETENT_DRAG)).toBe("full");
+    expect(detentAfterDrag("70", -300)).toBe("full");
+    expect(detentAfterDrag("full", -300)).toBe("full");
+  });
+
+  it("drags down from full to 70% and from 70% to close", () => {
+    expect(detentAfterDrag("full", DETENT_DRAG)).toBe("70");
+    expect(detentAfterDrag("full", 500)).toBe("70");
+    expect(detentAfterDrag("70", DETENT_DRAG)).toBe("close");
+  });
+
+  it("snaps back after a short drag", () => {
+    expect(detentAfterDrag("70", 0)).toBe("70");
+    expect(detentAfterDrag("70", DETENT_DRAG - 1)).toBe("70");
+    expect(detentAfterDrag("70", -(DETENT_DRAG - 1))).toBe("70");
+    expect(detentAfterDrag("full", DETENT_DRAG - 1)).toBe("full");
+    expect(detentAfterDrag("full", -(DETENT_DRAG - 1))).toBe("full");
+  });
+
+  it("takes a custom threshold", () => {
+    expect(detentAfterDrag("70", -40, 40)).toBe("full");
+    expect(detentAfterDrag("70", 39, 40)).toBe("70");
   });
 });
