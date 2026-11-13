@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { fullName, positionText } from "@/lib/names/card";
 import type { SexTag } from "@/lib/names/types";
+import { tagClass } from "@/components/names/ui/classes";
 
 interface CardHeaderProps {
   name: string;
@@ -27,7 +28,7 @@ export default function CardHeader({ name, niqqud, sexTag, position, total, surn
   return (
     <>
       <div className="flex items-center justify-between gap-2">
-        <span className="rounded-pill bg-peach-soft px-2.5 py-1.5 text-tag text-clay-deep">{sexTag}</span>
+        <span className={tagClass()}>{sexTag}</span>
         <div className="flex items-center gap-1">
           {position != null && total != null && (
             <span className="text-caption text-ink-soft in-data-[names-bg=none]:text-stone">

@@ -190,3 +190,18 @@ const SKELETON: Record<SkeletonSurface, string> = { canvas: "bg-sand", glass: "n
 export function skeletonClass(surface: SkeletonSurface = "canvas"): string {
   return SKELETON[surface];
 }
+
+// Tags (NP-066): the peach pill with clay-deep text. "sm" is the sex tag on the card and the
+// detail header; "xs" is the "חדש" badge in a list row.
+export type TagSize = "sm" | "xs";
+
+const TAG_SIZE: Record<TagSize, string> = { sm: "px-2.5 py-1.5 text-tag", xs: "px-2 py-0.5 text-label" };
+
+export function tagClass(size: TagSize = "sm"): string {
+  return `rounded-pill bg-peach-soft text-clay-deep ${TAG_SIZE[size]}`;
+}
+
+// The 10 px clay dot (intro, match and decision eyebrows, list rows, the new-match badge).
+export function dotClass(): string {
+  return "size-2.5 rounded-pill bg-clay";
+}

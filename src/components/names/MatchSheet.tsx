@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import ScreenBackground from "@/components/names/ScreenBackground";
-import { Button, Glass, IconButton } from "@/components/names/ui";
+import { Button, Glass, IconButton, dotClass } from "@/components/names/ui";
 import { closeSheet, openSheet, useLayerOpen } from "@/components/names/ui/layers";
 import { useModal, usePortalHost } from "@/components/names/ui/useModal";
 import { useNameStats } from "@/components/names/useCards";
@@ -128,7 +128,7 @@ function MatchPanel({ match, cards, onSeen }: { match: Match; cards: readonly Ca
               <h2 lang="he" className="m-0 text-match-name break-words">
                 {display}
               </h2>
-              <span aria-hidden="true" className="size-2.5 rounded-full bg-clay" />
+              <span aria-hidden="true" className={dotClass()} />
               <p id={lineId} className="m-0 text-match-line text-ink-soft">
                 {matchSheetLine(match)}
               </p>

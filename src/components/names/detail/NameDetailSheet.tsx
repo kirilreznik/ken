@@ -5,7 +5,7 @@ import { Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore } 
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
 import DecisionButtons, { type Decision } from "@/components/names/DecisionButtons";
-import { BottomSheet, IconButton, adoptNameLink, closeSheet, openNameSheet } from "@/components/names/ui";
+import { BottomSheet, IconButton, adoptNameLink, closeSheet, openNameSheet, tagClass } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useNameDetails } from "@/components/names/useNameDetails";
 import { rank2024, rankMap, similarForDisplay, togetherFor } from "@/lib/names/detail";
@@ -221,7 +221,7 @@ function NameHeader({ card, titleId, from }: { card: Card; titleId: string; from
           {content.niqqud.trim() && content.niqqud !== stats.name ? (
             <span className="text-card-title break-words text-ink-soft">{content.niqqud}</span>
           ) : null}
-          <span className="rounded-pill bg-peach-soft px-2.5 py-1.5 text-tag text-clay-deep">{derived.sexTag}</span>
+          <span className={tagClass()}>{derived.sexTag}</span>
         </div>
       </div>
       <IconButton aria-label="סגירה" onClick={close}>

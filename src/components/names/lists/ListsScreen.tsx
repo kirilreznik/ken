@@ -8,7 +8,7 @@ import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
-import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet, segmentClass, segmentGroupClass } from "@/components/names/ui";
+import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, dotClass, emptyTitleClass, openNameSheet, openSheet, segmentClass, segmentGroupClass, tagClass } from "@/components/names/ui";
 import { ListSkeleton } from "./ListSkeleton";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
@@ -417,7 +417,7 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                   <span className="text-row-name break-words">{match.name}</span>
                   {!seenAtOpen.has(match.name) ? (
-                    <span className="rounded-pill bg-peach-soft px-2 py-0.5 text-label text-clay-deep">חדש</span>
+                    <span className={tagClass("xs")}>חדש</span>
                   ) : null}
                   {match.lovedByCount > 0 ? (
                     <span className="flex items-center gap-1 text-caption font-bold text-ink-soft">
@@ -620,7 +620,7 @@ function SoloMatches() {
   useEffect(() => track("invite_prompt", { placement: "matches_tab", action: "shown" }), []);
   return (
     <div className={emptyPanelClass("card")}>
-      <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-full bg-peach-soft text-clay-deep">
+      <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-pill bg-peach-soft text-clay-deep">
         <Icon size={24}>
           <circle cx="9" cy="8" r="3.5" />
           <path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6" />
@@ -642,7 +642,7 @@ function SoloMatches() {
 function ChosenBanner({ name, shared, onOpen, onClear }: { name: string; shared: boolean; onOpen: () => void; onClear: () => void }) {
   return (
     <div className="flex items-center gap-3 rounded-lg bg-peach-soft py-2 ps-4 pe-2 text-ink">
-      <span aria-hidden="true" className="size-2.5 flex-none rounded-full bg-clay" />
+      <span aria-hidden="true" className={`flex-none ${dotClass()}`} />
       <button type="button" onClick={onOpen} className="flex min-h-11 min-w-0 flex-1 flex-col items-start justify-center text-start">
         <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
         <span className="text-row-name break-words">{name}</span>

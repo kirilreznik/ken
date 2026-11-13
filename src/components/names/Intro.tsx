@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Button, IconButton, inputClass } from "@/components/names/ui";
+import { Button, IconButton, dotClass, inputClass } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { introFromSheet } from "@/lib/names/routing";
@@ -82,7 +82,7 @@ export default function Intro() {
             <div className="absolute start-8.5 top-4.5 h-27.5 w-37.5 -rotate-8 rounded-lg bg-surface opacity-60 shadow-card" />
             <div className="absolute start-10 top-2.5 flex h-30 w-37.5 rotate-4 flex-col items-center justify-center gap-1.5 rounded-lg bg-surface shadow-hero">
               <span className="text-hero-name text-ink">נֹעַם</span>
-              <span className="size-2.5 rounded-full bg-clay" />
+              <span className={dotClass()} />
             </div>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function Intro() {
 
         {/* Sticky so the main action is in view on a short screen (NP-UX-002). The canvas fade only
             on "ללא רקע": on a photo it would paint a grey band, so the button sits on the photo (NP-030). */}
-        <div className="sticky bottom-0 -mx-5 mt-auto px-5 pt-6 pb-[max(16px,env(safe-area-inset-bottom))] in-data-[names-bg=none]:bg-linear-to-t in-data-[names-bg=none]:from-(--nest-canvas) in-data-[names-bg=none]:from-40% in-data-[names-bg=none]:to-transparent">
+        <div className="sticky bottom-0 -mx-5 mt-auto px-5 pt-6 pb-[max(16px,env(safe-area-inset-bottom))] in-data-[names-bg=none]:bg-linear-to-t in-data-[names-bg=none]:from-canvas in-data-[names-bg=none]:from-40% in-data-[names-bg=none]:to-transparent">
           <Button type="submit" className="w-full">
             התחלת בחירה
           </Button>

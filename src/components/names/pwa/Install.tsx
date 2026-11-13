@@ -91,7 +91,7 @@ export function InstallSheet() {
       <ol className="m-0 flex list-none flex-col gap-3 p-0">
         {INSTALL_STEPS.map((step, i) => (
           <li key={step} className="flex min-h-14 items-center gap-3 rounded-lg bg-sand px-4 py-3">
-            <span aria-hidden="true" className="flex size-8 flex-none items-center justify-center rounded-full bg-surface text-label text-ink">
+            <span aria-hidden="true" className="flex size-8 flex-none items-center justify-center rounded-pill bg-surface text-label text-ink">
               {i + 1}
             </span>
             <span className="min-w-0 flex-1 text-body text-ink">{step}</span>

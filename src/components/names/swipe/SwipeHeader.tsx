@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { IconButton, openSheet } from "@/components/names/ui";
+import { IconButton, dotClass, openSheet } from "@/components/names/ui";
 import { PRESS } from "@/components/names/ui/classes";
 import { savedLabel } from "@/lib/names/a11y";
 
@@ -55,7 +55,7 @@ export default function SwipeHeader({ saved, filtered = false }: { saved: number
           <path d="M4 6h16M7 12h10M10 18h4" />
         </Icon>
         {filtered ? (
-          <span aria-hidden="true" className="absolute top-1.5 end-1.5 size-2.5 rounded-full bg-clay ring-2 ring-surface" />
+          <span aria-hidden="true" className={`absolute top-1.5 end-1.5 ring-2 ring-surface ${dotClass()}`} />
         ) : null}
       </IconButton>
       <Link

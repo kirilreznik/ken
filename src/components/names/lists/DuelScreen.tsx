@@ -163,7 +163,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
     <div data-names-bg="none" className="relative isolate min-h-dvh bg-canvas">
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
-          <div className="absolute top-65 inset-x-0 mx-auto size-70 rounded-full bg-peach opacity-20 blur-(--nest-blob-blur)" />
+          <div className="absolute top-65 inset-x-0 mx-auto size-70 rounded-pill bg-peach opacity-20 blur-(--nest-blob-blur)" />
         </div>
       </div>
 
@@ -254,7 +254,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                         {i === 1 ? (
                           <div
                             aria-hidden="true"
-                            className="z-1 -my-8 flex size-11.5 items-center justify-center self-center rounded-full border-3 border-canvas bg-ink text-caption font-extrabold text-surface"
+                            className="z-1 -my-8 flex size-11.5 items-center justify-center self-center rounded-pill border-3 border-canvas bg-ink text-caption font-extrabold text-surface"
                           >
                             או
                           </div>
@@ -315,7 +315,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                         <li key={name} className="flex items-center gap-3 border-b border-line px-4 py-3.5 last:border-b-0">
                           <span
                             aria-hidden="true"
-                            className={`flex size-9 flex-none items-center justify-center rounded-full text-card-title ${i === 0 ? "bg-ink text-surface" : "bg-sand text-ink"}`}
+                            className={`flex size-9 flex-none items-center justify-center rounded-pill text-card-title ${i === 0 ? "bg-ink text-surface" : "bg-sand text-ink"}`}
                           >
                             {i + 1}
                           </span>

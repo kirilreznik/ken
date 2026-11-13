@@ -132,20 +132,20 @@ export default function ScreenBackground({ background, blobs = "main", children 
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         {shown === "none" && blobs === "intro" ? (
           <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
-            <div className="absolute -top-15 -end-20 size-80 rounded-full bg-peach opacity-25 blur-(--nest-blob-blur)" />
+            <div className="absolute -top-15 -end-20 size-80 rounded-pill bg-peach opacity-25 blur-(--nest-blob-blur)" />
           </div>
         ) : null}
 
         {shown === "none" && blobs === "match" ? (
           <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
-            <div className="absolute top-40 inset-x-0 mx-auto size-90 rounded-full bg-peach opacity-25 blur-(--nest-blob-blur)" />
+            <div className="absolute top-40 inset-x-0 mx-auto size-90 rounded-pill bg-peach opacity-25 blur-(--nest-blob-blur)" />
           </div>
         ) : null}
 
         {shown === "none" && blobs === "main" ? (
           <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
-            <div className="absolute top-30 -end-30 size-75 rounded-full bg-peach opacity-[0.22] blur-(--nest-blob-blur)" />
-            <div className="absolute bottom-20 -start-[90px] size-60 rounded-full bg-peach opacity-[0.18] blur-(--nest-blob-blur)" />
+            <div className="absolute top-30 -end-30 size-75 rounded-pill bg-peach opacity-[0.22] blur-(--nest-blob-blur)" />
+            <div className="absolute bottom-20 -start-[90px] size-60 rounded-pill bg-peach opacity-[0.18] blur-(--nest-blob-blur)" />
           </div>
         ) : null}
 

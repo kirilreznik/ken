@@ -4,7 +4,7 @@ import { Suspense, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import NestCard from "@/components/names/NestCard";
 import ScreenBackground from "@/components/names/ScreenBackground";
-import { Button, Glass, IconButton } from "@/components/names/ui";
+import { Button, Glass, IconButton, dotClass } from "@/components/names/ui";
 import { closeSheet, useLayerOpen } from "@/components/names/ui/layers";
 import { useModal, usePortalHost } from "@/components/names/ui/useModal";
 import { useNameStats } from "@/components/names/useCards";
@@ -72,7 +72,7 @@ function Panel({ name, shared, onClear }: DecisionSheetProps & { name: string })
               <h2 lang="he" className="m-0 text-match-name break-words">
                 {name}
               </h2>
-              <span aria-hidden="true" className="size-2.5 rounded-full bg-clay" />
+              <span aria-hidden="true" className={dotClass()} />
               <p id={lineId} className="m-0 text-match-line text-ink-soft">
                 מזל טוב. השם נשמר כאן, ואפשר לשנות אותו בכל רגע.
               </p>

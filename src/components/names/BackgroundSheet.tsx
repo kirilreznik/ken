@@ -201,7 +201,7 @@ function BackgroundOptions() {
                   <img src={ownThumb} alt="" className="absolute inset-0 size-full object-cover" />
                 ) : null}
                 {o.id === "none" ? (
-                  <span aria-hidden="true" className="h-13 w-10 rounded-sm bg-surface shadow-(--nest-shadow-card-raised)" />
+                  <span aria-hidden="true" className="h-13 w-10 rounded-sm bg-surface shadow-card-raised" />
                 ) : null}
                 {o.id === "own" && !ownThumb ? (
                   <Icon size={26}>
@@ -211,7 +211,7 @@ function BackgroundOptions() {
                   </Icon>
                 ) : null}
                 {on ? (
-                  <span className="absolute end-1.5 top-1.5 flex size-5.5 items-center justify-center rounded-full bg-ink text-surface">
+                  <span className="absolute end-1.5 top-1.5 flex size-5.5 items-center justify-center rounded-pill bg-ink text-surface">
                     <Icon size={14} strokeWidth={3}>
                       <path d="M5 12l5 5 9-10" />
                     </Icon>
