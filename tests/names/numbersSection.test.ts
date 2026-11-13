@@ -13,9 +13,9 @@ describe("NumbersSection (FR-D13)", () => {
   it("labels the chart and shows the 2024 count with its rank", () => {
     const html = render(years(2099), 2);
     expect(html).toContain("כמה תינוקות קיבלו את השם בכל שנה");
-    expect(text(line(html))).toBe("ב־2024: 2,099 תינוקות, #2 בשנת 2024");
+    expect(text(line(html))).toBe("ב־2024: 2,099 תינוקות, מקום 2 בדירוג");
     expect(line(html)).toContain('<bdi dir="ltr">2,099</bdi>');
-    expect(line(html)).toContain('<bdi dir="ltr">#2</bdi>');
+    expect(line(html)).toContain('<bdi dir="ltr">2</bdi>');
   });
 
   it("leaves the rank out when the name isn't ranked", () => {

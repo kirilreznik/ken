@@ -42,7 +42,7 @@ describe("rankMap / rank2024", () => {
     const map = rankMap(names);
     expect(rank2024("מוחמד", map)).toBe(1);
     expect(rank2024("אריאל", map)).toBe(2);
-    expect(rankText(2)).toBe("#2 בשנת 2024");
+    expect(rankText(2)).toBe("מקום 2 בדירוג");
   });
 
   it("gives tied names the same rank and skips the next one", () => {
@@ -117,7 +117,7 @@ describe("factTiles", () => {
   it("shows all three facts for אריאל like board 14", () => {
     expect(factTiles(stats("אריאל"), 2)).toEqual([
       { key: "all-time", value: "48,793", label: "תינוקות מאז 1949" },
-      { key: "rank", value: "#2", label: "בדירוג 2024" },
+      { key: "rank", value: "מקום 2", label: "בדירוג 2024" },
       { key: "compare", value: "פי 3.3", label: "לעומת 2000" },
     ]);
   });
@@ -131,7 +131,7 @@ describe("factTiles", () => {
     expect(factTiles({ m: 5, f: 0, y: years(100, 0) }, null).map((t) => t.key)).toEqual(["all-time"]);
     expect(factTiles(stats("אינה"), null).map((t) => t.key)).toEqual(["all-time"]);
     expect(factTiles({ m: 5, f: 0, y: years(10, 30) }, 400).map((t) => t.key)).toEqual(["all-time", "rank"]);
-    expect(factTiles({ m: 5, f: 0, y: years(10, 30) }, 1234)[1].value).toBe("#1,234");
+    expect(factTiles({ m: 5, f: 0, y: years(10, 30) }, 1234)[1].value).toBe("מקום 1,234");
   });
 });
 
