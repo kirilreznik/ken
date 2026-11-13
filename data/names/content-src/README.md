@@ -6,8 +6,8 @@
 |---|---|---|
 | `samples.json` | The 10 hand-written E16 sample cards | Owner review |
 | `batch-NNN.json` | Drafted cards (niqqud, intro, Bible reference), most popular names first | Rendered from `scripts/names-content/drafts/batch-NNN.py` |
-| `people.json` | Known people per name, from Wikidata only | `scripts/names-content/fetch-people.mjs` |
-| `people-exclude.json` | People the owner flagged (QIDs); never shown | Owner |
+| `people.json` | Known people per name, from Wikidata only (2026-11-13 run, every pick read by hand; see PEOPLE-REPORT.md) | `scripts/names-content/fetch-people.mjs` |
+| `people-exclude.json` | People never shown on a card (QID, name, reason) | Owner / reviewer |
 | `themes.json` | Theme lists for the "נושאים" filter (one list per theme; `unisex` is computed from CBS) | AI draft, owner review |
 | `THEMES.md` | Every theme's names and the names with none, for review | `scripts/names-content/build-themes.mjs` |
 | `sectors.json` | Births per name in the Jewish sector vs all sectors (CBS) | `scripts/names-content/build-sectors.mjs` |
@@ -20,7 +20,7 @@
 
 ```bash
 python3 scripts/names-content/drafts/batch-001.py      # render a drafted batch to JSON
-node scripts/names-content/fetch-people.mjs --only 1    # Wikidata people (needs query.wikidata.org)
+node scripts/names-content/fetch-people.mjs              # Wikidata people (needs query.wikidata.org; the cloud sandbox is blocked, so run it from a Mac or reuse the browser method in the script header)
 node scripts/names-content/build-content.mjs            # check Bible refs, build name-content.json
 node scripts/names-content/spot-check.mjs 1             # sample for the owner
 node scripts/names-content/build-themes.mjs             # check theme lists, build ../name-themes.json + THEMES.md

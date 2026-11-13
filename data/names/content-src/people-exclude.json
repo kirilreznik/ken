@@ -1,4 +1,235 @@
 {
-    "_about": "People the owner flagged: never shown on a card. Add {\"qid\":\"Q…\",\"why\":\"…\"} and rerun fetch-people.mjs.",
-    "qids": []
+ "_about": "People never shown on a card (owner or reviewer call, 2026-11-13). Add {\"qid\":\"Q…\",\"name\":\"…\",\"why\":\"…\"} and rerun fetch-people.mjs.",
+ "qids": [
+  {
+   "qid": "Q55950925",
+   "name": "מרים אדלסון",
+   "why": "political donor"
+  },
+  {
+   "qid": "Q4426215",
+   "name": "שרה נתניהו",
+   "why": "politician's spouse"
+  },
+  {
+   "qid": "Q124641586",
+   "name": "יובל אברהם",
+   "why": "political controversy"
+  },
+  {
+   "qid": "Q131129172",
+   "name": "ליבי אלון",
+   "why": "political media (Channel 14)"
+  },
+  {
+   "qid": "Q125872351",
+   "name": "עתי שלו",
+   "why": "political media (Channel 14)"
+  },
+  {
+   "qid": "Q33004319",
+   "name": "תהילה שוורץ אלטשולר",
+   "why": "political/legal commentator"
+  },
+  {
+   "qid": "Q12411276",
+   "name": "רון פונדק",
+   "why": "Oslo accords, political"
+  },
+  {
+   "qid": "Q24452328",
+   "name": "ים אנשל קספרס",
+   "why": "description not usable"
+  },
+  {
+   "qid": "Q2756349",
+   "name": "ליאם פיין",
+   "why": "died young in a widely covered tragedy"
+  },
+  {
+   "qid": "Q23000822",
+   "name": "קאי טראמפ",
+   "why": "politician's family"
+  },
+  {
+   "qid": "Q5638510",
+   "name": "חגי עמיר",
+   "why": "linked to the Rabin assassination"
+  },
+  {
+   "qid": "Q2904171",
+   "name": "עמרם בלוי",
+   "why": "anti-Zionist political leader"
+  },
+  {
+   "qid": "Q133705",
+   "name": "גדעון לוי",
+   "why": "political commentator, controversial"
+  },
+  {
+   "qid": "Q125208605",
+   "name": "שלו כחלון",
+   "why": "politician's family"
+  },
+  {
+   "qid": "Q125968908",
+   "name": "איתיאל זוהר",
+   "why": "politician's family"
+  },
+  {
+   "qid": "Q12404191",
+   "name": "אראל סג\"ל",
+   "why": "political commentator"
+  },
+  {
+   "qid": "Q8049449",
+   "name": "ירון זליכה",
+   "why": "politician"
+  },
+  {
+   "qid": "Q556740",
+   "name": "אריאלה אזולאי",
+   "why": "political controversy"
+  },
+  {
+   "qid": "Q7045437",
+   "name": "נח מוזס",
+   "why": "media owner, criminal case"
+  },
+  {
+   "qid": "Q47201955",
+   "name": "חגי סגל",
+   "why": "convicted (Jewish Underground)"
+  },
+  {
+   "qid": "Q2382141",
+   "name": "בני סלע",
+   "why": "convicted criminal"
+  },
+  {
+   "qid": "Q128766313",
+   "name": "טופז לוק",
+   "why": "political media adviser"
+  },
+  {
+   "qid": "Q6354013",
+   "name": "קלמן ליבסקינד",
+   "why": "political journalist"
+  },
+  {
+   "qid": "Q2895555",
+   "name": "אמנון לורד",
+   "why": "political commentator"
+  },
+  {
+   "qid": "Q460658",
+   "name": "ענת קם",
+   "why": "convicted (leaked documents)"
+  },
+  {
+   "qid": "Q374803",
+   "name": "בני מוריס",
+   "why": "controversial historian"
+  },
+  {
+   "qid": "Q2910102",
+   "name": "מיכה לינדנשטראוס",
+   "why": "state comptroller, political role"
+  },
+  {
+   "qid": "Q123017226",
+   "name": "ענבל ליברמן",
+   "why": "known for the October 7 attack"
+  },
+  {
+   "qid": "Q138316154",
+   "name": "שגיב אסולין",
+   "why": "intelligence"
+  },
+  {
+   "qid": "Q697131",
+   "name": "ארנון מילצ'ן",
+   "why": "criminal case, controversial"
+  },
+  {
+   "qid": "Q17573849",
+   "name": "סטיבן סוטלוף",
+   "why": "murdered journalist"
+  },
+  {
+   "qid": "Q7004694",
+   "name": "אהוביה טבנקין",
+   "why": "political movement"
+  },
+  {
+   "qid": "Q818077",
+   "name": "בני שטיינמץ",
+   "why": "bribery case, controversial"
+  },
+  {
+   "qid": "Q12411209",
+   "name": "רביב דרוקר",
+   "why": "political journalist"
+  },
+  {
+   "qid": "Q12408332",
+   "name": "ירמיהו הלפרן",
+   "why": "political movement (Betar)"
+  },
+  {
+   "qid": "Q1420903",
+   "name": "ג'ונתן קוק",
+   "why": "political controversy"
+  },
+  {
+   "qid": "Q2094098",
+   "name": "מלכיאל גרינוולד",
+   "why": "Kastner affair, controversial"
+  },
+  {
+   "qid": "Q24082918",
+   "name": "גמליאל כהן",
+   "why": "intelligence"
+  },
+  {
+   "qid": "Q16131573",
+   "name": "גאל גרינוולד",
+   "why": "political role (WZO)"
+  },
+  {
+   "qid": "Q12403280",
+   "name": "אבא סיקרא",
+   "why": "rebel leader in the war against Rome"
+  },
+  {
+   "qid": "Q119652891",
+   "name": "ויולט ח'ורי",
+   "why": "local council head (politician)"
+  },
+  {
+   "qid": "Q12409925",
+   "name": "נעמן דילר",
+   "why": "burglar"
+  },
+  {
+   "qid": "Q210096",
+   "name": "אגנס הקדושה",
+   "why": "Christian saint, not a fit for this audience"
+  },
+  {
+   "qid": "Q111127041",
+   "name": "מרי תותרי",
+   "why": "political research topic, little known"
+  },
+  {
+   "qid": "Q117338188",
+   "name": "דנית ברביבאי",
+   "why": "description not usable"
+  },
+  {
+   "qid": "Q12408687",
+   "name": "ליליה בסביץ",
+   "why": "labour-movement leader (political)"
+  }
+ ]
 }
