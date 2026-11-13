@@ -7,7 +7,7 @@ function Text({ text, contacts }: { text: string; contacts: LegalContacts }) {
     if (part.kind === "text") return part.text;
     const value = part.kind === "operator" ? contacts.operator : contacts.contact;
     if (!value) return <strong key={i} className="font-bold text-ink">{LEGAL_PLACEHOLDER}</strong>;
-    if (part.kind === "operator") return <bdi key={i}>{value}</bdi>;
+    if (part.kind === "operator") return <bdi key={i} className="whitespace-nowrap">{value}</bdi>;
     return (
       <a key={i} href={`mailto:${value}`} dir="ltr" className={`${linkClass("inline")} max-w-full break-all`}>
         {value}
