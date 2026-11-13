@@ -84,7 +84,7 @@ export function savedRows(votes: ReadonlyMap<string, { vote: Vote; custom?: bool
 
 /** Live region text after a row menu action. */
 export function rowActionText(name: string, action: "remove" | "hide"): string {
-  return action === "remove" ? `השם ${name} הוסר מהרשימה` : `השם ${name} הוסתר ולא יוצג יותר`;
+  return action === "remove" ? `השם ${name} הוסר מהרשימה` : `השם ${name} לא יוצג שוב`;
 }
 
 /** Toast text after "ביטול" on a row menu action: the name is back in "שמרתי". */

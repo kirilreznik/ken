@@ -25,7 +25,7 @@ function Icon({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * A "שמרתי" row's menu (FR-W18): "הסרה מהרשימה" and "לא להציג יותר" (not for a name the user
+ * A "שמרתי" row's menu (FR-W18): "הסרה מהרשימה" and "לא להציג שוב" (not for a name the user
  * added: it was never in the deck, so there's nothing to stop showing). Same behavior as the
  * skip menu: focus goes to the first item, arrows move, Escape returns focus, Tab or a tap
  * outside close it. It opens under its button, or above it when it wouldn't fit below (a row near the
@@ -141,7 +141,7 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
               <path d="M10.6 5.1A10.5 10.5 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-2.9 3.8M6.6 6.6A17 17 0 0 0 2.5 12S6 19 12 19a9.6 9.6 0 0 0 5.4-1.6" />
               <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
             </Icon>
-            לא להציג יותר
+            לא להציג שוב
           </button>
           ) : null}
         </div>
