@@ -12,9 +12,16 @@ export const OFFLINE_TEXT = "אין חיבור";
 /** The start of a caption-size offline line (name sheet details, matches list), after the wifi-off mark. */
 export const OFFLINE_LINE = "אין חיבור לאינטרנט.";
 
-/** "בחירה אחת ממתינה לסנכרון" / "3 בחירות ממתינות לסנכרון". */
-export function pendingText(pending: number): string {
-  return pending === 1 ? "בחירה אחת ממתינה לסנכרון" : `${formatCount(pending)} בחירות ממתינות לסנכרון`;
+/**
+ * NP-078: what happens to queued votes, in the undo button's word ("החלטה"). Offline:
+ * "החלטה אחת תישלח כשהחיבור יחזור" / "3 החלטות יישלחו כשהחיבור יחזור"; online (stuck):
+ * "החלטה אחת עוד לא נשלחה" / "3 החלטות עוד לא נשלחו".
+ */
+export function pendingText(pending: number, offline = true): string {
+  if (offline) {
+    return pending === 1 ? "החלטה אחת תישלח כשהחיבור יחזור" : `${formatCount(pending)} החלטות יישלחו כשהחיבור יחזור`;
+  }
+  return pending === 1 ? "החלטה אחת עוד לא נשלחה" : `${formatCount(pending)} החלטות עוד לא נשלחו`;
 }
 
 /** NP-073: online, nothing cached and the votes read failed; the store retries every 30 s. */
@@ -34,5 +41,5 @@ export function syncStatusText(online: boolean, pending: number, stuck = false, 
   const count = Math.max(0, Math.floor(pending));
   if (!online) return count > 0 ? `${OFFLINE_TEXT} · ${pendingText(count)}` : OFFLINE_TEXT;
   if (loadFailed) return VOTES_LOAD_FAILED_TEXT;
-  return count > 0 && stuck ? pendingText(count) : null;
+  return count > 0 && stuck ? pendingText(count, false) : null;
 }
