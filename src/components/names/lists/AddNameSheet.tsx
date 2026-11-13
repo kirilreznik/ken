@@ -88,7 +88,7 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
         />
         {error ? (
           <span id="add-name-error" role="alert" className="flex items-center gap-1.5 text-caption font-bold text-urgent">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true" className="flex-none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" className="flex-none">
               <circle cx="12" cy="12" r="9" />
               <path d="M12 7.5v5M12 16v.5" />
             </svg>

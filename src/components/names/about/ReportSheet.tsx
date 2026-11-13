@@ -31,7 +31,7 @@ const FORM_ID = "report-form";
 function ErrorLine({ id, children }: { id: string; children: string }) {
   return (
     <span id={id} role="alert" className="flex items-center gap-1.5 text-caption font-bold text-urgent">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true" className="flex-none">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" className="flex-none">
         <circle cx="12" cy="12" r="9" />
         <path d="M12 7.5v5M12 16v.5" />
       </svg>
@@ -111,7 +111,7 @@ function Panel({ name }: { name: string | null }) {
         }
       >
         <p ref={thanks} tabIndex={-1} role="status" className="m-0 flex items-center gap-2 text-card-title text-ink outline-none">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none">
             <path d="M5 12.5l4.5 4.5L19 7.5" />
           </svg>
           {REPORT_SENT}

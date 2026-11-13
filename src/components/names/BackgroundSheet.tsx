@@ -212,7 +212,7 @@ function BackgroundOptions() {
                 ) : null}
                 {on ? (
                   <span className="absolute end-1.5 top-1.5 flex size-5.5 items-center justify-center rounded-pill bg-ink text-surface">
-                    <Icon size={14} strokeWidth={3}>
+                    <Icon size={14}>
                       <path d="M5 12l5 5 9-10" />
                     </Icon>
                   </span>
