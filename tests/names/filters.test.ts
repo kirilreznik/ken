@@ -67,26 +67,20 @@ describe("filters on the 10 content names", () => {
     expect(pick({ letter: "א" })).toEqual(["אריאל", "אביגיל", "אלה"]);
   });
 
-  it("popularity, length and origin", () => {
+  it("popularity and length", () => {
     expect(pick({ popularity: "נפוץ" })).toEqual(cards.filter((c) => c.derived.band === "נפוץ").map((c) => c.stats.name));
     expect(pick({ length: "קצר" })).toEqual(["זיו", "יעל", "תמר", "שקד", "אלה"]);
     expect(pick({ length: "ארוך" })).toEqual(["אריאל", "אביגיל"]);
-    expect(pick({ origin: "C" })).toEqual(["תמר", "אביגיל"]);
-    expect(pick({ origin: "D" })).toEqual(["נועם", "תמר", "עמית"]);
-    expect(pick({ origin: "J" })).toHaveLength(10);
-    expect(pick({ origin: "M" })).toEqual(["זיו", "נועם", "יעל", "תמר", "עמית"]);
   });
 
   it("combines filters with AND", () => {
     expect(pick({ sex: "בת", letter: "א" })).toEqual(["אביגיל", "אלה"]);
     expect(pick({ sex: "בת", letter: "א", length: "קצר" })).toEqual(["אלה"]);
-    expect(pick({ sex: "בן", origin: "M" })).toEqual([]);
-    const f: Filters = { ...defaultFilters(), sex: "מתאים לכולם", origin: "D" };
-    expect(count(cards, f)).toBe(2);
+    expect(pick({ sex: "בן", length: "ארוך" })).toEqual([]);
   });
 
   it("reset brings back every name", () => {
-    let f: Filters = { sex: "בת", popularity: "נדיר", trend: "בירידה", letter: "ת", length: "ארוך", origin: "D" };
+    let f: Filters = { sex: "בת", popularity: "נדיר", trend: "בירידה", letter: "ת", length: "ארוך", themes: null, letterRange: null };
     expect(count(cards, f)).toBe(0);
     expect(isDefault(f)).toBe(false);
     f = defaultFilters();

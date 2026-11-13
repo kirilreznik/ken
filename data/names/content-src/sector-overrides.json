@@ -1,0 +1,5 @@
+{
+  "_about": "Owner exceptions to the Jewish-sector rule in scripts/names-content/sector.mjs. \"keep\": names to keep in the deck although the rule drops them; \"drop\": names to leave out although the rule keeps them. Each value is the reason.",
+  "keep": {},
+  "drop": {}
+}

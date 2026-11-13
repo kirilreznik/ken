@@ -8,9 +8,11 @@ const births = births2024() as Map<string, number>;
 const batchOf = batch as (n: number, order?: string[]) => string[];
 
 describe("details batches", () => {
-  it("cover every deck name exactly once across 20 batches", () => {
+  it("cover every drafted deck name exactly once across 20 batches", () => {
     const content = JSON.parse(readFileSync("data/names/name-content.json", "utf8"));
-    const deck = Object.keys(content.names);
+    // The split was fixed at drafting time, so it still holds the cards the sector rule left out.
+    const excluded = JSON.parse(readFileSync("data/names/content-src/sector-excluded.json", "utf8"));
+    const deck = [...Object.keys(content.names), ...excluded.cards];
     const all = Array.from({ length: 20 }, (_, i) => batchOf(i + 1, order)).flat();
     expect(all).toHaveLength(deck.length);
     expect(new Set(all).size).toBe(deck.length);

@@ -5,6 +5,8 @@
 //
 // Deck order: names in data/names/name-content.json, by 2024 births (names.json `y[24]`,
 // missing = 0) descending, ties by Hebrew name. Batch n = 65 names; batch 20 takes the rest.
+// The split was fixed when the batches were drafted, so it still counts the cards the Jewish-sector
+// rule later left out (content-src/sector-excluded.json `cards`); build-details skips those.
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -26,7 +28,8 @@ export function births2024() {
 export function deckOrder() {
   const births = births2024();
   const count = (name) => births.get(name) ?? 0;
-  return Object.keys(readJson("data/names/name-content.json").names).sort(
+  const left = readJson("data/names/content-src/sector-excluded.json").cards ?? [];
+  return [...Object.keys(readJson("data/names/name-content.json").names), ...left].sort(
     (a, b) => count(b) - count(a) || a.localeCompare(b, "he"),
   );
 }

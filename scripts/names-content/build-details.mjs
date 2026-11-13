@@ -202,7 +202,12 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const rows = readJson(resolve(root, "data/names/names.json")).names;
   const births = new Map(rows.map((r) => [r.n, r.y?.[24] ?? 0]));
   const known = new Set(rows.map((r) => r.n));
-  const batches = readBatches(srcDir);
+  // Entries for names the Jewish-sector rule left out of the deck (build-content.mjs) are skipped.
+  const excluded = new Set(readJson(resolve(srcDir, "sector-excluded.json")).names);
+  const batches = readBatches(srcDir).map(({ file, data }) => ({
+    file,
+    data: { ...data, names: Object.fromEntries(Object.entries(data.names ?? {}).filter(([name]) => !excluded.has(name))) },
+  }));
   const result = buildDetails({ batches, cards, births, known });
   if (result.failures.length) {
     console.error(`build-details: ${result.failures.length} problem(s), nothing written:`);

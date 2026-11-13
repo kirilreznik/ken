@@ -158,7 +158,6 @@ export default function SwipeScreen() {
         trend: filters.trend !== null,
         letter: filters.letter !== null,
         length: filters.length !== null,
-        origin: filters.origin !== null,
       });
     }
     // Only the change of state counts, not every vote or filter object.

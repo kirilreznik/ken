@@ -2,17 +2,6 @@ import { hasAnyTheme, type ThemeId } from "./themes";
 import type { CardDerived, NameStats, PopularityBand, SexTag, TrendWord } from "./types";
 
 export type NameLength = "קצר" | "ארוך";
-/** Sector codes in names.json `s`. */
-export type Sector = "J" | "M" | "C" | "D";
-
-/** Board 3 labels for the origin group ("נפוץ בקרב"). */
-export const SECTOR_LABELS: Record<Sector, string> = {
-  J: "יהודים",
-  M: "מוסלמים",
-  C: "נוצרים",
-  D: "דרוזים",
-};
-
 /** Up to this many letters is "קצר". */
 export const SHORT_MAX = 3;
 /** This many letters or more is "ארוך". */
@@ -35,7 +24,6 @@ export interface Filters {
   trend: TrendWord | null;
   letter: string | null;
   length: NameLength | null;
-  origin: Sector | null;
   /** Any of these themes; never an empty list (that is `null`). */
   themes: ThemeId[] | null;
   /** "מספר אותיות מותאם": when set, `length` is null. */
@@ -48,7 +36,6 @@ export const DEFAULT_FILTERS: Readonly<Filters> = Object.freeze({
   trend: null,
   letter: null,
   length: null,
-  origin: null,
   themes: null,
   letterRange: null,
 });
@@ -73,7 +60,7 @@ export function sexToken(sex: SexTag | null): string {
 
 /** The fields of a card the filters read. */
 export interface FilterableCard {
-  stats: Pick<NameStats, "name" | "s">;
+  stats: Pick<NameStats, "name">;
   derived: Pick<CardDerived, "sexTag" | "band" | "trend">;
   content?: { themes?: readonly string[] };
 }
@@ -101,7 +88,6 @@ export function matches(card: FilterableCard, filters: Filters): boolean {
   if (filters.trend !== null && derived.trend?.word !== filters.trend) return false;
   if (filters.letter !== null && firstLetter(stats.name) !== filters.letter) return false;
   if (filters.length !== null && nameLength(stats.name) !== filters.length) return false;
-  if (filters.origin !== null && !stats.s.includes(filters.origin)) return false;
   if (filters.themes !== null && !hasAnyTheme(card, filters.themes)) return false;
   if (filters.letterRange !== null) {
     const n = letters(stats.name).length;
