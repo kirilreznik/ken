@@ -9,6 +9,9 @@ export const SYNC_STUCK_MS = 5000;
 
 export const OFFLINE_TEXT = "אין חיבור";
 
+/** The start of a caption-size offline line (name sheet details, matches list), after the wifi-off mark. */
+export const OFFLINE_LINE = "אין חיבור לאינטרנט.";
+
 /** "בחירה אחת ממתינה לסנכרון" / "3 בחירות ממתינות לסנכרון". */
 export function pendingText(pending: number): string {
   return pending === 1 ? "בחירה אחת ממתינה לסנכרון" : `${formatCount(pending)} בחירות ממתינות לסנכרון`;

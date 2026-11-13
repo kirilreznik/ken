@@ -44,5 +44,10 @@ export function ErrorMark() {
   return <Icon icon="alert" size={16} className="me-1 inline-block align-[-3px]" />;
 }
 
+/** The wifi-off mark before a caption-size offline line (the name sheet's details, the matches list): 16 px, inline. */
+export function OfflineMark() {
+  return <Icon icon="offline" size={16} className="me-1 inline-block align-[-3px]" />;
+}
+
 /** Classes for a caption-size error's words on the glass, next to `ErrorMark`. */
 export const CAPTION_ERROR = "font-bold text-ink";

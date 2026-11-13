@@ -18,6 +18,7 @@ import { usePrefJson } from "@/components/names/usePrefJson";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
 import VotesLoadFailed from "./VotesLoadFailed";
+import { OfflineMark } from "@/components/names/auth/PanelNote";
 import type { Decision } from "@/components/names/DecisionButtons";
 import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
@@ -25,7 +26,7 @@ import { hasAppEntry } from "@/lib/names/appHistory";
 import { formatCount } from "@/lib/names/card";
 import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
 import { HIDDEN_LINK, addedText, listsTab, rowActionText, rowMeta, rowMetaText, rowUndoText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
-import { MATCHES_LOAD_FAILED_TITLE } from "@/lib/names/offline";
+import { MATCHES_LOAD_FAILED_TITLE, OFFLINE_LINE } from "@/lib/names/offline";
 import { showToast } from "@/lib/names/toast";
 import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
@@ -335,16 +336,24 @@ function MatchesPanel({ userId, state, onRetry, memberCount, names, canOpen, cho
   // The day to compare the last update with; the screen isn't open across midnight for long.
   const [openedAt] = useState(() => Date.now());
   const intro = <p className="m-0 text-person text-pretty text-ink-soft">{matchesIntro(memberCount)}</p>;
-  const updated =
-    !online && state?.fetchedAt != null ? (
-      <p className="m-0 text-caption text-stone">{updatedText(state.fetchedAt, openedAt)}</p>
-    ) : null;
+  // Always mounted (empty while online), so going offline is announced once (A11Y-G3-03).
+  const updated = (
+    <p role="status" className="m-0 text-caption text-stone empty:hidden">
+      {!online && state?.ready && state.fetchedAt != null ? (
+        <>
+          <OfflineMark />
+          {`${OFFLINE_LINE} ${updatedText(state.fetchedAt, openedAt)}.`}
+        </>
+      ) : null}
+    </p>
+  );
 
   // A failed first fetch says so (the store retries on focus and every 60 s), never a skeleton forever.
   if (state?.ready && state.fetchedAt === null && online && state.failed) {
     return (
       <>
         {intro}
+        {updated}
         <VotesLoadFailed title={MATCHES_LOAD_FAILED_TITLE} onRetry={onRetry} />
       </>
     );
@@ -355,6 +364,7 @@ function MatchesPanel({ userId, state, onRetry, memberCount, names, canOpen, cho
     return (
       <>
         {intro}
+        {updated}
         <ListSkeleton />
       </>
     );

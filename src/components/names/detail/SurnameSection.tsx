@@ -1,4 +1,5 @@
-import { Button } from "@/components/names/ui";
+import Link from "next/link";
+import { FADE_PRESS } from "@/components/names/ui";
 import { fullName } from "@/lib/names/card";
 import { SURNAME_PATH } from "@/lib/names/routing";
 import { track } from "@/lib/names/track";
@@ -13,9 +14,14 @@ export default function SurnameSection({ name, surname }: { name: string; surnam
   const full = fullName(name, surname);
   if (!full) {
     return (
-      <Button variant="link" size="md" href={SURNAME_PATH} onClick={() => track("detail_surname_add")} className="self-start">
+      // NP-118: a small secondary link (caption, medium, ink-soft); the padding keeps the tap area ≥ 44 px.
+      <Link
+        href={SURNAME_PATH}
+        onClick={() => track("detail_surname_add")}
+        className={`-mx-2 inline-flex min-h-11 min-w-11 items-center self-start rounded-pill px-2 text-caption font-medium text-ink-soft underline underline-offset-4 ${FADE_PRESS}`}
+      >
         הוספת שם משפחה
-      </Button>
+      </Link>
     );
   }
   return (
