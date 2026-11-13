@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
 import NameDetailSheet from "@/components/names/detail/LazyNameDetailSheet";
-import { Button, FADE_PRESS, IconButton, collapseRow, emptyLineClass, emptyPanelClass, dotClass, emptyTitleClass, openNameSheet, openSheet, segmentClass, segmentGroupClass, tagClass } from "@/components/names/ui";
+import { Button, ChevronIcon, FADE_PRESS, HeartIcon, Icon, IconButton, collapseRow, dotClass, emptyLineClass, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet, segmentClass, segmentGroupClass, tagClass } from "@/components/names/ui";
 import { ListSkeleton } from "./ListSkeleton";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
@@ -45,13 +45,6 @@ function openDetails(name: string) {
   track("detail_opened", { source: "list" });
 }
 
-function Icon({ size = 20, children, className }: { size?: number; children: ReactNode; className?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
-      {children}
-    </svg>
-  );
-}
 
 /**
  * FR-W18 "השמות שלי" (board 5): the header with back, invite and "הוספת שם", the segments
@@ -199,9 +192,7 @@ export default function ListsScreen() {
         {/* Under 360 px the row takes the deck header's 12 px edges and tighter gaps, so "השמות שלי" keeps its width at 320 px (NP-BUG-005). */}
         <header className="flex items-center gap-2 max-[22.5rem]:-mx-2 max-[22.5rem]:gap-1.5">
           <IconButton aria-label="חזרה" onClick={back}>
-            <Icon className="ltr:-scale-x-100">
-              <path d="M9 6l6 6-6 6" />
-            </Icon>
+            <ChevronIcon dir="back" />
           </IconButton>
           <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title text-balance outline-none">
             השמות שלי
@@ -436,9 +427,7 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
                   ) : null}
                   {match.lovedByCount > 0 ? (
                     <span className="flex items-center gap-1 text-caption font-bold text-ink-soft">
-                      <Icon size={16} className="self-center fill-clay stroke-clay">
-                        <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
-                      </Icon>
+                      <HeartIcon size={16} className="self-center fill-clay stroke-clay" />
                       סומן ״אהבתי מאוד״
                     </span>
                   ) : null}
@@ -489,9 +478,7 @@ function DuelLink({ title, from }: { title: string; from: "saved" | "matches" })
         <span className="text-card-title">{title}</span>
         <span className="text-caption text-ink-soft">שני שמות בכל פעם, עד שנשארת חמישייה</span>
       </span>
-      <Icon size={18} className="ltr:-scale-x-100">
-        <path d="M15 6l-6 6 6 6" />
-      </Icon>
+      <ChevronIcon dir="forward" size={18} />
     </Link>
   );
 }
@@ -564,9 +551,7 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
                   <span className="text-row-name break-words">{row.name}</span>
                   {row.vote === "love" ? (
                     <span className="flex items-center gap-1 text-caption font-bold text-ink-soft">
-                      <Icon size={16} className="self-center fill-clay stroke-clay">
-                        <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
-                      </Icon>
+                      <HeartIcon size={16} className="self-center fill-clay stroke-clay" />
                       אהבתי מאוד
                     </span>
                   ) : null}
@@ -642,9 +627,7 @@ function ChosenBanner({ name, shared, onOpen, onClear }: { name: string; shared:
           <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
           <span className="text-row-name break-words">{name}</span>
         </span>
-        <Icon size={16} className="flex-none text-ink-soft ltr:-scale-x-100">
-          <path d="M15 6l-6 6 6 6" />
-        </Icon>
+        <ChevronIcon dir="forward" size={16} className="flex-none text-ink-soft" />
       </button>
       <Button variant="link" onClick={onClear} aria-label={clearChoiceLabel(name)} className="text-person!">
         ביטול הבחירה

@@ -4,6 +4,7 @@ import { cardHints } from "@/lib/names/cardHints";
 import type { Card } from "@/lib/names/types";
 import { Button } from "../ui/Button";
 import { hintChipClass } from "../ui/classes";
+import { ChevronIcon } from "../ui/icons";
 import CardHeader from "./CardHeader";
 import CardSexBar from "./CardSexBar";
 import CardStats from "./CardStats";
@@ -69,9 +70,7 @@ export default function NameCard({ card, position, total, surname, corner, onDet
       {onDetails && (
         <Button ref={detailsRef} variant="secondary" size="md" aria-haspopup="dialog" onClick={onDetails} className="shrink-0 self-center">
           לכל הפרטים
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0 ltr:-scale-x-100">
-            <path d="M15 6l-6 6 6 6" />
-          </svg>
+          <ChevronIcon dir="forward" size={16} />
         </Button>
       )}
       <span aria-hidden="true" data-stamp="keep" className={`${stamp} end-5 -rotate-12 text-ink`}>

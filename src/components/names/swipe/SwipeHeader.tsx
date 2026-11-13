@@ -1,30 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
-import { IconButton, dotClass, openSheet } from "@/components/names/ui";
+import { useState } from "react";
+import { BookmarkIcon, Icon, IconButton, dotClass, openSheet } from "@/components/names/ui";
 import { PRESS } from "@/components/names/ui/classes";
 import { savedLabel } from "@/lib/names/a11y";
 import { formatCount } from "@/lib/names/card";
 
-function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="flex-none"
-    >
-      {children}
-    </svg>
-  );
-}
 
 // Board 2/8 header (FR-W10): settings sits where the board has "חזרה" (the swipe screen is
 // the app's root), then the title, background, filters and the "השמות שלי" pill. Below
@@ -73,9 +55,7 @@ export default function SwipeHeader({ saved, filtered = false }: { saved: number
         data-control
         className={`inline-flex h-11 shrink-0 items-center gap-1.5 rounded-pill bg-ink px-3.5 text-person font-bold text-surface ${PRESS}`}
       >
-        <Icon size={18}>
-          <path d="M6 4h12v16l-6-4-6 4z" />
-        </Icon>
+        <BookmarkIcon size={18} />
         {saved === null ? null : (
           <bdi key={pulse} className={`tabular-nums ${pulse ? "names-count-pulse" : ""}`}>
             {formatCount(saved)}

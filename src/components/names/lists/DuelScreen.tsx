@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
-import { Button, IconButton, emptyPanelClass, emptyTitleClass, linkClass, segmentClass, segmentGroupClass, useToastLift } from "@/components/names/ui";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import { Button, ChevronIcon, IconButton, emptyPanelClass, emptyTitleClass, linkClass, segmentClass, segmentGroupClass, useToastLift } from "@/components/names/ui";
 import { hintChipClass } from "@/components/names/ui/classes";
 import { DuelSkeleton } from "./ListSkeleton";
 import RowName from "./RowName";
@@ -33,13 +33,6 @@ import { dismissToast, showToast } from "@/lib/names/toast";
 import type { NameStats } from "@/lib/names/types";
 import { track } from "@/lib/names/track";
 
-function Icon({ size = 20, children, className }: { size?: number; children: ReactNode; className?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
-      {children}
-    </svg>
-  );
-}
 
 const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
 
@@ -195,9 +188,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
       <main className="mx-auto flex min-h-dvh w-full max-w-content flex-col gap-5 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
           <IconButton aria-label="חזרה" onClick={() => onBack(source)}>
-            <Icon className="ltr:-scale-x-100">
-              <path d="M9 6l6 6-6 6" />
-            </Icon>
+            <ChevronIcon dir="back" />
           </IconButton>
           <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title outline-none">
             דו־קרב

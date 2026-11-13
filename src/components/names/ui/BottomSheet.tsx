@@ -7,6 +7,7 @@ import { dismissScreenToast } from "@/lib/names/toast";
 import { otherLayerOpen, type SheetName } from "@/lib/names/urlLayer";
 import { DURATION_FAST, DURATION_SHEET, EASE_OUT } from "@/styles/nest-motion";
 import { IconButton } from "./Button";
+import { CloseIcon } from "./icons";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
 import { closeSheet, useLayerOpen } from "./layers";
 import { useToastLayer, useToastLift } from "./toastLift";
@@ -386,9 +387,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
                 <div className="flex items-center gap-2">
                   {headerEnd}
                   <IconButton aria-label="סגירה" onClick={close}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M6 6l12 12M18 6L6 18" />
-                    </svg>
+                    <CloseIcon />
                   </IconButton>
                 </div>
               ) : (

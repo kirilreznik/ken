@@ -1,4 +1,5 @@
-import DecisionButtons, { Icon, type Decision } from "../DecisionButtons";
+import DecisionButtons, { type Decision } from "../DecisionButtons";
+import { Icon } from "../ui/icons";
 import { DISABLED, PRESS } from "../ui/classes";
 
 // "ביטול" is a small round button at the end of the row, not a row of its own under it.

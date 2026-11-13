@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { iconButtonClass } from "@/components/names/ui/classes";
+import { ChevronIcon } from "@/components/names/ui/icons";
 import fabric from "../../../../public/landing/names-fabric.webp";
 
 /** The lead's id: fields in the panel point aria-describedby at it (NP-015). */
@@ -8,11 +9,7 @@ export const AUTH_LEAD_ID = "auth-lead";
 
 const BACK_PLACE = "absolute start-5 top-[max(6px,env(safe-area-inset-top))]";
 
-const backIcon = (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">
-    <path d="M9 6l6 6-6 6" />
-  </svg>
-);
+const backIcon = <ChevronIcon dir="back" />;
 
 interface AuthLayoutProps {
   title: string;

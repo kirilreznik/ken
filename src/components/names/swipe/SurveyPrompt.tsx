@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { IconButton, openSheet } from "@/components/names/ui";
+import { ChevronIcon, CloseIcon, IconButton, openSheet } from "@/components/names/ui";
 import { track } from "@/lib/names/track";
 
 /**
@@ -24,9 +24,7 @@ export default function SurveyPrompt({ onDismiss }: { onDismiss: () => void }) {
       >
         {/* A real question, underlined with a chevron so it reads as tappable (NP-130). */}
         <span className="min-w-0 underline decoration-stone underline-offset-4">אפשר לשאול 5 שאלות קצרות על בחירת השם?</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none text-ink-soft ltr:-scale-x-100">
-          <path d="M15 6l-6 6 6 6" />
-        </svg>
+        <ChevronIcon dir="forward" size={16} className="flex-none text-ink-soft" />
       </button>
       <IconButton
         aria-label="לא עכשיו, להסתיר את השאלון"
@@ -35,9 +33,7 @@ export default function SurveyPrompt({ onDismiss }: { onDismiss: () => void }) {
           onDismiss();
         }}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-          <path d="M6 6l12 12M18 6L6 18" />
-        </svg>
+        <CloseIcon size={16} />
       </IconButton>
     </div>
   );

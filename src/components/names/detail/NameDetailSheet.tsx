@@ -5,7 +5,7 @@ import { Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore } 
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
 import DecisionButtons, { type Decision } from "@/components/names/DecisionButtons";
-import { BottomSheet, IconButton, adoptNameLink, closeSheet, openNameSheet, tagClass } from "@/components/names/ui";
+import { BottomSheet, ChevronIcon, CloseIcon, IconButton, adoptNameLink, closeSheet, openNameSheet, tagClass } from "@/components/names/ui";
 import { useNameStats } from "@/components/names/useCards";
 import { useNameDetails } from "@/components/names/useNameDetails";
 import { rank2024, rankMap, similarForDisplay, togetherFor } from "@/lib/names/detail";
@@ -208,9 +208,7 @@ function NameHeader({ card, titleId, from }: { card: Card; titleId: string; from
     <div className="flex items-center gap-3">
       {from ? (
         <IconButton aria-label={`חזרה ל־${from}`} onClick={() => window.history.back()}>
-          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none ltr:-scale-x-100">
-            <path d="M9 6l6 6-6 6" />
-          </svg>
+          <ChevronIcon dir="back" />
         </IconButton>
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -225,20 +223,7 @@ function NameHeader({ card, titleId, from }: { card: Card; titleId: string; from
         </div>
       </div>
       <IconButton aria-label="סגירה" onClick={close}>
-        <svg
-          width={20}
-          height={20}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-          className="flex-none"
-        >
-          <path d="M6 6l12 12M18 6L6 18" />
-        </svg>
+        <CloseIcon />
       </IconButton>
     </div>
   );

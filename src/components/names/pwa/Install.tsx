@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useSyncExternalStore, type ReactNode } from "react";
-import { BottomSheet, Button, IconButton, closeSheet, openSheet } from "@/components/names/ui";
+import { BottomSheet, Button, CloseIcon, Icon, IconButton, closeSheet, openSheet } from "@/components/names/ui";
 import {
   INSTALL_HINT_TEXT,
   INSTALL_STEPS,
@@ -38,13 +38,6 @@ export function useInstall(): { mode: InstallMode; start: () => Promise<boolean>
   return { mode, start };
 }
 
-function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none">
-      {children}
-    </svg>
-  );
-}
 
 const STEP_ICONS: ReactNode[] = [
   // Safari's share button: a box with an arrow up.
@@ -135,9 +128,7 @@ export function InstallHint({ userId, voteCount }: { userId: string | null; vote
         </Button>
       </div>
       <IconButton aria-label="סגירת ההצעה להתקנה" onClick={dismiss} className="-me-2 -mt-2">
-        <Icon>
-          <path d="M6 6l12 12M18 6L6 18" />
-        </Icon>
+        <CloseIcon />
       </IconButton>
     </aside>
   );

@@ -1,10 +1,10 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
-import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import { useBackgroundChoice } from "@/components/names/ScreenBackground";
-import { BottomSheet, Button, FADE_PRESS } from "@/components/names/ui";
+import { BottomSheet, Button, CheckIcon, FADE_PRESS, Icon } from "@/components/names/ui";
 import { photoUrl } from "@/lib/names/background";
 import { canvasColor } from "@/lib/names/brand";
 import { loadOwnPhoto, resizePhoto, saveOwnPhoto, subscribeOwnPhoto } from "@/lib/names/photo";
@@ -31,24 +31,6 @@ const OPTIONS: Option[] = [
   { id: "own", label: "תמונה משלי", sub: "מהגלריה" },
 ];
 
-function Icon({ size, strokeWidth = 2, children }: { size: number; strokeWidth?: number; children: ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="flex-none"
-    >
-      {children}
-    </svg>
-  );
-}
 
 /** This user's saved own photo as an object URL (null when there is none), following saves and deletes. */
 function useOwnThumb(userId: string | null): string | null {
@@ -220,9 +202,7 @@ function BackgroundOptions() {
                 ) : null}
                 {on ? (
                   <span className="absolute end-1.5 top-1.5 flex size-5.5 items-center justify-center rounded-pill bg-ink text-surface">
-                    <Icon size={14}>
-                      <path d="M5 12l5 5 9-10" />
-                    </Icon>
+                    <CheckIcon size={14} />
                   </span>
                 ) : null}
               </span>

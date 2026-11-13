@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Vote } from "@/lib/names/types";
 import SkipButton from "./swipe/SkipButton";
 import { DISABLED, PRESS } from "./ui/classes";
+import { BOOKMARK_PATH, CHECK_PATH, CLOSE_PATH, HEART_PATH, Icon } from "./ui/icons";
 
 export type Decision = Vote;
 type Act = "keep" | "love" | "skip";
@@ -24,31 +25,13 @@ export const LABEL: Record<Act, string> = {
   skip: "דילוג",
 };
 
-export function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="flex-none"
-    >
-      {children}
-    </svg>
-  );
-}
 
 const PATH: Record<Act, ReactNode> = {
-  keep: <path d="M6 4h12v16l-6-4-6 4z" />,
-  love: <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />,
-  skip: <path d="M6 6l12 12M18 6L6 18" />,
+  keep: <path d={BOOKMARK_PATH} />,
+  love: <path d={HEART_PATH} />,
+  skip: <path d={CLOSE_PATH} />,
 };
-const CHECK = <path d="M5 12.5l4.5 4.5L19 7.5" />;
+const CHECK = <path d={CHECK_PATH} />;
 
 /** The button a vote presses: a hidden name reads as "דילוג". */
 export function pressedAct(vote: Vote | null | undefined): Act | null {

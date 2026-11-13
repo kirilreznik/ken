@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useRef, useState, type FormEvent } from "react";
-import { BottomSheet, Button, closeSheet, inputClass } from "@/components/names/ui";
+import { BottomSheet, Button, CheckIcon, closeSheet, inputClass } from "@/components/names/ui";
 import { useSearchParams } from "next/navigation";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { isOffline } from "@/lib/names/authErrors";
@@ -111,9 +111,7 @@ function Panel({ name }: { name: string | null }) {
         }
       >
         <p ref={thanks} tabIndex={-1} role="status" className="m-0 flex items-center gap-2 text-card-title text-ink outline-none">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none">
-            <path d="M5 12.5l4.5 4.5L19 7.5" />
-          </svg>
+          <CheckIcon />
           {REPORT_SENT}
         </p>
       </BottomSheet>

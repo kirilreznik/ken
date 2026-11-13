@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useRef, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, Dialog, IconButton, ROW_PRESS, closeDialog, inputClass, openDialog } from "@/components/names/ui";
+import { Button, ChevronIcon, Dialog, IconButton, ROW_PRESS, closeDialog, inputClass, openDialog } from "@/components/names/ui";
 import { InstallSheet, useInstall } from "@/components/names/pwa/Install";
 import { useSpace } from "@/components/names/useSpace";
 import {
@@ -46,9 +46,7 @@ const rowAction = `flex min-h-14 w-full items-center group-first/row:rounded-t-l
 
 function Chevron() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ms-auto shrink-0 text-stone ltr:-scale-x-100">
-      <path d="M15 6l-6 6 6 6" />
-    </svg>
+    <ChevronIcon dir="forward" size={18} className="ms-auto flex-none text-stone" />
   );
 }
 
@@ -268,9 +266,7 @@ export default function SettingsScreen() {
       <main className="mx-auto flex w-full max-w-content flex-col gap-5 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
           <IconButton aria-label="חזרה" onClick={back}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">
-              <path d="M9 6l6 6-6 6" />
-            </svg>
+            <ChevronIcon dir="back" />
           </IconButton>
           <h1 className="m-0 min-w-0 flex-1 text-title">הגדרות</h1>
         </header>

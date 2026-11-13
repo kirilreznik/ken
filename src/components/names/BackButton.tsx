@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { IconButton } from "@/components/names/ui";
+import { ChevronIcon, IconButton } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
 
@@ -16,9 +16,7 @@ export default function BackButton() {
 
   return (
     <IconButton aria-label="חזרה" onClick={back}>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">
-        <path d="M9 6l6 6-6 6" />
-      </svg>
+      <ChevronIcon dir="back" />
     </IconButton>
   );
 }

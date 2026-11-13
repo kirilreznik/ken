@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Button, IconButton, dotClass, inputClass } from "@/components/names/ui";
+import { BookmarkIcon, Button, CloseIcon, Icon, IconButton, dotClass, inputClass } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { introFromSheet } from "@/lib/names/routing";
@@ -11,13 +11,6 @@ import { useSpace } from "./useSpace";
 
 const SURNAME_MAX = 30;
 
-function Icon({ children }: { children: ReactNode }) {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {children}
-    </svg>
-  );
-}
 
 function Point({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   return (
@@ -72,9 +65,7 @@ export default function Intro() {
       >
         {/* X keeps a typed surname too; an empty field leaves a saved one alone (NP-029). */}
         <IconButton aria-label="סגירה" onClick={() => finish(surname.trim() !== "")} className="self-end">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
+          <CloseIcon />
         </IconButton>
 
         <div aria-hidden="true" className="flex justify-center py-2">
@@ -95,7 +86,7 @@ export default function Intro() {
         <ul className="m-0 flex list-none flex-col gap-3 p-0">
           <Point
             icon={
-              <Icon>
+              <Icon size={18}>
                 <path d="M4 19V9M10 19V5M16 19v-8M22 19H2" />
               </Icon>
             }
@@ -104,7 +95,7 @@ export default function Intro() {
           </Point>
           <Point
             icon={
-              <Icon>
+              <Icon size={18}>
                 <rect x="5" y="11" width="14" height="9" rx="2" />
                 <path d="M8 11V8a4 4 0 0 1 8 0v3" />
               </Icon>
@@ -117,9 +108,7 @@ export default function Intro() {
           </Point>
           <Point
             icon={
-              <Icon>
-                <path d="M6 4h12v16l-6-4-6 4z" />
-              </Icon>
+              <BookmarkIcon size={18} />
             }
           >
             <b className={strong}>עובד גם לבד.</b> מהשמות ששומרים אפשר לצמצם לחמישייה <span className="whitespace-nowrap">בדו־קרב</span>, ברשימות.

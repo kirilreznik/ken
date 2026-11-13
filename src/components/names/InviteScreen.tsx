@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, IconButton, skeletonClass } from "@/components/names/ui";
+import { Button, CheckIcon, ChevronIcon, Icon, IconButton, skeletonClass } from "@/components/names/ui";
 import { useOnline } from "@/components/names/useMatches";
 import { useSpace } from "@/components/names/useSpace";
 import { hasAppEntry } from "@/lib/names/appHistory";
@@ -148,9 +148,7 @@ export default function InviteScreen() {
       <main className="mx-auto flex w-full max-w-content flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
           <IconButton aria-label="חזרה" onClick={back}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">
-              <path d="M9 6l6 6-6 6" />
-            </svg>
+            <ChevronIcon dir="back" />
           </IconButton>
           <h1 className="m-0 min-w-0 flex-1 text-title">הזמנה לבחירה</h1>
         </header>
@@ -184,16 +182,14 @@ export default function InviteScreen() {
                     שליחת קישור הזמנה
                   </Button>
                   <Button variant="secondary" onClick={copy}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      {copied ? (
-                        <path d="M5 12.5l4.5 4.5L19 7.5" />
-                      ) : (
-                        <>
-                          <rect x="9" y="9" width="11" height="11" rx="2" />
-                          <path d="M5 15V6a2 2 0 0 1 2-2h9" />
-                        </>
-                      )}
-                    </svg>
+                    {copied ? (
+                      <CheckIcon />
+                    ) : (
+                      <Icon>
+                        <rect x="9" y="9" width="11" height="11" rx="2" />
+                        <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+                      </Icon>
+                    )}
                     {copied ? COPIED_TEXT : "העתקת הקישור"}
                   </Button>
                   <span role="status" className="sr-only">

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import ThemeIcon from "@/components/names/ThemeIcon";
-import { BottomSheet, Button, FADE_PRESS, ROW_PRESS, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
+import { BottomSheet, Button, ChevronIcon, FADE_PRESS, ROW_PRESS, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { formatCount } from "@/lib/names/card";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
@@ -136,25 +136,6 @@ function ThemeGroup({ value, onChange }: { value: ThemeId[] | null; onChange: (v
         {THEME_IDS.map((id) => chip(id, value?.includes(id) ?? false, id, THEME_LABELS[id], () => toggle(id)))}
       </div>
     </fieldset>
-  );
-}
-
-function Chevron() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="flex-none"
-    >
-      <path d="M15 6l-6 6 6 6" />
-    </svg>
   );
 }
 
@@ -302,7 +283,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
           <span>שמות שהסתרתי</span>
           <span className="flex items-center gap-1.5 font-medium text-ink-soft">
             <bdi>{hidden}</bdi>
-            <Chevron />
+            <ChevronIcon dir="forward" size={18} />
           </span>
         </Link>
         <p id={hiddenHintId} className="m-0 px-3.5 text-caption text-stone">

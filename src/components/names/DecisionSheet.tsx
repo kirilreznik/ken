@@ -4,7 +4,7 @@ import { Suspense, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import NestCard from "@/components/names/NestCard";
 import ScreenBackground from "@/components/names/ScreenBackground";
-import { Button, Glass, IconButton, dotClass } from "@/components/names/ui";
+import { Button, CloseIcon, Glass, IconButton, dotClass } from "@/components/names/ui";
 import { closeSheet, useLayerOpen } from "@/components/names/ui/layers";
 import { useModal, usePortalHost } from "@/components/names/ui/useModal";
 import { useNameStats } from "@/components/names/useCards";
@@ -61,9 +61,7 @@ function Panel({ name, shared, onClear }: DecisionSheetProps & { name: string })
           className="names-sheet-in flex min-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col gap-6 px-5 pt-14 pb-8 text-ink outline-none"
         >
           <IconButton aria-label="סגירה" onClick={close} className="self-end">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" />
-            </svg>
+            <CloseIcon />
           </IconButton>
 
           <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">

@@ -1,3 +1,5 @@
+import { Icon } from "../ui/icons";
+
 const ICONS = {
   // Wi-Fi with a slash: offline.
   offline:
@@ -17,11 +19,11 @@ interface PanelNoteProps {
   role?: "alert";
 }
 
-function Icon({ icon, size, className }: { icon: keyof typeof ICONS; size: number; className: string }) {
+function Glyph({ icon, size, className }: { icon: keyof typeof ICONS; size: number; className: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+    <Icon size={size} className={className}>
       <path d={ICONS[icon]} />
-    </svg>
+    </Icon>
   );
 }
 
@@ -33,7 +35,7 @@ function Icon({ icon, size, className }: { icon: keyof typeof ICONS; size: numbe
 export default function PanelNote({ icon, children, id, role }: PanelNoteProps) {
   return (
     <p id={id} role={role} className={`m-0 flex items-start gap-2 text-body text-ink ${icon === "alert" ? "font-bold" : "font-medium"}`}>
-      <Icon icon={icon} size={20} className="mt-0.5 flex-none" />
+      <Glyph icon={icon} size={20} className="mt-0.5 flex-none" />
       <span className="text-pretty">{children}</span>
     </p>
   );
@@ -41,12 +43,12 @@ export default function PanelNote({ icon, children, id, role }: PanelNoteProps) 
 
 /** The error mark for a caption-size error inside a line of text (a field hint, a centered hint): 16 px, inline. */
 export function ErrorMark() {
-  return <Icon icon="alert" size={16} className="me-1 inline-block align-[-3px]" />;
+  return <Glyph icon="alert" size={16} className="me-1 inline-block align-[-3px]" />;
 }
 
 /** The wifi-off mark before a caption-size offline line (the name sheet's details, the matches list): 16 px, inline. */
 export function OfflineMark() {
-  return <Icon icon="offline" size={16} className="me-1 inline-block align-[-3px]" />;
+  return <Glyph icon="offline" size={16} className="me-1 inline-block align-[-3px]" />;
 }
 
 /** Classes for a caption-size error's words on the glass, next to `ErrorMark`. */
