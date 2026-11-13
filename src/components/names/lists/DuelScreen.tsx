@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type Keyboa
 import { Button, IconButton, emptyPanelClass, emptyTitleClass, linkClass, segmentClass, segmentGroupClass, useToastLift } from "@/components/names/ui";
 import { hintChipClass } from "@/components/names/ui/classes";
 import { DuelSkeleton } from "./ListSkeleton";
+import RowName from "./RowName";
 import { APP_PATH } from "@/lib/names/auth";
 import { formatCount } from "@/lib/names/card";
 import {
@@ -77,6 +78,9 @@ type DuelScreenProps = {
   chooseLabel: (name: string) => string;
   /** "הוספת שם" on the too-few card: opens the add-name sheet over the duel. */
   onAddName: () => void;
+  /** Whether a name has a card, so its result row opens "פרטי השם" (NP-167). */
+  canOpen: (name: string) => boolean;
+  onOpenName: (name: string) => void;
 };
 
 /**
@@ -84,7 +88,7 @@ type DuelScreenProps = {
  * with 2+ matches) until a ranked top 5. Every pick is saved to the duelState pref, one duel per
  * source, so "עצירה", a reload or a switch to the other list and back resumes where it stopped.
  */
-export default function DuelScreen({ userId, from, ready, savedNames, matchNames, names, customNames, onSource, onBack, onChoose, chooseLabel, onAddName }: DuelScreenProps) {
+export default function DuelScreen({ userId, from, ready, savedNames, matchNames, names, customNames, onSource, onBack, onChoose, chooseLabel, onAddName, canOpen, onOpenName }: DuelScreenProps) {
   const saves = useSavedDuels(userId);
   const [seed, setSeed] = useState(randomSeed);
   // The duel in play once a pick is made: it keeps going even if the list changes meanwhile.
@@ -267,7 +271,8 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
 
             {pair ? (
               <>
-                <div className="flex flex-col gap-3">
+                {/* A short landscape screen sets the two names side by side, so both show (NP-169). */}
+                <div className="flex flex-col gap-3 [@media(max-height:30rem)]:flex-row">
                   {[pair.a, pair.b].map((name, i) => {
                     const m = meta(name);
                     return (
@@ -275,7 +280,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                         {i === 1 ? (
                           <div
                             aria-hidden="true"
-                            className="z-1 -my-8 flex size-11.5 items-center justify-center self-center rounded-pill border-3 border-canvas bg-ink text-caption font-extrabold text-surface"
+                            className="z-1 -my-8 flex size-11.5 flex-none [@media(max-height:30rem)]:-mx-8 [@media(max-height:30rem)]:my-0 items-center justify-center self-center rounded-pill border-3 border-canvas bg-ink text-caption font-extrabold text-surface"
                           >
                             או
                           </div>
@@ -285,7 +290,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                           data-duel-pick={i === 0 ? "a" : "b"}
                           aria-describedby={m ? `duel-meta-${i}` : undefined}
                           onClick={(event) => choose(name, event.timeStamp)}
-                          className="@container flex min-h-[180px] touch-manipulation flex-col items-center justify-center gap-1.5 rounded-xl bg-surface px-4 text-ink shadow-hero transition-transform duration-(--nest-duration-press) motion-safe:active:scale-97"
+                          className="@container flex min-h-[180px] min-w-0 touch-manipulation [@media(max-height:30rem)]:min-h-[140px] [@media(max-height:30rem)]:flex-1 flex-col items-center justify-center gap-1.5 rounded-xl bg-surface px-4 text-ink shadow-hero transition-transform duration-(--nest-duration-press) motion-safe:active:scale-97"
                         >
                           {/* Each round's names fade in (NP-162); a plain fade, so it stays under reduced motion (data-motion). The button itself keeps focus. */}
                           <span
@@ -333,7 +338,8 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
               </>
             ) : (
               <>
-                <div className="flex flex-col gap-2">
+                {/* Tighter gaps keep the primary above the fold at 320 × 568 (NP-167). */}
+                <div className="flex flex-col gap-1.5">
                   <h2 ref={resultRef} tabIndex={-1} className="m-0 text-section outline-none">
                     {top.length === 5 ? "החמישייה" : "הדירוג"}
                   </h2>
@@ -341,7 +347,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                     {top.map((name, i) => {
                       const m = meta(name);
                       return (
-                        <li key={name} className="flex items-center gap-3 border-b border-line px-4 py-3.5 last:border-b-0">
+                        <li key={name} className="flex items-center gap-3 border-b border-line px-4 py-2 last:border-b-0">
                           <span
                             aria-hidden="true"
                             className={`flex size-9 flex-none items-center justify-center rounded-pill text-card-title ${i === 0 ? "bg-ink text-surface" : "bg-sand text-ink"}`}
@@ -349,8 +355,9 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                             {i + 1}
                           </span>
                           <span className="sr-only">מקום {i + 1}:</span>
-                          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                            <span className="text-row-name break-words">{name}</span>
+                          {/* Names with a card open "פרטי השם" like every list row; #1 a size up (NP-167). */}
+                          <RowName onOpen={canOpen(name) ? () => onOpenName(name) : undefined}>
+                            <span className={`${i === 0 ? "text-section" : "text-row-name"} break-words`}>{name}</span>
                             {m ? (
                               <>
                                 <span aria-hidden="true" className="text-caption text-stone">
@@ -359,13 +366,13 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                                 <span className="sr-only">{m.full}</span>
                               </>
                             ) : null}
-                          </span>
+                          </RowName>
                         </li>
                       );
                     })}
                   </ol>
                 </div>
-                <div className="mt-auto flex flex-col items-stretch gap-2">
+                <div className="mt-auto flex flex-col items-stretch gap-1.5">
                   {top[0] ? <Button onClick={() => onChoose(top[0], source, 1)}>{chooseLabel(top[0])}</Button> : null}
                   <Button variant="secondary" onClick={restart}>
                     דו־קרב חדש

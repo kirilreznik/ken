@@ -7,7 +7,7 @@ import { useAuth } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
-import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
+import NameDetailSheet from "@/components/names/detail/LazyNameDetailSheet";
 import { Button, FADE_PRESS, IconButton, collapseRow, emptyLineClass, emptyPanelClass, dotClass, emptyTitleClass, openNameSheet, openSheet, segmentClass, segmentGroupClass, tagClass } from "@/components/names/ui";
 import { ListSkeleton } from "./ListSkeleton";
 import { useChosen } from "@/components/names/useChosen";
@@ -20,7 +20,7 @@ import { useVotes } from "@/components/names/useVotes";
 import VotesLoadFailed from "./VotesLoadFailed";
 import { OfflineMark } from "@/components/names/auth/PanelNote";
 import type { Decision } from "@/components/names/DecisionButtons";
-import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
+import { sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { formatCount } from "@/lib/names/card";
@@ -31,6 +31,7 @@ import { showToast } from "@/lib/names/toast";
 import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
 import DuelScreen from "./DuelScreen";
+import RowName from "./RowName";
 import RowMenu from "./RowMenu";
 import { clearChoiceLabel, decideLabel } from "@/lib/names/launch";
 import { track } from "@/lib/names/track";
@@ -138,29 +139,6 @@ export default function ListsScreen() {
     showToast(addedText(name));
   };
 
-  if (tab === "duel") {
-    return (
-      <>
-      <DuelScreen
-        userId={user?.id ?? null}
-        from={params.get("from")}
-        ready={ready && matchesLoaded}
-        savedNames={rows.map((r) => r.name)}
-        matchNames={matchNames}
-        names={names}
-        customNames={customNames}
-        onSource={(source) => router.replace(`${LISTS_PATH}?tab=duel&from=${source}`, { scroll: false })}
-        onBack={(source) => selectTab(source === "matches" && space.isShared ? "matches" : "saved")}
-        chooseLabel={(name) => decideLabel(space.isShared, name)}
-        onChoose={(name, _source, rank) => choose(name, "duel", { custom: customNames.has(name), rank })}
-        onAddName={() => openSheet("add-name")}
-      />
-      <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
-      {decision}
-      </>
-    );
-  }
-
   // PRD 3.2.6: a choice in the name sheet changes the vote through the store; the sheet stays
   // open with the new choice pressed, and the toast (outside the sheet's inert page) says it.
   // "דילוג" on a saved name takes it out of "שמרתי"; the toast's "ביטול" puts the old vote back.
@@ -185,6 +163,39 @@ export default function ListsScreen() {
       showToast(message);
     }
   };
+
+  if (tab === "duel") {
+    return (
+      <>
+      <DuelScreen
+        userId={user?.id ?? null}
+        from={params.get("from")}
+        ready={ready && matchesLoaded}
+        savedNames={rows.map((r) => r.name)}
+        matchNames={matchNames}
+        names={names}
+        customNames={customNames}
+        onSource={(source) => router.replace(`${LISTS_PATH}?tab=duel&from=${source}`, { scroll: false })}
+        onBack={(source) => selectTab(source === "matches" && space.isShared ? "matches" : "saved")}
+        chooseLabel={(name) => decideLabel(space.isShared, name)}
+        onChoose={(name, _source, rank) => choose(name, "duel", { custom: customNames.has(name), rank })}
+        onAddName={() => openSheet("add-name")}
+        canOpen={(name) => !customNames.has(name) && canOpen(name)}
+        onOpenName={openDetails}
+      />
+      <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
+      <NameDetailSheet
+        cards={cards}
+        surname={surname}
+        matches={space.isShared ? (matches?.matches ?? NO_MATCHES) : NO_MATCHES}
+        memberCount={space.members.length}
+        votes={votes}
+        onDecide={decideInSheet}
+      />
+      {decision}
+      </>
+    );
+  }
 
   return (
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
@@ -465,31 +476,6 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
       </ul>
       {matches.length >= 2 ? <DuelLink title="דו־קרב בין ההתאמות" from="matches" /> : null}
     </>
-  );
-}
-
-/**
- * The name part of a row. With `onOpen` (the name has a card) it's a button that opens the
- * name sheet, same look; without it, plain text (custom names have no sheet).
- */
-function RowName({ onOpen, children }: { onOpen?: () => void; children: ReactNode }) {
-  const className = "flex min-w-0 flex-1 flex-col gap-0.5";
-  if (!onOpen) return <div className={className}>{children}</div>;
-  return (
-    <button
-      type="button"
-      aria-haspopup="dialog"
-      // Safari doesn't focus a tapped button; focus it so the sheet gives focus back to this row.
-      onPointerDown={preloadNameDetail}
-      onFocus={preloadNameDetail}
-      onClick={(event) => {
-        event.currentTarget.focus({ preventScroll: true });
-        onOpen();
-      }}
-      className={`${className} min-h-11 justify-center rounded-sm text-start ${FADE_PRESS}`}>
-      {children}
-      <span className="sr-only">, {DETAILS_HINT}</span>
-    </button>
   );
 }
 
