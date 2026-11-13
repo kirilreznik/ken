@@ -274,6 +274,8 @@ export function useSwipeDrag({
       if (start === "x" || start === "up") {
         s.mode = start;
         e.currentTarget.setPointerCapture(e.pointerId);
+        // A card still playing its entrance jumps to its end, so it's opaque and under the finger (NP-090).
+        for (const a of e.currentTarget.getAnimations()) a.finish();
       }
       if (!s.mode) return;
     }
