@@ -8,6 +8,9 @@ import { clearVoteCache } from "./voteStore";
 export const WELCOME_PATH = "/names/welcome";
 export const APP_PATH = "/names";
 
+/** How long the callback and join screens wait before they show their failure and retry (NP-020). */
+export const WAIT_DEADLINE_MS = 15_000;
+
 /** Query flag on welcome after a rejected refresh token (FR-W8): shows EXPIRED_MESSAGE. */
 export const EXPIRED_PARAM = "expired";
 export const EXPIRED_MESSAGE = "החיבור לחשבון הסתיים. צריך להיכנס שוב כדי להמשיך.";

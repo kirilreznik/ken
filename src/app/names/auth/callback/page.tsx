@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import AuthCallback from "@/components/names/AuthCallback";
 
 export const metadata: Metadata = {
-  title: "מתחברים",
+  title: "נכנסים",
   robots: { index: false, follow: false },
 };
 

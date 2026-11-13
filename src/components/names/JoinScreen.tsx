@@ -10,7 +10,7 @@ import AuthLayout from "@/components/names/auth/AuthLayout";
 import LegalLine from "@/components/names/auth/LegalLine";
 import Wordmark from "@/components/names/auth/Wordmark";
 import { Button } from "@/components/names/ui";
-import { APP_PATH, WELCOME_PATH } from "@/lib/names/auth";
+import { APP_PATH, WAIT_DEADLINE_MS, WELCOME_PATH } from "@/lib/names/auth";
 import { reportClientLog } from "@/lib/names/clientLog";
 import {
   JOIN_COPY,
@@ -72,7 +72,12 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
   useEffect(() => {
     if (loading || !session || !onboarded || !userId || !code) return;
     let alive = true;
+    // NP-020: a hung names_join shows the error with its retry; a late answer still replaces it.
+    const timer = window.setTimeout(() => {
+      if (alive) setResult((prev) => (prev?.key === key ? prev : { key, outcome: { kind: "error" } }));
+    }, WAIT_DEADLINE_MS);
     void joinWithCode(userId, code, displayName).then((next) => {
+      window.clearTimeout(timer);
       if (!alive) return;
       if (next.kind === "error") void reportClientLog({ area: "join", message: "names_join failed" });
       if (next.kind === "joined") track("join_completed", { votes_moved: next.votesMoved });
@@ -81,6 +86,7 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
     });
     return () => {
       alive = false;
+      window.clearTimeout(timer);
     };
   }, [loading, session, onboarded, userId, code, displayName, key]);
 
