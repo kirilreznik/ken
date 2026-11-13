@@ -138,7 +138,7 @@ function Panel({ votes, sessions, onDone }: SurveySheetProps) {
     >
       <form id={FORM_ID} noValidate onSubmit={(e) => void submit(e)} className="flex flex-col gap-6">
         <p className="m-0 text-body text-ink-soft">
-          חמש שאלות, כולן לא חובה. התשובות עוזרות לנו להבין למי זה מתאים. הן נשמרות בלי האימייל ובלי השם שלך.
+          5 שאלות, כולן לא חובה. התשובות עוזרות לנו להבין למי זה מתאים. הן נשמרות בלי האימייל ובלי השם שלך.
         </p>
         <ChoiceGroup name="survey-disappointed" {...Q_DISAPPOINTED} value={answer.disappointed} onChange={(v) => set("disappointed", v)} />
         <div className="flex flex-col gap-2">
