@@ -81,14 +81,9 @@ describe("countTile", () => {
     expect(countTile(stats).value).toBe("1,090");
   });
 
-  it("falls back to the last year with births", () => {
-    const stats: NameStats = { name: "א", m: 50, f: 0, s: "J", y: years([7, 0, 0]) };
-    expect(countTile(stats)).toEqual({ label: "ב־2022", value: "7" });
-  });
-
-  it("uses the all-time line for a name with no recent births", () => {
-    expect(countTile({ name: "ב", m: 54_712, f: 300, s: "J" })).toEqual({ label: "מאז 1949", value: "כ־55,000" });
-    expect(countTile({ name: "ג", m: 40, f: 2, s: "J", y: years([]) })).toEqual({ label: "מאז 1949", value: "כ־42" });
+  it("says fewer than 5 in 2024 when CBS published no 2024 count", () => {
+    expect(countTile({ name: "א", m: 50, f: 0, s: "J", y: years([7, 0, 0]) })).toEqual({ label: "ב־2024", value: "פחות מ־5" });
+    expect(countTile({ name: "ב", m: 54_712, f: 300, s: "J" })).toEqual({ label: "ב־2024", value: "פחות מ־5" });
   });
 });
 
@@ -122,7 +117,7 @@ describe("deriveCard", () => {
       boysLabel: "25%",
       girlsLabel: "75%",
       band: "נפוץ",
-      countLine: "ניתן ל־4 תינוקות ב־2024",
+      countLine: "ניתן ל־4 תינוקות ב־2024, ולכ־40 מאז 1949",
       trend: null,
       spark: sparkline(stats),
     });
