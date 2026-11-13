@@ -70,6 +70,8 @@ export const NAMES_EVENTS = {
   space_leave_failed: "Leaving a shared space failed. {reason}",
   survey_prompt: "The beta survey prompt on the swipe screen. {action: 'shown' | 'open' | 'dismiss'}",
   survey_submitted: "The beta survey was sent; the closed answers ride along. {disappointed, stage, nest_app, audience, useful, sessions, votes}",
+  guest_prompt: "A sign-in card in a guest's deck (every 20 decisions) or the wall at 100. {kind: 'nudge' | 'wall', action: 'shown' | 'signin' | 'later', votes}",
+  guest_votes_imported: "A guest signed in and their device votes moved into the account. {votes}",
   // account_deleted is written by the database when an account goes (its own events go with it).
 } as const;
 

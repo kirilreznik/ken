@@ -3,6 +3,7 @@
 import type { Session, User } from "@supabase/supabase-js";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { clearLocalData } from "@/lib/names/auth";
+import { GUEST_ID, carryGuestPrefs } from "@/lib/names/guest";
 import { openPrefs } from "@/lib/names/prefs";
 import { AUTH_STORAGE_KEY, getSupabase } from "@/lib/names/supabase";
 import { setTrackToken } from "@/lib/names/track";
@@ -60,7 +61,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       } else if (next) {
         setExpired(false);
       }
-      if (next) openPrefs(next.user.id);
+      if (next) {
+        openPrefs(next.user.id);
+        // What a guest set on this device (filters, surname, background) carries into the account.
+        carryGuestPrefs(next.user.id);
+      }
       setTrackToken(next?.access_token ?? null);
       setSession(next);
     });
@@ -94,4 +99,27 @@ export function useAuth(): AuthState {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
   return ctx;
+}
+
+/** True inside pages a visitor may use without an account (AllowGuest in AuthGuard). */
+const GuestContext = createContext(false);
+
+export function GuestAllowed({ children }: { children: React.ReactNode }) {
+  return <GuestContext.Provider value={true}>{children}</GuestContext.Provider>;
+}
+
+/**
+ * The id device data is kept under: the signed-in user's id, or GUEST_ID on a guest page
+ * while signed out (lib/names/guest.ts). Null while the session loads or off guest pages.
+ */
+export function useUserId(): string | null {
+  const { user, loading } = useAuth();
+  const guestAllowed = useContext(GuestContext);
+  if (user) return user.id;
+  return guestAllowed && !loading ? GUEST_ID : null;
+}
+
+/** Signed out on a guest page: votes stay on this device until sign-in. */
+export function useIsGuest(): boolean {
+  return useUserId() === GUEST_ID;
 }

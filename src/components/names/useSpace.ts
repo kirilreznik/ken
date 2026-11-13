@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { MATCHES_INTERVAL_MS } from "@/lib/names/matches";
 import { clearSpaceCache, ensureSpace, isSharedSpace, members, type SpaceMember } from "@/lib/names/space";
-import { useAuth } from "./AuthProvider";
+import { GUEST_ID, GUEST_SPACE } from "@/lib/names/guest";
+import { useAuth, useUserId } from "./AuthProvider";
 
 export interface SpaceState {
   /** The space all votes go to; null until loaded, before onboarding, or after an error. */
@@ -53,6 +54,7 @@ async function fetchSpace(key: string, userId: string, displayName: string, forc
  */
 export function useSpace(): SpaceState {
   const { user } = useAuth();
+  const guest = useUserId() === GUEST_ID;
   const userId = user?.id ?? null;
   const displayName = displayNameOf(user?.user_metadata);
   const key = userId && displayName ? `${userId}:${displayName}` : null;
@@ -110,6 +112,9 @@ export function useSpace(): SpaceState {
       clearInterval(timer);
     };
   }, [soloSpace, userId, key]);
+
+  // A guest has no space on the server: votes go to the device (lib/names/guest.ts), alone.
+  if (guest) return { spaceId: GUEST_SPACE, members: [], isShared: false, loading: false, error: false, refresh };
 
   return {
     spaceId: current?.spaceId ?? null,

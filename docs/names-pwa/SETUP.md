@@ -79,6 +79,9 @@ Owner decision 2026-11-13: anyone who arrives through an in-app invite link (`/n
 
 Same project as the Nest app, so the hook gates its sign-ups too. To let one person in without a link: `insert into public.names_signup_allowlist (email) values ('their@email');`. Accounts made with the admin API pass when created with `app_metadata: { names_allow: true }` (or allowlist the address first). To close everything again, turn the switch in step 3 off. At public launch: disable the hook (step 2), keep the switch on.
 
+### 3.3.1 Guest mode needs open sign-ups (2026-11-13)
+Owner decision 2026-11-13: visitors swipe up to 100 names as guests, then must sign in, and anyone may create an account at that point. Open sign-ups by **disabling the Before User Created hook** (Authentication → Hooks); keep "Allow new users to sign up" on. Invite links keep working. While the hook is still on, a guest without an invite who reaches the wall gets the "not open yet" message.
+
 ### 3.4 Rate limits
 Authentication → Rate Limits, after step 7 (custom SMTP) is in place:
 - Emails sent per hour: 100
