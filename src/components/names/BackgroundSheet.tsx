@@ -96,7 +96,7 @@ export default function BackgroundSheet() {
             <path d="M8 11V8a4 4 0 0 1 8 0v3" />
           </Icon>
         </span>
-        <span>תמונה משלי נשמרת רק במכשיר הזה. היא לא עולה לשרת ולא מוצגת לשאר המשתתפים בבחירה.</span>
+        <span>תמונה משלך נשמרת רק במכשיר הזה. היא לא יוצאת ממנו ולא מוצגת לשאר המשתתפים בבחירה.</span>
       </p>
     </BottomSheet>
   );
@@ -133,13 +133,21 @@ function BackgroundOptions() {
     input.value = "";
     if (!file || !userId) return;
     setSaving(true);
+    // A photo that can't be read and a device that can't keep it get their own message (NP-132).
+    let blob: Blob;
     try {
-      const blob = await resizePhoto(file, canvasColor);
+      blob = await resizePhoto(file, canvasColor);
+    } catch {
+      setSaving(false);
+      showToast("אי אפשר לפתוח את התמונה הזו. אפשר לבחור תמונה אחרת.");
+      return;
+    }
+    try {
       await saveOwnPhoto(userId, blob);
       setPref(userId, "background", "own");
       showToast("התמונה נשמרה במכשיר הזה.");
     } catch {
-      showToast("אי אפשר לפתוח את התמונה הזו. אפשר לבחור תמונה אחרת.");
+      showToast("לא הצלחנו לשמור את התמונה במכשיר הזה. אפשר לנסות שוב.");
     } finally {
       setSaving(false);
     }
