@@ -68,7 +68,7 @@ function Panel({ name, shared, onClear }: DecisionSheetProps & { name: string })
 
           <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
             <p className="m-0 text-person font-bold text-ink">{decisionTitle(shared)}</p>
-            <Glass className="flex w-full flex-col items-center gap-2.5 rounded-xl px-6 py-8">
+            <Glass className="flex w-full flex-col items-center gap-3 rounded-xl px-6 py-8">
               <h2 lang="he" className="m-0 text-match-name break-words">
                 {name}
               </h2>

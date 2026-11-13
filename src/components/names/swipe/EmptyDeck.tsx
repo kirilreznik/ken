@@ -23,7 +23,7 @@ type EmptyDeckProps = {
 };
 
 /** The deck panel's shape (`emptyPanelClass("glass")`), shared with the pauses (PausePanel) and the load error (DeckLoad). */
-export const deckPanelWrap = "flex min-h-0 flex-1 flex-col pb-7";
+export const deckPanelWrap = "flex min-h-0 flex-1 flex-col pb-6";
 export const deckPanel = emptyPanelClass("glass");
 
 /** Shown names on the all-decided panel; the rest are on "השמות שלי". */

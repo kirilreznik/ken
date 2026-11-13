@@ -176,7 +176,7 @@ export default function InviteScreen() {
                 <p id="invite-expiry" className="m-0 text-caption text-stone">
                   הקישור בתוקף עד <bdi>{expiryDate(invite.expiresAt)}</bdi> ועובד פעם אחת.
                 </p>
-                <div className="flex flex-col gap-2.5 pt-1">
+                <div className="flex flex-col gap-3 pt-1">
                   <Button onClick={share}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />

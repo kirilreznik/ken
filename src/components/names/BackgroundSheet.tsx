@@ -89,7 +89,7 @@ export default function BackgroundSheet() {
       closeButton
     >
       <BackgroundOptions />
-      <p className="flex items-start gap-2.5 rounded-md bg-canvas px-3.5 py-3 text-note text-ink-soft">
+      <p className="flex items-start gap-3 rounded-md bg-canvas px-3.5 py-3 text-note text-ink-soft">
         <span className="mt-0.5">
           <Icon size={18}>
             <rect x="5" y="11" width="14" height="9" rx="2" />

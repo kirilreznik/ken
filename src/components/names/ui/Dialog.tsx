@@ -72,7 +72,7 @@ function DialogPanel({ name, title, description, children, busy, closing, onClos
         <div id={descriptionId} className="text-body text-ink-soft">
           {description}
         </div>
-        <div className="mt-3 flex flex-col gap-2.5">{children}</div>
+        <div className="mt-3 flex flex-col gap-3">{children}</div>
       </section>
     </div>
   );

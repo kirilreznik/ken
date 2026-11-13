@@ -32,13 +32,13 @@ function SourceLink({ href, children }: { href: string; children: ReactNode }) {
  */
 export default function AboutContent({ hasName, onReport, level = 3 }: { hasName: boolean; onReport: () => void; level?: 2 | 3 }) {
   return (
-    <div className="flex flex-col gap-4.5">
+    <div className="flex flex-col gap-4">
       <Part level={level} title="מספרי הלידות">
         המספרים הם תינוקות שנולדו בישראל וקיבלו את השם, לא אנשים שחיים היום. שמות שניתנו לפחות מ־5 תינוקות בשנה לא
         מתפרסמים באותה שנה.
       </Part>
 
-      <div className="flex flex-col gap-1.5 rounded-md bg-canvas p-3.5">
+      <div className="flex flex-col gap-1.5 rounded-md bg-canvas p-4">
         <span className="text-caption font-bold text-stone">מקור</span>
         <p className="m-0 text-person leading-5 text-ink">
           הלשכה המרכזית לסטטיסטיקה, הודעה לתקשורת 391/2025, שמות שניתנו ליילודים 1949–2024 (<bdi dir="ltr">{CBS_FILE}</bdi>).
