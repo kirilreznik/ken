@@ -12,12 +12,22 @@ export function pendingText(pending: number): string {
   return pending === 1 ? "בחירה אחת ממתינה לסנכרון" : `${pending} בחירות ממתינות לסנכרון`;
 }
 
+/** NP-073: online, nothing cached and the votes read failed; the store retries every 30 s. */
+export const VOTES_LOAD_FAILED_TEXT = "לא הצלחנו לטעון את הבחירות. מנסים שוב.";
+
+/** The same failure where a list would be (saved, hidden): in place of its empty state. */
+export const LIST_LOAD_FAILED = { title: "לא הצלחנו לטעון את הרשימה.", lead: "מנסים שוב מעצמנו בעוד רגע." } as const;
+
+/** NP-074: the "התאמות" tab when `name_matches` failed and there's no cache. */
+export const MATCHES_LOAD_FAILED_TITLE = "לא הצלחנו לטעון את ההתאמות.";
+
 /**
  * The footer's sync line, or null when there is nothing to say. `stuck` = queued votes
- * have waited online for SYNC_STUCK_MS.
+ * have waited online for SYNC_STUCK_MS; `loadFailed` = the votes couldn't be read (NP-073).
  */
-export function syncStatusText(online: boolean, pending: number, stuck = false): string | null {
+export function syncStatusText(online: boolean, pending: number, stuck = false, loadFailed = false): string | null {
   const count = Math.max(0, Math.floor(pending));
   if (!online) return count > 0 ? `${OFFLINE_TEXT} · ${pendingText(count)}` : OFFLINE_TEXT;
+  if (loadFailed) return VOTES_LOAD_FAILED_TEXT;
   return count > 0 && stuck ? pendingText(count) : null;
 }

@@ -32,6 +32,14 @@ describe("toast store", () => {
     expect(getToast()).toBeNull();
   });
 
+  it("keeps a toast with a link as long as one with an action", () => {
+    showToast("השם יעל הוסתר ולא יוצג יותר", { link: { label: "לשמות שהסתרתי", href: "/names/hidden" } });
+    vi.advanceTimersByTime(TOAST_DURATION);
+    expect(getToast()?.link).toEqual({ label: "לשמות שהסתרתי", href: "/names/hidden" });
+    vi.advanceTimersByTime(TOAST_ACTION_DURATION - TOAST_DURATION);
+    expect(getToast()).toBeNull();
+  });
+
   it("replaces the current toast, and an old id can't dismiss the new one", () => {
     const first = showToast("א");
     showToast("ב");
@@ -47,5 +55,12 @@ describe("toast store", () => {
     expect(getToast()?.id).toBe(id);
     dismissToast(id);
     expect(getToast()).toBeNull();
+  });
+
+  it("marks only a toast that stays until dismissed as sticky (it sits clear of the card's button)", () => {
+    showToast("עדכון זמין", { action: { label: "רענון", onAction: () => {} }, duration: 0 });
+    expect(getToast()?.sticky).toBe(true);
+    showToast("נשמר", { action: { label: "ביטול", onAction: () => {} } });
+    expect(getToast()?.sticky).toBe(false);
   });
 });

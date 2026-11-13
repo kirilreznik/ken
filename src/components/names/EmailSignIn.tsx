@@ -1,28 +1,38 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import Wordmark from "@/components/names/auth/Wordmark";
+import { Button, inputClass } from "@/components/names/ui";
 import CodeInput, { CODE_LENGTH } from "@/components/names/auth/CodeInput";
+import PanelNote from "@/components/names/auth/PanelNote";
 import ResendTimer from "@/components/names/auth/ResendTimer";
 import Turnstile, { captchaEnabled } from "@/components/names/auth/Turnstile";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
-import { INVALID_EMAIL_MESSAGE, OFFLINE_MESSAGE, handleAuthError, isOffline, isValidEmail } from "@/lib/names/authErrors";
+import {
+  INVALID_EMAIL_MESSAGE,
+  OFFLINE_MESSAGE,
+  type AuthErrorKind,
+  clearsCode,
+  handleAuthError,
+  isOffline,
+  isValidEmail,
+  visibleSignInError,
+} from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
+import { CODE_RESENT_TEXT } from "@/lib/names/resend";
 import { getPref } from "@/lib/names/prefs";
 import { hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
 import ConnectionNote from "./ConnectionNote";
+import { useOnline } from "./useMatches";
 import { track } from "@/lib/names/track";
 
-const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
-
-const primaryButton =
-  "flex h-14 items-center justify-center rounded-pill bg-ink px-6 text-button text-surface shadow-button disabled:opacity-60";
+const wordmark = <Wordmark />;
 
 /**
  * FR-W4: step 1 asks for the address and sends a code (signInWithOtp), step 2 takes the
@@ -32,29 +42,51 @@ export default function EmailSignIn() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const join = usePendingJoin();
+  const online = useOnline();
 
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [sentAt, setSentAt] = useState(0);
-  const [busy, setBusy] = useState(false);
+  // One request at a time, but each says its own thing: "שולחים…" on the resend link,
+  // "נכנסים…" only on the sign-in button (INT-G1-01).
+  const [pending, setPending] = useState<"send" | "verify" | null>(null);
+  const busy = pending !== null;
+  const [resent, setResent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaKey, setCaptchaKey] = useState(0);
+  const codeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (loading || !user) return;
     router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
   }, [loading, user, join, router]);
 
-  function fail(area: string, err: unknown): void {
+  // Back online, "no connection" is stale: drop it (while offline ConnectionNote says it instead).
+  useEffect(() => {
+    const clear = () => setError((e) => (e === OFFLINE_MESSAGE ? null : e));
+    window.addEventListener("online", clear);
+    return () => window.removeEventListener("online", clear);
+  }, []);
+
+  function fail(area: string, err: unknown): AuthErrorKind {
     track("signin_failed", { method: "email", step: area.endsWith("verify") ? "verify" : "send" });
-    const { message } = handleAuthError(area, err);
+    const { kind, message } = handleAuthError(area, err);
     if (message === null) {
       router.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));
-      return;
+      return kind;
     }
     setError(message);
+    return kind;
+  }
+
+  // A wrong code is cleared with focus kept in the field, so typing, pasting or the
+  // one-time-code fill starts fresh (CRIT-G1-01).
+  function failVerify(err: unknown): void {
+    if (!clearsCode(fail("sign-in-email-verify", err))) return;
+    setCode("");
+    codeRef.current?.focus();
   }
 
   async function sendCode(): Promise<boolean> {
@@ -64,8 +96,9 @@ export default function EmailSignIn() {
       setError(OFFLINE_MESSAGE);
       return false;
     }
-    setBusy(true);
+    setPending("send");
     setError(null);
+    setResent(false);
     try {
       const { error: err } = await supabase.auth.signInWithOtp({
         email: email.trim(),
@@ -76,6 +109,7 @@ export default function EmailSignIn() {
         return false;
       }
       setSentAt(Date.now());
+      setResent(step === "code");
       track("signin_code_sent", { resend: step === "code" });
       return true;
     } catch (err) {
@@ -87,7 +121,7 @@ export default function EmailSignIn() {
         setCaptchaToken(null);
         setCaptchaKey((k) => k + 1);
       }
-      setBusy(false);
+      setPending(null);
     }
   }
 
@@ -111,17 +145,18 @@ export default function EmailSignIn() {
       setError(OFFLINE_MESSAGE);
       return;
     }
-    setBusy(true);
+    setPending("verify");
     setError(null);
+    setResent(false);
     try {
       const { data, error: err } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: "email" });
       // On success the auth listener sets the user and the effect above routes on.
-      if (err) fail("sign-in-email-verify", err);
+      if (err) failVerify(err);
       else track("signin_completed", { method: "email", new_user: !hasAcceptedTerms(data.user) });
     } catch (err) {
-      fail("sign-in-email-verify", err);
+      failVerify(err);
     } finally {
-      setBusy(false);
+      setPending(null);
     }
   }
 
@@ -129,17 +164,17 @@ export default function EmailSignIn() {
     setStep("email");
     setCode("");
     setError(null);
+    setResent(false);
   }
 
   if (loading || user) return <AuthSkeleton />;
 
   const backHref = withJoin(WELCOME_PATH, join);
-  // ConnectionNote says it while offline; don't repeat it, or keep it once back online.
-  const shownError = error === OFFLINE_MESSAGE ? null : error;
+  const shownError = visibleSignInError(error, online);
   const errorLine = shownError ? (
-    <p id="email-sign-in-error" role="alert" className="text-body font-medium text-urgent">
+    <PanelNote icon="alert" id="email-sign-in-error" role="alert">
       {shownError}
-    </p>
+    </PanelNote>
   ) : null;
   const sendBlocked = captchaEnabled && !captchaToken;
 
@@ -171,14 +206,14 @@ export default function EmailSignIn() {
               }}
               aria-invalid={shownError === INVALID_EMAIL_MESSAGE || undefined}
               aria-describedby={shownError ? "email-sign-in-error" : undefined}
-              className="h-14 w-full rounded-md border border-line bg-surface px-3.5 text-start text-card-title text-ink placeholder:text-faint aria-invalid:border-urgent"
+              className={inputClass()}
             />
           </div>
           {errorLine}
           <Turnstile key={captchaKey} onToken={setCaptchaToken} />
-          <button type="submit" disabled={busy || sendBlocked} aria-busy={busy} className={primaryButton}>
+          <Button type="submit" disabled={busy || sendBlocked} aria-busy={pending === "send"}>
             {busy ? "שולחים…" : "שליחת קוד"}
-          </button>
+          </Button>
         </form>
       </AuthLayout>
     );
@@ -189,7 +224,12 @@ export default function EmailSignIn() {
       title="מה הקוד?"
       lead={
         <>
-          שלחנו קוד בן 6 ספרות ל־<bdi dir="ltr">{email.trim()}</bdi>. אפשר לבדוק גם בתיקיית הספאם.
+          שלחנו קוד בן 6 ספרות ל־
+          {/* Own line: the address stays whole where it fits and breaks anywhere only when it's wider. */}
+          <bdi dir="ltr" className="block text-end wrap-anywhere">
+            {email.trim()}
+          </bdi>
+          אפשר לבדוק גם בתיקיית הספאם.
         </>
       }
       backHref={backHref}
@@ -216,14 +256,27 @@ export default function EmailSignIn() {
           invalid={shownError !== null}
           describedBy={shownError ? "email-sign-in-error" : undefined}
           autoFocus
+          inputRef={codeRef}
         />
-        {errorLine}
-        <button type="submit" disabled={busy || code.length !== CODE_LENGTH} aria-busy={busy} className={primaryButton}>
-          {busy ? "נכנסים…" : "כניסה"}
-        </button>
+        {errorLine ??
+          (resent ? (
+            // Not a live region: ResendTimer's status says it with the new wait, once.
+            <p id="email-sign-in-sent" className="text-caption font-medium text-pretty text-ink-soft">
+              {CODE_RESENT_TEXT}
+            </p>
+          ) : null)}
+        <Button type="submit" disabled={busy || code.length !== CODE_LENGTH} aria-busy={pending === "verify"}>
+          {pending === "verify" ? "נכנסים…" : "כניסה"}
+        </Button>
       </form>
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <ResendTimer sentAt={sentAt} onResend={() => void sendCode()} busy={busy || sendBlocked} />
+        <ResendTimer
+          sentAt={sentAt}
+          onResend={() => void sendCode()}
+          disabled={busy || sendBlocked}
+          sending={pending === "send"}
+          sentNote={resent ? CODE_RESENT_TEXT : undefined}
+        />
         <button
           type="button"
           onClick={changeAddress}

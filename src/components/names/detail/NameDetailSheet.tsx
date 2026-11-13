@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
 import DecisionButtons, { type Decision } from "@/components/names/DecisionButtons";
@@ -13,7 +13,7 @@ import { createDetailVisits, type DetailSection, type DetailVisits } from "@/lib
 import { hiddenNames } from "@/lib/names/lists";
 import type { Match } from "@/lib/names/matches";
 import { track } from "@/lib/names/track";
-import { NAME_PARAM, NAME_SHEET, readName } from "@/lib/names/urlLayer";
+import { NAME_PARAM, NAME_SHEET, previousName, readName } from "@/lib/names/urlLayer";
 import type { Card, Vote } from "@/lib/names/types";
 import FactsSection from "./FactsSection";
 import MeaningSection from "./MeaningSection";
@@ -112,6 +112,9 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Nam
     if (shown !== null && adoptNameLink()) track("detail_opened", { source: "link" });
   }, [shown]);
 
+  // NP-117: a similar name sits on the entry of the name it was opened from; one Back returns there.
+  const from = usePreviousName();
+
   if (!card) return null;
   return (
     <BottomSheet
@@ -122,7 +125,7 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Nam
       }}
       contentKey={card.stats.name}
       closeInHeader
-      header={(titleId) => <NameHeader card={card} titleId={titleId} />}
+      header={(titleId) => <NameHeader card={card} titleId={titleId} from={named ? from : null} />}
       footer={
         <SheetDecisions vote={votes.get(card.stats.name) ?? null} onDecide={(kind) => onDecide?.(card.stats.name, kind)} />
       }
@@ -145,6 +148,17 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Nam
       </div>
     </BottomSheet>
   );
+}
+
+// history.state has no change event of its own; every push, replace or Back also changes the
+// search params, which re-render the sheet and read it again.
+const noSubscription = () => () => {};
+const previousNameNow = () => previousName(window.history.state);
+const noPreviousName = () => null;
+
+/** The name one Back returns to when the sheet shows a name opened over another name, else null. */
+function usePreviousName(): string | null {
+  return useSyncExternalStore(noSubscription, previousNameNow, noPreviousName);
 }
 
 /**
@@ -173,11 +187,11 @@ function useSectionsSeen(visits: DetailVisits, body: HTMLElement | null, content
 /**
  * FR-D18: the swipe screen's three buttons pinned under the scrolling content (the footer sits
  * outside the scroller, so it never covers the last section), the name's vote shown as pressed.
- * The screen decides what a choice does (PRD 3.2.5, 3.2.6).
+ * The screen decides what a choice does (PRD 3.2.5, 3.2.6). Under 17rem "דילוג" takes a line of its own.
  */
 function SheetDecisions({ vote, onDecide }: { vote: Vote | null; onDecide: (kind: Decision) => void }) {
   return (
-    <div data-clarity-unmask="true" className="grid grid-cols-3 gap-2 pt-3 max-[22.5rem]:gap-1.5">
+    <div data-clarity-unmask="true" className="grid grid-cols-3 gap-2 pt-3 max-[22.5rem]:gap-1.5 max-[17rem]:grid-cols-2 max-[17rem]:[&>:last-child]:col-span-2">
       <DecisionButtons onDecide={onDecide} pressed={vote} />
     </div>
   );
@@ -185,12 +199,20 @@ function SheetDecisions({ vote, onDecide }: { vote: Vote | null; onDecide: (kind
 
 /**
  * FR-D7: the name, then its niqqud and the card's sex tag, and "סגירה" on the end side. The
- * heading names the dialog and takes focus on open (no outline: it isn't a control).
+ * heading names the dialog and takes focus on open (no outline: it isn't a control). A name
+ * opened from another name's similar names has "חזרה ל־{from}" on the start side (NP-117).
  */
-function NameHeader({ card, titleId }: { card: Card; titleId: string }) {
+function NameHeader({ card, titleId, from }: { card: Card; titleId: string; from: string | null }) {
   const { stats, content, derived } = card;
   return (
     <div className="flex items-center gap-3">
+      {from ? (
+        <IconButton aria-label={`חזרה ל־${from}`} onClick={() => window.history.back()}>
+          <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none ltr:-scale-x-100">
+            <path d="M9 6l6 6-6 6" />
+          </svg>
+        </IconButton>
+      ) : null}
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <h2 id={titleId} tabIndex={-1} data-autofocus className="text-hero-name break-words text-ink focus:outline-none">
           {stats.name}

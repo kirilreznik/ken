@@ -1,16 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import PanelNote, { CAPTION_ERROR, ErrorMark } from "@/components/names/auth/PanelNote";
+import Wordmark from "@/components/names/auth/Wordmark";
+import { Button, checkboxClass, inputClass } from "@/components/names/ui";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { GENERIC_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
 import {
   DISPLAY_NAME_MAX,
   canSubmit,
   isValidDisplayName,
+  missingHint,
   onboardingMetadata,
   suggestedDisplayName,
   type OnboardingForm,
@@ -24,13 +27,13 @@ import { track } from "@/lib/names/track";
 
 const OFFLINE_SAVE_MESSAGE = "אין חיבור לאינטרנט. אפשר לשמור שוב כשהחיבור יחזור.";
 const ADULTS_ONLY = "השירות מיועד מגיל 18 ומעלה.";
-const MISSING_HINT = "אפשר להתחיל אחרי שממלאים שם ומאשרים את שני הסעיפים הראשונים.";
 
-const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
+const wordmark = <Wordmark />;
 
 const checkboxRow = "flex min-h-11 cursor-pointer items-start gap-3 py-1 text-body text-ink";
-const checkbox = "mt-0.5 size-6 shrink-0 cursor-pointer accent-ink";
-const legalLink = "font-bold underline underline-offset-2";
+const checkbox = `mt-0.5 ${checkboxClass()}`;
+// Each link owns a 44 px tall tap area on its own row, apart from the box's label (NP-027).
+const legalLink = "inline-flex min-h-11 items-center font-bold text-ink underline underline-offset-2";
 
 function NewTabLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -79,7 +82,9 @@ export default function Onboarding() {
     if (error) setError(null);
   }
 
+  // Busy ends only on a failure: after a save it stays on until the next screen replaces this one (NP-028).
   function fail(area: string, err: unknown) {
+    setBusy(false);
     if (isOffline()) {
       setError(OFFLINE_SAVE_MESSAGE);
       return;
@@ -131,8 +136,6 @@ export default function Onboarding() {
       router.replace(next === ONBOARDING_PATH ? "/names" : next);
     } catch (err) {
       fail("onboarding-save", err);
-    } finally {
-      setBusy(false);
     }
   }
 
@@ -163,10 +166,15 @@ export default function Onboarding() {
             onChange={(e) => update({ displayName: e.target.value })}
             aria-invalid={nameInvalid || undefined}
             aria-describedby="display-name-hint"
-            className="h-14 w-full rounded-md border border-line bg-surface px-4 text-start text-card-title text-ink placeholder:text-faint aria-invalid:border-urgent"
+            className={inputClass()}
           />
           <p id="display-name-hint" className="text-caption text-ink-soft">
-            {nameInvalid ? <strong className="font-bold text-urgent">צריך שם, עד 40 תווים. </strong> : null}
+            {nameInvalid ? (
+              <strong className={CAPTION_ERROR}>
+                <ErrorMark />
+                צריך שם, עד 40 תווים.{" "}
+              </strong>
+            ) : null}
             השם יוצג בבחירה משותפת.
           </p>
         </div>
@@ -182,7 +190,7 @@ export default function Onboarding() {
                 checked={form.ageConfirmed}
                 onChange={(e) => update({ ageConfirmed: e.target.checked })}
                 aria-invalid={ageInvalid || undefined}
-                aria-describedby="age-hint"
+                aria-describedby={ageInvalid ? "age-hint onboarding-missing" : "age-hint"}
                 className={checkbox}
               />
               <span>אני בן/בת 18 ומעלה</span>
@@ -191,22 +199,28 @@ export default function Onboarding() {
               {ADULTS_ONLY}
             </p>
           </div>
-          <label className={checkboxRow}>
-            <input
-              ref={termsRef}
-              type="checkbox"
-              required
-              checked={form.termsAccepted}
-              onChange={(e) => update({ termsAccepted: e.target.checked })}
-              aria-invalid={termsInvalid || undefined}
-              className={checkbox}
-            />
-            <span>
-              קראתי ואני מסכים/ה ל<NewTabLink href="/names/terms">תנאי השימוש</NewTabLink> ול
+          <div className="flex flex-col">
+            <label className={checkboxRow}>
+              <input
+                ref={termsRef}
+                type="checkbox"
+                required
+                checked={form.termsAccepted}
+                onChange={(e) => update({ termsAccepted: e.target.checked })}
+                aria-invalid={termsInvalid || undefined}
+                aria-describedby={termsInvalid ? "onboarding-missing" : undefined}
+                className={checkbox}
+              />
+              <span>קראתי ואני מסכים/ה לתנאי השימוש ולמדיניות הפרטיות</span>
+            </label>
+            {/* Outside the label, so a tap near a link never ticks the box and a tap on the words never opens a tab. */}
+            <p className="-mt-1 flex flex-wrap gap-x-5 ps-9 text-caption">
+              <NewTabLink href="/names/terms">תנאי השימוש</NewTabLink>
               <NewTabLink href="/names/privacy">מדיניות הפרטיות</NewTabLink>
-            </span>
-          </label>
-          <label className={checkboxRow}>
+            </p>
+          </div>
+          {/* The optional opt-in is its own group, apart from the two required confirmations. */}
+          <label className={`${checkboxRow} mt-2 border-t border-line pt-4`}>
             <input
               type="checkbox"
               checked={form.updatesOptIn}
@@ -223,24 +237,24 @@ export default function Onboarding() {
         </fieldset>
 
         {error ? (
-          <p id="onboarding-error" role="alert" className="text-body font-medium text-urgent">
+          <PanelNote icon="alert" id="onboarding-error" role="alert">
             {error}
-          </p>
+          </PanelNote>
         ) : null}
 
         <div className="flex flex-col gap-2">
-          <button
+          <Button
             type="submit"
             aria-disabled={!valid || busy}
             aria-busy={busy}
             aria-describedby={valid ? undefined : "onboarding-missing"}
-            className="flex h-14 items-center justify-center rounded-pill bg-ink px-6 text-button text-surface shadow-button aria-disabled:opacity-60"
           >
-            {busy ? "שומרים…" : "התחלת בחירה"}
-          </button>
+            {busy ? "שומרים…" : "שמירה והמשך"}
+          </Button>
           {valid ? null : (
-            <p id="onboarding-missing" aria-live="polite" className={`text-center text-caption ${tried ? "font-bold text-urgent" : "text-ink-soft"}`}>
-              {MISSING_HINT}
+            <p id="onboarding-missing" aria-live="polite" className={`text-start text-caption ${tried ? CAPTION_ERROR : "text-ink-soft"}`}>
+              {tried ? <ErrorMark /> : null}
+              {missingHint(form)}
             </p>
           )}
         </div>

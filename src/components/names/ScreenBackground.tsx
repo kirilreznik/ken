@@ -9,6 +9,7 @@ import {
   coverSourceRect,
   effectiveBackground,
   ownScrimOpacity,
+  photoUrl,
   type PhotoBackground,
 } from "@/lib/names/background";
 import { loadOwnPhoto, subscribeOwnPhoto } from "@/lib/names/photo";
@@ -149,12 +150,16 @@ export default function ScreenBackground({ background, blobs = "main", children 
         ) : null}
 
         {shown === "fabric" || shown === "notebook" || shown === "nursery" ? (
+          // The file the service worker precaches, as is: through the image optimizer it would
+          // be a URL that's only cached once fetched, so offline after one visit it was gone (NP-BUG-009).
           <Image
             key={shown}
-            src={PHOTOS[shown]}
+            src={photoUrl(shown)}
             alt=""
             priority
+            unoptimized
             placeholder="blur"
+            blurDataURL={PHOTOS[shown].blurDataURL}
             sizes="100vw"
             className="object-cover"
             fill

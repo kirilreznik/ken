@@ -9,6 +9,9 @@
 // WebKit runs as an iPhone 15 and Chromium as a Pixel 7, both with touch, he-IL and
 // Asia/Jerusalem. A signed-in user gets the storageState from ../names-pwa/.auth/ (written by
 // login.mjs when missing). Never prints tokens, codes or emails.
+//
+// Screenshots go to ./shots/ unless QA_SHOTS_DIR names another folder (e.g. the polish run's
+// scripts/ralph/qa/name-polish/shots), relative to the working directory.
 import { existsSync, mkdirSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,7 +19,9 @@ import { AxeBuilder } from "@axe-core/playwright";
 import { chromium, devices, webkit } from "@playwright/test";
 import { authFile, login, STORAGE_KEY } from "../names-pwa/login.mjs";
 
-export const SHOTS = fileURLToPath(new URL("./shots/", import.meta.url));
+export const SHOTS = process.env.QA_SHOTS_DIR
+  ? `${resolve(process.env.QA_SHOTS_DIR)}/`
+  : fileURLToPath(new URL("./shots/", import.meta.url));
 
 const ENGINES = { webkit, chromium };
 const DEFAULT_DEVICE = { webkit: "iPhone 15", chromium: "Pixel 7" };
@@ -176,7 +181,7 @@ export async function drag(page, locator, { dx = 0, dy = 0, steps = 12, ms = 240
   );
 }
 
-/** Saves a viewport screenshot to shots/<name>.png (or a path with a directory); returns the path. */
+/** Saves a viewport screenshot to SHOTS/<name>.png (or a path with a directory); returns the path. */
 export async function shot(page, name, { fullPage = false } = {}) {
   const file = name.includes("/") ? resolve(name) : resolve(SHOTS, name.endsWith(".png") ? name : `${name}.png`);
   mkdirSync(dirname(file), { recursive: true });

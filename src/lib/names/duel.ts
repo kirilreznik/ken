@@ -204,6 +204,43 @@ export function resumeOrStart(
   return { state: { ...start(names, seed), source }, restarted };
 }
 
+/** The duelState pref: one duel per source, so switching the toggle never drops the other one. */
+export interface DuelSaves {
+  /** The source played last (the one to open with). */
+  last: DuelSource;
+  saved?: DuelState;
+  matches?: DuelState;
+}
+
+/** Reads the pref. A single duel (saves before INT-G3-01) becomes the duel of its source. */
+export function readDuelSaves(raw: unknown): DuelSaves | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const r = raw as Record<string, unknown>;
+  if ("version" in r) {
+    const one = deserialize(JSON.stringify(r));
+    return one ? { last: sourceOf(one), [sourceOf(one)]: one } : null;
+  }
+  const out: Partial<DuelSaves> = {};
+  for (const source of ["saved", "matches"] as const) {
+    const duel = r[source] == null ? null : deserialize(JSON.stringify(r[source]));
+    if (duel && sourceOf(duel) === source) out[source] = duel;
+  }
+  const last = r.last === "saved" || r.last === "matches" ? r.last : out.saved ? "saved" : "matches";
+  return out.saved || out.matches ? { ...out, last } : null;
+}
+
+/** The saves with `state` as its source's duel, played last. */
+export function withDuel(saves: DuelSaves | null, state: DuelState): DuelSaves {
+  const source = sourceOf(state);
+  return { ...saves, [source]: state, last: source };
+}
+
+/** The saved duel over `source`, or the one played last when no source is given. */
+export function savedDuel(saves: DuelSaves | null, source?: DuelSource): DuelState | null {
+  if (!saves) return null;
+  return saves[source ?? saves.last] ?? null;
+}
+
 /**
  * The source to open with: `?from=` when that list can duel, then the saved duel's source,
  * then "שמרתי" unless only "התאמות" has 2+ names. "התאמות" needs 2+ matches.
@@ -218,6 +255,12 @@ export function duelSource(
   if ((param === "saved" || param === "matches") && can(param)) return param;
   if (saved && can(sourceOf(saved))) return sourceOf(saved);
   return savedCount < 2 && matchCount >= 2 ? "matches" : "saved";
+}
+
+/** The duel's empty card: the rule, and how many the list has when it has one (COPY-G3-02). */
+export function duelTooFewText(source: DuelSource, count: number): string {
+  if (source === "matches") return count === 1 ? "לדו־קרב צריך לפחות שתי התאמות, ויש אחת." : "לדו־קרב צריך לפחות שתי התאמות.";
+  return count === 1 ? "לדו־קרב צריך לפחות שני שמות ברשימה, ויש בה אחד." : "לדו־קרב צריך לפחות שני שמות ברשימה.";
 }
 
 export function roundText(p: DuelProgress): string {

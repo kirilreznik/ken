@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, type FormEvent } from "react";
-import { BottomSheet, Button, closeSheet } from "@/components/names/ui";
+import { BottomSheet, Button, closeSheet, inputClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { reportClientLog } from "@/lib/names/clientLog";
 import { getSupabase } from "@/lib/names/supabase";
@@ -31,7 +31,7 @@ type SurveySheetProps = {
 };
 
 const FORM_ID = "survey-form";
-const field = "w-full rounded-md border border-line bg-surface px-3.5 py-3 text-start text-body text-ink min-h-22 resize-y";
+const field = `${inputClass("multiline")} min-h-22`;
 
 /**
  * The beta survey (?sheet=survey), opened from the prompt on the swipe screen. Every question
@@ -115,13 +115,14 @@ function Panel({ votes, sessions, onDone }: SurveySheetProps) {
     track("survey_submitted", surveyEventProps(answer, context));
     onDone();
     closeSheet("survey");
-    showToast("תודה! התשובות נשלחו.");
+    showToast("תודה, התשובות נשלחו.");
   };
 
   return (
     <BottomSheet
       name="survey"
       title="שאלון קצר"
+      closeButton
       footer={
         <div className="flex flex-col gap-2">
           {error ? (

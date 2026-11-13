@@ -1,8 +1,8 @@
 import Link from "next/link";
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
+import type { AnchorHTMLAttributes, ComponentPropsWithRef } from "react";
 import { buttonClass, iconButtonClass, type ButtonSize, type ButtonVariant } from "./classes";
 
-type ButtonAttrs = ButtonHTMLAttributes<HTMLButtonElement> & { href?: undefined };
+type ButtonAttrs = ComponentPropsWithRef<"button"> & { href?: undefined };
 type LinkAttrs = AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
 
 // The peach circle has no visible text, so it needs a Hebrew aria-label like IconButton.
@@ -17,7 +17,7 @@ function join(base: string, extra?: string) {
 export function Button({ variant = "primary", size = "lg", className, ...rest }: ButtonProps) {
   const cls = join(buttonClass(variant, size), className);
   if (rest.href !== undefined) {
-    return <Link {...(rest as LinkAttrs)} className={cls} />;
+    return <Link {...(rest as LinkAttrs)} data-control className={cls} />;
   }
   const { type = "button", ...attrs } = rest as ButtonAttrs;
   return <button {...attrs} type={type} className={cls} />;
@@ -29,7 +29,7 @@ type IconButtonProps = (ButtonAttrs | LinkAttrs) & { "aria-label": string };
 export function IconButton({ className, ...rest }: IconButtonProps) {
   const cls = join(iconButtonClass(), className);
   if (rest.href !== undefined) {
-    return <Link {...(rest as LinkAttrs)} className={cls} />;
+    return <Link {...(rest as LinkAttrs)} data-control className={cls} />;
   }
   const { type = "button", ...attrs } = rest as ButtonAttrs;
   return <button {...attrs} type={type} className={cls} />;

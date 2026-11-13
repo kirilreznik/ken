@@ -1,7 +1,7 @@
 "use client";
 
 import type { Session, User } from "@supabase/supabase-js";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { clearLocalData } from "@/lib/names/auth";
 import { openPrefs } from "@/lib/names/prefs";
 import { AUTH_STORAGE_KEY, getSupabase } from "@/lib/names/supabase";
@@ -26,6 +26,16 @@ function hasStoredSession(): boolean {
   } catch {
     return false;
   }
+}
+
+const subscribeNever = () => () => {};
+
+/**
+ * Whether this device keeps a session. False on the server and while hydrating, so the server
+ * HTML of welcome and the join invitation is the signed-out screen; true right after if one is stored.
+ */
+export function useStoredSession(): boolean {
+  return useSyncExternalStore(subscribeNever, hasStoredSession, () => false);
 }
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {

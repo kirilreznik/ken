@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import Wordmark from "@/components/names/auth/Wordmark";
+import { Button } from "@/components/names/ui";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import { authErrorKind, reportAuthError, urlAuthError } from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
@@ -23,7 +23,7 @@ const readError = () => {
 };
 const serverError = () => null;
 
-const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
+const wordmark = <Wordmark />;
 
 /**
  * Waits for the session the auth client gets from the PKCE exchange (detectSessionInUrl), then
@@ -58,12 +58,7 @@ export default function AuthCallback() {
   if (failed && urlError !== "signups-closed") {
     return (
       <AuthLayout title={GOOGLE_FAILED_MESSAGE} lead="אפשר לנסות שוב או להיכנס עם קוד במייל." hero={wordmark}>
-        <Link
-          href={withJoin(WELCOME_PATH, join)}
-          className="flex h-14 items-center justify-center rounded-pill bg-ink px-6 text-button text-surface shadow-button"
-        >
-          חזרה לכניסה
-        </Link>
+        <Button href={withJoin(WELCOME_PATH, join)}>חזרה לכניסה</Button>
       </AuthLayout>
     );
   }

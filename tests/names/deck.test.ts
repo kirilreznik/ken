@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
 import contentFile from "./fixtures/name-content-sample.json";
 import { contentNames, parseContent, parseNames, type RawContentFile, type RawNamesFile } from "@/lib/names/data";
-import { buildDeck, deckCount, deckProgress, hiddenCount, hashSeed, mulberry32, shuffle } from "@/lib/names/deck";
+import { buildDeck, deckCount, deckProgress, deckSlot, hiddenCount, hashSeed, mulberry32, shuffle } from "@/lib/names/deck";
 import { defaultFilters, type FilterableCard } from "@/lib/names/filters";
 import { popularityBand, rankByLastYear, trend } from "@/lib/names/popularity";
 import { sexTag } from "@/lib/names/sex";
@@ -85,9 +85,23 @@ describe("buildDeck", () => {
   });
 
   it("is 'empty-filter' when undecided names exist but none match", () => {
+    // No name starts with a final letter: nothing matches, decided or not.
+    const f = { ...defaultFilters(), letter: "ץ" };
+    expect(cards.some((c) => c.stats.name.startsWith("ץ"))).toBe(false);
+    expect(buildDeck(cards, none, f, seed1)).toEqual({ state: "empty-filter", cards: [] });
     const votes = new Map<string, Vote>(cards.filter((c) => c.stats.name !== "אלה").map((c) => [c.stats.name, "keep"]));
-    const deck = buildDeck(cards, votes, { ...defaultFilters(), letter: "ת" }, seed1);
-    expect(deck).toEqual({ state: "empty-filter", cards: [] });
+    expect(buildDeck(cards, votes, f, seed1)).toEqual({ state: "empty-filter", cards: [] });
+  });
+
+  it("is 'filter-done' when names match the filters but all of them are decided", () => {
+    const f = { ...defaultFilters(), letter: "א" };
+    const inFilter = cards.filter((c) => c.stats.name.startsWith("א")).map((c) => c.stats.name);
+    expect(inFilter.length).toBeGreaterThan(0);
+    const votes = new Map<string, Vote>(inFilter.map((n, i) => [n, i % 2 ? "hidden" : "keep"]));
+    expect(buildDeck(cards, votes, f, seed1)).toEqual({ state: "filter-done", cards: [] });
+    // One undecided name in the filter: the deck has a card again.
+    votes.delete(inFilter[0]);
+    expect(buildDeck(cards, votes, f, seed1).state).toBe("ok");
   });
 
   it("is 'all-decided' when every name has a vote, filters or not", () => {
@@ -131,5 +145,22 @@ describe("deckCount and hiddenCount", () => {
     expect(deckCount(cards, none, defaultFilters())).toBe(cards.length);
     expect(hiddenCount(votes)).toBe(1);
     expect(hiddenCount(none)).toBe(0);
+  });
+});
+
+describe("deckSlot", () => {
+  const base = { paused: false, hasCard: false, deckState: null, loadError: false } as const;
+  it("shows the skeleton until the deck is built", () => {
+    expect(deckSlot(base)).toBe("loading");
+  });
+  it("shows the load error with its retry when the names data failed", () => {
+    expect(deckSlot({ ...base, loadError: true })).toBe("error");
+  });
+  it("keeps the pause, the card and the end states ahead of loading and errors", () => {
+    expect(deckSlot({ ...base, paused: true, hasCard: true, loadError: true })).toBe("pause");
+    expect(deckSlot({ ...base, hasCard: true, deckState: "ok" })).toBe("card");
+    expect(deckSlot({ ...base, deckState: "all-decided" })).toBe("empty");
+    expect(deckSlot({ ...base, deckState: "empty-filter" })).toBe("empty");
+    expect(deckSlot({ ...base, deckState: "filter-done" })).toBe("empty");
   });
 });

@@ -13,14 +13,14 @@ interface Snapshot {
 /**
  * The shared space's matches (PRD 3.2.10): the cache first, then `name_matches`, refetched on
  * focus, every 60 s while visible and 2 s after `votes` (the user's own votes) changes.
- * Null in a space of one.
+ * Null in a space of one. `refresh` fetches now (the failed state's retry, NP-074).
  */
 export function useMatches(
   spaceId: string | null,
   userId: string | null,
   shared: boolean,
   votes: unknown,
-): MatchesState | null {
+): (MatchesState & { refresh: () => void }) | null {
   const key = spaceId && userId && shared ? `${userId}:${spaceId}` : null;
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
 
@@ -44,7 +44,7 @@ export function useMatches(
     if (store && votes) store.votesChanged();
   }, [store, votes]);
 
-  return current?.state ?? null;
+  return useMemo(() => (current ? { ...current.state, refresh: () => void current.store.refresh() } : null), [current]);
 }
 
 const noSubscribe = () => () => {};

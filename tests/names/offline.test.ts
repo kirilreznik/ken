@@ -18,6 +18,11 @@ describe("syncStatusText", () => {
     expect(syncStatusText(true, 2, true)).toBe("2 בחירות ממתינות לסנכרון");
   });
 
+  it("says when the votes couldn't be read, but offline says offline (NP-073)", () => {
+    expect(syncStatusText(true, 0, false, true)).toBe("לא הצלחנו לטעון את הבחירות. מנסים שוב.");
+    expect(syncStatusText(false, 0, false, true)).toBe("אין חיבור");
+  });
+
   it("ignores bad counts", () => {
     expect(syncStatusText(false, -1)).toBe("אין חיבור");
     expect(pendingText(12)).toBe("12 בחירות ממתינות לסנכרון");

@@ -4,7 +4,7 @@ import type { ClientLogReport } from "./clientLog";
 
 export const ERROR_AREA = "names-render";
 export const ERROR_TITLE = "משהו השתבש";
-export const ERROR_LEAD = "אפשר לנסות שוב, או לחזור לבחירת שם.";
+export const ERROR_LEAD = "אפשר לנסות שוב, או לחזור לבחירת שמות.";
 export const ERROR_RETRY = "ניסיון חוזר";
 
 /**

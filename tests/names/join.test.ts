@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  JOIN_COPY,
   JOIN_STORAGE_KEY,
+  VOTES_MOVE_TEXT,
   callbackUrl,
   clearPendingJoin,
   isInvalidCodeError,
@@ -119,5 +121,26 @@ describe("names_join results", () => {
 
   it("treats the same space back as already a member", () => {
     expect(joinOutcome({ spaceId: "a", solo: true, saved: 3 }, "a")).toEqual({ kind: "already", spaceId: "a" });
+  });
+});
+
+describe("join outcome copy", () => {
+  it("says where the saved names went, in the past tense", () => {
+    expect(VOTES_MOVE_TEXT).toBe("השמות ששמרת עברו איתך לבחירה המשותפת.");
+  });
+
+  it("matches the offline lead to the retry button", () => {
+    expect(JOIN_COPY.offline.lead).toBe("אפשר לנסות שוב כשהחיבור יחזור.");
+  });
+
+  it("covers a used link and says whom to ask", () => {
+    expect(JOIN_COPY.invalid).toEqual({
+      title: "הקישור כבר לא בתוקף, או שכבר השתמשו בו",
+      lead: "אפשר לבקש קישור חדש ממי ששלח את ההזמנה.",
+    });
+  });
+
+  it("writes titles without a period, like every other screen title", () => {
+    for (const { title } of Object.values(JOIN_COPY)) expect(title).not.toMatch(/\.$/);
   });
 });

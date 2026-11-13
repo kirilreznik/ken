@@ -5,14 +5,21 @@ import {
   dragOutcome,
   dragStart,
   dragStyle,
+  flingDistance,
+  flingTiming,
   flingTo,
   isTap,
   keepDir,
+  keepSamples,
+  releaseVelocity,
   type Decision,
   type DragKind,
   type DragMode,
   type KeepDir,
+  type Sample,
+  type Velocity,
 } from "@/lib/names/gesture";
+import { DURATION_FADE, DURATION_SNAP, EASE_OUT } from "@/styles/nest-motion";
 
 type Drag = {
   id: number;
@@ -23,6 +30,8 @@ type Drag = {
   mode: DragMode | null;
   dx: number;
   dy: number;
+  /** The last moves (relative to the start), for the release speed. */
+  moves: Sample[];
   /** It went down on a control inside the card ("i", "לכל הפרטים"): a tap there is the control's. */
   onControl: boolean;
 };
@@ -49,17 +58,64 @@ function swallowNextClick() {
   const timer = window.setTimeout(done, 500);
 }
 
+/** The card is off its place (a drag, a fling, the snap back): the stack shows the back cards whole (names.css). */
+const moving = (el: HTMLElement, on: boolean) => el.toggleAttribute("data-moving", on);
+
 function paint(el: HTMLElement, transform: string, keep = 0, skip = 0, love = 0) {
   el.style.transform = transform;
+  moving(el, transform !== "");
   el.style.setProperty("--keep", String(keep));
   el.style.setProperty("--skip", String(skip));
   el.style.setProperty("--love", String(love));
 }
 
 /**
+ * A copy of the card for its flight off screen: same place and size (fixed, measured without the
+ * drag's transform, corrected for any containing block), the drag's transform and stamps kept,
+ * no ids, focus, entrance or pointer events. It goes next to the card stack, so it keeps the
+ * deck's styles and outlives the stack when the deck ends or pauses; the card itself is hidden.
+ */
+function flyingCopy(node: HTMLElement): HTMLElement {
+  // A card still playing its entrance leaves from where it's headed.
+  for (const a of node.getAnimations()) a.finish();
+  const transform = node.style.transform;
+  node.style.transform = "";
+  const box = node.getBoundingClientRect();
+  node.style.transform = transform;
+  const copy = node.cloneNode(true) as HTMLElement;
+  copy.classList.remove("names-card-enter");
+  copy.removeAttribute("tabindex");
+  copy.removeAttribute("aria-describedby");
+  for (const el of [copy, ...copy.querySelectorAll("[id]")]) el.removeAttribute("id");
+  copy.setAttribute("aria-hidden", "true");
+  copy.inert = true;
+  // Pinned to the viewport's corner and moved by `translate` (it stacks under the fling's
+  // transform): the measured box is in viewport coordinates, the same in RTL and LTR.
+  const place = (x: number, y: number) => (copy.style.translate = `${x}px ${y}px`);
+  Object.assign(copy.style, {
+    position: "fixed",
+    inset: "0 auto auto 0",
+    width: `${box.width}px`,
+    height: `${box.height}px`,
+    margin: "0",
+    pointerEvents: "none",
+  });
+  place(box.left, box.top);
+  const host = node.closest(".names-stack")?.parentElement ?? node.parentElement ?? document.body;
+  host.append(copy);
+  copy.style.transform = "";
+  const at = copy.getBoundingClientRect();
+  copy.style.transform = transform;
+  if (at.left !== box.left || at.top !== box.top) place(2 * box.left - at.left, 2 * box.top - at.top);
+  copy.scrollTop = node.scrollTop;
+  node.style.visibility = "hidden";
+  return copy;
+}
+
+/**
  * The card drag (FR-W11) for mouse, touch and pen, like the landing demo's bindDrag(): the card
- * follows the pointer with the stamps showing, and on release it flies off and calls onDecide,
- * or snaps back. The keep side is read from the action buttons when the drag starts (PRD
+ * follows the pointer with the stamps showing, and on release it calls onDecide while a copy of it
+ * flies off (so the next card is live at once), or snaps back. The keep side is read from the action buttons when the drag starts (PRD
  * 3.2.12). A card whose content fits keeps every touch gesture (touch-action: none) so a swipe
  * up can love it; a card that scrolls leaves vertical touch to scrolling (pan-y), and the
  * "אהבתי מאוד" button stays the way to love it by touch.
@@ -133,26 +189,52 @@ export function useSwipeDrag({
     if (!node || !s?.mode) return;
     const from = node.style.transform;
     paint(node, "");
-    if (from && !reducedMotion()) node.animate([{ transform: from }, { transform: "none" }], { duration: 220, easing: "ease-out" });
+    if (!from || reducedMotion()) return;
+    moving(node, true);
+    node.animate([{ transform: from }, { transform: "none" }], { duration: DURATION_SNAP, easing: EASE_OUT }).finished.then(
+      () => !drag.current?.mode && moving(node, false),
+      () => {},
+    );
   };
 
-  const fling = async (node: HTMLElement, kind: DragKind, dir: KeepDir, decision: Decision = kind) => {
+  // Leaving copies still in flight (see fling): undo finishes them so the card it brings back isn't shadowed.
+  const flights = useRef(new Set<Animation>());
+
+  /**
+   * The card leaves as a copy (NP-088): the decision is made as the fling starts, so the next
+   * card mounts under the flying copy and takes taps, keys and undo at once; nothing waits for
+   * the 300 ms flight. The copy is a fixed, inert clone over the card's place, removed when it
+   * lands. If the decision didn't replace the card, the card comes back when the copy lands.
+   * A released drag passes its velocity, so the flight picks up the finger's speed (flingTiming).
+   */
+  const fling = (node: HTMLElement, kind: DragKind, dir: KeepDir, decision: Decision = kind, release?: { dx: number; dy: number; v: Velocity }) => {
     busy.current = true;
+    // Focus on the card or a control in it (the name sheet gives it back to "לכל הפרטים") moves to the next card.
+    refocus.current = node.contains(document.activeElement);
     const from = node.style.transform || "none";
+    const copy = flyingCopy(node);
     const frames = reducedMotion()
       ? [{ opacity: 1 }, { opacity: 0 }]
       : [{ transform: from }, { transform: flingTo(kind, dir), opacity: 0.4 }];
-    if (kind === "love" && !reducedMotion()) node.style.setProperty("--love", "1");
-    try {
-      await node.animate(frames, { duration: reducedMotion() ? 160 : 300, easing: "ease-in", fill: "forwards" }).finished;
-    } catch {
-      // The card was replaced mid-flight.
-    }
-    if (el.current !== node) return;
-    // Focus on the card or a control in it (the name sheet gives it back to "לכל הפרטים") moves to the next card.
-    refocus.current = node.contains(document.activeElement);
+    if (kind === "love" && !reducedMotion()) copy.style.setProperty("--love", "1");
+    const timing = release
+      ? flingTiming(
+          flingDistance(kind, release.dx, release.dy, copy.offsetWidth, copy.offsetHeight),
+          kind === "love" ? -release.v.y : release.v.x * Math.sign(release.dx),
+        )
+      : flingTiming(0);
+    const flight = copy.animate(frames, { ...(reducedMotion() ? { duration: DURATION_FADE, easing: EASE_OUT } : timing), fill: "forwards" });
+    flights.current.add(flight);
+    const land = () => {
+      flights.current.delete(flight);
+      copy.remove();
+      if (el.current !== node) return;
+      node.style.visibility = "";
+      paint(node, "");
+      busy.current = false;
+    };
+    flight.finished.then(land, land);
     decide.current(decision);
-    busy.current = false;
   };
 
   const onPointerDown = (e: PointerEvent<HTMLElement>) => {
@@ -169,6 +251,7 @@ export function useSwipeDrag({
       mode: null,
       dx: 0,
       dy: 0,
+      moves: [{ x: 0, y: 0, t: performance.now() }],
       onControl: !!control && control !== e.currentTarget && e.currentTarget.contains(control),
     };
   };
@@ -178,6 +261,7 @@ export function useSwipeDrag({
     if (!s || e.pointerId !== s.id) return;
     s.dx = e.clientX - s.x;
     s.dy = e.clientY - s.y;
+    s.moves = keepSamples(s.moves, { x: s.dx, y: s.dy, t: performance.now() });
     if (!s.mode) {
       const start = dragStart(s.dx, s.dy);
       if (start === "cancel") drag.current = null;
@@ -203,10 +287,12 @@ export function useSwipeDrag({
       }
       return;
     }
-    const kind = dragOutcome(s.mode, s.dx, s.dy, performance.now() - s.t, s.dir);
+    const now = performance.now();
+    const v = releaseVelocity(keepSamples(s.moves, { x: e.clientX - s.x, y: e.clientY - s.y, t: now }), now);
+    const kind = dragOutcome(s.mode, s.dx, s.dy, now - s.t, s.dir, v);
     if (!kind) return snapBack();
     drag.current = null;
-    void fling(e.currentTarget, kind, s.dir);
+    fling(e.currentTarget, kind, s.dir, kind, { dx: s.dx, dy: s.dy, v });
   };
 
   const onPointerCancel = (e: PointerEvent<HTMLElement>) => {
@@ -226,12 +312,16 @@ export function useSwipeDrag({
     const node = el.current;
     if (!node || disabled || busy.current || drag.current?.mode) return;
     drag.current = null;
-    void fling(node, decision === "hidden" ? "skip" : decision, keepDir(), decision);
+    fling(node, decision === "hidden" ? "skip" : decision, keepDir(), decision);
   };
 
-  /** Call before anything that replaces the card (undo) to move focus to the new one. */
+  /**
+   * Call before anything that replaces the card (undo): focus moves to the new one, and a card
+   * still flying off lands at once, so the name undo brings back isn't covered by its copy.
+   */
   const holdFocus = () => {
     refocus.current = !!el.current && document.activeElement === el.current;
+    for (const flight of flights.current) flight.finish();
   };
 
   return {

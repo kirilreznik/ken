@@ -3,14 +3,12 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
-import ReportSheet from "@/components/names/about/ReportSheet";
-import BackgroundSheet from "@/components/names/BackgroundSheet";
 import CardStack from "@/components/names/card/CardStack";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
 import FiltersSheet from "@/components/names/FiltersSheet";
 import MatchSheet from "@/components/names/MatchSheet";
-import SurveySheet from "@/components/names/SurveySheet";
-import { closeSheet, openNameSheet } from "@/components/names/ui";
+import { closeSheet, openNameSheet, useToastLift } from "@/components/names/ui";
+import { lazySheet } from "@/components/names/lazySheet";
 import { useCards } from "@/components/names/useCards";
 import { usePrefJson } from "@/components/names/usePrefJson";
 import { useSpace } from "@/components/names/useSpace";
@@ -19,11 +17,11 @@ import { useSyncStatus } from "@/components/names/useSyncStatus";
 import { useVotes } from "@/components/names/useVotes";
 import { sheetVoteText, statusText } from "@/lib/names/a11y";
 import { markAppEntry } from "@/lib/names/appHistory";
-import { buildDeck, deckProgress, hashSeed } from "@/lib/names/deck";
+import { buildDeck, deckProgress, deckSlot, hashSeed } from "@/lib/names/deck";
 import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
 import type { Decision } from "@/lib/names/gesture";
 import { matchToShow, withSeen, type Match } from "@/lib/names/matches";
-import { RECAP_VOTES, countSession, pauseToShow, sessionTotals, surveyDue, type Pause } from "@/lib/names/launch";
+import { RECAP_VOTES, countSession, pauseAfterVote, pauseToShow, sessionTotals, surveyDue, type Pause } from "@/lib/names/launch";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { showToast } from "@/lib/names/toast";
 import { currentSessionInfo, track } from "@/lib/names/track";
@@ -33,6 +31,7 @@ import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
 import AboutLink from "./AboutLink";
+import { DeckLoadError, DeckSkeleton } from "./DeckLoad";
 import EmptyDeck from "./EmptyDeck";
 import PausePanel from "./PausePanel";
 import SurveyPrompt from "./SurveyPrompt";
@@ -40,6 +39,11 @@ import SwipeFooter from "./SwipeFooter";
 import SwipeHeader from "./SwipeHeader";
 import SwipeKeys, { SWIPE_KEYS_ID } from "./SwipeKeys";
 import { dragClass, useSwipeDrag } from "./useSwipeDrag";
+
+// Opened from a tap or once (background, a report, the survey): out of the first load, loaded when idle.
+const BackgroundSheet = lazySheet("background", () => import("@/components/names/BackgroundSheet"));
+const ReportSheet = lazySheet("report", () => import("@/components/names/about/ReportSheet"));
+const SurveySheet = lazySheet("survey", () => import("@/components/names/SurveySheet"));
 
 const NO_MATCHES: readonly Match[] = [];
 const NO_TOTALS = { votes: 0, saves: 0, names: [] as string[] };
@@ -56,10 +60,14 @@ export default function SwipeScreen() {
   const { user } = useAuth();
   const userId = user?.id ?? null;
   const space = useSpace();
-  const { cards } = useCards();
+  const barRef = useToastLift();
+  // "עדכון זמין" stays until tapped: it waits above the card's "לכל הפרטים", not on it (NP-BUG-011).
+  const detailsRef = useToastLift({ sticky: true });
+  const { cards, error: cardsError, retry: retryCards } = useCards();
+  const [retried, setRetried] = useState(false);
   const { store, state } = useVotes(space.spaceId, userId);
   const matches = useMatches(space.spaceId, userId, space.isShared, state?.votes);
-  const sync = useSyncStatus(state?.pendingCount ?? 0);
+  const sync = useSyncStatus(state?.pendingCount ?? 0, state?.loadFailed ?? false);
   const { seen, setSeen } = useSeenMatches(userId);
   const newMatch = useMemo(() => (matches?.ready ? matchToShow(matches.matches, seen) : null), [matches, seen]);
 
@@ -109,10 +117,8 @@ export default function SwipeScreen() {
   const solo = !space.loading && !space.error && space.members.length === 1;
   // A pause comes only after a decision in this visit (`entered`), never on opening the app,
   // and stays until it is answered (endPause writes the prefs that turn it off).
-  const pause: Pause | null =
-    userId && entered
-      ? pauseToShow({ solo, savedCount, invitePromptShown, sessionId, sessionVotes: totals.votes, recapSession })
-      : null;
+  const pauseInput = { solo, savedCount, invitePromptShown, sessionId, sessionVotes: totals.votes, recapSession };
+  const pause: Pause | null = userId && entered ? pauseToShow(pauseInput) : null;
   const endPause = () => {
     if (!userId) return;
     if (pause === "invite") setPref(userId, "invitePromptShown", true);
@@ -130,13 +136,22 @@ export default function SwipeScreen() {
   const progress = deck && cards && filters ? deckProgress(cards, votes, filters, deck.cards.length) : null;
   // While paused nothing can be decided: the panel stands where the card was.
   const current = pause ? null : (deck?.cards[0] ?? null);
+  const slot = deckSlot({ paused: !!pause, hasCard: !!(deck && current && progress), deckState: deck?.state ?? null, loadError: cardsError });
   const method = useRef<DecideMethod>("swipe");
 
-  // The deck ran out (all decided) or the filters left nothing: once each time it happens.
+  // A retry that worked: the button is gone, so focus (if it went with it) moves to the card.
+  useEffect(() => {
+    const active = document.activeElement;
+    if (slot !== "card" || !retried || (active && active !== document.body)) return;
+    document.querySelector<HTMLElement>("main article[tabindex='0']")?.focus();
+  }, [slot, retried]);
+
+  // The deck ran out (all decided) or the filters left nothing (none match, or all of those
+  // are decided: both are the filter_empty event): once each time it happens.
   const deckState = deck?.state ?? null;
   useEffect(() => {
     if (deckState === "all-decided") track("deck_exhausted", { votes: votes.size });
-    else if (deckState === "empty-filter" && filters) {
+    else if ((deckState === "empty-filter" || deckState === "filter-done") && filters) {
       track("filter_empty", {
         sex: sexToken(filters.sex),
         popularity: filters.popularity !== null,
@@ -163,7 +178,13 @@ export default function SwipeScreen() {
     setEntered(true);
     setStatus(statusText(kind, name));
     // Focus stays on the button, so screen-reader users hear the next name without going back to the card.
-    setNext(deck?.cards[1]?.stats.name ?? null);
+    // Not when this decision opens a pause: the panel covers the next card, and focus moves to it.
+    const opensPause = pauseAfterVote(pauseInput, {
+      previous: storedVotes?.get(name),
+      saves: isSaved(kind),
+      startedAt: session?.startedAt ?? null,
+    });
+    setNext(opensPause ? null : (deck?.cards[1]?.stats.name ?? null));
   };
 
   const openDetails = (source: "tap" | "button" | "key") => () => {
@@ -238,7 +259,7 @@ export default function SwipeScreen() {
 
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto [@media(max-height:30rem)]:h-auto">
-      <SwipeHeader saved={savedCount} filtered={hasFilters(filters)} />
+      <SwipeHeader saved={state?.loadFailed ? null : savedCount} filtered={hasFilters(filters)} />
       <main className="flex min-h-0 flex-1 flex-col">
         {showSurvey ? <SurveyPrompt onDismiss={() => userId && setPref(userId, "survey", "dismissed")} /> : null}
         <SwipeKeys
@@ -249,9 +270,9 @@ export default function SwipeScreen() {
             drag.fly(key);
           }} className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 flex-col px-5 pt-1 max-[20rem]:min-h-100 max-[20rem]:px-3 [@media(max-height:30rem)]:min-h-100">
-            {pause ? (
+            {slot === "pause" && pause ? (
               <PausePanel key={pause} pause={pause} totals={totals} onContinue={endPause} />
-            ) : deck && current && progress ? (
+            ) : slot === "card" && deck && progress ? (
               <CardStack
                 cards={deck.cards}
                 enter={entered}
@@ -262,13 +283,14 @@ export default function SwipeScreen() {
                 aria-describedby={SWIPE_KEYS_ID}
                 corner={<AboutLink />}
                 onDetails={openDetails("button")}
+                detailsRef={detailsRef}
                 onKeyDown={onCardKeyDown}
                 // A touch or focus on the card may become a tap: start loading the sheet's code.
                 onPointerDownCapture={preloadNameDetail}
                 onFocus={preloadNameDetail}
                 {...drag.card}
               />
-            ) : deck && deck.state !== "ok" ? (
+            ) : slot === "empty" && deck && deck.state !== "ok" ? (
               <EmptyDeck
                 state={deck.state}
                 saved={saved}
@@ -276,19 +298,32 @@ export default function SwipeScreen() {
                 onReset={resetFilters}
                 takeFocus={entered}
               />
-            ) : null}
+            ) : slot === "error" ? (
+              <DeckLoadError
+                takeFocus={retried}
+                onRetry={() => {
+                  setRetried(true);
+                  retryCards();
+                }}
+              />
+            ) : (
+              <DeckSkeleton />
+            )}
           </div>
-          <ActionBar
-            onKeep={fly("keep")}
-            onLove={fly("love")}
-            onSkip={fly("skip")}
-            onHide={fly("hidden")}
-            disabled={!current}
-            describedBy={SWIPE_KEYS_ID}
-            onUndo={undo}
-            canUndo={undoStack.length > 0 && !pause}
-          />
-          <SwipeFooter status={status} next={next} sync={sync} />
+          {/* The sync line floats above the action bar (SwipeFooter); toasts sit above it too. */}
+          <div ref={barRef} className="relative">
+            <ActionBar
+              onKeep={fly("keep")}
+              onLove={fly("love")}
+              onSkip={fly("skip")}
+              onHide={fly("hidden")}
+              disabled={!current}
+              describedBy={SWIPE_KEYS_ID}
+              onUndo={undo}
+              canUndo={undoStack.length > 0 && !pause}
+            />
+            <SwipeFooter status={status} next={next} sync={sync} />
+          </div>
         </SwipeKeys>
       </main>
       <BackgroundSheet />

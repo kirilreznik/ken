@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, Dialog, IconButton, closeDialog, openDialog } from "@/components/names/ui";
+import { Button, Dialog, IconButton, closeDialog, inputClass, openDialog } from "@/components/names/ui";
 import { InstallSheet, useInstall } from "@/components/names/pwa/Install";
 import { useSpace } from "@/components/names/useSpace";
 import {
@@ -52,21 +52,13 @@ function Chevron() {
   );
 }
 
-function LinkRow({ href, children, newTab = false }: { href: string; children: React.ReactNode; newTab?: boolean }) {
+function LinkRow({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <li className={row}>
-      {newTab ? (
-        <a href={href} target="_blank" rel="noopener" className={rowAction}>
-          {children}
-          <span className="sr-only"> (נפתח בכרטיסייה חדשה)</span>
-          <Chevron />
-        </a>
-      ) : (
-        <Link href={href} className={rowAction}>
-          {children}
-          <Chevron />
-        </Link>
-      )}
+      <Link href={href} data-control className={rowAction}>
+        {children}
+        <Chevron />
+      </Link>
     </li>
   );
 }
@@ -282,7 +274,7 @@ export default function SettingsScreen() {
                     }}
                     aria-invalid={nameError ? true : undefined}
                     aria-describedby="settings-name-hint"
-                    className="min-h-11 min-w-0 flex-1 rounded-md border border-line bg-sand px-3 text-start text-body text-ink"
+                    className={`${inputClass()} min-w-0 flex-1`}
                   />
                   <Button type="submit" variant="secondary" size="md" aria-disabled={!changed || savingName} aria-busy={savingName} className="aria-disabled:opacity-60">
                     {savingName ? "שומרים…" : "שמירה"}
@@ -327,9 +319,9 @@ export default function SettingsScreen() {
                 </span>
                 <span
                   aria-hidden="true"
-                  className={`relative inline-flex h-8 w-13 shrink-0 items-center rounded-pill border-2 transition-colors ${optedIn ? "border-ink bg-ink" : "border-line bg-sand"}`}
+                  className={`relative inline-flex h-8 w-13 shrink-0 items-center rounded-pill border-2 transition-colors duration-(--nest-duration-press) ease-out ${optedIn ? "border-ink bg-ink" : "border-stone bg-sand"}`}
                 >
-                  <span className={`absolute size-6 rounded-full bg-surface shadow-card transition-[inset-inline-start] ${optedIn ? "start-[calc(100%-26px)]" : "start-0.5"}`} />
+                  <span className={`absolute start-0.5 size-6 rounded-full bg-surface shadow-card transition-transform duration-(--nest-duration-press) ease-out ${optedIn ? "translate-x-5 rtl:-translate-x-5" : ""}`} />
                 </span>
               </button>
               {optInError ? (
@@ -373,12 +365,8 @@ export default function SettingsScreen() {
                 </button>
               </li>
             ) : null}
-            <LinkRow href="/names/terms" newTab>
-              תנאי שימוש
-            </LinkRow>
-            <LinkRow href="/names/privacy" newTab>
-              מדיניות פרטיות
-            </LinkRow>
+            <LinkRow href="/names/terms">תנאי שימוש</LinkRow>
+            <LinkRow href="/names/privacy">מדיניות פרטיות</LinkRow>
           </ul>
         </Section>
 

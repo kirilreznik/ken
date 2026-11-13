@@ -8,7 +8,7 @@ import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
-import { Button, IconButton, openNameSheet, openSheet } from "@/components/names/ui";
+import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet } from "@/components/names/ui";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
 import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
@@ -16,18 +16,20 @@ import { InstallHint, InstallSheet } from "@/components/names/pwa/Install";
 import { usePrefJson } from "@/components/names/usePrefJson";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
+import VotesLoadFailed from "./VotesLoadFailed";
 import type { Decision } from "@/components/names/DecisionButtons";
 import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
 import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
-import { addedText, listsTab, rowActionText, rowMeta, rowMetaText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
+import { HIDDEN_LINK, addedText, listsTab, rowActionText, rowMeta, rowMetaText, rowUndoText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
+import { MATCHES_LOAD_FAILED_TITLE } from "@/lib/names/offline";
 import { showToast } from "@/lib/names/toast";
 import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
 import DuelScreen from "./DuelScreen";
 import RowMenu from "./RowMenu";
-import { decideLabel } from "@/lib/names/launch";
+import { clearChoiceLabel, decideLabel } from "@/lib/names/launch";
 import { track } from "@/lib/names/track";
 
 const LISTS_PATH = "/names/lists";
@@ -69,6 +71,7 @@ export default function ListsScreen() {
   useEffect(() => track("lists_tab", { tab }), [tab]);
   const rows = useMemo(() => savedRows(state?.votes ?? new Map()), [state?.votes]);
   const ready = !!(store && state?.ready);
+  const loadFailed = ready && !!state?.loadFailed;
   // Only names with a card open the sheet; names added by hand have nothing to show there.
   const deckNames = useMemo(() => new Set((cards ?? []).map((c) => c.stats.name)), [cards]);
   const canOpen = (name: string) => deckNames.has(name);
@@ -81,7 +84,7 @@ export default function ListsScreen() {
   const surname = surnameJson ? (JSON.parse(surnameJson) as string) : "";
 
   const tabs: { id: ListsTab; label: string }[] = [
-    { id: "saved", label: ready ? `שמרתי · ${rows.length}` : "שמרתי" },
+    { id: "saved", label: ready && !loadFailed ? `שמרתי · ${rows.length}` : "שמרתי" },
     { id: "matches", label: space.isShared && matches?.ready && matches.fetchedAt !== null ? `התאמות · ${matches.matches.length}` : "התאמות" },
     { id: "duel", label: "דו־קרב" },
   ];
@@ -118,9 +121,19 @@ export default function ListsScreen() {
 
   const online = useOnline();
   // The matches the duel can use: the last fetched list, or the cache while offline.
-  const matchesLoaded = !space.isShared || (!!matches?.ready && (matches.fetchedAt !== null || !online));
+  // A failed first fetch counts as loaded with no matches, so the duel from "שמרתי" still runs (NP-074).
+  const matchesLoaded = !space.isShared || (!!matches?.ready && (matches.fetchedAt !== null || !online || matches.failed));
   const matchNames = useMemo(() => (space.isShared && matches ? matches.matches.map((m) => m.name) : []), [space.isShared, matches]);
   const customNames = useMemo(() => new Set(rows.filter((r) => r.custom).map((r) => r.name)), [rows]);
+
+  // From the duel's too-few card the person stays in the duel, which starts once there are two.
+  const add = (name: string, custom: boolean) => {
+    if (!store) return;
+    store.setVote(name, "keep", custom);
+    if (tab !== "saved" && tab !== "duel") selectTab("saved");
+    setStatus(addedText(name));
+    showToast(addedText(name));
+  };
 
   if (tab === "duel") {
     return (
@@ -137,7 +150,9 @@ export default function ListsScreen() {
         onBack={(source) => selectTab(source === "matches" && space.isShared ? "matches" : "saved")}
         chooseLabel={(name) => decideLabel(space.isShared, name)}
         onChoose={(name, _source, rank) => choose(name, "duel", { custom: customNames.has(name), rank })}
+        onAddName={() => openSheet("add-name")}
       />
+      <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
       {decision}
       </>
     );
@@ -168,18 +183,11 @@ export default function ListsScreen() {
     }
   };
 
-  const add = (name: string, custom: boolean) => {
-    if (!store) return;
-    store.setVote(name, "keep", custom);
-    if (tab !== "saved") selectTab("saved");
-    setStatus(addedText(name));
-    showToast(addedText(name));
-  };
-
   return (
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
       <main className="mx-auto flex w-full max-w-[480px] flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
-        <header className="flex items-center gap-2 max-[20rem]:flex-wrap">
+        {/* Under 360 px the row takes the deck header's 12 px edges and tighter gaps, so "השמות שלי" keeps its width at 320 px (NP-BUG-005). */}
+        <header className="flex items-center gap-2 max-[22.5rem]:-mx-2 max-[22.5rem]:gap-1.5 max-[20rem]:flex-wrap">
           <IconButton aria-label="חזרה" onClick={back}>
             <Icon className="ltr:-scale-x-100">
               <path d="M9 6l6 6-6 6" />
@@ -232,13 +240,27 @@ export default function ListsScreen() {
           {tab === "saved" ? (
             <SavedPanel
               ready={ready}
+              loadFailed={loadFailed}
+              onRetry={() => void store?.reconcile()}
               rows={rows}
               names={names}
               onAction={(name, action) => {
                 if (!store) return;
+                const previous = state?.votes.get(name);
                 if (action === "remove") store.removeVote(name);
                 else store.setVote(name, "hidden");
-                setStatus(rowActionText(name, action));
+                // Like "דילוג" in the sheet: the toast says what happened, "ביטול" puts the old vote back.
+                const undo = previous
+                  ? () => {
+                      store.setVote(name, previous.vote, previous.custom);
+                      showToast(rowUndoText(name));
+                    }
+                  : undefined;
+                // A hidden name leaves "שמרתי"; the toast links to where it went (IMP-C-G3-05).
+                showToast(rowActionText(name, action), {
+                  ...(undo ? { action: { label: "ביטול", onAction: undo } } : {}),
+                  ...(action === "hide" ? { link: HIDDEN_LINK } : {}),
+                });
               }}
               headingRef={headingRef}
               canOpen={canOpen}
@@ -255,6 +277,7 @@ export default function ListsScreen() {
             <MatchesPanel
               userId={user?.id ?? null}
               state={matches}
+              onRetry={() => matches?.refresh()}
               memberCount={space.members.length}
               names={names}
               canOpen={canOpen}
@@ -295,6 +318,7 @@ type ChooseProps = {
 type MatchesPanelProps = ChooseProps & {
   userId: string | null;
   state: MatchesState | null;
+  onRetry: () => void;
   memberCount: number;
   names: Map<string, NameStats> | null;
   onChoose: (name: string) => void;
@@ -305,7 +329,7 @@ type MatchesPanelProps = ChooseProps & {
  * "{n} שמרו" from 3 up, a heart when someone loved it (never who), the last update time
  * while offline. Nothing about anyone's skips.
  */
-function MatchesPanel({ userId, state, memberCount, names, canOpen, chooseLabel, onChoose }: MatchesPanelProps) {
+function MatchesPanel({ userId, state, onRetry, memberCount, names, canOpen, chooseLabel, onChoose }: MatchesPanelProps) {
   const online = useOnline();
   // The day to compare the last update with; the screen isn't open across midnight for long.
   const [openedAt] = useState(() => Date.now());
@@ -314,6 +338,16 @@ function MatchesPanel({ userId, state, memberCount, names, canOpen, chooseLabel,
     !online && state?.fetchedAt != null ? (
       <p className="m-0 text-caption text-stone">{updatedText(state.fetchedAt, openedAt)}</p>
     ) : null;
+
+  // A failed first fetch says so (the store retries on focus and every 60 s), never a skeleton forever.
+  if (state?.ready && state.fetchedAt === null && online && state.failed) {
+    return (
+      <>
+        {intro}
+        <VotesLoadFailed title={MATCHES_LOAD_FAILED_TITLE} onRetry={onRetry} />
+      </>
+    );
+  }
 
   // Before the first fetch an empty list is only "no cache yet"; offline it's all there is.
   if (!state?.ready || (state.fetchedAt === null && online)) {
@@ -356,14 +390,10 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
 
   if (matches.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-surface px-4 py-6 text-center shadow-card">
-        <p className="m-0 text-card-title text-ink-soft">עוד אין התאמות.</p>
-        <p className="m-0 text-person text-ink-soft">
-          {memberCount < 2
-            ? "התאמה היא שם שגם מי שבוחר איתך שמר."
-            : memberCount > 2
-              ? "שם ששניים מכם שמרו יופיע כאן."
-              : "שם ששניכם שמרתם יופיע כאן."}
+      <div className={emptyPanelClass("card")}>
+        <h2 className={emptyTitleClass("card")}>עוד אין התאמות.</h2>
+        <p className={emptyLineClass()}>
+          {memberCount < 2 ? "התאמה היא שם שנשמר אצל שניים או יותר." : "שם שנשמר אצל שניים או יותר יופיע כאן."}
         </p>
         {memberCount < 2 ? (
           <Button variant="link" href="/names/invite">
@@ -458,6 +488,7 @@ function DuelLink({ title, from }: { title: string; from: "saved" | "matches" })
       href={`${LISTS_PATH}?tab=duel&from=${from}`}
       replace
       scroll={false}
+      data-control
       className="flex items-center gap-3 rounded-lg bg-peach-soft px-4 py-3.5 text-ink"
     >
       <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-md bg-surface">
@@ -479,6 +510,9 @@ function DuelLink({ title, from }: { title: string; from: "saved" | "matches" })
 type SavedPanelProps = ChooseProps & {
   onChoose: (row: SavedRow) => void;
   ready: boolean;
+  /** NP-073: the votes couldn't be read and nothing was cached. */
+  loadFailed: boolean;
+  onRetry: () => void;
   rows: SavedRow[];
   names: Map<string, NameStats> | null;
   onAction: (name: string, action: "remove" | "hide") => void;
@@ -486,7 +520,7 @@ type SavedPanelProps = ChooseProps & {
 };
 
 /** "שמרתי": loved first with "אהבתי מאוד", each row with sex tag, count, trend and its menu. */
-function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseLabel, onChoose }: SavedPanelProps) {
+function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, headingRef, canOpen, chooseLabel, onChoose }: SavedPanelProps) {
   const listRef = useRef<HTMLUListElement>(null);
   const focusAfter = useRef<number | null>(null);
 
@@ -500,6 +534,14 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
     target?.focus();
   }, [rows, headingRef]);
 
+  // The row closes first (NP-137), then the vote changes and the row goes from the data.
+  const leave = (index: number, name: string, action: "remove" | "hide") => {
+    collapseRow(listRef.current?.children[index] as HTMLElement | undefined, () => {
+      focusAfter.current = index;
+      onAction(name, action);
+    });
+  };
+
   if (!ready) {
     return (
       <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
@@ -508,10 +550,13 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
     );
   }
 
+  if (loadFailed) return <VotesLoadFailed onRetry={onRetry} />;
+
   if (rows.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-lg bg-surface px-4 py-6 text-center shadow-card">
-        <p className="m-0 text-card-title text-ink-soft">עוד לא נשמרו שמות.</p>
+      <div className={emptyPanelClass("card")}>
+        <h2 className={emptyTitleClass("card")}>עוד אין שמות שמורים.</h2>
+        <p className={emptyLineClass()}>שמות ששומרים או אוהבים בכרטיסים יופיעו כאן.</p>
         <Button variant="link" href={APP_PATH}>
           לבחירת שמות
         </Button>
@@ -560,14 +605,8 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
                 name={row.name}
                 chooseLabel={chooseLabel(row.name)}
                 onChoose={() => onChoose(row)}
-                onRemove={() => {
-                  focusAfter.current = i;
-                  onAction(row.name, "remove");
-                }}
-                onHide={() => {
-                  focusAfter.current = i;
-                  onAction(row.name, "hide");
-                }}
+                onRemove={() => leave(i, row.name, "remove")}
+                onHide={row.custom ? undefined : () => leave(i, row.name, "hide")}
               />
             </li>
           );
@@ -585,18 +624,18 @@ function SavedPanel({ ready, rows, names, onAction, headingRef, canOpen, chooseL
 function SoloMatches() {
   useEffect(() => track("invite_prompt", { placement: "matches_tab", action: "shown" }), []);
   return (
-    <div className="flex flex-col items-center gap-3 rounded-lg bg-surface px-5 py-7 text-center shadow-card">
+    <div className={emptyPanelClass("card")}>
       <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-full bg-peach-soft text-clay-deep">
         <Icon size={24}>
           <circle cx="9" cy="8" r="3.5" />
           <path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6" />
         </Icon>
       </span>
-      <h2 className="m-0 text-card-title text-ink">בוחרים ביחד?</h2>
-      <p className="m-0 text-person text-ink-soft">
-        אפשר להזמין את מי שבוחר איתך. כל אחד בוחר בטלפון שלו, ושם ששניכם שמרתם יופיע כאן כהתאמה.
+      <h2 className={emptyTitleClass("card")}>בוחרים ביחד?</h2>
+      <p className={emptyLineClass()}>
+        אפשר להזמין מישהו נוסף. הבחירה נעשית בנפרד, בכל טלפון, ושם שנשמר אצל שניים או יותר יופיע כאן כהתאמה.
       </p>
-      <p className="m-0 text-caption text-stone">על מה כל אחד דילג נשאר פרטי. השמות ששמרת עוברים איתך.</p>
+      <p className="m-0 text-caption text-stone">הדילוגים נשארים פרטיים. השמות ששמרת עוברים איתך.</p>
       <Button size="md" href="/names/invite" onClick={() => track("invite_prompt", { placement: "matches_tab", action: "invite" })}>
         הזמנה לבחירה משותפת
       </Button>
@@ -613,8 +652,8 @@ function ChosenBanner({ name, shared, onOpen, onClear }: { name: string; shared:
         <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
         <span className="text-row-name break-words">{name}</span>
       </button>
-      <Button variant="link" onClick={onClear} aria-label={`ביטול הבחירה בשם ${name}`} className="text-person!">
-        ביטול
+      <Button variant="link" onClick={onClear} aria-label={clearChoiceLabel(name)} className="text-person!">
+        ביטול הבחירה
       </Button>
     </div>
   );

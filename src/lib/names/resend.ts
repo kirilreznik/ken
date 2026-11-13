@@ -15,12 +15,17 @@ export function resendWaitText(seconds: number): string {
 
 export const RESEND_READY_TEXT = "אפשר לשלוח קוד חדש";
 
+/** Shown and announced after a resend: a new code replaces the one sent before (INT-G1-01). */
+export const CODE_RESENT_TEXT = "שלחנו קוד חדש. הקוד הקודם כבר לא עובד.";
+
 /**
  * Screen readers hear the countdown at the start, every 15 s and when it's done, not every
  * second (a polite live region that changes each second is noise).
  */
-export function resendAnnouncement(seconds: number, total = RESEND_SECONDS): string | null {
+export function resendAnnouncement(seconds: number, total = RESEND_SECONDS, sentNote?: string): string | null {
   if (seconds <= 0) return RESEND_READY_TEXT;
+  // A resend's note rides on the restart announcement, so one live region says it once.
+  if (seconds === total && sentNote) return `${sentNote} ${resendWaitText(seconds)}`;
   if (seconds === total || seconds % 15 === 0) return resendWaitText(seconds);
   return null;
 }

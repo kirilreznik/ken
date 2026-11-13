@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import NestCard from "@/components/names/NestCard";
-import { Button, Glass } from "@/components/names/ui";
+import { Button, Glass, emptyTitleClass } from "@/components/names/ui";
+import { deckPanel, deckPanelWrap } from "./EmptyDeck";
 import { RECAP_NAMES, recapLine, type Pause } from "@/lib/names/launch";
 import { track } from "@/lib/names/track";
 
@@ -22,7 +23,8 @@ type PausePanelProps = {
 export default function PausePanel({ pause, totals, onContinue }: PausePanelProps) {
   const root = useRef<HTMLDivElement>(null);
 
-  // Focus follows the card that was swiped away, so keyboard and screen-reader users land here.
+  // Focus follows the card that was swiped away, so keyboard and screen-reader users land here;
+  // the main button is described by the panel's lines, so the reason is read with it.
   useEffect(() => {
     const active = document.activeElement;
     const el = root.current;
@@ -39,25 +41,26 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
   }, [pause, opened]);
 
   return (
-    <div ref={root} className="flex min-h-0 flex-1 flex-col pb-7">
+    <div ref={root} className={deckPanelWrap}>
       <Glass
         as="section"
         aria-labelledby="names-pause-title"
-        className="flex min-h-0 flex-1 flex-col items-center justify-center-safe gap-3.5 overflow-y-auto rounded-xl px-5.5 py-7 text-center"
+        className={deckPanel}
       >
         {pause === "invite" ? (
           <>
-            <h2 id="names-pause-title" className="m-0 text-title font-bold text-ink">
+            <h2 id="names-pause-title" className={emptyTitleClass("glass")}>
               רוצה לבחור עם מישהו?
             </h2>
-            <p className="m-0 text-intro text-ink-soft">
-              כבר שמרת 5 שמות. אפשר להזמין את מי שבוחר איתך: כל אחד בוחר בטלפון שלו, ושם ששניכם שמרתם הופך להתאמה.
+            <p id="names-pause-lead" className="m-0 text-intro text-ink-soft">
+              כבר שמרת 5 שמות. אפשר להזמין מישהו נוסף: הבחירה נעשית בנפרד, בכל טלפון, ושם שנשמר אצל שניים או יותר הופך להתאמה.
             </p>
-            <p className="m-0 text-person text-ink-soft">על מה דילגת נשאר רק אצלך.</p>
+            <p id="names-pause-note" className="m-0 text-person text-ink-soft">על מה דילגת נשאר רק אצלך.</p>
             <Button
               size="md"
               href="/names/invite"
               data-autofocus=""
+              aria-describedby="names-pause-lead names-pause-note"
               onClick={() => {
                 track("invite_prompt", { placement: "fifth_save", action: "invite" });
                 onContinue();
@@ -77,10 +80,10 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
           </>
         ) : (
           <>
-            <h2 id="names-pause-title" className="m-0 text-title font-bold text-ink">
+            <h2 id="names-pause-title" className={emptyTitleClass("glass")}>
               סיכום הסבב
             </h2>
-            <p className="m-0 text-intro text-ink-soft">{recapLine(opened.votes, opened.saves)}</p>
+            <p id="names-pause-lead" className="m-0 text-intro text-ink-soft">{recapLine(opened.votes, opened.saves)}</p>
             {opened.names.length > 0 ? (
               <ol aria-label="שמות ששמרת בסבב הזה" className="m-0 flex list-none flex-wrap justify-center gap-1.5 p-0">
                 {opened.names.slice(0, RECAP_NAMES).map((name) => (
@@ -94,6 +97,7 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
               <Button
                 size="md"
                 data-autofocus=""
+                aria-describedby="names-pause-lead"
                 onClick={() => {
                   track("recap_cta", { action: "continue" });
                   onContinue();

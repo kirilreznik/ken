@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  CODE_RESENT_TEXT,
   RESEND_READY_TEXT,
   RESEND_SECONDS,
   cleanCode,
@@ -35,6 +36,12 @@ describe("resendAnnouncement", () => {
       if (a) said.push(s);
     }
     expect(said).toEqual([60, 45, 30, 15, 0]);
+  });
+
+  it("puts a resend's note in front of the restart only", () => {
+    expect(resendAnnouncement(60, 60, CODE_RESENT_TEXT)).toBe(`${CODE_RESENT_TEXT} אפשר לשלוח שוב בעוד 60 שניות`);
+    expect(resendAnnouncement(45, 60, CODE_RESENT_TEXT)).toBe("אפשר לשלוח שוב בעוד 45 שניות");
+    expect(resendAnnouncement(0, 60, CODE_RESENT_TEXT)).toBe(RESEND_READY_TEXT);
   });
 });
 

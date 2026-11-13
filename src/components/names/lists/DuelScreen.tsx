@@ -1,21 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
-import { Button, IconButton } from "@/components/names/ui";
+import { Button, IconButton, emptyPanelClass, emptyTitleClass, useToastLift } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import {
   currentPair,
-  deserialize,
   duelAnnouncement,
   duelSource,
+  duelTooFewText,
   isDone,
   pick,
   progress,
   ranking,
   resumeOrStart,
+  readDuelSaves,
   roundText,
+  savedDuel,
   sourceOf,
   start,
+  withDuel,
+  type DuelSaves,
   type DuelSource,
   type DuelState,
 } from "@/lib/names/duel";
@@ -35,14 +39,14 @@ function Icon({ size = 20, children, className }: { size?: number; children: Rea
 
 const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
 
-/** The saved duel (the duelState pref) as a stable JSON snapshot. */
-function useSavedDuel(userId: string | null): DuelState | null {
+/** The saved duels (the duelState pref, one per source) as a stable JSON snapshot. */
+function useSavedDuels(userId: string | null): DuelSaves | null {
   const json = useSyncExternalStore(
     subscribePrefs,
     () => (userId ? JSON.stringify(getPref(userId, "duelState")) : "null"),
     () => "null",
   );
-  return useMemo(() => deserialize(json), [json]);
+  return useMemo(() => readDuelSaves(JSON.parse(json)), [json]);
 }
 
 const SOURCES: { id: DuelSource; label: string }[] = [
@@ -65,23 +69,27 @@ type DuelScreenProps = {
   /** "בחרנו בשם X" on the finished ranking (the decision moment). */
   onChoose: (name: string, from: DuelSource, rank: number) => void;
   chooseLabel: (name: string) => string;
+  /** "הוספת שם" on the too-few card: opens the add-name sheet over the duel. */
+  onAddName: () => void;
 };
 
 /**
  * FR-W21 "דו־קרב" (board 6, E16 FR-13): two names at a time from "שמרתי" (or from "התאמות"
- * with 2+ matches) until a ranked top 5. Every pick is saved to the duelState pref, so
- * "עצירה" or a reload resumes where it stopped.
+ * with 2+ matches) until a ranked top 5. Every pick is saved to the duelState pref, one duel per
+ * source, so "עצירה", a reload or a switch to the other list and back resumes where it stopped.
  */
-export default function DuelScreen({ userId, from, ready, savedNames, matchNames, names, customNames, onSource, onBack, onChoose, chooseLabel }: DuelScreenProps) {
-  const saved = useSavedDuel(userId);
+export default function DuelScreen({ userId, from, ready, savedNames, matchNames, names, customNames, onSource, onBack, onChoose, chooseLabel, onAddName }: DuelScreenProps) {
+  const saves = useSavedDuels(userId);
   const [seed, setSeed] = useState(randomSeed);
   // The duel in play once a pick is made: it keeps going even if the list changes meanwhile.
   const [pinned, setPinned] = useState<DuelState | null>(null);
   const [status, setStatus] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
   const resultRef = useRef<HTMLHeadingElement>(null);
+  // Toasts ("השם … נוסף לרשימה") sit above "עצירה" (NP-BUG-003).
+  const stopRef = useToastLift();
 
-  const source = duelSource(from, saved, savedNames.length, matchNames.length);
+  const source = duelSource(from, savedDuel(saves), savedNames.length, matchNames.length);
   const list = source === "matches" ? matchNames : savedNames;
   const canToggle = matchNames.length >= 2;
 
@@ -89,7 +97,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
     pinned && sourceOf(pinned) === source
       ? { state: pinned, restarted: false }
       : list.length >= 2
-        ? resumeOrStart(saved, source, list, seed)
+        ? resumeOrStart(savedDuel(saves, source), source, list, seed)
         : null;
   const duel = resolved?.state ?? null;
   const done = duel ? isDone(duel) : false;
@@ -101,7 +109,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
 
   const save = (state: DuelState) => {
     setPinned(state);
-    if (userId) setPref(userId, "duelState", state);
+    if (userId) setPref(userId, "duelState", withDuel(getPref(userId, "duelState"), state));
   };
 
   const choose = (name: string) => {
@@ -204,13 +212,18 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
             <span className="sr-only">בטעינה</span>
           </div>
         ) : !duel || !p ? (
-          <div className="flex flex-col items-start gap-2 rounded-lg bg-surface px-4 py-5 shadow-card">
-            <p className="m-0 text-card-title">
-              {source === "matches" ? "לדו־קרב צריך לפחות שתי התאמות." : "לדו־קרב צריך לפחות שני שמות ברשימה."}
-            </p>
-            <Button variant="link" href={APP_PATH}>
-              לבחירת שמות
-            </Button>
+          <div className={emptyPanelClass("card")}>
+            <h2 className={emptyTitleClass("card")}>{duelTooFewText(source, list.length)}</h2>
+            <div className="flex flex-wrap justify-center gap-x-6">
+              <Button variant="link" href={APP_PATH}>
+                לבחירת שמות
+              </Button>
+              {source === "saved" && list.length === 1 ? (
+                <Button variant="link" onClick={onAddName}>
+                  הוספת שם
+                </Button>
+              ) : null}
+            </div>
           </div>
         ) : (
           <>
@@ -252,9 +265,10 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                           data-duel-pick={i === 0 ? "a" : "b"}
                           aria-describedby={m ? `duel-meta-${i}` : undefined}
                           onClick={() => choose(name)}
-                          className="flex min-h-[180px] flex-col items-center justify-center gap-1.5 rounded-xl bg-surface px-4 text-ink shadow-hero"
+                          className="@container flex min-h-[180px] flex-col items-center justify-center gap-1.5 rounded-xl bg-surface px-4 text-ink shadow-hero"
                         >
-                          <span className="text-duel-name break-words">{name}</span>
+                          {/* A narrow card (Page Zoom 150 %) steps the name down a size, and a name too long for a line breaks anywhere (NP-BUG-012). */}
+                          <span className="max-w-full text-center text-duel-name wrap-anywhere @max-[16rem]:text-hero-name">{name}</span>
                           {m ? (
                             <span aria-hidden="true" className="text-caption font-medium text-stone">
                               {m.short}
@@ -276,14 +290,14 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                   <h2 className="m-0 text-person font-bold">החמישייה עד עכשיו</h2>
                   <ol className="m-0 flex list-none flex-wrap gap-2 p-0">
                     {top.map((name, i) => (
-                      <li key={name} className="rounded-pill bg-ink px-3 py-1.5 text-caption font-bold text-surface">
+                      <li key={name} className="max-w-full rounded-pill bg-ink px-3 py-1.5 text-caption font-bold wrap-anywhere text-surface">
                         {i + 1}. {name}
                       </li>
                     ))}
                   </ol>
                 </div>
 
-                <div className="mt-auto flex items-center">
+                <div ref={stopRef} className="mt-auto flex items-center">
                   <button
                     type="button"
                     onClick={stop}

@@ -28,6 +28,8 @@ export interface MatchesState {
   matches: readonly Match[];
   /** Epoch ms of the last successful fetch; null when never fetched. */
   fetchedAt: number | null;
+  /** The last request failed (error or no network); cleared by the next successful one (NP-074). */
+  failed: boolean;
 }
 
 export interface MatchesStore {
@@ -117,7 +119,7 @@ export function createMatchesStore({
   client = getSupabase(),
   now = Date.now,
 }: MatchesStoreOptions): MatchesStore {
-  let state: MatchesState = { ready: false, matches: [], fetchedAt: null };
+  let state: MatchesState = { ready: false, matches: [], fetchedAt: null, failed: false };
   const listeners = new Set<() => void>();
   let disposed = false;
   let fetching: Promise<void> | null = null;
@@ -135,10 +137,14 @@ export function createMatchesStore({
     if (!client || disposed) return;
     try {
       const { data, error } = await client.rpc("name_matches", { p_space: spaceId });
-      if (error || !Array.isArray(data) || disposed) return;
+      if (disposed) return;
+      if (error || !Array.isArray(data)) {
+        if (!state.failed) setState({ failed: true });
+        return;
+      }
       const matches = toMatches(data as MatchRow[]);
       const fetchedAt = now();
-      setState({ ready: true, matches, fetchedAt });
+      setState({ ready: true, matches, fetchedAt, failed: false });
       const store = matchesIdb();
       if (store) {
         const entry: CachedMatches = { matches, fetchedAt };
@@ -148,6 +154,7 @@ export function createMatchesStore({
       }
     } catch {
       // Offline: keep the last result.
+      if (!disposed && !state.failed) setState({ failed: true });
     }
   }
 
@@ -247,14 +254,13 @@ export function keptByText(match: Match): string | null {
 
 /** The line under the name on the match sheet (board 4). */
 export function matchSheetLine(match: Match): string {
-  return match.keptByCount >= 3 ? `${match.keptByCount} שמרו את השם הזה.` : "שניכם שמרתם את השם הזה.";
+  return match.keptByCount >= 3 ? `${match.keptByCount} שמרו את השם הזה.` : "שניים שמרו את השם הזה.";
 }
 
 /** The explainer above the "התאמות" list (board 5); never says who skipped what. */
 export function matchesIntro(memberCount: number): string {
   if (memberCount < 2) return "התאמות יופיעו כשמישהו נוסף יבחר איתך. הדילוגים נשארים פרטיים.";
-  const who = memberCount > 2 ? "שמות שלפחות שניים מכם שמרו." : "שמות ששניכם שמרתם.";
-  return `${who} על שמות שדילגתם עליהם אף אחד לא יודע.`;
+  return "שמות שנשמרו אצל שניים או יותר. על דילוגים אף אחד לא יודע.";
 }
 
 /** The newest match the user hasn't been shown on this device, or null. */

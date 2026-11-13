@@ -68,3 +68,5 @@ supabase/functions/*/dist/
 __pycache__/
 /scripts/ralph/qa/name-detail/shots/
 /scripts/ralph/qa/name-detail/.auth/
+/scripts/ralph/qa/name-polish/shots/
+/scripts/ralph/qa/name-polish/.auth/

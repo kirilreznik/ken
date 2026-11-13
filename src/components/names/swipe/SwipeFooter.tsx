@@ -10,12 +10,15 @@ type SwipeFooterProps = {
 /**
  * Under the actions (FR-W10): the last decision as a polite live region for screen readers
  * (on screen the card flying off and the saved count say it), and the sync line (offline,
- * queued votes) in its own live region, which only takes room while there is something to say.
+ * queued votes) in its own live region. The sync line floats just above the action bar (its
+ * parent in SwipeScreen is `relative`), so its arrival and departure move nothing (CLS 0). It fits
+ * the 20 px strip between the card (the stack's pb-3) and the pills (the bar's pt-2), so it covers
+ * only the peeking cards, never the card or its "לכל הפרטים" (NP-BUG-002).
  * "ביטול" lives in the action row. Both regions are always rendered so the first message is announced.
  */
 export default function SwipeFooter({ status, next = null, sync }: SwipeFooterProps) {
   return (
-    <div className="flex flex-col px-5">
+    <>
       <span role="status" aria-live="polite" className="sr-only">
         {status}
         {status && next ? `. השם הבא: ${next}` : null}
@@ -25,9 +28,8 @@ export default function SwipeFooter({ status, next = null, sync }: SwipeFooterPr
         aria-live="polite"
         data-sync-status
         className={[
-          "m-0 mb-2 flex items-center justify-center gap-1.5 self-center rounded-pill text-caption text-ink",
-          "names-glass-soft px-3 py-1 in-data-[names-bg=none]:border-transparent in-data-[names-bg=none]:bg-transparent in-data-[names-bg=none]:p-0 in-data-[names-bg=none]:text-stone",
-          "empty:m-0 empty:border-0 empty:bg-transparent empty:p-0",
+          "pointer-events-none absolute inset-x-0 bottom-[calc(100%-0.5rem)] mx-auto flex w-fit max-w-[calc(100%-2.5rem)] items-center justify-center gap-1.5 rounded-pill text-caption leading-4 text-ink",
+          "names-glass-soft bg-surface px-3 py-px empty:border-0 empty:p-0",
         ].join(" ")}
       >
         {sync ? (
@@ -50,6 +52,6 @@ export default function SwipeFooter({ status, next = null, sync }: SwipeFooterPr
           </>
         ) : null}
       </p>
-    </div>
+    </>
   );
 }

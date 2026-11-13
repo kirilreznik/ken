@@ -3,9 +3,13 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from "react";
 import { createPortal } from "react-dom";
+import { dismissScreenToast } from "@/lib/names/toast";
 import { otherLayerOpen, type SheetName } from "@/lib/names/urlLayer";
+import { DURATION_FAST, DURATION_SHEET, EASE_OUT } from "@/styles/nest-motion";
+import { IconButton } from "./Button";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
 import { closeSheet, useLayerOpen } from "./layers";
+import { useToastLayer, useToastLift } from "./toastLift";
 import { useModal, usePortalHost } from "./useModal";
 
 /**
@@ -21,8 +25,13 @@ type BottomSheetProps = SheetHeading & {
   name: SheetName;
   /** Next to the title on the end side, e.g. "איפוס" (title row only). */
   headerEnd?: ReactNode;
-  /** headerEnd holds its own "סגירה" button: the handle then leaves the Tab order (NP-UX-010). */
+  /** The custom header holds its own "סגירה" button: the handle then leaves the Tab order (NP-UX-010). */
   closeInHeader?: boolean;
+  /**
+   * A "סגירה" X at the end of the title row, after `headerEnd` (title row only). The handle then
+   * leaves the Tab order, as with `closeInHeader` (NP-110).
+   */
+  closeButton?: boolean;
   /** Stays below the scrolling content, e.g. the apply button. */
   footer?: ReactNode;
   /**
@@ -46,45 +55,24 @@ const DRAG_CLOSE = DETENT_DRAG;
 const FULL_HEIGHT = "calc(100dvh - env(safe-area-inset-top))";
 // 28 px under the content (board 3), more on phones with a home indicator.
 const SAFE_BOTTOM = "pb-[max(1.75rem,env(safe-area-inset-bottom))]";
-// PRD 3.2.12: a tall sheet slides out in 200 ms (160 ms fade with reduced motion, names.css);
+// PRD 3.2.12: a tall sheet slides out in DURATION_FAST (DURATION_FADE with reduced motion, names.css);
 // it unmounts on animationend, or after this if that never fires.
-const EXIT_MS = 300;
+const EXIT_MS = DURATION_FAST + 100;
 // PRD 3.2.2: a card tap opens the sheet on pointerup. Quick taps that follow land on the scrim or
-// on the sliding panel's controls before it has slid in (260 ms); for this long after opening,
+// on the sliding panel's controls before it has slid in (DURATION_SHEET); for this long after opening,
 // clicks in the layer do nothing (no close, no decision).
-const OPEN_GUARD_MS = 350;
+const OPEN_GUARD_MS = DURATION_SHEET + 90;
 // Mobile Safari turns a quick double tap on the card into a word selection in the sheet that just
 // opened under the second tap (ND-BUG-007). Text in the layer can't be selected until the taps that
 // opened it stop: this long after opening, or after the last press in the layer during it. A
 // selection made in it meanwhile is dropped when the guard ends.
 const SELECT_GUARD_MS = 600;
 // A tall sheet settling after a handle drag (new detent or snap back), as the slide-in eases.
-const SETTLE = { duration: 200, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" } as const;
+const SETTLE = { duration: DURATION_FAST, easing: EASE_OUT } as const;
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 // PRD 3.2.4: from 768 px a tall sheet is a centered panel (max 480 px wide, 90vh) without detents.
 const DESKTOP = "(min-width: 768px)";
 const desktop = () => window.matchMedia(DESKTOP).matches;
-// The pinned footer's height, on <html> while the sheet is open: ToastRegion sits above it, so a
-// toast never covers the sheet's buttons.
-const TOAST_LIFT = "--names-toast-lift";
-
-/** Publishes the footer's height as TOAST_LIFT for as long as it is mounted. */
-function useToastLift(footer: RefObject<HTMLDivElement | null>) {
-  useLayoutEffect(() => {
-    const node = footer.current;
-    if (!node) return;
-    const root = document.documentElement.style;
-    const lift = () => root.setProperty(TOAST_LIFT, `${node.offsetHeight}px`);
-    lift();
-    const observer = new ResizeObserver(lift);
-    observer.observe(node);
-    return () => {
-      observer.disconnect();
-      root.removeProperty(TOAST_LIFT);
-    };
-  }, [footer]);
-}
-
 /** A new `key` in an open sheet starts it over: content at the top, focus on [data-autofocus]. */
 function useContentReset(panel: RefObject<HTMLElement | null>, scroller: RefObject<HTMLDivElement | null>, key: string | undefined) {
   const shown = useRef(key);
@@ -136,11 +124,12 @@ type PanelProps = BottomSheetProps & {
 };
 
 /** The panel itself; exported for markup tests. */
-export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, footer, detents, onDetent, contentKey, closing = false, onClosed, children }: PanelProps) {
+export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, closeButton = false, footer, detents, onDetent, contentKey, closing = false, onClosed, children }: PanelProps) {
   const panel = useRef<HTMLElement>(null);
-  const footerRef = useRef<HTMLDivElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
-  useToastLift(footerRef);
+  const footerRef = useToastLift({ layer: true });
+  useToastLayer();
+  useEffect(dismissScreenToast, []);
   useContentReset(panel, scroller, contentKey);
   // `detents`: a tall sheet on a phone; on desktop its handle only drags down to close.
   const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean; detents: boolean } | null>(null);
@@ -275,12 +264,12 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
               ? { transform: `translateY(${offset}px)` }
               : undefined
         }
-        className={`${closing ? "names-sheet-out" : "names-sheet-in"} relative mx-auto flex w-full max-w-lg flex-col rounded-t-xl bg-surface text-ink outline-none ${heightClass(tall, detent)} ${offset || height !== null || tall ? "" : "transition-transform duration-200"}`}
+        className={`${closing ? "names-sheet-out" : "names-sheet-in"} relative mx-auto flex w-full max-w-lg flex-col rounded-t-xl bg-surface text-ink outline-none ${heightClass(tall, detent)} ${offset || height !== null || tall ? "" : "transition-transform duration-(--nest-duration-fast)"}`}
       >
         <button
           type="button"
           aria-label="סגירה"
-          tabIndex={closeInHeader ? -1 : undefined}
+          tabIndex={closeInHeader || closeButton ? -1 : undefined}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerEnd}
@@ -297,7 +286,18 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
               <h2 id={titleId} className="text-title">
                 {title}
               </h2>
-              {headerEnd}
+              {closeButton ? (
+                <div className="flex items-center gap-2">
+                  {headerEnd}
+                  <IconButton aria-label="סגירה" onClick={close}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                  </IconButton>
+                </div>
+              ) : (
+                headerEnd
+              )}
             </div>
           )}
           {children}

@@ -3,9 +3,11 @@ import type { Vote } from "./types";
 
 /**
  * "ok": there are cards to swipe. "empty-filter": undecided names exist but none match the
- * filters. "all-decided": every name has a vote (keep, love, skip or hidden).
+ * filters. "filter-done": names match the filters, but every one of them has a vote, while
+ * undecided names are left outside them. "all-decided": every name has a vote (keep, love,
+ * skip or hidden).
  */
-export type DeckState = "ok" | "empty-filter" | "all-decided";
+export type DeckState = "ok" | "empty-filter" | "filter-done" | "all-decided";
 
 export interface Deck<T extends FilterableCard> {
   state: DeckState;
@@ -69,7 +71,13 @@ export function buildDeck<T extends FilterableCard>(
     if (i > 0) remaining.unshift(...remaining.splice(i, 1));
   }
   const state: DeckState =
-    remaining.length > 0 ? "ok" : undecided.length > 0 ? "empty-filter" : "all-decided";
+    remaining.length > 0
+      ? "ok"
+      : undecided.length === 0
+        ? "all-decided"
+        : cards.some((c) => matches(c, filters))
+          ? "filter-done"
+          : "empty-filter";
   return { state, cards: remaining };
 }
 
@@ -98,3 +106,21 @@ export function hiddenCount(votes: ReadonlyMap<string, Vote>): number {
   for (const v of votes.values()) if (v === "hidden") n++;
   return n;
 }
+
+/**
+ * What stands where the card is: the pause panel, the card, an end state, the load error
+ * (the names data didn't arrive; it offers a retry) or, until the deck is built, the skeleton.
+ */
+export type DeckSlot = "pause" | "card" | "empty" | "error" | "loading";
+
+export function deckSlot(o: { paused: boolean; hasCard: boolean; deckState: DeckState | null; loadError: boolean }): DeckSlot {
+  if (o.paused) return "pause";
+  if (o.hasCard) return "card";
+  if (o.deckState && o.deckState !== "ok") return "empty";
+  return o.loadError ? "error" : "loading";
+}
+
+/** The deck's load error (same pattern as join's "ההצטרפות לא הצליחה" + "אפשר לנסות שוב."). */
+export const DECK_LOAD_ERROR = { title: "לא הצלחנו לטעון את השמות.", lead: "אפשר לנסות שוב." } as const;
+/** Read while the skeleton shows. */
+export const DECK_LOADING_TEXT = "השמות נטענים";

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import namesFile from "../../data/names/names.json";
 import { parseNames, type RawNamesFile } from "@/lib/names/data";
 import { trend } from "@/lib/names/popularity";
-import { addedText, hiddenNames, listsTab, restoredText, rowActionText, rowMeta, rowMetaText, savedRows } from "@/lib/names/lists";
+import { addedText, hiddenAgainText, hiddenNames, listsTab, restoredText, rowActionText, rowMeta, rowMetaText, rowUndoText, savedRows } from "@/lib/names/lists";
 import type { NameStats, Vote } from "@/lib/names/types";
 
 const names = parseNames(namesFile as RawNamesFile);
@@ -90,5 +90,9 @@ describe("list texts", () => {
     expect(rowActionText("תמר", "remove")).toBe("השם תמר הוסר מהרשימה");
     expect(rowActionText("תמר", "hide")).toBe("השם תמר הוסתר ולא יוצג יותר");
     expect(addedText("אוריה")).toBe("השם אוריה נוסף לרשימה");
+  });
+  it("says what the undo put back", () => {
+    expect(rowUndoText("תמר")).toBe("השם תמר חזר לרשימה");
+    expect(hiddenAgainText("תמר")).toBe("השם תמר הוסתר שוב");
   });
 });

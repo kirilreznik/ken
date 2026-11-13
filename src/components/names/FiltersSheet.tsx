@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import ThemeIcon from "@/components/names/ThemeIcon";
-import { BottomSheet, Button, closeSheet } from "@/components/names/ui";
+import { BottomSheet, Button, checkboxClass, closeSheet } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
@@ -21,6 +21,7 @@ import {
   type NameLength,
   type Sector,
 } from "@/lib/names/filters";
+import { HIDE_HINT } from "@/lib/names/lists";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { track } from "@/lib/names/track";
 import { THEME_IDS, THEME_LABELS, type ThemeId } from "@/lib/names/themes";
@@ -82,7 +83,7 @@ function chipClass(on: boolean): string {
   return [
     "relative inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-pill px-3.5 text-person font-bold",
     "before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-['']",
-    "transition-transform duration-150 motion-safe:active:scale-95",
+    "transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95",
     on ? "border border-ink bg-ink text-surface" : "border border-line bg-surface text-ink",
   ].join(" ");
 }
@@ -200,6 +201,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   const [draft, setDraft] = useState<Filters>(() => (userId ? getPref(userId, "filters") : defaultFilters()));
   const [picker, setPicker] = useState<Picker>(null);
   const pickerId = useId();
+  const hiddenHintId = useId();
 
   const set = <K extends keyof Filters>(key: K) => (value: Filters[K] | null) =>
     setDraft((d) => ({ ...d, [key]: value }));
@@ -249,6 +251,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
     <BottomSheet
       name="filters"
       title="סינון"
+      closeButton
       headerEnd={
         <button
           type="button"
@@ -298,7 +301,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
                   type="checkbox"
                   checked={customLength}
                   onChange={(e) => setCustomLength(e.target.checked)}
-                  className="size-6 shrink-0 cursor-pointer accent-ink"
+                  className={checkboxClass()}
                 />
                 מספר אותיות מותאם אישית
               </label>
@@ -310,16 +313,23 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
         </div>
       </div>
 
-      <Link
-        href="/names/hidden"
-        className="flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink"
-      >
-        <span>שמות שהסתרתי</span>
-        <span className="flex items-center gap-1.5 font-medium text-ink-soft">
-          <bdi>{hidden}</bdi>
-          <Chevron />
-        </span>
-      </Link>
+      <div className="flex flex-col gap-1.5">
+        <Link
+          href="/names/hidden"
+          data-control
+          aria-describedby={hiddenHintId}
+          className="flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink"
+        >
+          <span>שמות שהסתרתי</span>
+          <span className="flex items-center gap-1.5 font-medium text-ink-soft">
+            <bdi>{hidden}</bdi>
+            <Chevron />
+          </span>
+        </Link>
+        <p id={hiddenHintId} className="m-0 px-3.5 text-caption text-stone">
+          {HIDE_HINT}
+        </p>
+      </div>
     </BottomSheet>
   );
 }

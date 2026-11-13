@@ -4,7 +4,8 @@ import Image, { type StaticImageData } from "next/image";
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import { useBackgroundChoice } from "@/components/names/ScreenBackground";
-import { BottomSheet, Button, IconButton, closeSheet } from "@/components/names/ui";
+import { BottomSheet, Button } from "@/components/names/ui";
+import { photoUrl } from "@/lib/names/background";
 import { canvasColor } from "@/lib/names/brand";
 import { loadOwnPhoto, resizePhoto, saveOwnPhoto, subscribeOwnPhoto } from "@/lib/names/photo";
 import { setPref, type Background } from "@/lib/names/prefs";
@@ -18,15 +19,15 @@ interface Option {
   id: Background;
   label: string;
   sub: string;
-  photo?: StaticImageData;
+  photo?: { url: string; blur: StaticImageData };
 }
 
 // Board 11, in its order (RTL rows of three).
 const OPTIONS: Option[] = [
   { id: "none", label: "ללא רקע", sub: "כרטיסים לבנים" },
-  { id: "fabric", label: "בדים", sub: "ברירת מחדל", photo: fabric },
-  { id: "notebook", label: "מחברת", sub: "", photo: notebook },
-  { id: "nursery", label: "חדר תינוק", sub: "", photo: nursery },
+  { id: "fabric", label: "בדים", sub: "ברירת מחדל", photo: { url: photoUrl("fabric"), blur: fabric } },
+  { id: "notebook", label: "מחברת", sub: "", photo: { url: photoUrl("notebook"), blur: notebook } },
+  { id: "nursery", label: "חדר תינוק", sub: "", photo: { url: photoUrl("nursery"), blur: nursery } },
   { id: "own", label: "תמונה משלי", sub: "מהגלריה" },
 ];
 
@@ -85,14 +86,7 @@ export default function BackgroundSheet() {
     <BottomSheet
       name="background"
       title="רקע למסך"
-      closeInHeader
-      headerEnd={
-        <IconButton aria-label="סגירה" onClick={() => closeSheet("background")}>
-          <Icon size={20}>
-            <path d="M6 6l12 12M18 6L6 18" />
-          </Icon>
-        </IconButton>
-      }
+      closeButton
     >
       <BackgroundOptions />
       <p className="flex items-start gap-2.5 rounded-md bg-canvas px-3.5 py-3 text-note text-ink-soft">
@@ -197,7 +191,10 @@ function BackgroundOptions() {
                     : `${o.photo || o.id === "own" ? "bg-sand" : "bg-canvas"} ${on ? "" : "border border-line"}`
                 } ${on ? "outline-3 outline-offset-2 outline-ink" : ""}`}
               >
-                {o.photo ? <Image src={o.photo} alt="" placeholder="blur" sizes="160px" fill className="object-cover" /> : null}
+                {o.photo ? (
+                  // The precached file, so the thumbnails show offline too (NP-BUG-009).
+                  <Image src={o.photo.url} alt="" unoptimized placeholder="blur" blurDataURL={o.photo.blur.blurDataURL} fill className="object-cover" />
+                ) : null}
                 {o.id === "own" && ownThumb ? (
                   // A local Blob's object URL: next/image can't optimize it.
                   // eslint-disable-next-line @next/next/no-img-element

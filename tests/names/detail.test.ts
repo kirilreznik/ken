@@ -332,7 +332,7 @@ describe("togetherFor", () => {
 
   it("uses the Lists wording for two members", () => {
     expect(togetherFor("נועם", [match("יעל", 2), match("נועם", 2)], 2)).toEqual({
-      text: "התאמה · שניכם שמרתם את השם הזה",
+      text: "התאמה · שניים שמרו את השם הזה",
     });
   });
 

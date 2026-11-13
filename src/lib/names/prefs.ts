@@ -1,4 +1,4 @@
-import { deserialize as deserializeDuel, type DuelState } from "./duel";
+import { readDuelSaves, type DuelSaves } from "./duel";
 import { SECTOR_LABELS, clampRange, defaultFilters, type Filters, type NameLength, type Sector } from "./filters";
 import { isThemeId } from "./themes";
 import type { SpaceMember } from "./space";
@@ -17,7 +17,8 @@ export interface Prefs {
   introSeen: boolean;
   /** Match names the user has already been shown. */
   seenMatches: string[];
-  duelState: DuelState | null;
+  /** One duel per source (duel.ts `DuelSaves`). */
+  duelState: DuelSaves | null;
   installHintDismissed: boolean;
   /** The last space loaded online, so the app still opens offline (FR-W29). */
   lastSpace: { spaceId: string; members: SpaceMember[] } | null;
@@ -99,7 +100,7 @@ const readers: { [K in PrefKey]: (raw: unknown) => Prefs[K] } = {
   background: (v) => oneOf(BACKGROUNDS)(v) ?? "fabric",
   introSeen: bool,
   seenMatches: (v) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : []),
-  duelState: (v) => (v == null ? null : deserializeDuel(JSON.stringify(v))),
+  duelState: readDuelSaves,
   installHintDismissed: bool,
   lastSpace: readLastSpace,
   invitePromptShown: bool,

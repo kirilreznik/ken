@@ -72,17 +72,17 @@ export function callbackUrl(origin: string, code: string | null): string {
   return withJoin(`${origin.replace(/\/+$/, "")}${CALLBACK_PATH}`, code);
 }
 
-/** FR-W24 copy. Each message is a short title plus its second sentence as the lead. */
+/** FR-W24 copy. Each message is a short title (no period, like every screen title) plus its second sentence as the lead. */
 export const JOIN_INVITED_TITLE = "קיבלת הזמנה לבחור שם ביחד ב־Nest";
-export const JOIN_INVITED_LEAD = "הבחירה נעשית בנפרד, בכל טלפון. שם ששניכם שמרתם יופיע בהתאמות.";
+export const JOIN_INVITED_LEAD = "הבחירה נעשית בנפרד, בכל טלפון. שם שנשמר אצל שניים או יותר יופיע בהתאמות.";
 export const JOIN_COPY = {
-  joined: { title: "הצטרפת.", lead: "מעכשיו שמות ששניכם שמרתם יופיעו בהתאמות." },
-  already: { title: "כבר משתתפים בבחירה הזו.", lead: "אפשר להמשיך לבחור." },
-  invalid: { title: "הקישור כבר לא בתוקף.", lead: "אפשר לבקש קישור חדש." },
-  offline: { title: "אין חיבור לאינטרנט.", lead: "אפשר לפתוח את הקישור שוב כשהחיבור יחזור." },
-  error: { title: "ההצטרפות לא הצליחה.", lead: "אפשר לנסות שוב." },
+  joined: { title: "הצטרפת", lead: "מעכשיו שמות שנשמרו אצל שניים או יותר יופיעו בהתאמות." },
+  already: { title: "כבר משתתפים בבחירה הזו", lead: "אפשר להמשיך לבחור." },
+  invalid: { title: "הקישור כבר לא בתוקף, או שכבר השתמשו בו", lead: "אפשר לבקש קישור חדש ממי ששלח את ההזמנה." },
+  offline: { title: "אין חיבור לאינטרנט", lead: "אפשר לנסות שוב כשהחיבור יחזור." },
+  error: { title: "ההצטרפות לא הצליחה", lead: "אפשר לנסות שוב." },
 } as const;
-export const VOTES_MOVE_TEXT = "השמות ששמרת עוברים איתך.";
+export const VOTES_MOVE_TEXT = "השמות ששמרת עברו איתך לבחירה המשותפת.";
 
 export type JoinOutcome =
   | { kind: "joined"; spaceId: string; votesMoved: boolean }

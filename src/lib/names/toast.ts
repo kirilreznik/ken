@@ -3,14 +3,24 @@
 // the current one.
 
 export type ToastAction = { label: string; onAction: () => void };
-export type Toast = { id: number; message: string; action?: ToastAction };
-export type ToastOptions = { action?: ToastAction; /** ms; 0 keeps it until dismissed. */ duration?: number };
+/** A link after the action, to the screen where the result can be found ("לשמות שהסתרתי"). */
+export type ToastLink = { label: string; href: string };
+/** sticky: shown until dismissed, so it sits clear of more controls (toastLift, NP-BUG-011). */
+export type Toast = { id: number; message: string; action?: ToastAction; link?: ToastLink; sticky: boolean };
+export type ToastOptions = {
+  action?: ToastAction;
+  link?: ToastLink;
+  /** ms; 0 keeps it until dismissed. */
+  duration?: number;
+};
 
 export const TOAST_DURATION = 4000;
 // A toast with an action stays longer so there is time to reach the button.
 export const TOAST_ACTION_DURATION = 8000;
 
 let current: Toast | null = null;
+// Shown until dismissed ("עדכון זמין"): it outlives the screen it came up on.
+let sticky = false;
 let nextId = 1;
 let timer: ReturnType<typeof setTimeout> | undefined;
 const listeners = new Set<() => void>();
@@ -31,8 +41,9 @@ export function getToast(): Toast | null {
 export function showToast(message: string, options: ToastOptions = {}): number {
   clearTimeout(timer);
   const id = nextId++;
-  current = { id, message, action: options.action };
-  const duration = options.duration ?? (options.action ? TOAST_ACTION_DURATION : TOAST_DURATION);
+  const duration = options.duration ?? (options.action || options.link ? TOAST_ACTION_DURATION : TOAST_DURATION);
+  sticky = duration <= 0;
+  current = { id, message, action: options.action, link: options.link, sticky };
   if (duration > 0) timer = setTimeout(() => dismissToast(id), duration);
   emit();
   return id;
@@ -44,4 +55,13 @@ export function dismissToast(id?: number): void {
   clearTimeout(timer);
   current = null;
   emit();
+}
+
+/**
+ * A sheet opening ends the toast of the screen under it (NP-BUG-006): its moment, and its "ביטול",
+ * have passed once another layer is on top, and it would sit on the sheet's fields. A toast that
+ * stays until dismissed is kept.
+ */
+export function dismissScreenToast(): void {
+  if (!sticky) dismissToast();
 }

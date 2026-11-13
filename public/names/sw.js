@@ -17,7 +17,7 @@
 // Bump VERSION when this file's caching rules change; activate deletes every
 // cache that doesn't belong to the current version.
 
-const VERSION = "v4";
+const VERSION = "v5";
 const PREFIX = "nest-names-";
 const SHELL_CACHE = `${PREFIX}shell-${VERSION}`;
 const STATIC_CACHE = `${PREFIX}static-${VERSION}`;
@@ -42,6 +42,7 @@ const STATIC_ASSETS = [
   "/names/icons/apple-touch-icon-180.png",
   "/names/brand/favicon.svg",
   "/names/brand/nest-mark.svg",
+  "/names/brand/nest-wordmark.svg",
   "/names/brand/google-g.svg",
 ];
 

@@ -38,6 +38,21 @@ export function canSubmit(form: OnboardingForm): boolean {
   return isValidDisplayName(form.displayName) && form.ageConfirmed && form.termsAccepted;
 }
 
+/**
+ * The line under onboarding's button: names what is still missing instead of counting boxes,
+ * e.g. "אפשר להמשיך אחרי שממלאים שם, מאשרים גיל ומסכימים לתנאים." Empty when nothing is.
+ */
+export function missingHint(form: OnboardingForm): string {
+  const parts = [
+    isValidDisplayName(form.displayName) ? null : "ממלאים שם",
+    form.ageConfirmed ? null : "מאשרים גיל",
+    form.termsAccepted ? null : "מסכימים לתנאים",
+  ].filter((p): p is string => p !== null);
+  if (!parts.length) return "";
+  const list = parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(", ")} ו${parts[parts.length - 1]}`;
+  return `אפשר להמשיך אחרי ש${list}.`;
+}
+
 /** user_metadata written by onboarding (PRD §6). updates_opt_in_at only when the opt-in is on. */
 export function onboardingMetadata(form: OnboardingForm, now: Date = new Date()): Record<string, unknown> {
   const at = now.toISOString();

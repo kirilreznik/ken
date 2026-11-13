@@ -46,6 +46,11 @@ export interface OutboxItem {
 export interface VoteStoreState {
   /** False until the cache (or the server) has been read. */
   ready: boolean;
+  /**
+   * True when nothing was cached and the server couldn't be read (NP-073): an empty list then
+   * means "not loaded", not "no votes". Cleared by the next good read; retried every 30 s.
+   */
+  loadFailed: boolean;
   /** In the order the votes were made: a changed vote moves to the end. */
   votes: ReadonlyMap<string, StoredVote>;
   pendingCount: number;
@@ -64,7 +69,7 @@ export interface VoteStore {
   applyRemote(row: RemoteVoteRow): void;
   /** Re-reads the server copy (a remote delete, a Realtime reconnect). */
   reconcile(): Promise<void>;
-  /** Flushes on online, focus and every 30 s, follows own votes over Realtime and re-reads on focus; returns the stop function. */
+  /** Flushes on online, focus and every 30 s (and re-reads then while `loadFailed`), follows own votes over Realtime and re-reads on focus; returns the stop function. */
   start(): () => void;
   /** Stops all writes, sends and listeners (before clearLocalData on sign-out); resolves after the last write. */
   dispose(): Promise<void>;
@@ -203,11 +208,12 @@ export function createVoteStore({
   let votes: ReadonlyMap<string, StoredVote> = new Map();
   let outbox: OutboxItem[] = [];
   let ready = false;
+  let loadFailed = false;
   let inFlightId: string | null = null;
   let flushing: Promise<void> | null = null;
   let again = false;
   let againForced = false;
-  let state: VoteStoreState = { ready, votes, pendingCount: 0 };
+  let state: VoteStoreState = { ready, loadFailed, votes, pendingCount: 0 };
   const listeners = new Set<() => void>();
   let persistChain: Promise<void> = Promise.resolve();
   let disposed = false;
@@ -219,7 +225,7 @@ export function createVoteStore({
   const removedAt = new Map<string, string>();
 
   function emit() {
-    state = { ready, votes, pendingCount: outbox.length };
+    state = { ready, loadFailed, votes, pendingCount: outbox.length };
     for (const listener of listeners) listener();
   }
 
@@ -364,6 +370,7 @@ export function createVoteStore({
       const remote = new Map<string, StoredVote>();
       for (const row of data as VoteRow[]) remote.set(row.name, toStored(row));
       votes = mergeRemote(votes, remote, outbox, since, removedAt);
+      loadFailed = false;
       persist();
       emit();
       return true;
@@ -485,9 +492,10 @@ export function createVoteStore({
       emit();
     }
 
-    await readServer();
+    const read = await readServer();
     if (!ready) {
       ready = true;
+      loadFailed = !read && !disposed;
       emit();
     }
     void flush();
@@ -507,7 +515,10 @@ export function createVoteStore({
     window.addEventListener("online", onOnline);
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onVisible);
-    const timer = setInterval(() => void flush(), FLUSH_INTERVAL_MS);
+    const timer = setInterval(() => {
+      void flush();
+      if (loadFailed) void reconcile();
+    }, FLUSH_INTERVAL_MS);
     const unfollow = followRemote();
     const stop = () => {
       unfollow();

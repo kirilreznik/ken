@@ -59,7 +59,9 @@ export default function NestCard({ placement }: { placement: NestCardPlacement }
   }
 
   return (
-    <Glass as="aside" variant="soft" aria-label="Nest, אפליקציה לניהול ההיריון" className="flex w-full flex-col items-start gap-2 rounded-lg px-4 py-3.5 text-start">
+    // On the decision sheet the card sits on the bare photo, so it reads on card glass like the
+    // name card; in the recap and deck-end panels it's already on glass and stays soft.
+    <Glass as="aside" variant={placement === "decision" ? "strong" : "soft"} aria-label="Nest, אפליקציה לניהול ההיריון" className={`${placement === "decision" ? "names-card-glass " : ""}flex w-full flex-col items-start gap-2 rounded-lg px-4 py-3.5 text-start`}>
       <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-card-title text-ink">
         {/* The wordmark is the brand's Latin "nest"; the alt names it for screen readers. */}
         <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={53} height={20} unoptimized className="h-5 w-auto" />

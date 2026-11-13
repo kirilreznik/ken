@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import AuthLayout from "@/components/names/auth/AuthLayout";
+import Wordmark from "@/components/names/auth/Wordmark";
+import { Button } from "@/components/names/ui";
 
 export const metadata: Metadata = {
   title: "העמוד לא נמצא",
 };
 
+/** An unknown /names address: the auth frame (photo, wordmark, glass panel) with one way back. */
 export default function NamesNotFound() {
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-4 p-6 text-center">
-      <h1 className="text-title">העמוד לא נמצא</h1>
-      <Link href="/names" className="inline-flex min-h-11 items-center px-4 text-card-title underline underline-offset-4">
-        לבחירת שם
-      </Link>
-    </main>
+    <AuthLayout title="העמוד לא נמצא" lead="אולי הקישור השתנה." hero={<Wordmark />}>
+      <Button href="/names">לבחירת שמות</Button>
+    </AuthLayout>
   );
 }

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, IconButton } from "@/components/names/ui";
+import { Button, IconButton, inputClass } from "@/components/names/ui";
 import { useOnline } from "@/components/names/useMatches";
 import { useSpace } from "@/components/names/useSpace";
 import { hasAppEntry } from "@/lib/names/appHistory";
@@ -152,7 +152,7 @@ export default function InviteScreen() {
           <h1 className="m-0 min-w-0 flex-1 text-title">הזמנה לבחירה</h1>
         </header>
         <p className="m-0 text-person font-medium text-ink-soft">
-          בוחרים שם ביחד? שולחים קישור, והבחירה נעשית בנפרד, בכל טלפון. שם ששניכם שמרתם יופיע בהתאמות, ועל דילוגים אף אחד לא יודע.
+          בוחרים שם ביחד? שולחים קישור, והבחירה נעשית בנפרד, בכל טלפון. שם שנשמר אצל שניים או יותר יופיע בהתאמות, ועל דילוגים אף אחד לא יודע.
         </p>
 
         <section aria-labelledby="invite-link-title" className="flex flex-col gap-3 rounded-lg bg-surface p-4 shadow-card">
@@ -169,7 +169,7 @@ export default function InviteScreen() {
                 aria-label="קישור ההזמנה"
                 aria-describedby="invite-expiry"
                 onFocus={(e) => e.currentTarget.select()}
-                className="min-h-11 w-full rounded-md border border-line bg-sand px-3 text-start text-caption text-ink"
+                className={inputClass("link")}
               />
               <p id="invite-expiry" className="m-0 text-caption text-stone">
                 {expiryText(invite.expiresAt)} · הקישור עובד פעם אחת

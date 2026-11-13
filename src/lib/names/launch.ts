@@ -58,6 +58,25 @@ export function pauseToShow(input: PauseInput): Pause | null {
   return null;
 }
 
+/**
+ * The pause a decision on `name` opens, if any: `pauseToShow` with the counts as they will be
+ * once the vote is stored. The swipe screen reads it before the store updates, so the status
+ * line doesn't name a next card the pause is about to cover.
+ */
+export function pauseAfterVote(
+  input: PauseInput,
+  vote: { previous: StoredVote | undefined; saves: boolean; startedAt: number | null },
+): Pause | null {
+  const { previous, saves, startedAt } = vote;
+  const wasSaved = !!previous && saved(previous);
+  const counted = !!previous && !previous.custom && startedAt !== null && time(previous.updatedAt) >= startedAt;
+  return pauseToShow({
+    ...input,
+    savedCount: input.savedCount - Number(wasSaved) + Number(saves),
+    sessionVotes: input.sessionVotes + Number(startedAt !== null && !counted && !previous?.custom),
+  });
+}
+
 /** The session count after seeing session `id` (a new id is one more session). */
 export function countSession(prev: { last: string | null; count: number }, id: string): { last: string; count: number } {
   return prev.last === id ? { last: id, count: Math.max(prev.count, 1) } : { last: id, count: prev.count + 1 };
@@ -83,4 +102,19 @@ export function decisionTitle(shared: boolean): string {
 /** The label of the "this is the name" action for `name`. */
 export function decideLabel(shared: boolean, name: string): string {
   return shared ? `בחרנו בשם ${name}` : `בחרתי בשם ${name}`;
+}
+
+/** The action that takes the chosen name back, on the decision sheet and the lists banner (aria). */
+export function clearChoiceLabel(name: string): string {
+  return `ביטול הבחירה בשם ${name}`;
+}
+
+/** Toast after taking the chosen name back; its "ביטול" restores it. */
+export function choiceClearedText(name: string): string {
+  return `הבחירה בשם ${name} בוטלה`;
+}
+
+/** Toast after that "ביטול": the name is chosen again. */
+export function choiceRestoredText(name: string): string {
+  return `השם ${name} נבחר שוב`;
 }

@@ -5,15 +5,19 @@ import {
   deserialize,
   duelAnnouncement,
   duelSource,
+  duelTooFewText,
   isDone,
   pick,
   progress,
   ranking,
+  readDuelSaves,
   resumeOrStart,
   roundText,
   sameNames,
+  savedDuel,
   serialize,
   start,
+  withDuel,
   type DuelState,
 } from "@/lib/names/duel";
 
@@ -213,6 +217,24 @@ describe("source and resume (FR-W21)", () => {
     expect(resumeOrStart(legacy, "saved", names, 99).state).toBe(legacy);
   });
 
+  it("keeps one duel per source through a switch and back (INT-G3-01)", () => {
+    const run3 = (s: DuelState) => [0, 1, 2].reduce((d) => pick(d, choose(d)), s);
+    const savedMid = run3(resumeOrStart(null, "saved", names, SEED).state);
+    let saves = withDuel(null, savedMid);
+    const matches = resumeOrStart(savedDuel(saves, "matches"), "matches", names.slice(0, 4), 99).state;
+    saves = withDuel(saves, pick(matches, choose(matches)));
+    expect(saves.last).toBe("matches");
+    expect(savedDuel(saves)?.source).toBe("matches");
+    expect(resumeOrStart(savedDuel(saves, "saved"), "saved", names, 99)).toEqual({ state: savedMid, restarted: false });
+    expect(savedDuel(saves, "matches")?.picks).toBe(1);
+    expect(readDuelSaves(JSON.parse(JSON.stringify(saves)))).toEqual(saves);
+    // A duel saved under the wrong source key is dropped.
+    expect(readDuelSaves({ last: "saved", saved: { ...savedMid, source: "matches" } })).toBeNull();
+    // A single duel (older saves) is the duel of its source.
+    expect(readDuelSaves(savedMid)).toEqual({ last: "saved", saved: savedMid });
+    expect(readDuelSaves(null)).toBeNull();
+  });
+
   it("a finished duel over a changed list starts over quietly", () => {
     const done = run({ ...start(names, SEED), source: "saved" }, choose);
     expect(resumeOrStart(done, "saved", names, 99).state).toBe(done);
@@ -238,5 +260,14 @@ describe("source and resume (FR-W21)", () => {
     expect(duelAnnouncement(s)).toBe(`סיבוב 1 מתוך 1: ${pair.a} או ${pair.b}`);
     const done = pick(s, "תמר");
     expect(duelAnnouncement(done)).toBe("הדו־קרב הסתיים. 1. תמר, 2. לביא");
+  });
+});
+
+describe("too few names (COPY-G3-02)", () => {
+  it("says the rule, and the count when the list has one", () => {
+    expect(duelTooFewText("saved", 0)).toBe("לדו־קרב צריך לפחות שני שמות ברשימה.");
+    expect(duelTooFewText("saved", 1)).toBe("לדו־קרב צריך לפחות שני שמות ברשימה, ויש בה אחד.");
+    expect(duelTooFewText("matches", 0)).toBe("לדו־קרב צריך לפחות שתי התאמות.");
+    expect(duelTooFewText("matches", 1)).toBe("לדו־קרב צריך לפחות שתי התאמות, ויש אחת.");
   });
 });

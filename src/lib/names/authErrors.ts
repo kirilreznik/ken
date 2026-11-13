@@ -1,7 +1,8 @@
 import { reportClientLog } from "./clientLog";
 
 /** FR-W5: Supabase auth errors in Hebrew; raw English never reaches the screen. */
-export const WRONG_CODE_MESSAGE = "הקוד לא נכון או שפג תוקפו. אפשר לבקש קוד חדש.";
+export const WRONG_CODE_MESSAGE =
+  "הקוד לא נכון או שפג תוקפו. אפשר להקליד שוב או לבקש קוד חדש כשהשליחה החוזרת תיפתח.";
 export const RATE_LIMIT_MESSAGE = "נשלחו יותר מדי קודים. אפשר לנסות שוב בעוד כמה דקות.";
 export const OFFLINE_MESSAGE = "אין חיבור לאינטרנט. אפשר להיכנס כשהחיבור יחזור.";
 export const GENERIC_MESSAGE = "משהו השתבש. אפשר לנסות שוב.";
@@ -90,9 +91,26 @@ export function handleAuthError(area: string, error: unknown): { kind: AuthError
   return { kind, message: kind === "signups-closed" ? null : authErrorMessage(kind) };
 }
 
+/**
+ * After a failed verify, a code known to be wrong is cleared so a new one can be typed or pasted
+ * (the field keeps only the first six digits). A network or server failure keeps it: it may be right.
+ */
+export function clearsCode(kind: AuthErrorKind): boolean {
+  return kind === "wrong-code";
+}
+
 /** True when the browser says it's offline (checked before any sign-in request). */
 export function isOffline(): boolean {
   return typeof navigator !== "undefined" && navigator.onLine === false;
+}
+
+/**
+ * The error line for the sign-in screens. While offline ConnectionNote already says
+ * OFFLINE_MESSAGE, so it isn't repeated; a network failure while the phone says it's
+ * online (status 0, captive portal, DNS) has no note, so the line shows it (BREAK-G1-01).
+ */
+export function visibleSignInError(error: string | null, online: boolean): string | null {
+  return error === OFFLINE_MESSAGE && !online ? null : error;
 }
 
 /** A light check before sending: something@domain.tld, no spaces. */

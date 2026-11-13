@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Button, IconButton } from "@/components/names/ui";
+import { Button, IconButton, inputClass } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { introFromSheet } from "@/lib/names/routing";
@@ -70,7 +70,8 @@ export default function Intro() {
         }}
         className="flex flex-1 flex-col gap-6 px-5 pt-14"
       >
-        <IconButton aria-label="סגירה" onClick={() => finish(false)} className="self-end">
+        {/* X keeps a typed surname too; an empty field leaves a saved one alone (NP-029). */}
+        <IconButton aria-label="סגירה" onClick={() => finish(surname.trim() !== "")} className="self-end">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
@@ -111,7 +112,7 @@ export default function Intro() {
           >
             <b className={strong}>הבחירות נשארות פרטיות.</b>{" "}
             {isShared
-              ? "הבחירה נעשית בנפרד, בכל טלפון. שם ששניכם שמרתם יופיע בהתאמות, ועל דילוגים אף אחד לא יודע."
+              ? "הבחירה נעשית בנפרד, בכל טלפון. שם שנשמר אצל שניים או יותר יופיע בהתאמות, ועל דילוגים אף אחד לא יודע."
               : "מה ששומרים ועל מה שמדלגים נשאר פרטי."}
           </Point>
           <Point
@@ -141,15 +142,17 @@ export default function Intro() {
             value={surname}
             onChange={(e) => setSurname(e.target.value)}
             aria-describedby="surname-hint"
-            className="h-12 w-full rounded-md border border-line bg-surface px-3.5 text-start text-intro text-ink placeholder:text-stone"
+            // Focus scrolls the field and its hint clear of the pinned button below (NP-030).
+            className={`${inputClass()} scroll-mb-34`}
           />
           <span id="surname-hint" className="text-caption text-ink-soft in-data-[names-bg=none]:text-stone">
             נשמר רק במכשיר הזה.
           </span>
         </div>
 
-        {/* Sticky so the main action is in view on a short screen (NP-UX-002). */}
-        <div className="sticky bottom-0 -mx-5 mt-auto bg-linear-to-t from-(--nest-canvas) from-40% to-transparent px-5 pt-6 pb-[max(16px,env(safe-area-inset-bottom))]">
+        {/* Sticky so the main action is in view on a short screen (NP-UX-002). The canvas fade only
+            on "ללא רקע": on a photo it would paint a grey band, so the button sits on the photo (NP-030). */}
+        <div className="sticky bottom-0 -mx-5 mt-auto px-5 pt-6 pb-[max(16px,env(safe-area-inset-bottom))] in-data-[names-bg=none]:bg-linear-to-t in-data-[names-bg=none]:from-(--nest-canvas) in-data-[names-bg=none]:from-40% in-data-[names-bg=none]:to-transparent">
           <Button type="submit" className="w-full">
             התחלת בחירה
           </Button>

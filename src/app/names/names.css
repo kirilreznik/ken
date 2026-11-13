@@ -32,6 +32,13 @@
     background-color: var(--nest-canvas);
   }
 
+  /* An app, not a document (mobile-native §6): pulling past the top doesn't drag the whole
+   * screen down or reload it. Inner scrollers (sheets, the card) keep overscroll-contain. */
+  html:has(.nest-names),
+  body:has(.nest-names) {
+    overscroll-behavior-y: none;
+  }
+
   .nest-names {
     background-color: var(--nest-canvas);
     color: var(--nest-ink);
@@ -50,6 +57,31 @@
     color: inherit;
   }
 
+  /* Controls (mobile-native §5, §8): holding or double-tapping one never selects its label or
+   * opens Safari's link preview (the callout is inherited, so thumbnails inside are covered),
+   * sliding off a held one doesn't drag out its link or image, a quick second tap is a second click, and a pointer gets the hand. Links that act as
+   * controls (pills, round buttons, rows) carry data-control; other links are content and
+   * keep their callout. Zero-specificity :where(), so a component's utility still wins. */
+  .nest-names :where(button, [role="button"], [role="tab"], [role="switch"], [role="radio"], [role="menuitem"], summary, a[data-control], label:has(input[type="checkbox"], input[type="radio"])) {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+  }
+
+  .nest-names :where(a[data-control], a[data-control] img, button img, [role="radio"] img) {
+    -webkit-user-drag: none;
+  }
+
+  .nest-names :where(a:not([data-control])) {
+    -webkit-touch-callout: default;
+    touch-action: manipulation;
+  }
+
+  .nest-names :where(button, [role="button"], [role="tab"], [role="switch"], [role="radio"], [role="menuitem"], summary, label:has(input[type="checkbox"], input[type="radio"])):where(:not(:disabled, [aria-disabled="true"])) {
+    cursor: pointer;
+  }
+
   .nest-names :focus-visible {
     outline: 2px solid var(--nest-ink);
     outline-offset: 2px;
@@ -63,10 +95,13 @@
 
 /* Reduced motion: no transition or animation runs longer than 200 ms. Short fades that
  * should still play (the next card fading in, PRD 3.2.17) mark their element with
- * data-motion="fade" and get capped at 200 ms; everything else is switched off. */
+ * data-motion="fade" and get capped at 200 ms; everything else is switched off.
+ * data-motion="fade-in" caps only the entrance animation: its transitions stay off, so a card
+ * moved by the finger follows it in the same frame (NP-BUG-008). */
 @media (prefers-reduced-motion: reduce) {
   .nest-names,
-  .nest-names *:not([data-motion="fade"]),
+  .nest-names *:not([data-motion]),
+  .nest-names [data-motion="fade-in"],
   .nest-names *::before,
   .nest-names *::after {
     animation-duration: 0.01ms !important;
@@ -77,10 +112,14 @@
   }
 
   .nest-names [data-motion="fade"] {
-    animation-duration: 200ms !important;
+    animation-duration: var(--nest-duration-fast) !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 200ms !important;
+    transition-duration: var(--nest-duration-fast) !important;
     transition-delay: 0s !important;
+  }
+
+  .nest-names [data-motion="fade-in"] {
+    animation-duration: var(--nest-duration-fast) !important;
   }
 }
 
@@ -158,6 +197,25 @@
   .nest-names [data-names-bg="none"] .names-chip-off {
     background-color: var(--nest-sand);
     border-color: transparent;
+  }
+
+  /* The checkbox's check mark (checkboxClass): a surface-colored tick masked out of ::before,
+   * shown only when checked. The mask's own color doesn't matter, only its alpha. */
+  .nest-names .names-checkbox {
+    display: inline-grid;
+    place-content: center;
+  }
+  .nest-names .names-checkbox::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    background-color: var(--nest-surface);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+    visibility: hidden;
+  }
+  .nest-names .names-checkbox:checked::before {
+    visibility: visible;
   }
 
   /* A well inside a glass card (the stat tiles, GlassFabric.dc.html .well). On "ללא רקע"
@@ -257,34 +315,34 @@
 
 @layer components {
   .nest-names .names-sheet-in {
-    animation: names-sheet-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation: names-sheet-in var(--nest-duration-sheet) var(--nest-ease-out);
   }
 
   .nest-names .names-scrim-in,
   .nest-names .names-toast-in {
-    animation: names-fade-in 200ms ease-out;
+    animation: names-fade-in var(--nest-duration-fast) ease-out;
   }
 
   .nest-names .names-dialog-in {
-    animation: names-dialog-in 200ms ease-out;
+    animation: names-dialog-in var(--nest-duration-fast) ease-out;
   }
 
   .nest-names .names-sheet-out {
-    animation: names-sheet-out 200ms ease-in forwards;
+    animation: names-sheet-out var(--nest-duration-fast) ease-in forwards;
   }
 
   .nest-names .names-scrim-out {
-    animation: names-fade-out 200ms ease-in forwards;
+    animation: names-fade-out var(--nest-duration-fast) ease-in forwards;
   }
 
   /* Desktop (PRD 3.2.4): the tall sheet is a centered panel, so it comes and goes like a dialog. */
   @media (min-width: 768px) {
     .nest-names [data-detent].names-sheet-in {
-      animation: names-dialog-in 200ms ease-out;
+      animation: names-dialog-in var(--nest-duration-fast) ease-out;
     }
 
     .nest-names [data-detent].names-sheet-out {
-      animation: names-fade-out 200ms ease-in forwards;
+      animation: names-fade-out var(--nest-duration-fast) ease-in forwards;
     }
   }
 }
@@ -294,12 +352,12 @@
 @media (prefers-reduced-motion: reduce) {
   .nest-names .names-sheet-in,
   .nest-names .names-scrim-in {
-    animation: names-fade-in 160ms ease-out !important;
+    animation: names-fade-in var(--nest-duration-fade) ease-out !important;
   }
 
   .nest-names .names-sheet-out,
   .nest-names .names-scrim-out {
-    animation: names-fade-out 160ms ease-in forwards !important;
+    animation: names-fade-out var(--nest-duration-fade) ease-in forwards !important;
   }
 }
 
@@ -314,7 +372,7 @@
 /* The card stack (CardStack, Main.dc.html / GlassFabric.dc.html): the peeking cards are soft
  * glass, the nearer one whiter. On "ללא רקע" they're solid: sand behind, near-white in front,
  * line border and card shadows. The current card enters like the demo's .nd-card.enter; with
- * reduced motion it only fades (data-motion="fade" keeps it at 200 ms). */
+ * reduced motion it only fades (data-motion="fade-in" keeps the animation at 200 ms). */
 @keyframes names-card-in {
   from {
     transform: translateY(14px) scale(0.96);
@@ -325,6 +383,29 @@
 @layer components {
   .nest-names .names-back-near {
     background-color: var(--nest-white-30);
+  }
+  /* On a photo the current card is see-through, so the back cards paint only where they peek:
+   * the 28 px under the card (its 12 px gap plus the wrapper's 16 px) and the two bottom corners
+   * outside its curve. Masks keep only alpha, so the gradient colour doesn't matter. "ללא רקע"
+   * keeps them whole (the solid card hides them), and a moving card lifts the mask (CardStack). */
+  .nest-names .names-back-clip:where(:not([data-names-bg="none"] *)) {
+    --names-back-r: var(--nest-radius-xl);
+    mask-image:
+      linear-gradient(black, black),
+      radial-gradient(circle var(--names-back-r) at 100% 0, transparent calc(var(--names-back-r) - 0.5px), black var(--names-back-r)),
+      radial-gradient(circle var(--names-back-r) at 0 0, transparent calc(var(--names-back-r) - 0.5px), black var(--names-back-r));
+    mask-size:
+      100% 28px,
+      var(--names-back-r) var(--names-back-r),
+      var(--names-back-r) var(--names-back-r);
+    mask-position:
+      left 0 bottom 0,
+      left 0 bottom 28px,
+      right 0 bottom 28px;
+    mask-repeat: no-repeat;
+  }
+  .nest-names .names-stack:has([data-moving]) .names-back-clip {
+    mask-image: none;
   }
   .nest-names [data-names-bg="none"] .names-back-far {
     background-color: var(--nest-sand);
@@ -348,11 +429,58 @@
   }
 
   .nest-names .names-card-enter {
-    animation: names-card-in 280ms ease-out;
+    animation: names-card-in var(--nest-duration-card) ease-out;
   }
   @media (prefers-reduced-motion: reduce) {
     .nest-names .names-card-enter {
       animation-name: names-fade-in;
     }
+  }
+}
+
+/* The welcome screen's preview card (PreviewCard) only gets the height the panel leaves. It ends
+ * after a whole part, never through a line (NP-BUG-001): each part goes, with all after it, once
+ * the card (its size container minus 16 px) can't hold it plus the card's 20 px bottom padding.
+ * Card parts: tag row, middle (name, intro, chips), sex bar, stats; the stats never fit the 300 px cap.
+ * Unlayered, so it wins over the parts' own display utilities. */
+.nest-names .names-preview-card > :nth-child(n + 4) {
+  display: none;
+}
+@container (height < 18.5rem) {
+  .nest-names .names-preview-card > :nth-child(n + 3) {
+    display: none;
+  }
+}
+@container (height < 15.875rem) {
+  .nest-names .names-preview-card > :nth-child(2) > :nth-child(n + 3) {
+    display: none;
+  }
+}
+@container (height < 13.1875rem) {
+  .nest-names .names-preview-card > :nth-child(2) > :nth-child(n + 2) {
+    display: none;
+  }
+}
+
+/* The deck card (CardStack, a size container) never scrolls on a phone (NP-BUG-010): at short
+ * heights (320 × 568) the card drops parts the name sheet repeats, in this order, until the
+ * longest card fits with "לכל הפרטים" whole: the hint chips (the 2-line intro plus a chip row
+ * needs a 29rem stack), then the gaps tighten from 12 to 8 px (a 2-line card needs 27rem), then
+ * the intro keeps 1 line (25.75rem). Card parts: tag row, middle (name, intro, chips), sex bar,
+ * stats, button. Under 20rem wide or 30rem high the deck is content-sized (no container). */
+@container (height < 29rem) {
+  .nest-names .names-stack > article > :nth-child(2) > ul {
+    display: none;
+  }
+}
+@container (height < 27rem) {
+  .nest-names .names-stack > article,
+  .nest-names .names-stack > article > :nth-child(2) {
+    row-gap: calc(var(--spacing) * 2);
+  }
+}
+@container (height < 25.75rem) {
+  .nest-names .names-stack > article > :nth-child(2) > p {
+    -webkit-line-clamp: 1;
   }
 }

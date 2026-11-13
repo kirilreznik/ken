@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, type FormEvent } from "react";
-import { BottomSheet, Button, closeSheet } from "@/components/names/ui";
+import { BottomSheet, Button, closeSheet, inputClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { CUSTOM_NAME_MAX, validateCustomName } from "@/lib/names/custom";
 import { track } from "@/lib/names/track";
@@ -56,6 +56,7 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
     <BottomSheet
       name="add-name"
       title="הוספת שם"
+      closeButton
       footer={
         <Button type="submit" form={FORM_ID} className="w-full" aria-disabled={!names || undefined}>
           הוספה לרשימה
@@ -83,7 +84,7 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
           }}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? "add-name-error" : "add-name-hint"}
-          className="h-12 w-full rounded-md border border-line bg-surface px-3.5 text-start text-intro text-ink placeholder:text-stone aria-invalid:border-urgent"
+          className={inputClass()}
         />
         {error ? (
           <span id="add-name-error" role="alert" className="flex items-center gap-1.5 text-caption font-bold text-urgent">

@@ -251,7 +251,7 @@ export interface Together {
 /**
  * The match badge (§3.1.5, FR-D12): null unless `name` is a match of a shared space. Takes
  * only the matches, never a partner's votes, so a lone save, skip or hide can't leak. The
- * wording is the Lists match line ("שניכם שמרתם…" / "{n} שמרו…") after "התאמה · ".
+ * wording is the Lists match line ("שניים שמרו…" / "{n} שמרו…") after "התאמה · ".
  */
 export function togetherFor(name: string, matches: readonly Match[], memberCount: number): Together | null {
   if (memberCount < 2) return null;

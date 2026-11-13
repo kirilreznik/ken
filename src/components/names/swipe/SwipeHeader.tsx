@@ -27,7 +27,8 @@ function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
 // Board 2/8 header (FR-W10): settings sits where the board has "חזרה" (the swipe screen is
 // the app's root), then the title, background, filters and the "השמות שלי" pill. Below
 // 320 px (200% zoom on a phone) the row wraps; under 360 px the title is visually hidden.
-export default function SwipeHeader({ saved, filtered = false }: { saved: number; filtered?: boolean }) {
+// `saved` is null while the votes couldn't be read (NP-073): the pill shows no count then.
+export default function SwipeHeader({ saved, filtered = false }: { saved: number | null; filtered?: boolean }) {
   return (
     <header data-clarity-unmask="true" className="flex items-center gap-2 px-5 pt-4 pb-2 max-[20rem]:flex-wrap max-[22.5rem]:px-3">
       {/* A gear, not a hamburger: the button opens the settings page, not a menu. */}
@@ -59,12 +60,13 @@ export default function SwipeHeader({ saved, filtered = false }: { saved: number
       <Link
         href="/names/lists"
         aria-label={savedLabel(saved)}
-        className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-pill bg-ink px-3.5 text-person font-bold text-surface transition-transform duration-150 motion-safe:active:scale-95"
+        data-control
+        className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-pill bg-ink px-3.5 text-person font-bold text-surface transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95"
       >
         <Icon size={18}>
           <path d="M6 4h12v16l-6-4-6 4z" />
         </Icon>
-        <bdi>{saved}</bdi>
+        {saved === null ? null : <bdi>{saved}</bdi>}
       </Link>
     </header>
   );

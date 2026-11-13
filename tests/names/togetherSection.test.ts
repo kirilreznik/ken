@@ -15,7 +15,7 @@ describe("TogetherSection (FR-D12)", () => {
     expect(html).toContain('<h3 class="text-tag text-ink-soft">ביחד</h3>');
     expect(html).toContain("bg-sand");
     expect(html).toContain("text-ink");
-    expect(html).toContain('<b class="font-bold">התאמה</b> · שניכם שמרתם את השם הזה');
+    expect(html).toContain('<b class="font-bold">התאמה</b> · שניים שמרו את השם הזה');
     expect(html).toContain("<svg");
     expect(html).not.toMatch(/green/);
   });

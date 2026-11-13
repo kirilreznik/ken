@@ -137,6 +137,16 @@ describe("names design guard", () => {
       .flatMap((f) => scanButtons(relative(ROOT, f), readFileSync(f, "utf8")));
     expect(hits.map((h) => `${h.file}:${h.line} ${h.rule}`)).toEqual([]);
   });
+
+  // A space has any number of members and a match is a name two or more kept (NP-025).
+  it("never assumes exactly two people choose", () => {
+    const hits = all.flatMap((f) =>
+      readFileSync(f, "utf8")
+        .split("\n")
+        .flatMap((text, i) => (/שניכם|שנינו/.test(text) ? [`${relative(ROOT, f)}:${i + 1}`] : [])),
+    );
+    expect(hits).toEqual([]);
+  });
 });
 
 describe("scanRules", () => {

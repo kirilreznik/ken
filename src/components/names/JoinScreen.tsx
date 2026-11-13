@@ -1,14 +1,14 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AuthSkeleton } from "@/components/names/AuthGuard";
-import { useAuth } from "@/components/names/AuthProvider";
+import { AuthSkeleton, SignedOutView } from "@/components/names/AuthGuard";
+import { useAuth, useStoredSession } from "@/components/names/AuthProvider";
 import PreviewCard from "@/components/names/PreviewCard";
 import WelcomeActions from "@/components/names/WelcomeActions";
 import AuthLayout from "@/components/names/auth/AuthLayout";
+import LegalLine from "@/components/names/auth/LegalLine";
+import Wordmark from "@/components/names/auth/Wordmark";
 import { Button } from "@/components/names/ui";
 import { APP_PATH, WELCOME_PATH } from "@/lib/names/auth";
 import { reportClientLog } from "@/lib/names/clientLog";
@@ -24,23 +24,10 @@ import {
 } from "@/lib/names/join";
 import { joinWithCode } from "@/lib/names/joinSpace";
 import { getPref } from "@/lib/names/prefs";
-import { ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
+import { INTRO_PATH, ONBOARDING_PATH, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { track } from "@/lib/names/track";
 
-const wordmark = <Image src="/names/brand/nest-wordmark.svg" alt="Nest" width={85} height={32} priority unoptimized className="self-center" />;
-
-const legalFooter = (
-  <p className="text-center text-caption text-ink-soft">
-    בהמשך מאשרים את{" "}
-    <Link href="/names/terms" className="font-bold text-ink underline underline-offset-2">
-      תנאי השימוש
-    </Link>{" "}
-    ו
-    <Link href="/names/privacy" className="font-bold text-ink underline underline-offset-2">
-      מדיניות הפרטיות
-    </Link>
-  </p>
-);
+const wordmark = <Wordmark />;
 
 function displayNameOf(metadata: Record<string, unknown> | undefined): string {
   const value = metadata?.display_name;
@@ -63,6 +50,7 @@ function Outcome({ title, lead, children }: { title: string; lead: React.ReactNo
  */
 export default function JoinScreen({ code: rawCode }: { code: string }) {
   const { session, user, loading } = useAuth();
+  const stored = useStoredSession();
   const router = useRouter();
   const code = normalizeJoinCode(rawCode);
   const onboarded = hasAcceptedTerms(user);
@@ -96,37 +84,43 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
     };
   }, [loading, session, onboarded, userId, code, displayName, key]);
 
-  if (loading) return <AuthSkeleton />;
+  // Without a stored session the signed-out screens show at once, also in the server HTML.
+  if (loading && stored) return <AuthSkeleton />;
 
   const startHref = user ? nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, null) : APP_PATH;
+  // The button says where it goes: on to the intro, or back to the deck (NP-024).
+  const startLabel = startHref === INTRO_PATH ? "המשך" : "לבחירת שמות";
 
   if (!code || outcome?.kind === "invalid") {
     const copy = JOIN_COPY.invalid;
-    return (
+    const invalid = (
       <Outcome title={copy.title} lead={copy.lead}>
         <p role="status" className="sr-only">
-          {`${copy.title} ${copy.lead}`}
+          {`${copy.title}. ${copy.lead}`}
         </p>
-        {session ? <Button href={startHref}>לבחירת שמות</Button> : <Button href={WELCOME_PATH}>לכניסה</Button>}
+        {session ? <Button href={startHref}>{startLabel}</Button> : <Button href={WELCOME_PATH}>לכניסה</Button>}
       </Outcome>
     );
+    return session ? invalid : <SignedOutView>{invalid}</SignedOutView>;
   }
 
   if (!session) {
     return (
-      <AuthLayout
-        title={JOIN_INVITED_TITLE}
-        lead={JOIN_INVITED_LEAD}
-        hero={
-          <div className="flex flex-col items-center gap-6">
-            {wordmark}
-            <PreviewCard />
-          </div>
-        }
-        footer={legalFooter}
-      >
-        <WelcomeActions joinCode={code} />
-      </AuthLayout>
+      <SignedOutView>
+        <AuthLayout
+          title={JOIN_INVITED_TITLE}
+          lead={JOIN_INVITED_LEAD}
+          hero={
+            <>
+              {wordmark}
+              <PreviewCard />
+            </>
+          }
+          footer={<LegalLine />}
+        >
+          <WelcomeActions joinCode={code} />
+        </AuthLayout>
+      </SignedOutView>
     );
   }
 
@@ -148,7 +142,7 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
     return (
       <Outcome title={copy.title} lead={copy.lead}>
         <p role="status" className="sr-only">
-          {`${copy.title} ${copy.lead}`}
+          {`${copy.title}. ${copy.lead}`}
         </p>
         <Button onClick={() => setAttempt((n) => n + 1)}>ניסיון חוזר</Button>
       </Outcome>
@@ -168,9 +162,9 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
       }
     >
       <p role="status" className="sr-only">
-        {[copy.title, copy.lead, moved ? VOTES_MOVE_TEXT : ""].join(" ").trim()}
+        {[`${copy.title}.`, copy.lead, moved ? VOTES_MOVE_TEXT : ""].join(" ").trim()}
       </p>
-      <Button href={startHref}>{outcome.kind === "joined" ? "להתחיל לבחור" : "להמשיך לבחור"}</Button>
+      <Button href={startHref}>{startLabel}</Button>
     </Outcome>
   );
 }

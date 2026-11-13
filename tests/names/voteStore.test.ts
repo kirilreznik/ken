@@ -128,6 +128,50 @@ describe("createVoteStore", () => {
     expect(names(store)).toEqual(["זיו"]);
   });
 
+  it("with no cached copy and a failed read, says so and retries on the 30 s timer (NP-073)", async () => {
+    const answers: { data: unknown[] | null; error: { message: string } | null }[] = [
+      { data: null, error: { message: "500" } },
+      { data: null, error: { message: "500" } },
+      { data: [{ name: "זיו", vote: "keep", custom: false, updated_at: "2026-11-01T10:00:00Z" }], error: null },
+    ];
+    const select = () => {
+      const query = { eq: () => query, order: async () => answers.shift() };
+      return query;
+    };
+    const client = { from: () => ({ select }) } as unknown as SupabaseClient;
+    const { store } = makeStore(client);
+    await store.load();
+    expect(store.getState()).toMatchObject({ ready: true, loadFailed: true });
+    expect(store.getState().votes.size).toBe(0);
+    // Fake timers only after load: fake-indexeddb runs on real ones.
+    vi.useFakeTimers();
+    vi.stubGlobal("window", new EventTarget());
+    vi.stubGlobal("document", Object.assign(new EventTarget(), { visibilityState: "visible" }));
+    const stop = store.start();
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(store.getState().loadFailed).toBe(true);
+    await vi.advanceTimersByTimeAsync(30_000);
+    expect(store.getState().loadFailed).toBe(false);
+    expect(names(store)).toEqual(["זיו"]);
+    stop();
+    vi.useRealTimers();
+  });
+
+  it("a failed read with a cached copy isn't a load failure", async () => {
+    const first = makeStore(fakeClient({ rows: [{ name: "זיו", vote: "keep", custom: false, updated_at: "2026-11-01T10:00:00Z" }] }).client);
+    await first.store.load();
+    await new Promise((r) => setTimeout(r, 20));
+    const select = () => {
+      const query = { eq: () => query, order: async () => ({ data: null, error: { message: "500" } }) };
+      return query;
+    };
+    const failing = { from: () => ({ select }) } as unknown as SupabaseClient;
+    const again = createVoteStore({ spaceId: `space-${n}`, userId: `user-${n}`, client: failing, report: vi.fn() });
+    await again.load();
+    expect(again.getState()).toMatchObject({ ready: true, loadFailed: false });
+    expect(names(again)).toEqual(["זיו"]);
+  });
+
   it("gives same-millisecond changes increasing times", async () => {
     const { client, calls } = fakeClient();
     const store = createVoteStore({ spaceId: "s", userId: "u", client, now: () => 1_000, report: vi.fn() });
