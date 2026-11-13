@@ -137,6 +137,9 @@ export default function Intro() {
             type="text"
             dir="rtl"
             autoComplete="family-name"
+            autoCorrect="off"
+            spellCheck={false}
+            enterKeyHint="done"
             maxLength={SURNAME_MAX}
             value={surname}
             onChange={(e) => setSurname(e.target.value)}

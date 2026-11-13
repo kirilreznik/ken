@@ -76,6 +76,8 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
           lang="he"
           autoComplete="off"
           enterKeyHint="done"
+          autoCorrect="off"
+          spellCheck={false}
           data-autofocus=""
           value={value}
           onChange={(e) => {

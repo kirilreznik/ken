@@ -288,6 +288,9 @@ export default function SettingsScreen() {
                     type="text"
                     dir="auto"
                     autoComplete="given-name"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    enterKeyHint="done"
                     maxLength={DISPLAY_NAME_MAX}
                     value={name}
                     onChange={(e) => {

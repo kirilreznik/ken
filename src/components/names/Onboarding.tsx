@@ -160,6 +160,9 @@ export default function Onboarding() {
             type="text"
             dir="auto"
             autoComplete="given-name"
+            autoCorrect="off"
+            spellCheck={false}
+            enterKeyHint="done"
             required
             maxLength={DISPLAY_NAME_MAX}
             value={form.displayName}
