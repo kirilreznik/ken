@@ -1,6 +1,6 @@
 /** PRD FR-W4: the email field on /names/sign-in/email. Supabase does the real check. */
 
-export const EMAIL_ERROR = "צריך כתובת אימייל, למשל name@example.com";
+export const EMAIL_ERROR = "צריך כתובת מייל, למשל name@example.com";
 
 // Something before one @, a domain with a dot, no spaces anywhere.
 const SHAPE = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;

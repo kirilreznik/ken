@@ -13,6 +13,7 @@ import Turnstile, { captchaEnabled } from "@/components/names/auth/Turnstile";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import {
+  EMPTY_EMAIL_MESSAGE,
   INVALID_EMAIL_MESSAGE,
   OFFLINE_MESSAGE,
   RATE_LIMIT_CLEAR_MS,
@@ -137,7 +138,7 @@ export default function EmailSignIn() {
   async function submitEmail(e: React.FormEvent) {
     e.preventDefault();
     if (!isValidEmail(email)) {
-      setError(INVALID_EMAIL_MESSAGE);
+      setError(email.trim() ? INVALID_EMAIL_MESSAGE : EMPTY_EMAIL_MESSAGE);
       return;
     }
     track("signin_started", { method: "email" });
@@ -189,12 +190,12 @@ export default function EmailSignIn() {
 
   if (step === "email") {
     return (
-      <AuthLayout title="כניסה עם קוד במייל" lead="נשלח קוד בן 6 ספרות לכתובת שלך." backHref={backHref} hero={wordmark}>
+      <AuthLayout title="כניסה עם קוד במייל" lead="שולחים לכתובת שלך קוד בן 6 ספרות, ואיתו נכנסים." backHref={backHref} hero={wordmark}>
         <form noValidate onSubmit={submitEmail} className="flex flex-col gap-4">
           <ConnectionNote />
           <div className="flex flex-col gap-1.5">
             <label htmlFor="email" className="text-caption font-bold text-ink">
-              כתובת אימייל
+              כתובת מייל
             </label>
             <input
               id="email"
@@ -209,11 +210,13 @@ export default function EmailSignIn() {
               autoFocus
               placeholder="name@example.com"
               value={email}
+              // Typing waits for the send's answer, so the code goes to the address shown (NP-006).
+              readOnly={busy}
               onChange={(e) => {
                 setEmail(e.target.value);
                 if (error) setError(null);
               }}
-              aria-invalid={shownError === INVALID_EMAIL_MESSAGE || undefined}
+              aria-invalid={shownError === INVALID_EMAIL_MESSAGE || shownError === EMPTY_EMAIL_MESSAGE || undefined}
               aria-describedby={shownError ? `${AUTH_LEAD_ID} email-sign-in-error` : AUTH_LEAD_ID}
               className={inputClass()}
             />
@@ -241,7 +244,8 @@ export default function EmailSignIn() {
           אפשר לבדוק גם בתיקיית הספאם.
         </>
       }
-      backHref={backHref}
+      // Back returns to the email step with the address kept (NP-007).
+      onBack={changeAddress}
       hero={wordmark}
     >
       <form
@@ -265,6 +269,7 @@ export default function EmailSignIn() {
           invalid={shownError !== null}
           describedBy={shownError ? `${AUTH_LEAD_ID} email-sign-in-error` : AUTH_LEAD_ID}
           autoFocus
+          readOnly={busy}
           inputRef={codeRef}
         />
         {errorLine ??

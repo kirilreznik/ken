@@ -21,7 +21,7 @@ export default function ClosedNotice() {
         <PanelNote icon="info">
           {SIGNUPS_CLOSED_MESSAGE}{" "}
           <Link href={WAITLIST_HREF} className={linkClass("inline")}>
-            להשארת אימייל
+            להשארת מייל
           </Link>
         </PanelNote>
       ) : null}

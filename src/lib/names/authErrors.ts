@@ -133,4 +133,6 @@ export function isValidEmail(raw: string): boolean {
   return /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[^\s@.]{2,}$/.test(raw.trim());
 }
 
-export const INVALID_EMAIL_MESSAGE = "צריך כתובת אימייל, למשל name@example.com";
+/** An empty field and a typed but incomplete address each say their own thing (NP-034). */
+export const EMPTY_EMAIL_MESSAGE = "צריך כתובת מייל";
+export const INVALID_EMAIL_MESSAGE = "הכתובת לא שלמה. היא צריכה להיראות כמו name@example.com";
