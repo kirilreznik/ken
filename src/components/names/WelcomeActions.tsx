@@ -9,6 +9,7 @@ import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import { OFFLINE_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
 import { withJoin } from "@/lib/names/join";
 import { GOOGLE_FAILED_MESSAGE, oauthRedirectTo } from "@/lib/names/routing";
+import { requestSignupPass } from "@/lib/names/signupPass";
 import { getSupabase } from "@/lib/names/supabase";
 import { track } from "@/lib/names/track";
 
@@ -46,6 +47,8 @@ export default function WelcomeActions({ joinCode }: { joinCode?: string | null 
     setError(null);
     track("signin_started", { method: "google" });
     try {
+      // A new account through an invite link needs this pass (Google can't carry the code).
+      await requestSignupPass(supabase, join);
       const { error: err } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo: oauthRedirectTo(process.env.NEXT_PUBLIC_SITE_URL, window.location.origin, join) },
