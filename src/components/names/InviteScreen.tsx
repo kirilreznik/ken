@@ -21,7 +21,6 @@ import {
   SHARE_TITLE,
   type Invite,
 } from "@/lib/names/invite";
-import { showToast } from "@/lib/names/toast";
 import { track } from "@/lib/names/track";
 
 type Loaded = { key: string; invite: Invite | null; error: boolean };
@@ -51,6 +50,8 @@ export default function InviteScreen() {
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [copyFailed, setCopyFailed] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const copiedTimer = useRef<number | undefined>(undefined);
   const linkRef = useRef<HTMLParagraphElement>(null);
   const { refresh } = space;
 
@@ -111,7 +112,10 @@ export default function InviteScreen() {
     setCopyFailed(!copied);
     if (copied) {
       track("invite_shared", { method: "copy" });
-      showToast(COPIED_TEXT);
+      // NP-045: the copy button itself confirms for 2 s, where the eye already is.
+      setCopied(true);
+      window.clearTimeout(copiedTimer.current);
+      copiedTimer.current = window.setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -129,6 +133,8 @@ export default function InviteScreen() {
     }
     await copy();
   };
+
+  useEffect(() => () => window.clearTimeout(copiedTimer.current), []);
 
   const back = () => {
     if (hasAppEntry()) router.back();
@@ -179,11 +185,20 @@ export default function InviteScreen() {
                   </Button>
                   <Button variant="secondary" onClick={copy}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <rect x="9" y="9" width="11" height="11" rx="2" />
-                      <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+                      {copied ? (
+                        <path d="M5 12.5l4.5 4.5L19 7.5" />
+                      ) : (
+                        <>
+                          <rect x="9" y="9" width="11" height="11" rx="2" />
+                          <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+                        </>
+                      )}
                     </svg>
-                    העתקת הקישור
+                    {copied ? COPIED_TEXT : "העתקת הקישור"}
                   </Button>
+                  <span role="status" className="sr-only">
+                    {copied ? COPIED_TEXT : ""}
+                  </span>
                 </div>
                 {copyFailed ? (
                   <p role="alert" className="m-0 text-caption text-ink-soft">
