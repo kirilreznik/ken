@@ -158,7 +158,7 @@ export default function Onboarding() {
             id="display-name"
             name="display-name"
             type="text"
-            dir="rtl"
+            dir="auto"
             autoComplete="given-name"
             required
             maxLength={DISPLAY_NAME_MAX}

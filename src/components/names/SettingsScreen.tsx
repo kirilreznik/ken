@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import { Button, Dialog, IconButton, ROW_PRESS, closeDialog, inputClass, openDialog } from "@/components/names/ui";
 import { InstallSheet, useInstall } from "@/components/names/pwa/Install";
@@ -52,6 +52,14 @@ function Chevron() {
   );
 }
 
+function Trash() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
+      <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
+    </svg>
+  );
+}
+
 function LinkRow({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <li className={row}>
@@ -92,6 +100,8 @@ export default function SettingsScreen() {
   const [optIn, setOptIn] = useState<boolean | null>(null);
   const [optInError, setOptInError] = useState<string | null>(null);
   const [savingOptIn, setSavingOptIn] = useState(false);
+  const savingOptInRef = useRef(false);
+  const wantedOptIn = useRef(false);
   const [signingOut, setSigningOut] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -142,28 +152,40 @@ export default function SettingsScreen() {
     }
   }
 
-  async function toggleOptIn() {
+  // Every tap counts (NP-155): a tap while saving only moves the wanted value; the save resends it.
+  function toggleOptIn() {
     const supabase = getSupabase();
-    if (!supabase || savingOptIn) return;
+    if (!supabase) return;
     if (isOffline()) {
       setOptInError(SETTINGS_OFFLINE_TEXT);
       return;
     }
     const next = !optedIn;
     setOptIn(next);
-    setSavingOptIn(true);
     setOptInError(null);
+    wantedOptIn.current = next;
+    if (!savingOptInRef.current) void saveOptIn(supabase);
+  }
+
+  async function saveOptIn(supabase: NonNullable<ReturnType<typeof getSupabase>>) {
+    savingOptInRef.current = true;
+    setSavingOptIn(true);
     try {
-      const { error } = await supabase.auth.updateUser({ data: optInMetadata(next) });
-      if (error) throw error;
+      let sent: boolean;
+      do {
+        sent = wantedOptIn.current;
+        const { error } = await supabase.auth.updateUser({ data: optInMetadata(sent) });
+        if (error) throw error;
+      } while (wantedOptIn.current !== sent);
       setOptIn(null);
-      track("opt_in_changed", { opt_in: next });
-      setStatus(next ? OPT_IN_ON_TEXT : OPT_IN_OFF_TEXT);
+      track("opt_in_changed", { opt_in: sent });
+      setStatus(sent ? OPT_IN_ON_TEXT : OPT_IN_OFF_TEXT);
     } catch (err) {
       reportClientLog({ area: "settings", message: "opt-in save failed", name: err instanceof Error ? err.name : undefined });
       setOptIn(null);
       setOptInError(isOffline() ? SETTINGS_OFFLINE_TEXT : SETTINGS_ERROR_TEXT);
     } finally {
+      savingOptInRef.current = false;
       setSavingOptIn(false);
     }
   }
@@ -266,7 +288,7 @@ export default function SettingsScreen() {
                   <input
                     id="settings-name"
                     type="text"
-                    dir="rtl"
+                    dir="auto"
                     autoComplete="given-name"
                     maxLength={DISPLAY_NAME_MAX}
                     value={name}
@@ -298,7 +320,7 @@ export default function SettingsScreen() {
               {method.kind === "google" ? (
                 <span className="text-body text-ink">Google</span>
               ) : (
-                <bdi dir="ltr" className="self-start text-body break-all text-ink">
+                <bdi dir="ltr" className="self-start text-body wrap-anywhere text-ink">
                   {method.email}
                 </bdi>
               )}
@@ -309,14 +331,17 @@ export default function SettingsScreen() {
                 role="switch"
                 aria-checked={optedIn}
                 aria-busy={savingOptIn}
+                aria-labelledby="settings-optin-title"
                 aria-describedby="settings-optin-hint"
                 onClick={toggleOptIn}
                 className={`flex min-h-14 w-full items-center gap-3 px-4 py-3 text-start group-first/row:rounded-t-lg group-last/row:rounded-b-lg ${ROW_PRESS}`}
               >
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="text-body font-bold text-ink">עדכון כש־Nest יוצאת לחנויות</span>
+                  <span id="settings-optin-title" className="text-body font-bold text-ink">
+                    עדכון כש־Nest יוצאת לחנויות
+                  </span>
                   <span id="settings-optin-hint" className="text-caption text-stone">
-                    {optedIn ? "פעיל" : "כבוי"} · לא חובה
+                    {savingOptIn ? "שומרים…" : optedIn ? "פעיל" : "כבוי"} · לא חובה
                   </span>
                 </span>
                 <span
@@ -348,7 +373,7 @@ export default function SettingsScreen() {
                   }}
                   className={`${rowAction} flex-col items-start! gap-0.5!`}
                 >
-                  <span>יציאה מהבחירה המשותפת</span>
+                  <span className="text-urgent">יציאה מהבחירה המשותפת</span>
                   <span className="text-caption font-medium text-stone">השמות ששמרת יישארו אצלך</span>
                 </button>
               </li>
@@ -380,6 +405,7 @@ export default function SettingsScreen() {
           </li>
           <li className={row}>
             <button type="button" onClick={openDelete} className={`${rowAction} text-urgent`}>
+              <Trash />
               מחיקת החשבון
             </button>
           </li>
@@ -410,7 +436,8 @@ export default function SettingsScreen() {
             {deleteError}
           </p>
         ) : null}
-        <Button onClick={confirmDelete} aria-disabled={deleting} aria-busy={deleting}>
+        <Button variant="secondary" onClick={confirmDelete} aria-disabled={deleting} aria-busy={deleting} className="text-urgent">
+          <Trash />
           {deleting ? "מוחקים…" : "מחיקה לצמיתות"}
         </Button>
         <Button variant="secondary" data-autofocus="" onClick={() => closeDialog(DELETE_DIALOG)}>
