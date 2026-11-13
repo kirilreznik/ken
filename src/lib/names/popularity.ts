@@ -56,11 +56,37 @@ export function roughly(n: number): number {
   return Math.round(n / step) * step;
 }
 
-/** "ניתן ל־1,189 תינוקות ב־2024", or "ניתן לכ־55,000 תינוקות מאז 1949" with no recent births. */
+/** CBS publishes a year's count only when at least this many babies got the name. */
+export const CBS_MIN_COUNT = 5;
+
+/** Births in LAST_YEAR (2024); 0 when CBS published none, which means fewer than CBS_MIN_COUNT. */
+export function lastYearCount({ y }: YearCounts): number {
+  return y?.[LAST_YEAR - FIRST_TREND_YEAR] ?? 0;
+}
+
+/** True when the 2024 count is low, so the all-time count is shown with it (owner decision 2026-11-13). */
+export function showsAllTime(stats: NameStats): boolean {
+  return lastYearCount(stats) < CBS_MIN_COUNT;
+}
+
+/** The 2024 part: "1,189" or "פחות מ־5". */
+export function lastYearAmount(stats: NameStats): string {
+  const n = lastYearCount(stats);
+  return n > 0 ? fmt.format(n) : `פחות מ־${CBS_MIN_COUNT}`;
+}
+
+/** The all-time part: "כ־55,000". */
+export function allTimeAmount(stats: NameStats): string {
+  return `כ־${fmt.format(roughly(stats.m + stats.f))}`;
+}
+
+/**
+ * Every card states 2024 (owner decision 2026-11-13): "ניתן ל־1,189 תינוקות ב־2024", and when
+ * 2024 is under 5, the all-time count too: "ניתן לפחות מ־5 תינוקות ב־2024, ולכ־1,200 מאז 1949".
+ */
 export function countLine(stats: NameStats): string {
-  const latest = latestCount(stats);
-  if (latest) return `ניתן ל־${fmt.format(latest.n)} תינוקות ב־${latest.year}`;
-  return `ניתן לכ־${fmt.format(roughly(stats.m + stats.f))} תינוקות מאז 1949`;
+  const line = `ניתן ל${lastYearCount(stats) > 0 ? "־" : ""}${lastYearAmount(stats)} תינוקות ב־${LAST_YEAR}`;
+  return showsAllTime(stats) ? `${line}, ול${allTimeAmount(stats)} מאז 1949` : line;
 }
 
 const ARROWS: Record<TrendWord, string> = { בעלייה: "↗", בירידה: "↘", יציב: "→" };

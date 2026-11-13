@@ -83,17 +83,13 @@ describe("countLine", () => {
     expect(latestCount(stats("אריאל"))).toEqual({ n: 2099, year: 2024 });
   });
 
-  it("falls back to the latest year with births", () => {
+  it("says fewer than 5 in 2024, with the all-time count, when CBS published no 2024 count", () => {
     const y = Array(25).fill(0);
     y[20] = 7;
-    expect(countLine({ name: "x", m: 30, f: 0, s: "", y })).toBe("ניתן ל־7 תינוקות ב־2020");
-  });
-
-  it("uses the rounded all-time line with no recent year", () => {
-    expect(countLine({ name: "x", m: 42517, f: 12945, s: "" })).toBe("ניתן לכ־55,000 תינוקות מאז 1949");
-    expect(countLine({ name: "x", m: 1234, f: 0, s: "" })).toBe("ניתן לכ־1,200 תינוקות מאז 1949");
-    expect(countLine({ name: "x", m: 37, f: 0, s: "" })).toBe("ניתן לכ־37 תינוקות מאז 1949");
-    expect(countLine({ name: "x", m: 3, f: 0, s: "", y: Array(25).fill(0) })).toBe("ניתן לכ־3 תינוקות מאז 1949");
+    expect(countLine({ name: "x", m: 30, f: 0, s: "", y })).toBe("ניתן לפחות מ־5 תינוקות ב־2024, ולכ־30 מאז 1949");
+    expect(countLine({ name: "x", m: 42517, f: 12945, s: "" })).toBe("ניתן לפחות מ־5 תינוקות ב־2024, ולכ־55,000 מאז 1949");
+    expect(countLine({ name: "x", m: 1234, f: 0, s: "" })).toBe("ניתן לפחות מ־5 תינוקות ב־2024, ולכ־1,200 מאז 1949");
+    expect(countLine({ name: "x", m: 3, f: 0, s: "", y: Array(25).fill(0) })).toBe("ניתן לפחות מ־5 תינוקות ב־2024, ולכ־3 מאז 1949");
   });
 });
 

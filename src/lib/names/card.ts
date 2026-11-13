@@ -1,10 +1,9 @@
 import { FIRST_TREND_YEAR, LAST_YEAR } from "@/lib/names/data";
 import {
   countLine,
-  latestCount,
+  lastYearAmount,
   popularityBand,
   rankByLastYear,
-  roughly,
   sparkline,
   trend,
 } from "@/lib/names/popularity";
@@ -63,16 +62,12 @@ export function bibleNote(bible: NameContent["bible"]): { text: string; ref: str
   return text ? { text, ref: bible?.ref.trim() ?? "" } : null;
 }
 
-const fmt = new Intl.NumberFormat("he-IL");
-
 /**
- * The births tile: "ב־2024" and the latest year's count, or, for a name with no recent
- * births, the all-time line's "מאז 1949" and "כ־{n}" (E16 FR-5).
+ * The births tile: always "ב־2024" with its count, or "פחות מ־5" when CBS published none
+ * (owner decision 2026-11-13; the count line adds the all-time count).
  */
 export function countTile(stats: NameStats): { label: string; value: string } {
-  const latest = latestCount(stats);
-  if (latest) return { label: `ב־${latest.year}`, value: fmt.format(latest.n) };
-  return { label: "מאז 1949", value: `כ־${fmt.format(roughly(stats.m + stats.f))}` };
+  return { label: `ב־${LAST_YEAR}`, value: lastYearAmount(stats) };
 }
 
 /** The sparkline's last point, where the clay dot sits, or null without a sparkline. */
