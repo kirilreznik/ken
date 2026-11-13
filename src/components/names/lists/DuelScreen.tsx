@@ -38,6 +38,7 @@ const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
 
 // The "עצירה" toast; reopening the duel ends it so it doesn't cover the result's link (NP-097).
 let stopToastId: number | undefined;
+const rememberStopToast = (id: number) => { stopToastId = id; };
 
 /** The saved duels (the duelState pref, one per source) as a stable JSON snapshot. */
 function useSavedDuels(userId: string | null): DuelSaves | null {
@@ -149,7 +150,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
 
   const stop = () => {
     if (duel) save(duel);
-    stopToastId = showToast("הדו־קרב נשמר. אפשר להמשיך מאותו מקום.");
+    rememberStopToast(showToast("הדו־קרב נשמר. אפשר להמשיך מאותו מקום."));
     onBack(source);
   };
 

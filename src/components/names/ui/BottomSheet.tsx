@@ -99,25 +99,29 @@ function fadeMask(more: { top: boolean; bottom: boolean }): string | undefined {
   const bottom = more.bottom ? `#000 calc(100% - ${FADE_PX}px), transparent 100%` : "#000 100%";
   return `linear-gradient(to bottom, ${top}, ${bottom})`;
 }
+function edgesOf(el: HTMLElement) {
+  return (m: { top: boolean; bottom: boolean }) => {
+    const top = el.scrollTop > 1;
+    const bottom = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+    return m.top === top && m.bottom === bottom ? m : { top, bottom };
+  };
+}
 /** Which edges of the scroller have content past them; follows scrolling and resizes. */
 function useScrollEdges(scroller: RefObject<HTMLDivElement | null>) {
   const [more, setMore] = useState({ top: false, bottom: false });
-  const update = useCallback(() => {
+  const update = () => {
     const el = scroller.current;
-    if (!el) return;
-    const top = el.scrollTop > 1;
-    const bottom = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
-    setMore((m) => (m.top === top && m.bottom === bottom ? m : { top, bottom }));
-  }, [scroller]);
+    if (el) setMore(edgesOf(el));
+  };
   useEffect(() => {
     const el = scroller.current;
     if (!el) return;
-    update();
-    const observer = new ResizeObserver(update);
+    // observe() reports the first size right away, so this also sets the starting edges.
+    const observer = new ResizeObserver(() => setMore(edgesOf(el)));
     observer.observe(el);
     for (const child of Array.from(el.children)) observer.observe(child);
     return () => observer.disconnect();
-  }, [scroller, update]);
+  }, [scroller]);
   return { more, update };
 }
 /** A new `key` in an open sheet starts it over: content at the top, focus on [data-autofocus]. */
