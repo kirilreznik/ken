@@ -34,11 +34,11 @@ export default function CardStats({ stats, band, trend, spark }: CardStatsProps)
           </span>
           <svg
             width="132"
-            height="28"
+            height="36"
             viewBox={SPARK_VIEWBOX}
             role="img"
             aria-label={trendLabel(trend.word)}
-            className="max-w-full"
+            className="h-auto w-full"
             style={{ direction: "ltr" }}
           >
             <polyline
