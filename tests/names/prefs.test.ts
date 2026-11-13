@@ -84,7 +84,7 @@ describe("get/set round trip", () => {
   });
 
   it("round-trips every key", () => {
-    const filters = { ...defaultFilters(), sex: "בת" as const, letter: "א", origin: "J" as const };
+    const filters = { ...defaultFilters(), sex: "בת" as const, letter: "א" };
     let duel = start(["נועם", "יעל", "אריאל"], 7);
     duel = pick(duel, currentPair(duel)!.a);
     setPref(U, "surname", "כהן");
@@ -149,6 +149,11 @@ describe("safe parse", () => {
   it("drops non-strings from seenMatches", () => {
     raw("seenMatches", '["נועם", 3, null, "יעל"]');
     expect(getPref(U, "seenMatches")).toEqual(["נועם", "יעל"]);
+  });
+
+  it("drops the removed origin group from an older saved value", () => {
+    raw("filters", JSON.stringify({ sex: "בת", origin: "M" }));
+    expect(getPref(U, "filters")).toEqual({ ...defaultFilters(), sex: "בת" });
   });
 
   it("keeps valid filter groups and resets invalid ones", () => {

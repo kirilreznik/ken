@@ -10,6 +10,9 @@
 | `people-exclude.json` | People the owner flagged (QIDs); never shown | Owner |
 | `themes.json` | Theme lists for the "נושאים" filter (one list per theme; `unisex` is computed from CBS) | AI draft, owner review |
 | `THEMES.md` | Every theme's names and the names with none, for review | `scripts/names-content/build-themes.mjs` |
+| `sectors.json` | Births per name in the Jewish sector vs all sectors (CBS) | `scripts/names-content/build-sectors.mjs` |
+| `sector-overrides.json` | Owner exceptions to the Jewish-sector rule (`keep` / `drop`, with a reason) | Owner |
+| `sector-excluded.json`, `SECTOR-REPORT.md` | Names the Jewish-sector rule leaves out, with counts and borderline names | `build-content.mjs` |
 | `REPORT.md` | Build report: counts, held names, dropped Bible references | Build script |
 | `spot-check-NNN.md` | Random cards from a batch for the owner to check | `scripts/names-content/spot-check.mjs` |
 
@@ -30,6 +33,7 @@ node scripts/names-content/build-themes.mjs             # check theme lists, bui
 - A reference that fails is dropped from the card and listed in `REPORT.md`; the card still ships.
 - **Niqqud**: its letters must match the name, apart from the vowel letters ו and י.
 - An entry with `hold` is left out of the deck until the owner decides (unclear origin or meaning).
+- **Jewish-sector rule** (owner decision 2026-11-13, `scripts/names-content/sector.mjs`): the deck keeps a name only when most babies ever given it were in the CBS Jewish sector, or when since 2000 at least 100 Jewish babies got it and they are at least 10% of its births (shared names such as לין, איה, אדם). Exceptions go in `sector-overrides.json`. `build-themes` and `build-details` skip the names it leaves out.
 
 ## Writing rules (E16 spec §2)
 

@@ -18,6 +18,8 @@ const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
 
 const src = readJson(resolve(dataDir, "content-src/themes.json"));
 const content = readJson(resolve(dataDir, "name-content.json")).names;
+// Names the Jewish-sector rule left out of the deck (build-content.mjs) stay on the lists but are skipped.
+const excluded = new Set(readJson(resolve(dataDir, "content-src/sector-excluded.json")).names);
 const stats = new Map(readJson(resolve(dataDir, "names.json")).names.map((n) => [n.n, n]));
 
 // Same rule as src/lib/names/sex.ts, for the report only.
@@ -35,6 +37,7 @@ for (const theme of src.themes) {
   for (const name of theme.names) {
     if (seen.has(name)) errors.push(`${theme.id}: ${name} listed twice`);
     seen.add(name);
+    if (!content[name] && excluded.has(name)) continue;
     if (!content[name]) {
       errors.push(`${theme.id}: ${name} has no card in name-content.json`);
       continue;
@@ -75,7 +78,7 @@ const lines = [
 for (const theme of src.themes) {
   const list = theme.derived
     ? Object.keys(content).filter((n) => stats.get(n) && unisex(stats.get(n)))
-    : theme.names;
+    : theme.names.filter((n) => content[n]);
   lines.push(`## ${theme.label} (\`${theme.id}\`, ${list.length})`, "", `_${theme.rule}_`, "", list.join(", "), "");
 }
 const untagged = [...tags].filter(([n, ids]) => !ids.length && !(stats.get(n) && unisex(stats.get(n)))).map(([n]) => n);

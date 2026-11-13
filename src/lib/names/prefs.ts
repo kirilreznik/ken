@@ -1,5 +1,5 @@
 import { readDuelSaves, type DuelSaves } from "./duel";
-import { SECTOR_LABELS, clampRange, defaultFilters, type Filters, type NameLength, type Sector } from "./filters";
+import { clampRange, defaultFilters, type Filters, type NameLength } from "./filters";
 import { isThemeId } from "./themes";
 import type { SpaceMember } from "./space";
 import type { PopularityBand, SexTag, TrendWord } from "./types";
@@ -46,7 +46,6 @@ const SEX_TAGS: readonly SexTag[] = ["בן", "בת", "מתאים לכולם"];
 const BANDS: readonly PopularityBand[] = ["נפוץ", "בינוני", "נדיר"];
 const TRENDS: readonly TrendWord[] = ["בעלייה", "בירידה", "יציב"];
 const LENGTHS: readonly NameLength[] = ["קצר", "ארוך"];
-const SECTORS = Object.keys(SECTOR_LABELS) as Sector[];
 
 const oneOf =
   <T extends string>(allowed: readonly T[]) =>
@@ -63,7 +62,7 @@ function readFilters(raw: unknown): Filters {
   out.trend = oneOf(TRENDS)(r.trend);
   out.letter = typeof r.letter === "string" && /^\p{L}$/u.test(r.letter) ? r.letter : null;
   out.length = oneOf(LENGTHS)(r.length);
-  out.origin = oneOf(SECTORS)(r.origin);
+  // "origin" ("נפוץ בקרב") was removed 2026-11-13; an old saved value is dropped here.
   if (Array.isArray(r.themes)) {
     const themes = [...new Set(r.themes.filter(isThemeId))];
     out.themes = themes.length ? themes : null;

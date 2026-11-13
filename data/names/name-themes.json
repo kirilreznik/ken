@@ -392,9 +392,6 @@
    "land",
    "nature"
   ],
-  "אבראהים": [
-   "bible"
-  ],
   "נעמה": [
    "bible",
    "joy"
@@ -459,12 +456,6 @@
   "אמילי": [
    "international"
   ],
-  "מסק": [
-   "special"
-  ],
-  "נור": [
-   "fire"
-  ],
   "אוריאל": [
    "fire",
    "bible"
@@ -496,10 +487,6 @@
   "עופרי": [
    "animals"
   ],
-  "שאם": [
-   "special",
-   "land"
-  ],
   "ברכה": [
    "joy"
   ],
@@ -510,15 +497,8 @@
   "מריה": [
    "international"
   ],
-  "מילא": [
-   "joy",
-   "international"
-  ],
   "יהושע": [
    "bible"
-  ],
-  "זיין": [
-   "beauty"
   ],
   "ידידיה": [
    "bible",
@@ -577,14 +557,7 @@
   "אביה": [
    "bible"
   ],
-  "ריאן": [
-   "water"
-  ],
   "יאר": [
-   "fire",
-   "special"
-  ],
-  "שמס": [
    "fire",
    "special"
   ],
@@ -731,21 +704,11 @@
    "joy",
    "international"
   ],
-  "מאסה": [
-   "beauty"
-  ],
   "אליאב": [
    "bible"
   ],
   "עמיחי": [
    "israel"
-  ],
-  "אוסיד": [
-   "strength",
-   "animals"
-  ],
-  "זינה": [
-   "beauty"
   ],
   "ליאור": [
    "fire"
@@ -760,9 +723,6 @@
    "bible",
    "joy"
   ],
-  "אילול": [
-   "special"
-  ],
   "אפרים": [
    "bible"
   ],
@@ -774,15 +734,6 @@
   ],
   "אופק": [
    "special"
-  ],
-  "אליאס": [
-   "international"
-  ],
-  "ג'ורי": [
-   "nature"
-  ],
-  "סיף": [
-   "strength"
   ],
   "דריה": [
    "international"
@@ -827,9 +778,6 @@
   "ארז": [
    "strength",
    "nature"
-  ],
-  "ג'מאל": [
-   "beauty"
   ],
   "עתי": [
    "special"
@@ -897,14 +845,8 @@
   "אחיה": [
    "bible"
   ],
-  "רים": [
-   "animals"
-  ],
   "אמרי": [
    "poetry"
-  ],
-  "פרח": [
-   "nature"
   ],
   "טומי": [
    "international"
@@ -943,9 +885,6 @@
   "אוראל": [
    "fire"
   ],
-  "קמר": [
-   "fire"
-  ],
   "שפרה": [
    "bible",
    "beauty"
@@ -969,9 +908,6 @@
    "poetry",
    "joy"
   ],
-  "ביסאן": [
-   "special"
-  ],
   "סיני": [
    "land",
    "bible"
@@ -986,10 +922,6 @@
   "רננה": [
    "poetry",
    "joy"
-  ],
-  "ליית": [
-   "strength",
-   "animals"
   ],
   "גיל": [
    "joy"
@@ -1014,9 +946,6 @@
   ],
   "שיראל": [
    "poetry"
-  ],
-  "ח'ליל": [
-   "joy"
   ],
   "אלונה": [
    "nature"
@@ -1043,9 +972,6 @@
   "ניר": [
    "land",
    "nature"
-  ],
-  "סעיד": [
-   "joy"
   ],
   "צור": [
    "strength"
@@ -1083,9 +1009,6 @@
    "bible",
    "animals"
   ],
-  "אנס": [
-   "joy"
-  ],
   "לילי": [
    "international"
   ],
@@ -1098,9 +1021,6 @@
   "נח": [
    "bible"
   ],
-  "באסם": [
-   "joy"
-  ],
   "נינה": [
    "international"
   ],
@@ -1111,17 +1031,8 @@
    "special",
    "strength"
   ],
-  "עימאד": [
-   "strength"
-  ],
   "לב": [
    "special"
-  ],
-  "אמל": [
-   "joy"
-  ],
-  "איוב": [
-   "bible"
   ],
   "נורי": [
    "fire"
@@ -1129,15 +1040,8 @@
   "אלכס": [
    "international"
   ],
-  "נוח": [
-   "bible"
-  ],
   "דורון": [
    "joy"
-  ],
-  "אוסאמה": [
-   "strength",
-   "animals"
   ],
   "קורן": [
    "fire"
@@ -1154,9 +1058,6 @@
   ],
   "יעלה": [
    "animals"
-  ],
-  "יאקות": [
-   "beauty"
   ],
   "רעות": [
    "joy"
@@ -1193,12 +1094,6 @@
   ],
   "בצלאל": [
    "bible"
-  ],
-  "ג'ולאן": [
-   "land"
-  ],
-  "סנא": [
-   "fire"
   ],
   "דולב": [
    "nature"
@@ -1250,24 +1145,12 @@
   "נלי": [
    "international"
   ],
-  "באסל": [
-   "strength"
-  ],
-  "דימא": [
-   "water"
-  ],
   "עובדיה": [
    "bible"
-  ],
-  "רחמה": [
-   "joy"
   ],
   "דילן": [
    "water",
    "international"
-  ],
-  "האני": [
-   "joy"
   ],
   "גבע": [
    "israel",
@@ -1283,12 +1166,6 @@
   ],
   "סתיו": [
    "nature"
-  ],
-  "ביאן": [
-   "poetry"
-  ],
-  "סיראג'": [
-   "fire"
   ],
   "עזרא": [
    "bible"
@@ -1307,9 +1184,6 @@
   ],
   "פריידא": [
    "joy"
-  ],
-  "מוניר": [
-   "fire"
   ],
   "הוד": [
    "beauty"
@@ -1339,12 +1213,6 @@
   "אנה": [
    "international"
   ],
-  "נדא": [
-   "water"
-  ],
-  "ג'מיל": [
-   "beauty"
-  ],
   "יוחנן": [
    "bible"
   ],
@@ -1360,18 +1228,12 @@
   "שאול": [
    "bible"
   ],
-  "פהד": [
-   "animals"
-  ],
   "כליל": [
    "beauty"
   ],
   "לונה": [
    "fire",
    "international"
-  ],
-  "סידרא": [
-   "nature"
   ],
   "תיאו": [
    "international"
@@ -1382,9 +1244,6 @@
   "חגי": [
    "bible"
   ],
-  "וסים": [
-   "beauty"
-  ],
   "אליס": [
    "international"
   ],
@@ -1394,14 +1253,8 @@
   "אביר": [
    "strength"
   ],
-  "חוסאם": [
-   "strength"
-  ],
   "חנוך": [
    "bible"
-  ],
-  "לונא": [
-   "fire"
   ],
   "שחרי": [
    "fire"
@@ -1409,22 +1262,10 @@
   "חגית": [
    "bible"
   ],
-  "שאדי": [
-   "poetry"
-  ],
-  "נדין": [
-   "international"
-  ],
   "מעוז": [
    "strength"
   ],
   "קשת": [
-   "special"
-  ],
-  "ג'וליא": [
-   "international"
-  ],
-  "נאדר": [
    "special"
   ],
   "מיתר": [
@@ -1439,40 +1280,18 @@
   "דקל": [
    "nature"
   ],
-  "סלסביל": [
-   "water"
-  ],
-  "שאהין": [
-   "animals"
-  ],
-  "מאסא": [
-   "beauty"
-  ],
   "רן": [
    "joy"
   ],
   "אדוה": [
    "water"
   ],
-  "אנוור": [
-   "fire"
-  ],
   "שמשון": [
    "strength",
    "bible"
   ],
-  "תסנים": [
-   "water"
-  ],
-  "ריאד": [
-   "nature"
-  ],
   "איילת השחר": [
    "fire"
-  ],
-  "ליית'": [
-   "strength",
-   "animals"
   ],
   "נחמיה": [
    "bible"
@@ -1487,21 +1306,9 @@
    "israel",
    "bible"
   ],
-  "ג'נאת": [
-   "nature"
-  ],
-  "לוג'ין": [
-   "beauty"
-  ],
-  "זאין": [
-   "beauty"
-  ],
   "בלה": [
    "beauty",
    "international"
-  ],
-  "גורי": [
-   "animals"
   ],
   "מתניה": [
    "bible"
@@ -1539,16 +1346,10 @@
   "גרשון": [
    "bible"
   ],
-  "זמזם": [
-   "water"
-  ],
   "ציון": [
    "israel"
   ],
   "לירן": [
-   "joy"
-  ],
-  "סלאם": [
    "joy"
   ],
   "ליאון": [
@@ -1563,17 +1364,11 @@
    "fire",
    "international"
   ],
-  "ריחאן": [
-   "nature"
-  ],
   "תיאה": [
    "international"
   ],
   "מיאור": [
    "fire"
-  ],
-  "עביר": [
-   "nature"
   ],
   "אביאור": [
    "fire"
@@ -1587,14 +1382,8 @@
   "באר": [
    "water"
   ],
-  "הדיל": [
-   "animals"
-  ],
   "גליה": [
    "water"
-  ],
-  "נאדיה": [
-   "international"
   ],
   "שחף": [
    "water",
@@ -1602,13 +1391,6 @@
   ],
   "רביד": [
    "beauty"
-  ],
-  "חביב": [
-   "joy"
-  ],
-  "נימר": [
-   "strength",
-   "animals"
   ],
   "דגן": [
    "nature"
@@ -1625,9 +1407,6 @@
   "גד": [
    "bible"
   ],
-  "ג'ורג'": [
-   "international"
-  ],
   "קים": [
    "international"
   ],
@@ -1637,28 +1416,16 @@
   "לאור": [
    "fire"
   ],
-  "טארק": [
-   "fire"
-  ],
   "יקיר": [
    "joy"
   ],
   "מייקל": [
    "international"
   ],
-  "ג'נה": [
-   "nature"
-  ],
   "אילנה": [
    "nature"
   ],
   "עליזה": [
-   "joy"
-  ],
-  "נסרין": [
-   "nature"
-  ],
-  "הנא": [
    "joy"
   ],
   "רעיה": [
@@ -1676,9 +1443,6 @@
   "פרידא": [
    "joy"
   ],
-  "יאסמינה": [
-   "nature"
-  ],
   "ארגמן": [
    "special"
   ],
@@ -1688,9 +1452,6 @@
   "מור": [
    "nature"
   ],
-  "שירין": [
-   "international"
-  ],
   "מרגלית": [
    "beauty"
   ],
@@ -1699,9 +1460,6 @@
   ],
   "עמרם": [
    "bible"
-  ],
-  "רעד": [
-   "strength"
   ],
   "ריו": [
    "water",
@@ -1722,9 +1480,6 @@
   ],
   "אסנת": [
    "bible"
-  ],
-  "חמד": [
-   "beauty"
   ],
   "זכריה": [
    "bible"
@@ -1754,12 +1509,6 @@
   "גדעון": [
    "bible"
   ],
-  "נורה": [
-   "fire"
-  ],
-  "נואל": [
-   "international"
-  ],
   "גבריאלה": [
    "international"
   ],
@@ -1775,20 +1524,11 @@
   "אנדי": [
    "international"
   ],
-  "לוקאס": [
-   "international"
-  ],
   "נצר": [
    "nature"
   ],
   "אשחר": [
    "nature"
-  ],
-  "סופיא": [
-   "international"
-  ],
-  "מוהנד": [
-   "strength"
   ],
   "יוני": [
    "animals"
@@ -1809,21 +1549,11 @@
   "מלאני": [
    "international"
   ],
-  "גנאת": [
-   "nature"
-  ],
   "אשל": [
    "nature"
   ],
-  "אלאן": [
-   "international"
-  ],
   "נירי": [
    "land"
-  ],
-  "אסלאן": [
-   "strength",
-   "animals"
   ],
   "מתאו": [
    "international"
@@ -1843,14 +1573,8 @@
   "להב": [
    "fire"
   ],
-  "סקר": [
-   "animals"
-  ],
   "עשהאל": [
    "bible"
-  ],
-  "לוג'יין": [
-   "beauty"
   ],
   "אילור": [
    "fire"
@@ -1867,12 +1591,6 @@
   "אריק": [
    "international"
   ],
-  "רואן": [
-   "water"
-  ],
-  "סועאד": [
-   "joy"
-  ],
   "לאון": [
    "animals",
    "international"
@@ -1880,18 +1598,9 @@
   "אליסה": [
    "international"
   ],
-  "בדר": [
-   "fire"
-  ],
   "מירון": [
    "israel",
    "land"
-  ],
-  "לוגין": [
-   "beauty"
-  ],
-  "ניסאן": [
-   "nature"
   ],
   "נוהר": [
    "fire"
@@ -1903,17 +1612,8 @@
   "ליטל": [
    "water"
   ],
-  "רנין": [
-   "poetry"
-  ],
   "יוגב": [
    "land"
-  ],
-  "נעים": [
-   "joy"
-  ],
-  "ג'מילה": [
-   "beauty"
   ],
   "מאירה": [
    "fire"
@@ -1937,9 +1637,6 @@
   "ירון": [
    "joy"
   ],
-  "רביע": [
-   "nature"
-  ],
   "סער": [
    "strength"
   ],
@@ -1952,14 +1649,8 @@
   "ניסן": [
    "nature"
   ],
-  "אסעד": [
-   "joy"
-  ],
   "חביבה": [
    "joy"
-  ],
-  "נגם": [
-   "fire"
   ],
   "סמואל": [
    "international"
@@ -1967,14 +1658,8 @@
   "סלין": [
    "international"
   ],
-  "עזיז": [
-   "strength"
-  ],
   "קירה": [
    "international"
-  ],
-  "יסמינה": [
-   "nature"
   ],
   "פורת": [
    "nature"
@@ -1984,15 +1669,6 @@
   ],
   "יערי": [
    "nature"
-  ],
-  "ריחאנה": [
-   "nature"
-  ],
-  "תאג'": [
-   "beauty"
-  ],
-  "אלמאס": [
-   "beauty"
   ],
   "אלאורי": [
    "fire"
@@ -2012,9 +1688,6 @@
   ],
   "הלן": [
    "international"
-  ],
-  "זוהיר": [
-   "nature"
   ],
   "דותן": [
    "israel"
@@ -2057,9 +1730,6 @@
   "טבע": [
    "nature"
   ],
-  "דהב": [
-   "beauty"
-  ],
   "דפנה": [
    "nature"
   ],
@@ -2074,9 +1744,6 @@
   ],
   "זוהרה": [
    "fire"
-  ],
-  "ג'וזף": [
-   "international"
   ],
   "עטרת": [
    "beauty"
@@ -2099,9 +1766,6 @@
   "רווה": [
    "water"
   ],
-  "כריסטיאן": [
-   "international"
-  ],
   "שינדל": [
    "beauty"
   ],
@@ -2111,23 +1775,14 @@
   "לוקה": [
    "international"
   ],
-  "סידרה": [
-   "nature"
-  ],
   "תור": [
    "animals"
   ],
   "דבש": [
    "special"
   ],
-  "יאקוט": [
-   "beauty"
-  ],
   "לוקא": [
    "international"
-  ],
-  "תאג": [
-   "beauty"
   ],
   "מפל": [
    "water"
@@ -2147,20 +1802,11 @@
   "אלכסנדרה": [
    "international"
   ],
-  "מנאר": [
-   "fire"
-  ],
-  "גמילה": [
-   "beauty"
-  ],
   "אורון": [
    "fire"
   ],
   "מקס": [
    "international"
-  ],
-  "הלאל": [
-   "fire"
   ],
   "אדריאן": [
    "international"
@@ -2181,25 +1827,12 @@
   "יעלי": [
    "animals"
   ],
-  "אסד": [
-   "strength",
-   "animals"
-  ],
   "מנואל": [
    "international"
   ],
   "חזקיהו": [
    "strength",
    "bible"
-  ],
-  "גזאל": [
-   "animals"
-  ],
-  "גולאן": [
-   "land"
-  ],
-  "ארג'ואן": [
-   "nature"
   ],
   "נוייה": [
    "beauty"
@@ -2209,9 +1842,6 @@
   ],
   "אור-יה": [
    "fire"
-  ],
-  "ג'בל": [
-   "land"
   ],
   "סיון": [
    "nature"
@@ -2226,15 +1856,6 @@
   "צליל": [
    "poetry"
   ],
-  "זהרה": [
-   "nature"
-  ],
-  "סובחי": [
-   "fire"
-  ],
-  "סבאח": [
-   "fire"
-  ],
   "מילנה": [
    "international"
   ],
@@ -2246,12 +1867,6 @@
   ],
   "טופז": [
    "beauty"
-  ],
-  "רפיק": [
-   "joy"
-  ],
-  "סוהיל": [
-   "fire"
   ],
   "רגב": [
    "land"
@@ -2284,9 +1899,6 @@
   "פריידי": [
    "joy"
   ],
-  "ג'אסר": [
-   "strength"
-  ],
   "מגן": [
    "strength"
   ],
@@ -2303,9 +1915,6 @@
   "מון": [
    "fire",
    "international"
-  ],
-  "אורקיד": [
-   "nature"
   ],
   "מיטל": [
    "water"
@@ -2328,12 +1937,6 @@
    "israel",
    "water"
   ],
-  "ודאד": [
-   "joy"
-  ],
-  "ג'וליאן": [
-   "international"
-  ],
   "רובין": [
    "international"
   ],
@@ -2346,9 +1949,6 @@
   "אנג'לה": [
    "international"
   ],
-  "ורוד": [
-   "nature"
-  ],
   "קמילה": [
    "international",
    "nature"
@@ -2358,9 +1958,6 @@
   ],
   "ריזל": [
    "nature"
-  ],
-  "פוראת": [
-   "water"
   ],
   "אמבר": [
    "beauty"
@@ -2384,10 +1981,6 @@
   "שמש": [
    "fire"
   ],
-  "לית'": [
-   "strength",
-   "animals"
-  ],
   "תאו": [
    "international"
   ],
@@ -2410,9 +2003,6 @@
   "ניקול": [
    "international"
   ],
-  "מרווה": [
-   "nature"
-  ],
   "נמרוד": [
    "strength",
    "bible"
@@ -2423,18 +2013,11 @@
   "הגר": [
    "bible"
   ],
-  "סוזאן": [
-   "international",
-   "nature"
-  ],
   "ליליה": [
    "nature"
   ],
   "ארנון": [
    "water"
-  ],
-  "דיאא": [
-   "fire"
   ],
   "עדה": [
    "bible"
@@ -2442,54 +2025,30 @@
   "נדיה": [
    "international"
   ],
-  "מריאן": [
-   "international"
-  ],
-  "מונירה": [
-   "fire"
-  ],
   "בלהה": [
    "bible"
   ],
   "שביט": [
    "fire"
   ],
-  "מארי": [
-   "international"
-  ],
   "צוריאל": [
    "strength"
-  ],
-  "נאדרה": [
-   "special"
   ],
   "ויליאם": [
    "international"
   ],
-  "דאנה": [
-   "beauty"
-  ],
   "פרל": [
    "beauty"
-  ],
-  "וורוד": [
-   "nature"
   ],
   "ג'וי": [
    "joy",
    "international"
-  ],
-  "פרדוס": [
-   "nature"
   ],
   "לי-אור": [
    "fire"
   ],
   "ברקת": [
    "beauty"
-  ],
-  "תמארה": [
-   "nature"
   ],
   "תמרי": [
    "nature"
@@ -2519,13 +2078,6 @@
    "animals",
    "international"
   ],
-  "ג'ינאן": [
-   "nature"
-  ],
-  "עקאב": [
-   "strength",
-   "animals"
-  ],
   "נוב": [
    "bible"
   ],
@@ -2541,9 +2093,6 @@
    "israel",
    "land"
   ],
-  "זיינה": [
-   "beauty"
-  ],
   "מיקאלה": [
    "international"
   ],
@@ -2557,17 +2106,11 @@
    "international",
    "nature"
   ],
-  "רוזא": [
-   "nature"
-  ],
   "אודם": [
    "beauty"
   ],
   "איליין": [
    "international"
-  ],
-  "נג'ד": [
-   "land"
   ],
   "סטערנא": [
    "fire"
@@ -2578,21 +2121,11 @@
   "תיאודור": [
    "international"
   ],
-  "טוליפ": [
-   "nature"
-  ],
   "שדה": [
    "land"
   ],
   "מיילו": [
    "international"
-  ],
-  "דילאן": [
-   "water",
-   "international"
-  ],
-  "יקות": [
-   "beauty"
   ],
   "בראשית": [
    "special"

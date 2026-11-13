@@ -10,7 +10,6 @@ import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
   RANGE_MAX,
   RANGE_MIN,
-  SECTOR_LABELS,
   applyLabel,
   defaultFilters,
   lengthValue,
@@ -19,7 +18,6 @@ import {
   sexToken,
   type Filters,
   type NameLength,
-  type Sector,
 } from "@/lib/names/filters";
 import { HIDE_HINT } from "@/lib/names/lists";
 import { getPref, setPref } from "@/lib/names/prefs";
@@ -64,11 +62,6 @@ const TRENDS: Option<TrendWord | null>[] = [
   { value: "בעלייה", label: arrow("↗", "בעלייה") },
   { value: "יציב", label: arrow("→", "יציב") },
   { value: "בירידה", label: arrow("↘", "בירידה") },
-];
-
-const ORIGINS: Option<Sector | null>[] = [
-  { value: null, label: "כל השמות" },
-  ...(Object.entries(SECTOR_LABELS) as [Sector, string][]).map(([value, label]) => ({ value, label })),
 ];
 
 const LENGTHS: Option<NameLength | null>[] = [
@@ -178,8 +171,8 @@ function Chevron() {
 type Picker = "letter" | "length" | null;
 
 /**
- * "סינון" (board 3, FR-W16): sex chips, theme chips (several at once), popularity, trend and
- * origin chips, first letter and length (or a custom letter range)
+ * "סינון" (board 3, FR-W16): sex chips, theme chips (several at once), popularity and trend
+ * chips, first letter and length (or a custom letter range)
  * pickers, "שמות שהסתרתי ({n})" and the apply button with the live count. Changes are a draft
  * until "הצגת {n} שמות" saves them to the device pref; closing the sheet another way drops them.
  */
@@ -276,7 +269,6 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       <ThemeGroup value={draft.themes} onChange={set("themes")} />
       <ChipGroup legend="כמה נפוץ" options={BANDS} value={draft.popularity} onChange={set("popularity")} />
       <ChipGroup legend="מגמה" options={TRENDS} value={draft.trend} onChange={set("trend")} />
-      <ChipGroup legend="נפוץ בקרב" options={ORIGINS} value={draft.origin} onChange={set("origin")} />
 
       <div className="flex flex-col gap-3">
         <div className="grid grid-cols-2 gap-3">
