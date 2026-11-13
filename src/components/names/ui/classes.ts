@@ -170,3 +170,23 @@ export function emptyTitleClass(surface: EmptyPanelSurface): string {
 export function emptyLineClass(): string {
   return EMPTY_LINE;
 }
+
+// Segmented control (NP-060): the lists tabs and the duel's source toggle. The group is a white
+// pill with equal columns; the selected segment is ink.
+export function segmentGroupClass(): string {
+  return "grid auto-cols-fr grid-flow-col gap-1 rounded-pill border border-line bg-surface p-1";
+}
+
+export function segmentClass(selected: boolean): string {
+  return `min-h-11 rounded-pill px-2 text-person font-bold ${selected ? "bg-ink text-surface" : "text-ink-soft hover:bg-sand"}`;
+}
+
+// Loading placeholders (DESIGN.md "Loading"): static bars, no shimmer, so nothing to reduce. "canvas"
+// is sand on canvas and white cards; "glass" is the well inside a glass card (the deck skeleton).
+export type SkeletonSurface = "canvas" | "glass";
+
+const SKELETON: Record<SkeletonSurface, string> = { canvas: "bg-sand", glass: "names-well" };
+
+export function skeletonClass(surface: SkeletonSurface = "canvas"): string {
+  return SKELETON[surface];
+}

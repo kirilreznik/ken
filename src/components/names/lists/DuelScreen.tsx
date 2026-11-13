@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
-import { Button, IconButton, emptyPanelClass, emptyTitleClass, linkClass, useToastLift } from "@/components/names/ui";
+import { Button, IconButton, emptyPanelClass, emptyTitleClass, linkClass, segmentClass, segmentGroupClass, useToastLift } from "@/components/names/ui";
+import { DuelSkeleton } from "./ListSkeleton";
 import { APP_PATH } from "@/lib/names/auth";
 import {
   currentPair,
@@ -184,7 +185,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
             <span aria-hidden="true" className="text-person font-bold text-ink-soft">
               בין:
             </span>
-            <div className="grid flex-1 grid-cols-2 gap-1 rounded-pill border border-line bg-surface p-1">
+            <div className={`flex-1 ${segmentGroupClass()}`}>
               {SOURCES.map((s) => {
                 const checked = s.id === source;
                 return (
@@ -197,7 +198,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                     tabIndex={checked ? 0 : -1}
                     onClick={() => onSource(s.id)}
                     onKeyDown={onToggleKey}
-                    className={`min-h-11 rounded-pill px-2 text-person font-bold ${checked ? "bg-ink text-surface" : "text-ink-soft hover:bg-sand"}`}
+                    className={segmentClass(checked)}
                   >
                     {s.id === "saved" ? `${s.label} · ${savedNames.length}` : `${s.label} · ${matchNames.length}`}
                   </button>
@@ -208,9 +209,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
         ) : null}
 
         {!ready ? (
-          <div aria-busy="true" className="h-[180px] rounded-xl bg-surface shadow-card">
-            <span className="sr-only">בטעינה</span>
-          </div>
+          <DuelSkeleton />
         ) : !duel || !p ? (
           <div className={emptyPanelClass("card")}>
             <h2 className={emptyTitleClass("card")}>{duelTooFewText(source, list.length)}</h2>

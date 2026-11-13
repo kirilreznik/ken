@@ -8,7 +8,8 @@ import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
-import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet } from "@/components/names/ui";
+import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet, segmentClass, segmentGroupClass } from "@/components/names/ui";
+import { ListSkeleton } from "./ListSkeleton";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
 import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
@@ -214,7 +215,7 @@ export default function ListsScreen() {
 
         {ready ? <InstallHint userId={user?.id ?? null} voteCount={state?.votes.size ?? 0} /> : null}
 
-        <div role="tablist" aria-label="רשימות" className="grid auto-cols-fr grid-flow-col gap-1 rounded-pill border border-line bg-surface p-1">
+        <div role="tablist" aria-label="רשימות" className={segmentGroupClass()}>
           {tabs.map((t) => {
             const selected = t.id === tab;
             return (
@@ -228,7 +229,7 @@ export default function ListsScreen() {
                 tabIndex={selected ? 0 : -1}
                 onClick={() => selectTab(t.id)}
                 onKeyDown={onTabKeyDown}
-                className={`min-h-11 rounded-pill px-2 text-person font-bold ${selected ? "bg-ink text-surface" : "text-ink-soft hover:bg-sand"}`}
+                className={segmentClass(selected)}
               >
                 {t.label}
               </button>
@@ -268,9 +269,7 @@ export default function ListsScreen() {
               onChoose={(row) => choose(row.name, "saved", { custom: row.custom })}
             />
           ) : space.loading ? (
-            <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-              <span className="sr-only">בטעינה</span>
-            </div>
+            <ListSkeleton />
           ) : !space.isShared ? (
             <SoloMatches />
           ) : (
@@ -354,9 +353,7 @@ function MatchesPanel({ userId, state, onRetry, memberCount, names, canOpen, cho
     return (
       <>
         {intro}
-        <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-          <span className="sr-only">בטעינה</span>
-        </div>
+        <ListSkeleton />
       </>
     );
   }
@@ -544,9 +541,7 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
 
   if (!ready) {
     return (
-      <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-        <span className="sr-only">בטעינה</span>
-      </div>
+      <ListSkeleton />
     );
   }
 

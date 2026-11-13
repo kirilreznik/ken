@@ -1,3 +1,4 @@
+import { skeletonClass } from "@/components/names/ui";
 import type { DetailsState } from "@/components/names/useNameDetails";
 
 /** PRD 3.2.7: shown in place of the story and similar names when the details can't load. */
@@ -12,8 +13,8 @@ export default function DetailsPending({ state }: { state: DetailsState }) {
   if (state === "error") return <p className="text-caption text-ink-soft">{DETAILS_OFFLINE}</p>;
   return (
     <div data-details-loading aria-hidden="true" className="flex flex-col gap-2 py-1">
-      <div className="h-3 w-full rounded-pill bg-sand" />
-      <div className="h-3 w-3/5 rounded-pill bg-sand" />
+      <div className={`h-3 w-full rounded-pill ${skeletonClass()}`} />
+      <div className={`h-3 w-3/5 rounded-pill ${skeletonClass()}`} />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
+import { ListSkeleton } from "@/components/names/lists/ListSkeleton";
 import { useNameStats } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
@@ -81,9 +82,7 @@ export default function HiddenScreen() {
         <p className="m-0 text-person font-medium text-ink-soft">שמות שהסתרת לא מופיעים בבחירה. אחרי החזרה השם יופיע בה שוב.</p>
 
         {!ready ? (
-          <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-            <span className="sr-only">בטעינה</span>
-          </div>
+          <ListSkeleton />
         ) : state?.loadFailed ? (
           <VotesLoadFailed onRetry={() => void store?.reconcile()} />
         ) : hidden.length === 0 ? (

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, IconButton, inputClass } from "@/components/names/ui";
+import { Button, IconButton, inputClass, skeletonClass } from "@/components/names/ui";
 import { useOnline } from "@/components/names/useMatches";
 import { useSpace } from "@/components/names/useSpace";
 import { hasAppEntry } from "@/lib/names/appHistory";
@@ -208,8 +208,8 @@ export default function InviteScreen() {
             </>
           ) : waiting ? (
             <div aria-busy="true" className="flex flex-col gap-3">
-              <div className="h-11 rounded-md bg-sand" />
-              <div className="h-14 rounded-pill bg-sand" />
+              <div className={`h-11 rounded-md ${skeletonClass()}`} />
+              <div className={`h-14 rounded-pill ${skeletonClass()}`} />
               <span className="sr-only">יוצרים קישור</span>
             </div>
           ) : null}

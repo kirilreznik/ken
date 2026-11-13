@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Button, Glass, emptyTitleClass } from "@/components/names/ui";
+import { Button, Glass, emptyTitleClass, skeletonClass } from "@/components/names/ui";
 import { DECK_LOAD_ERROR, DECK_LOADING_TEXT } from "@/lib/names/deck";
 import { deckPanel, deckPanelWrap } from "./EmptyDeck";
 
-const line = "rounded-pill bg-sand";
+const line = `rounded-pill ${skeletonClass("glass")}`;
 
 /**
  * Where the card will be while the names data loads: the card's glass outline with quiet sand
@@ -30,8 +30,8 @@ export function DeckSkeleton() {
         <div aria-hidden="true" className="flex flex-col gap-4">
           <div className={`h-2 w-full ${line}`} />
           <div className="flex gap-3">
-            <div className="h-20 flex-1 rounded-lg bg-sand" />
-            <div className="h-20 flex-1 rounded-lg bg-sand" />
+            <div className={`h-20 flex-1 rounded-lg ${skeletonClass("glass")}`} />
+            <div className={`h-20 flex-1 rounded-lg ${skeletonClass("glass")}`} />
           </div>
         </div>
       </div>
