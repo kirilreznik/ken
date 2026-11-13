@@ -19,7 +19,7 @@ import {
   type Sample,
   type Velocity,
 } from "@/lib/names/gesture";
-import { DURATION_FADE, DURATION_SNAP, EASE_OUT } from "@/styles/nest-motion";
+import { DURATION_CARD, DURATION_FADE, DURATION_SNAP, EASE_OUT } from "@/styles/nest-motion";
 
 type Drag = {
   id: number;
@@ -167,6 +167,14 @@ export function useSwipeDrag({
     if (refocus.current) {
       refocus.current = false;
       node.focus({ preventScroll: true });
+    }
+    // A card an undo brings back (CardStack's data-return) comes in the reverse of its fling (NP-091).
+    const back = node.dataset.return as DragKind | undefined;
+    if (back) {
+      const frames = reducedMotion()
+        ? [{ opacity: 0 }, { opacity: 1 }]
+        : [{ transform: flingTo(back, keepDir()), opacity: 0.4 }, { transform: "none", opacity: 1 }];
+      node.animate(frames, { duration: reducedMotion() ? DURATION_FADE : DURATION_CARD, easing: EASE_OUT });
     }
     const fit = () => {
       node.style.touchAction = node.scrollHeight > node.clientHeight + 1 ? "pan-y" : "none";
