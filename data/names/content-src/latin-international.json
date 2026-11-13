@@ -1,0 +1,973 @@
+{
+ "_about": "International forms shown under the Academy spelling (\"הצורה המוכרת בעולם\"). Hand-made list. source 'bible' = the name's form in the English King James Bible, checked word by word against the KJV text by scripts/names-content/build-latin.mjs; 'borrowed:<lang>' = the name was taken from that language and this is its spelling there. Entries equal to the Academy spelling are dropped at build.",
+ "names": {
+  "מיכאל": {
+   "form": "Michael",
+   "source": "bible"
+  },
+  "דניאל": {
+   "form": "Daniel",
+   "source": "bible"
+  },
+  "שרה": {
+   "form": "Sarah",
+   "source": "bible"
+  },
+  "רחל": {
+   "form": "Rachel",
+   "source": "bible"
+  },
+  "לאה": {
+   "form": "Leah",
+   "source": "bible"
+  },
+  "חנה": {
+   "form": "Hannah",
+   "source": "bible"
+  },
+  "מרים": {
+   "form": "Miriam",
+   "source": "bible"
+  },
+  "אסתר": {
+   "form": "Esther",
+   "source": "bible"
+  },
+  "רות": {
+   "form": "Ruth",
+   "source": "bible"
+  },
+  "אביגיל": {
+   "form": "Abigail",
+   "source": "bible"
+  },
+  "דבורה": {
+   "form": "Deborah",
+   "source": "bible"
+  },
+  "דינה": {
+   "form": "Dinah",
+   "source": "bible"
+  },
+  "אברהם": {
+   "form": "Abraham",
+   "source": "bible"
+  },
+  "אהרון": {
+   "form": "Aaron",
+   "source": "bible"
+  },
+  "בנימין": {
+   "form": "Benjamin",
+   "source": "bible"
+  },
+  "שמואל": {
+   "form": "Samuel",
+   "source": "bible"
+  },
+  "יונתן": {
+   "form": "Jonathan",
+   "source": "bible"
+  },
+  "יהונתן": {
+   "form": "Jonathan",
+   "source": "bible"
+  },
+  "נתן": {
+   "form": "Nathan",
+   "source": "bible"
+  },
+  "אלישע": {
+   "form": "Elisha",
+   "source": "bible"
+  },
+  "עזרא": {
+   "form": "Ezra",
+   "source": "bible"
+  },
+  "גדעון": {
+   "form": "Gideon",
+   "source": "bible"
+  },
+  "בועז": {
+   "form": "Boaz",
+   "source": "bible"
+  },
+  "אריאל": {
+   "form": "Ariel",
+   "source": "bible"
+  },
+  "אוריאל": {
+   "form": "Uriel",
+   "source": "bible"
+  },
+  "גבריאל": {
+   "form": "Gabriel",
+   "source": "bible"
+  },
+  "יואל": {
+   "form": "Joel",
+   "source": "bible"
+  },
+  "נפתלי": {
+   "form": "Naphtali",
+   "source": "bible"
+  },
+  "ראובן": {
+   "form": "Reuben",
+   "source": "bible"
+  },
+  "אפרים": {
+   "form": "Ephraim",
+   "source": "bible"
+  },
+  "עמוס": {
+   "form": "Amos",
+   "source": "bible"
+  },
+  "יונה": {
+   "form": "Jonah",
+   "source": "bible"
+  },
+  "מיכה": {
+   "form": "Micah",
+   "source": "bible"
+  },
+  "שאול": {
+   "form": "Saul",
+   "source": "bible"
+  },
+  "נח": {
+   "form": "Noah",
+   "source": "bible"
+  },
+  "חוה": {
+   "form": "Eve",
+   "source": "bible"
+  },
+  "חווה": {
+   "form": "Eve",
+   "source": "bible"
+  },
+  "זכריה": {
+   "form": "Zechariah",
+   "source": "bible"
+  },
+  "מלאכי": {
+   "form": "Malachi",
+   "source": "bible"
+  },
+  "נחמיה": {
+   "form": "Nehemiah",
+   "source": "bible"
+  },
+  "יחזקאל": {
+   "form": "Ezekiel",
+   "source": "bible"
+  },
+  "ישעיהו": {
+   "form": "Isaiah",
+   "source": "bible"
+  },
+  "ירמיהו": {
+   "form": "Jeremiah",
+   "source": "bible"
+  },
+  "שמעון": {
+   "form": "Simeon",
+   "source": "bible"
+  },
+  "יהודה": {
+   "form": "Judah",
+   "source": "bible"
+  },
+  "יוסף": {
+   "form": "Joseph",
+   "source": "bible"
+  },
+  "יעקב": {
+   "form": "Jacob",
+   "source": "bible"
+  },
+  "יצחק": {
+   "form": "Isaac",
+   "source": "bible"
+  },
+  "משה": {
+   "form": "Moses",
+   "source": "bible"
+  },
+  "שלמה": {
+   "form": "Solomon",
+   "source": "bible"
+  },
+  "אליהו": {
+   "form": "Elijah",
+   "source": "bible"
+  },
+  "יהושע": {
+   "form": "Joshua",
+   "source": "bible"
+  },
+  "רבקה": {
+   "form": "Rebekah",
+   "source": "bible"
+  },
+  "אליעזר": {
+   "form": "Eliezer",
+   "source": "bible"
+  },
+  "הגר": {
+   "form": "Hagar",
+   "source": "bible"
+  },
+  "מרדכי": {
+   "form": "Mordecai",
+   "source": "bible"
+  },
+  "ציון": {
+   "form": "Zion",
+   "source": "bible"
+  },
+  "שמשון": {
+   "form": "Samson",
+   "source": "bible"
+  },
+  "ישי": {
+   "form": "Jesse",
+   "source": "bible"
+  },
+  "זבולון": {
+   "form": "Zebulun",
+   "source": "bible"
+  },
+  "יששכר": {
+   "form": "Issachar",
+   "source": "bible"
+  },
+  "מנשה": {
+   "form": "Manasseh",
+   "source": "bible"
+  },
+  "עמנואל": {
+   "form": "Emmanuel",
+   "source": "bible"
+  },
+  "הדסה": {
+   "form": "Hadassah",
+   "source": "bible"
+  },
+  "מיכל": {
+   "form": "Michal",
+   "source": "bible"
+  },
+  "חנוך": {
+   "form": "Enoch",
+   "source": "bible"
+  },
+  "נתנאל": {
+   "form": "Nathanael",
+   "source": "bible"
+  },
+  "עובדיה": {
+   "form": "Obadiah",
+   "source": "bible"
+  },
+  "אבשלום": {
+   "form": "Absalom",
+   "source": "bible"
+  },
+  "אבנר": {
+   "form": "Abner",
+   "source": "bible"
+  },
+  "צפורה": {
+   "form": "Zipporah",
+   "source": "bible"
+  },
+  "אמילי": {
+   "form": "Emily",
+   "source": "borrowed:en"
+  },
+  "אמה": {
+   "form": "Emma",
+   "source": "borrowed:en"
+  },
+  "ליאם": {
+   "form": "Liam",
+   "source": "borrowed:en"
+  },
+  "זואי": {
+   "form": "Zoe",
+   "source": "borrowed:en"
+  },
+  "איימי": {
+   "form": "Amy",
+   "source": "borrowed:en"
+  },
+  "איב": {
+   "form": "Eve",
+   "source": "borrowed:en"
+  },
+  "ריי": {
+   "form": "Ray",
+   "source": "borrowed:en"
+  },
+  "מיי": {
+   "form": "May",
+   "source": "borrowed:en"
+  },
+  "רוז": {
+   "form": "Rose",
+   "source": "borrowed:en"
+  },
+  "אוליביה": {
+   "form": "Olivia",
+   "source": "borrowed:en"
+  },
+  "אוליבר": {
+   "form": "Oliver",
+   "source": "borrowed:en"
+  },
+  "ליליאן": {
+   "form": "Lillian",
+   "source": "borrowed:en"
+  },
+  "אליס": {
+   "form": "Alice",
+   "source": "borrowed:en"
+  },
+  "לילי": {
+   "form": "Lily",
+   "source": "borrowed:en"
+  },
+  "אן": {
+   "form": "Anne",
+   "source": "borrowed:en"
+  },
+  "אלכס": {
+   "form": "Alex",
+   "source": "borrowed:en"
+  },
+  "אלכסנדר": {
+   "form": "Alexander",
+   "source": "borrowed:en"
+  },
+  "אלכסנדרה": {
+   "form": "Alexandra",
+   "source": "borrowed:en"
+  },
+  "תומאס": {
+   "form": "Thomas",
+   "source": "borrowed:en"
+  },
+  "תומס": {
+   "form": "Thomas",
+   "source": "borrowed:en"
+  },
+  "מלודי": {
+   "form": "Melody",
+   "source": "borrowed:en"
+  },
+  "דילן": {
+   "form": "Dylan",
+   "source": "borrowed:en"
+  },
+  "מקס": {
+   "form": "Max",
+   "source": "borrowed:en"
+  },
+  "הארי": {
+   "form": "Harry",
+   "source": "borrowed:en"
+  },
+  "מליסה": {
+   "form": "Melissa",
+   "source": "borrowed:en"
+  },
+  "נטלי": {
+   "form": "Natalie",
+   "source": "borrowed:en"
+  },
+  "אנדי": {
+   "form": "Andy",
+   "source": "borrowed:en"
+  },
+  "מלאני": {
+   "form": "Melanie",
+   "source": "borrowed:en"
+  },
+  "אריק": {
+   "form": "Eric",
+   "source": "borrowed:en"
+  },
+  "ריילי": {
+   "form": "Riley",
+   "source": "borrowed:en"
+  },
+  "אליזבט": {
+   "form": "Elizabeth",
+   "source": "borrowed:en"
+  },
+  "ריקי": {
+   "form": "Ricky",
+   "source": "borrowed:en"
+  },
+  "לוסי": {
+   "form": "Lucy",
+   "source": "borrowed:en"
+  },
+  "ויקטוריה": {
+   "form": "Victoria",
+   "source": "borrowed:en"
+  },
+  "ג'ולי": {
+   "form": "Julie",
+   "source": "borrowed:en"
+  },
+  "אנאבל": {
+   "form": "Annabelle",
+   "source": "borrowed:en"
+  },
+  "אנבל": {
+   "form": "Annabelle",
+   "source": "borrowed:en"
+  },
+  "קיילי": {
+   "form": "Kylie",
+   "source": "borrowed:en"
+  },
+  "אדוארד": {
+   "form": "Edward",
+   "source": "borrowed:en"
+  },
+  "ג'ון": {
+   "form": "John",
+   "source": "borrowed:en"
+  },
+  "אנג'לה": {
+   "form": "Angela",
+   "source": "borrowed:en"
+  },
+  "ג'ויס": {
+   "form": "Joyce",
+   "source": "borrowed:en"
+  },
+  "ויליאם": {
+   "form": "William",
+   "source": "borrowed:en"
+  },
+  "וויליאם": {
+   "form": "William",
+   "source": "borrowed:en"
+  },
+  "ג'וי": {
+   "form": "Joy",
+   "source": "borrowed:en"
+  },
+  "ברוק": {
+   "form": "Brooke",
+   "source": "borrowed:en"
+  },
+  "אייבי": {
+   "form": "Ivy",
+   "source": "borrowed:en"
+  },
+  "תיאודור": {
+   "form": "Theodore",
+   "source": "borrowed:en"
+  },
+  "מיילו": {
+   "form": "Milo",
+   "source": "borrowed:en"
+  },
+  "אלן": {
+   "form": "Alan",
+   "source": "borrowed:en"
+  },
+  "ארתור": {
+   "form": "Arthur",
+   "source": "borrowed:en"
+  },
+  "סוזן": {
+   "form": "Susan",
+   "source": "borrowed:en"
+  },
+  "סטיבן": {
+   "form": "Steven",
+   "source": "borrowed:en"
+  },
+  "בטי": {
+   "form": "Betty",
+   "source": "borrowed:en"
+  },
+  "ויקי": {
+   "form": "Vicky",
+   "source": "borrowed:en"
+  },
+  "ג'סיקה": {
+   "form": "Jessica",
+   "source": "borrowed:en"
+  },
+  "גסיקה": {
+   "form": "Jessica",
+   "source": "borrowed:en"
+  },
+  "לורה": {
+   "form": "Laura",
+   "source": "borrowed:en"
+  },
+  "הנרי": {
+   "form": "Henry",
+   "source": "borrowed:en"
+  },
+  "סטפני": {
+   "form": "Stephanie",
+   "source": "borrowed:en"
+  },
+  "אבלין": {
+   "form": "Evelyn",
+   "source": "borrowed:en"
+  },
+  "פאני": {
+   "form": "Fanny",
+   "source": "borrowed:en"
+  },
+  "ג'רמי": {
+   "form": "Jeremy",
+   "source": "borrowed:en"
+  },
+  "פיטר": {
+   "form": "Peter",
+   "source": "borrowed:en"
+  },
+  "מייק": {
+   "form": "Mike",
+   "source": "borrowed:en"
+  },
+  "מייקל": {
+   "form": "Michael",
+   "source": "borrowed:en"
+  },
+  "אנטוני": {
+   "form": "Anthony",
+   "source": "borrowed:en"
+  },
+  "סטיב": {
+   "form": "Steve",
+   "source": "borrowed:en"
+  },
+  "סנדי": {
+   "form": "Sandy",
+   "source": "borrowed:en"
+  },
+  "כריסטינה": {
+   "form": "Christina",
+   "source": "borrowed:en"
+  },
+  "קתרין": {
+   "form": "Catherine",
+   "source": "borrowed:en"
+  },
+  "ג'ק": {
+   "form": "Jack",
+   "source": "borrowed:en"
+  },
+  "ג'ונתן": {
+   "form": "Jonathan",
+   "source": "borrowed:en"
+  },
+  "קלי": {
+   "form": "Kelly",
+   "source": "borrowed:en"
+  },
+  "דומיניק": {
+   "form": "Dominic",
+   "source": "borrowed:en"
+  },
+  "סיימון": {
+   "form": "Simon",
+   "source": "borrowed:en"
+  },
+  "אשלי": {
+   "form": "Ashley",
+   "source": "borrowed:en"
+  },
+  "בקי": {
+   "form": "Becky",
+   "source": "borrowed:en"
+  },
+  "פלורנס": {
+   "form": "Florence",
+   "source": "borrowed:en"
+  },
+  "פיבי": {
+   "form": "Phoebe",
+   "source": "borrowed:en"
+  },
+  "קלייר": {
+   "form": "Claire",
+   "source": "borrowed:en"
+  },
+  "ויולט": {
+   "form": "Violet",
+   "source": "borrowed:en"
+  },
+  "ג'ולייט": {
+   "form": "Juliet",
+   "source": "borrowed:en"
+  },
+  "ג'יימס": {
+   "form": "James",
+   "source": "borrowed:en"
+  },
+  "אייזיק": {
+   "form": "Isaac",
+   "source": "borrowed:en"
+  },
+  "שרלוט": {
+   "form": "Charlotte",
+   "source": "borrowed:en"
+  },
+  "גניפר": {
+   "form": "Jennifer",
+   "source": "borrowed:en"
+  },
+  "ג'יין": {
+   "form": "Jane",
+   "source": "borrowed:en"
+  },
+  "איידן": {
+   "form": "Aiden",
+   "source": "borrowed:en"
+  },
+  "קייט": {
+   "form": "Kate",
+   "source": "borrowed:en"
+  },
+  "טימותי": {
+   "form": "Timothy",
+   "source": "borrowed:en"
+  },
+  "בריטני": {
+   "form": "Britney",
+   "source": "borrowed:en"
+  },
+  "מדיסון": {
+   "form": "Madison",
+   "source": "borrowed:en"
+  },
+  "וולטר": {
+   "form": "Walter",
+   "source": "borrowed:en"
+  },
+  "לורן": {
+   "form": "Lauren",
+   "source": "borrowed:en"
+  },
+  "דונה": {
+   "form": "Donna",
+   "source": "borrowed:en"
+  },
+  "שירלי": {
+   "form": "Shirley",
+   "source": "borrowed:en"
+  },
+  "שון": {
+   "form": "Sean",
+   "source": "borrowed:en"
+  },
+  "ג'ורג'יה": {
+   "form": "Georgia",
+   "source": "borrowed:en"
+  },
+  "בנגמין": {
+   "form": "Benjamin",
+   "source": "borrowed:en"
+  },
+  "נובה": {
+   "form": "Nova",
+   "source": "borrowed:en"
+  },
+  "אושן": {
+   "form": "Ocean",
+   "source": "borrowed:en"
+  },
+  "מקסין": {
+   "form": "Maxine",
+   "source": "borrowed:en"
+  },
+  "קלריס": {
+   "form": "Clarice",
+   "source": "borrowed:en"
+  },
+  "ג'ואל": {
+   "form": "Joel",
+   "source": "borrowed:en"
+  },
+  "מישל": {
+   "form": "Michelle",
+   "source": "borrowed:fr"
+  },
+  "קמיל": {
+   "form": "Camille",
+   "source": "borrowed:fr"
+  },
+  "קלואי": {
+   "form": "Chloe",
+   "source": "borrowed:fr"
+  },
+  "מוניק": {
+   "form": "Monique",
+   "source": "borrowed:fr"
+  },
+  "סלין": {
+   "form": "Celine",
+   "source": "borrowed:fr"
+  },
+  "שאנל": {
+   "form": "Chanel",
+   "source": "borrowed:fr"
+  },
+  "איבון": {
+   "form": "Yvonne",
+   "source": "borrowed:fr"
+  },
+  "אוליבייה": {
+   "form": "Olivier",
+   "source": "borrowed:fr"
+  },
+  "איזבל": {
+   "form": "Isabelle",
+   "source": "borrowed:fr"
+  },
+  "קלרה": {
+   "form": "Clara",
+   "source": "borrowed:fr"
+  },
+  "רשל": {
+   "form": "Rachelle",
+   "source": "borrowed:fr"
+  },
+  "קמילה": {
+   "form": "Camila",
+   "source": "borrowed:es"
+  },
+  "קרלוס": {
+   "form": "Carlos",
+   "source": "borrowed:es"
+  },
+  "קרולינה": {
+   "form": "Carolina",
+   "source": "borrowed:es"
+  },
+  "מיגל": {
+   "form": "Miguel",
+   "source": "borrowed:es"
+  },
+  "חוליו": {
+   "form": "Julio",
+   "source": "borrowed:es"
+  },
+  "דייגו": {
+   "form": "Diego",
+   "source": "borrowed:es"
+  },
+  "קטלינה": {
+   "form": "Catalina",
+   "source": "borrowed:es"
+  },
+  "לטיסיה": {
+   "form": "Leticia",
+   "source": "borrowed:es"
+  },
+  "אליסיה": {
+   "form": "Alicia",
+   "source": "borrowed:es"
+  },
+  "אלישיה": {
+   "form": "Alicia",
+   "source": "borrowed:es"
+  },
+  "לוסיאנה": {
+   "form": "Luciana",
+   "source": "borrowed:es"
+  },
+  "סמואל": {
+   "form": "Samuel",
+   "source": "borrowed:es"
+  },
+  "אנגל": {
+   "form": "Angel",
+   "source": "borrowed:es"
+  },
+  "קרלה": {
+   "form": "Carla",
+   "source": "borrowed:es"
+  },
+  "קיארה": {
+   "form": "Chiara",
+   "source": "borrowed:it"
+  },
+  "לוקה": {
+   "form": "Luca",
+   "source": "borrowed:it"
+  },
+  "לוקא": {
+   "form": "Luca",
+   "source": "borrowed:it"
+  },
+  "מרקו": {
+   "form": "Marco",
+   "source": "borrowed:it"
+  },
+  "פאולו": {
+   "form": "Paolo",
+   "source": "borrowed:it"
+  },
+  "ג'ובאני": {
+   "form": "Giovanni",
+   "source": "borrowed:it"
+  },
+  "לואיג'י": {
+   "form": "Luigi",
+   "source": "borrowed:it"
+  },
+  "לוצ'יה": {
+   "form": "Lucia",
+   "source": "borrowed:it"
+  },
+  "אנטונלה": {
+   "form": "Antonella",
+   "source": "borrowed:it"
+  },
+  "איזבלה": {
+   "form": "Isabella",
+   "source": "borrowed:it"
+  },
+  "ג'וליה": {
+   "form": "Julia",
+   "source": "borrowed:it"
+  },
+  "סרג'יו": {
+   "form": "Sergio",
+   "source": "borrowed:it"
+  },
+  "אורורה": {
+   "form": "Aurora",
+   "source": "borrowed:it"
+  },
+  "אולגה": {
+   "form": "Olga",
+   "source": "borrowed:ru"
+  },
+  "טטיאנה": {
+   "form": "Tatiana",
+   "source": "borrowed:ru"
+  },
+  "דמיטרי": {
+   "form": "Dmitry",
+   "source": "borrowed:ru"
+  },
+  "נטליה": {
+   "form": "Natalia",
+   "source": "borrowed:ru"
+  },
+  "יבגני": {
+   "form": "Evgeny",
+   "source": "borrowed:ru"
+  },
+  "יבגניה": {
+   "form": "Evgenia",
+   "source": "borrowed:ru"
+  },
+  "יוליה": {
+   "form": "Yulia",
+   "source": "borrowed:ru"
+  },
+  "ויקטור": {
+   "form": "Victor",
+   "source": "borrowed:ru"
+  },
+  "אינה": {
+   "form": "Inna",
+   "source": "borrowed:ru"
+  },
+  "סרגיי": {
+   "form": "Sergey",
+   "source": "borrowed:ru"
+  },
+  "מקסים": {
+   "form": "Maxim",
+   "source": "borrowed:ru"
+  },
+  "ארקדי": {
+   "form": "Arkady",
+   "source": "borrowed:ru"
+  },
+  "ויטלי": {
+   "form": "Vitaly",
+   "source": "borrowed:ru"
+  },
+  "סוניה": {
+   "form": "Sonia",
+   "source": "borrowed:ru"
+  },
+  "אנדריי": {
+   "form": "Andrey",
+   "source": "borrowed:ru"
+  },
+  "אנסטסיה": {
+   "form": "Anastasia",
+   "source": "borrowed:ru"
+  },
+  "ולריה": {
+   "form": "Valeria",
+   "source": "borrowed:ru"
+  },
+  "ורוניקה": {
+   "form": "Veronica",
+   "source": "borrowed:ru"
+  },
+  "ארטיום": {
+   "form": "Artyom",
+   "source": "borrowed:ru"
+  },
+  "קסניה": {
+   "form": "Ksenia",
+   "source": "borrowed:ru"
+  },
+  "פיליפ": {
+   "form": "Philip",
+   "source": "borrowed:ru"
+  },
+  "מקסימיליאן": {
+   "form": "Maximilian",
+   "source": "borrowed:de"
+  },
+  "אלזה": {
+   "form": "Elsa",
+   "source": "borrowed:de"
+  },
+  "תיאו": {
+   "form": "Theo",
+   "source": "borrowed:el"
+  },
+  "תאו": {
+   "form": "Theo",
+   "source": "borrowed:el"
+  },
+  "סופיה": {
+   "form": "Sophia",
+   "source": "borrowed:el"
+  },
+  "סופי": {
+   "form": "Sophie",
+   "source": "borrowed:el"
+  },
+  "אמיליה": {
+   "form": "Emilia",
+   "source": "borrowed:el"
+  }
+ }
+}

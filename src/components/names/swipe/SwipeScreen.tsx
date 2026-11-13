@@ -34,14 +34,15 @@ import AboutLink from "./AboutLink";
 import { DeckLoadError, DeckSkeleton } from "./DeckLoad";
 import EmptyDeck from "./EmptyDeck";
 import PausePanel from "./PausePanel";
+import RelativeChip from "./RelativeChip";
 import SurveyPrompt from "./SurveyPrompt";
 import SwipeFooter from "./SwipeFooter";
 import SwipeHeader from "./SwipeHeader";
 import SwipeKeys, { SWIPE_KEYS_ID } from "./SwipeKeys";
 import { dragClass, useSwipeDrag } from "./useSwipeDrag";
 
-// Opened from a tap or once (background, a report, the survey): out of the first load, loaded when idle.
-const BackgroundSheet = lazySheet("background", () => import("@/components/names/BackgroundSheet"));
+// Opened from a tap or once (search, a report, the survey): out of the first load, loaded when idle.
+const SearchSheet = lazySheet("search", () => import("@/components/names/search/SearchSheet"));
 const ReportSheet = lazySheet("report", () => import("@/components/names/about/ReportSheet"));
 const SurveySheet = lazySheet("survey", () => import("@/components/names/SurveySheet"));
 
@@ -158,6 +159,7 @@ export default function SwipeScreen() {
         trend: filters.trend !== null,
         letter: filters.letter !== null,
         length: filters.length !== null,
+        relative: filters.relative !== null,
       });
     }
     // Only the change of state counts, not every vote or filter object.
@@ -217,6 +219,10 @@ export default function SwipeScreen() {
     setNext(null);
   };
 
+  const clearRelative = () => {
+    if (userId && filters) setPref(userId, "filters", { ...filters, relative: null });
+  };
+
   const resetFilters = () => {
     if (userId) setPref(userId, "filters", defaultFilters());
     track("filters_reset");
@@ -259,6 +265,7 @@ export default function SwipeScreen() {
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto [@media(max-height:30rem)]:h-auto">
       <SwipeHeader saved={state?.loadFailed ? null : savedCount} filtered={hasFilters(filters)} />
+      {filters?.relative ? <RelativeChip filter={filters.relative} onClear={clearRelative} /> : null}
       <main className="flex min-h-0 flex-1 flex-col">
         {showSurvey ? <SurveyPrompt onDismiss={() => userId && setPref(userId, "survey", "dismissed")} /> : null}
         <SwipeKeys
@@ -325,7 +332,7 @@ export default function SwipeScreen() {
           </div>
         </SwipeKeys>
       </main>
-      <BackgroundSheet />
+      <SearchSheet cards={cards} votes={votes} />
       <AboutSheet hasName={!!current} />
       <ReportSheet name={current?.stats.name ?? null} knownNames={deckNames} />
       <FiltersSheet userId={userId} cards={cards} votes={votes} />

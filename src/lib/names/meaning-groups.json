@@ -1,0 +1,436 @@
+{
+ "_about": "Built by scripts/names-content/build-meanings.mjs from data/names/content-src/meanings.json; do not edit by hand.",
+ "groups": {
+  "light": "אור",
+  "life": "חיים",
+  "joy": "שמחה",
+  "gift": "מתנה",
+  "peace": "שלום",
+  "lion": "אריה",
+  "deer": "צבי ואיילה",
+  "bird": "ציפור",
+  "flower": "פרח",
+  "tree": "עץ",
+  "water": "מים",
+  "sky": "שמיים וכוכבים",
+  "gem": "אבן יקרה וזהב",
+  "strength": "כוח ועוז",
+  "beauty": "יופי",
+  "song": "שיר ושבח",
+  "grace": "חן וחסד",
+  "help": "עזרה וישועה",
+  "royalty": "מלכות וכתר",
+  "heal": "ריפוי",
+  "judge": "דין ומשפט",
+  "dawn": "שחר",
+  "spring": "אביב",
+  "hope": "תקווה ואמונה",
+  "blessing": "ברכה",
+  "good": "טוב וטובה",
+  "comfort": "נחמה",
+  "wolf": "זאב",
+  "bear": "דב",
+  "luck": "מזל",
+  "love": "אהבה וידידות",
+  "sweet": "מתיקות",
+  "long_life": "אריכות ימים"
+ },
+ "relatives": [
+  {
+   "spellings": [
+    "הירש",
+    "הערש",
+    "הירשל"
+   ],
+   "lang": "יידיש",
+   "means": "צבי",
+   "groups": [
+    "deer"
+   ]
+  },
+  {
+   "spellings": [
+    "וולף",
+    "וואלף",
+    "וולוול",
+    "וועלוול"
+   ],
+   "lang": "יידיש",
+   "means": "זאב",
+   "groups": [
+    "wolf"
+   ]
+  },
+  {
+   "spellings": [
+    "בער",
+    "בערל",
+    "בערעל",
+    "ברל"
+   ],
+   "lang": "יידיש",
+   "means": "דב",
+   "groups": [
+    "bear"
+   ]
+  },
+  {
+   "spellings": [
+    "לייב",
+    "לייבל",
+    "לייבוש"
+   ],
+   "lang": "יידיש",
+   "means": "אריה",
+   "groups": [
+    "lion"
+   ]
+  },
+  {
+   "spellings": [
+    "מענדל",
+    "מנדל"
+   ],
+   "lang": "יידיש",
+   "means": "מנחם",
+   "groups": [
+    "comfort"
+   ]
+  },
+  {
+   "spellings": [
+    "פייגה",
+    "פייגע",
+    "פייגל",
+    "פיגא"
+   ],
+   "lang": "יידיש",
+   "means": "ציפור",
+   "groups": [
+    "bird"
+   ]
+  },
+  {
+   "spellings": [
+    "טויבה",
+    "טויבע",
+    "טויבא",
+    "טובה'לה"
+   ],
+   "lang": "יידיש",
+   "means": "יונה",
+   "groups": [
+    "bird"
+   ]
+  },
+  {
+   "spellings": [
+    "גולדה",
+    "גאלדע",
+    "גולדע",
+    "גאלדא"
+   ],
+   "lang": "יידיש",
+   "means": "זהב",
+   "groups": [
+    "gem"
+   ]
+  },
+  {
+   "spellings": [
+    "זלאטה",
+    "זלאטע"
+   ],
+   "lang": "יידיש",
+   "means": "זהב",
+   "groups": [
+    "gem"
+   ]
+  },
+  {
+   "spellings": [
+    "פערל",
+    "פרל",
+    "פערלה"
+   ],
+   "lang": "יידיש",
+   "means": "פנינה",
+   "groups": [
+    "gem"
+   ]
+  },
+  {
+   "spellings": [
+    "בלומה",
+    "בלימה",
+    "בלומע"
+   ],
+   "lang": "יידיש",
+   "means": "פרח",
+   "groups": [
+    "flower"
+   ]
+  },
+  {
+   "spellings": [
+    "רייזל",
+    "ריזל",
+    "רויזא",
+    "רייזה"
+   ],
+   "lang": "יידיש",
+   "means": "ורד",
+   "groups": [
+    "flower"
+   ]
+  },
+  {
+   "spellings": [
+    "שיינדל",
+    "שיינא",
+    "שיינה",
+    "שיינע"
+   ],
+   "lang": "יידיש",
+   "means": "יפה",
+   "groups": [
+    "beauty"
+   ]
+  },
+  {
+   "spellings": [
+    "פריידא",
+    "פריידה",
+    "פריידע",
+    "פרידא"
+   ],
+   "lang": "יידיש",
+   "means": "שמחה",
+   "groups": [
+    "joy"
+   ]
+  },
+  {
+   "spellings": [
+    "הינדה",
+    "הינדא",
+    "הינדע",
+    "הינדל"
+   ],
+   "lang": "יידיש",
+   "means": "איילה",
+   "groups": [
+    "deer"
+   ]
+  },
+  {
+   "spellings": [
+    "ליבא",
+    "ליבע",
+    "ליבה"
+   ],
+   "lang": "יידיש",
+   "means": "אהובה",
+   "groups": [
+    "love"
+   ]
+  },
+  {
+   "spellings": [
+    "גיטל",
+    "גיטה",
+    "גיטע"
+   ],
+   "lang": "יידיש",
+   "means": "טובה",
+   "groups": [
+    "good"
+   ]
+  },
+  {
+   "spellings": [
+    "זיסל",
+    "זיסע",
+    "זיסקינד"
+   ],
+   "lang": "יידיש",
+   "means": "מתוק",
+   "groups": [
+    "sweet"
+   ]
+  },
+  {
+   "spellings": [
+    "שטערנא",
+    "שטרנא",
+    "שטערן"
+   ],
+   "lang": "יידיש",
+   "means": "כוכב",
+   "groups": [
+    "sky"
+   ]
+  },
+  {
+   "spellings": [
+    "קריינה",
+    "קריינדל"
+   ],
+   "lang": "יידיש",
+   "means": "כתר",
+   "groups": [
+    "royalty"
+   ]
+  },
+  {
+   "spellings": [
+    "אלטר",
+    "אלטע"
+   ],
+   "lang": "יידיש",
+   "means": "זקן, איחול לאריכות ימים",
+   "groups": [
+    "long_life"
+   ]
+  },
+  {
+   "spellings": [
+    "וידה",
+    "בידה"
+   ],
+   "lang": "לדינו",
+   "means": "חיים",
+   "groups": [
+    "life"
+   ]
+  },
+  {
+   "spellings": [
+    "אלגרה",
+    "אליגרה"
+   ],
+   "lang": "לדינו",
+   "means": "שמחה",
+   "groups": [
+    "joy"
+   ]
+  },
+  {
+   "spellings": [
+    "ריינה"
+   ],
+   "lang": "לדינו",
+   "means": "מלכה",
+   "groups": [
+    "royalty"
+   ]
+  },
+  {
+   "spellings": [
+    "אסטרייה",
+    "אסטרלה",
+    "איסטרייה"
+   ],
+   "lang": "לדינו",
+   "means": "כוכב",
+   "groups": [
+    "sky"
+   ]
+  },
+  {
+   "spellings": [
+    "פלומה"
+   ],
+   "lang": "לדינו",
+   "means": "יונה",
+   "groups": [
+    "bird"
+   ]
+  },
+  {
+   "spellings": [
+    "בואינה",
+    "בונה"
+   ],
+   "lang": "לדינו",
+   "means": "טובה",
+   "groups": [
+    "good"
+   ]
+  },
+  {
+   "spellings": [
+    "פורטונה"
+   ],
+   "lang": "לדינו",
+   "means": "מזל",
+   "groups": [
+    "luck"
+   ]
+  },
+  {
+   "spellings": [
+    "פלור",
+    "פלורה"
+   ],
+   "lang": "לדינו",
+   "means": "פרח",
+   "groups": [
+    "flower"
+   ]
+  },
+  {
+   "spellings": [
+    "לונה"
+   ],
+   "lang": "לדינו",
+   "means": "ירח",
+   "groups": [
+    "sky"
+   ]
+  },
+  {
+   "spellings": [
+    "סול"
+   ],
+   "lang": "לדינו",
+   "means": "שמש",
+   "groups": [
+    "sky"
+   ]
+  },
+  {
+   "spellings": [
+    "דולסה",
+    "דולצ'ה"
+   ],
+   "lang": "לדינו",
+   "means": "מתוקה",
+   "groups": [
+    "sweet"
+   ]
+  },
+  {
+   "spellings": [
+    "ביליה",
+    "בייה",
+    "בלה"
+   ],
+   "lang": "לדינו",
+   "means": "יפה",
+   "groups": [
+    "beauty"
+   ]
+  },
+  {
+   "spellings": [
+    "סולטנה"
+   ],
+   "lang": "לדינו",
+   "means": "מלכה",
+   "groups": [
+    "royalty"
+   ]
+  }
+ ]
+}

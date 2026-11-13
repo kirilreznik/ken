@@ -28,6 +28,7 @@ import { showToast } from "@/lib/names/toast";
 import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
 import DuelScreen from "./DuelScreen";
+import PairsPanel from "./PairsPanel";
 import RowMenu from "./RowMenu";
 import { clearChoiceLabel, decideLabel } from "@/lib/names/launch";
 import { track } from "@/lib/names/track";
@@ -65,7 +66,9 @@ export default function ListsScreen() {
   const [status, setStatus] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const tab = listsTab(params.get("tab"));
+  const twins = usePrefJson(user?.id ?? null, "twins") === "true";
+  const asked = listsTab(params.get("tab"));
+  const tab = asked === "pairs" && !twins ? "saved" : asked;
   const { chosen, choose, clear } = useChosen(user?.id ?? null, space.spaceId, space.isShared);
   const decision = <DecisionSheet name={chosen} shared={space.isShared} onClear={() => clear("sheet")} />;
   useEffect(() => track("lists_tab", { tab }), [tab]);
@@ -75,6 +78,8 @@ export default function ListsScreen() {
   // Only names with a card open the sheet; names added by hand have nothing to show there.
   const deckNames = useMemo(() => new Set((cards ?? []).map((c) => c.stats.name)), [cards]);
   const canOpen = (name: string) => deckNames.has(name);
+  const latinByName = useMemo(() => new Map((cards ?? []).map((c) => [c.stats.name, c.content.latin?.intl ?? c.content.latin?.he ?? null])), [cards]);
+  const latinOf = (name: string) => latinByName.get(name) ?? null;
   const votes = useMemo(() => {
     const map = new Map<string, Vote>();
     for (const [name, v] of state?.votes ?? []) map.set(name, v.vote);
@@ -87,6 +92,7 @@ export default function ListsScreen() {
     { id: "saved", label: ready && !loadFailed ? `שמרתי · ${rows.length}` : "שמרתי" },
     { id: "matches", label: space.isShared && matches?.ready && matches.fetchedAt !== null ? `התאמות · ${matches.matches.length}` : "התאמות" },
     { id: "duel", label: "דו־קרב" },
+    ...(twins ? [{ id: "pairs" as const, label: "זוגות" }] : []),
   ];
 
   const selectTab = (id: ListsTab) => router.replace(`${LISTS_PATH}?tab=${id}`, { scroll: false });
@@ -237,7 +243,9 @@ export default function ListsScreen() {
         </div>
 
         <section id={`lists-panel-${tab}`} role="tabpanel" aria-labelledby={`lists-tab-${tab}`} className="flex flex-col gap-4">
-          {tab === "saved" ? (
+          {tab === "pairs" ? (
+            <PairsPanel cards={cards} saved={rows.map((r) => r.name)} ready={ready} />
+          ) : tab === "saved" ? (
             <SavedPanel
               ready={ready}
               loadFailed={loadFailed}
@@ -266,6 +274,7 @@ export default function ListsScreen() {
               canOpen={canOpen}
               chooseLabel={(name) => decideLabel(space.isShared, name)}
               onChoose={(row) => choose(row.name, "saved", { custom: row.custom })}
+              latinOf={latinOf}
             />
           ) : space.loading ? (
             <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
@@ -517,10 +526,12 @@ type SavedPanelProps = ChooseProps & {
   names: Map<string, NameStats> | null;
   onAction: (name: string, action: "remove" | "hide") => void;
   headingRef: React.RefObject<HTMLHeadingElement | null>;
+  /** The name's Latin spelling (international form first), when it has one. */
+  latinOf?: (name: string) => string | null;
 };
 
 /** "שמרתי": loved first with "אהבתי מאוד", each row with sex tag, count, trend and its menu. */
-function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, headingRef, canOpen, chooseLabel, onChoose }: SavedPanelProps) {
+function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, headingRef, canOpen, chooseLabel, onChoose, latinOf }: SavedPanelProps) {
   const listRef = useRef<HTMLUListElement>(null);
   const focusAfter = useRef<number | null>(null);
 
@@ -575,6 +586,11 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
               <RowName onOpen={!row.custom && canOpen(row.name) ? () => openDetails(row.name) : undefined}>
                 <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                   <span className="text-row-name break-words">{row.name}</span>
+                  {latinOf?.(row.name) ? (
+                    <bdi dir="ltr" lang="en" className="text-caption text-stone">
+                      {latinOf(row.name)}
+                    </bdi>
+                  ) : null}
                   {row.vote === "love" ? (
                     <span className="flex items-center gap-1 text-caption font-bold text-ink-soft">
                       <Icon size={16} className="fill-clay stroke-clay">

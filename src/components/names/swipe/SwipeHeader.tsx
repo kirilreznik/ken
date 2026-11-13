@@ -25,7 +25,7 @@ function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
 }
 
 // Board 2/8 header (FR-W10): settings sits where the board has "חזרה" (the swipe screen is
-// the app's root), then the title, background, filters and the "השמות שלי" pill. Below
+// the app's root), then the title, search (in the background button's place), filters and the "השמות שלי" pill. Below
 // 320 px (200% zoom on a phone) the row wraps; under 360 px the title is visually hidden.
 // `saved` is null while the votes couldn't be read (NP-073): the pill shows no count then.
 export default function SwipeHeader({ saved, filtered = false }: { saved: number | null; filtered?: boolean }) {
@@ -41,11 +41,11 @@ export default function SwipeHeader({ saved, filtered = false }: { saved: number
       {/* Under 360 px the four controls leave no room for the title: it stays for screen readers only. */}
       <h1 className="m-0 min-w-0 flex-1 text-title whitespace-nowrap max-[22.5rem]:sr-only">בחירת שם</h1>
       <span aria-hidden="true" className="hidden flex-1 max-[22.5rem]:block" />
-      <IconButton aria-label="בחירת רקע" onClick={() => openSheet("background")}>
+      {/* "חיפוש שם" took the background button's place; the background moved to settings. */}
+      <IconButton aria-label="חיפוש שם" onClick={() => openSheet("search")}>
         <Icon>
-          <rect x="3" y="5" width="18" height="14" rx="3" />
-          <circle cx="9" cy="10" r="1.6" />
-          <path d="M21 16l-5-5-8 8" />
+          <circle cx="11" cy="11" r="6.5" />
+          <path d="M20 20l-4.2-4.2" />
         </Icon>
       </IconButton>
       {/* A clay dot (and the label) says sheet filters are on, so a short deck explains itself (NP-UX-004). */}

@@ -24,6 +24,13 @@ export interface NameContent {
   people: NamePerson[];
   /** Theme ids from data/names/name-themes.json, added at build time (see themes.ts). */
   themes?: string[];
+  /**
+   * Latin spellings from data/names/name-latin.json, added at build time: `he` by the Academy
+   * of the Hebrew Language's rules, `intl` the international form. Either can be missing.
+   */
+  latin?: { he?: string; intl?: string };
+  /** Meaning group ids from data/names/name-meanings.json, added at build time (see relative.ts). */
+  meanings?: string[];
 }
 
 /** Details shown in the name sheet (data/names/name-details.json), loaded lazily. */
