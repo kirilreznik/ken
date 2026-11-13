@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
 import type { Vote } from "@/lib/names/types";
 import SkipButton from "./swipe/SkipButton";
+import { DISABLED, PRESS } from "./ui/classes";
 
 export type Decision = Vote;
 type Act = "keep" | "love" | "skip";
 
-export const PRESS = "touch-manipulation transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95";
-export const DISABLED = "aria-disabled:opacity-60 aria-disabled:cursor-default motion-safe:aria-disabled:active:scale-100";
 // Three equal pills, each with its word: the heart used to be an unlabeled circle, and people
 // had to remember from the intro that it means "אהבתי מאוד".
 const PILL = `inline-flex h-13 w-full min-w-0 items-center justify-center gap-1.5 rounded-pill px-3 text-intro font-bold whitespace-nowrap max-[22.5rem]:gap-1 max-[22.5rem]:px-2 [&>svg]:max-[22.5rem]:hidden ${PRESS} ${DISABLED}`;

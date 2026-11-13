@@ -276,7 +276,7 @@ export default function SettingsScreen() {
                     aria-describedby="settings-name-hint"
                     className={`${inputClass()} min-w-0 flex-1`}
                   />
-                  <Button type="submit" variant="secondary" size="md" aria-disabled={!changed || savingName} aria-busy={savingName} className="aria-disabled:opacity-60">
+                  <Button type="submit" variant="secondary" size="md" aria-disabled={!changed || savingName} aria-busy={savingName}>
                     {savingName ? "שומרים…" : "שמירה"}
                   </Button>
                 </div>
@@ -395,7 +395,7 @@ export default function SettingsScreen() {
             {leaveError}
           </p>
         ) : null}
-        <Button onClick={() => void confirmLeave()} aria-disabled={leaving} aria-busy={leaving} className="aria-disabled:opacity-60">
+        <Button onClick={() => void confirmLeave()} aria-disabled={leaving} aria-busy={leaving}>
           {leaving ? "יוצאים…" : "יציאה מהבחירה המשותפת"}
         </Button>
         <Button variant="secondary" data-autofocus="" onClick={() => closeDialog(LEAVE_DIALOG)}>
@@ -408,7 +408,7 @@ export default function SettingsScreen() {
             {deleteError}
           </p>
         ) : null}
-        <Button onClick={confirmDelete} aria-disabled={deleting} aria-busy={deleting} className="aria-disabled:opacity-60">
+        <Button onClick={confirmDelete} aria-disabled={deleting} aria-busy={deleting}>
           {deleting ? "מוחקים…" : "מחיקה לצמיתות"}
         </Button>
         <Button variant="secondary" data-autofocus="" onClick={() => closeDialog(DELETE_DIALOG)}>

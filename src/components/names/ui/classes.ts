@@ -10,9 +10,18 @@ export function glassClass(variant: GlassVariant = "strong"): string {
   return variant === "soft" ? "names-glass-soft" : "names-glass";
 }
 
-// Pressed state: scale 0.95, never under reduced motion.
-const PRESS = "touch-manipulation transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95";
-const DISABLED = "disabled:opacity-60 aria-disabled:opacity-60";
+// Pressed state: scale 0.95, never under reduced motion, and never on a disabled control.
+export const PRESS =
+  "touch-manipulation transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95 motion-safe:disabled:active:scale-100 motion-safe:aria-disabled:active:scale-100";
+// Disabled buttons and chips ("not yet"): an opaque line fill with stone text (4.2:1) and no
+// shadow or edge, the same on every background. Opacity let the photo through, so an ink pill
+// turned brown and kept competing with the screen's real action.
+export const DISABLED = [
+  "disabled:border-transparent disabled:bg-line disabled:text-stone disabled:shadow-none",
+  "aria-disabled:border-transparent aria-disabled:bg-line aria-disabled:text-stone aria-disabled:shadow-none",
+].join(" ");
+// Fields and checkboxes keep their own look and dim instead.
+const FIELD_DISABLED = "disabled:opacity-60 aria-disabled:opacity-60";
 
 const SIZE: Record<ButtonSize, string> = {
   lg: "h-14 gap-2 px-6 text-button",
@@ -62,7 +71,7 @@ export type InputKind = "line" | "multiline" | "code" | "link";
 const FIELD = [
   "w-full rounded-md border border-stone in-[.names-glass]:border-ink-soft bg-surface px-3.5 text-ink placeholder:text-stone read-only:enabled:bg-sand",
   "focus-visible:-outline-offset-1 aria-invalid:border-urgent aria-invalid:focus-visible:outline-urgent",
-  DISABLED,
+  FIELD_DISABLED,
 ].join(" ");
 
 const FIELD_KIND: Record<InputKind, string> = {
@@ -84,7 +93,7 @@ export function checkboxClass(): string {
   return [
     "names-checkbox size-6 shrink-0 cursor-pointer appearance-none rounded-[calc(var(--radius-sm)/2)] border-2 border-stone in-[.names-glass]:border-ink-soft bg-surface",
     "checked:border-ink checked:bg-ink aria-invalid:not-checked:border-urgent",
-    DISABLED,
+    FIELD_DISABLED,
   ].join(" ");
 }
 
