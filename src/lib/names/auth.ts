@@ -17,7 +17,8 @@ export const EXPIRED_MESSAGE = "החיבור לחשבון הסתיים. צריך
 
 /** Query flag on welcome when Supabase refuses a new account (PRD 3.2.2, FR-W5). */
 export const CLOSED_PARAM = "closed";
-export const SIGNUPS_CLOSED_MESSAGE = "ההרשמה עוד לא פתוחה. אפשר להשאיר אימייל בעמוד הבית ונעדכן כשנפתח.";
+// The last clause says who the sign-in buttons below are for (NP-013).
+export const SIGNUPS_CLOSED_MESSAGE = "ההרשמה עוד לא פתוחה. אפשר להשאיר אימייל בעמוד הבית ונעדכן כשנפתח. כניסה לחשבון קיים עובדת כרגיל.";
 export const WAITLIST_HREF = "/#waitlist";
 
 /** Routes that never need a session (PRD 3.2.11). Everything else under /names is an app page. */
