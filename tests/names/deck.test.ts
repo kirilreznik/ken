@@ -129,7 +129,7 @@ describe("deckProgress", () => {
   });
 
   it("counts only names that pass the filters", () => {
-    const girls = { ...f, sex: "בת" as const };
+    const girls = { ...f, sex: ["בת" as const] };
     const deck = buildDeck(cards, none, girls, seed1);
     expect(deckProgress(cards, none, girls, deck.cards.length)).toEqual({ position: 1, total: deck.cards.length });
   });
@@ -138,7 +138,7 @@ describe("deckProgress", () => {
 describe("deckCount and hiddenCount", () => {
   it("counts undecided names that match, the same as the deck", () => {
     const votes = new Map<string, Vote>([[cards[0].stats.name, "keep"], [cards[1].stats.name, "hidden"]]);
-    const girls = { ...defaultFilters(), sex: "בת" as const };
+    const girls = { ...defaultFilters(), sex: ["בת" as const] };
     for (const f of [defaultFilters(), girls]) {
       expect(deckCount(cards, votes, f)).toBe(buildDeck(cards, votes, f, seed1).cards.length);
     }

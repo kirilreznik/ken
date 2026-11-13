@@ -12,11 +12,13 @@ import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
   RANGE_MAX,
   RANGE_MIN,
+  SEX_TAGS,
   applyLabel,
   defaultFilters,
   lengthValue,
   letterOptions,
   letterValue,
+  readSex,
   sexToken,
   type Filters,
   type NameLength,
@@ -39,12 +41,6 @@ interface Option<T> {
   label: ReactNode;
 }
 
-const SEX: Option<SexTag | null>[] = [
-  { value: null, label: "כל השמות" },
-  { value: "בן", label: "בן" },
-  { value: "בת", label: "בת" },
-  { value: "מתאים לכולם", label: "מתאים לכולם" },
-];
 
 // Every group starts with "כל השמות", so clearing a choice never depends on tapping it again.
 const BANDS: Option<PopularityBand | null>[] = [
@@ -105,6 +101,36 @@ function ChipGroup<T>({
             </button>
           );
         })}
+      </div>
+    </fieldset>
+  );
+}
+
+/**
+ * "לבן או לבת": several can be on at once, so "בת" with "מתאים לכולם" shows girls' names and
+ * names given to both. "כל השמות" clears them; turning the last one off, or all three on, is
+ * the same as "כל השמות".
+ */
+function SexGroup({ value, onChange }: { value: SexTag[] | null; onChange: (value: SexTag[] | null) => void }) {
+  const hintId = useId();
+  const toggle = (tag: SexTag) => {
+    const now = value ?? [];
+    onChange(readSex(now.includes(tag) ? now.filter((t) => t !== tag) : [...now, tag]));
+  };
+  const chip = (key: string, on: boolean, label: string, onClick: () => void) => (
+    <button key={key} type="button" aria-pressed={on} className={chipClass(on, "md")} onClick={onClick}>
+      {label}
+    </button>
+  );
+  return (
+    <fieldset className="m-0 min-w-0 border-0 p-0" aria-describedby={hintId}>
+      <legend className="mb-0.5 p-0 text-card-title">לבן או לבת</legend>
+      <p id={hintId} className="mb-2.5 text-caption text-stone">
+        אפשר לבחור יותר מאחד, למשל בת ומתאים לכולם
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {chip("all", value === null, "כל השמות", () => onChange(null))}
+        {SEX_TAGS.map((tag) => chip(tag, value?.includes(tag) ?? false, tag, () => toggle(tag)))}
       </div>
     </fieldset>
   );
@@ -185,7 +211,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   function apply() {
     if (n === 0) return;
     if (userId) {
-      if (getPref(userId, "filters").sex !== draft.sex) track("filter_sex", { sex: sexToken(draft.sex) });
+      if (sexToken(getPref(userId, "filters").sex) !== sexToken(draft.sex)) track("filter_sex", { sex: sexToken(draft.sex) });
       if (draft.relative) {
         const older = matchRelative(draft.relative.name, cards ?? []).older !== null;
         track("relative_applied", { letter: draft.relative.letter, meaning: draft.relative.meaning, older, names: draft.relative.names.length });
@@ -243,7 +269,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       }
     >
       <RelativeSection key={resets} cards={cards} value={draft.relative} onChange={set("relative")} />
-      <ChipGroup legend="לבן או לבת" options={SEX} value={draft.sex} onChange={set("sex")} />
+      <SexGroup value={draft.sex} onChange={set("sex")} />
       <ThemeGroup value={draft.themes} onChange={set("themes")} />
       <ChipGroup legend="כמה נפוץ" options={BANDS} value={draft.popularity} onChange={set("popularity")} />
       <ChipGroup legend="מגמה" options={TRENDS} value={draft.trend} onChange={set("trend")} />

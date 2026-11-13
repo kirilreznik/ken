@@ -1,9 +1,9 @@
 import { readDuelSaves, type DuelSaves } from "./duel";
-import { clampRange, defaultFilters, type Filters, type NameLength } from "./filters";
+import { clampRange, defaultFilters, readSex, type Filters, type NameLength } from "./filters";
 import { readRelative } from "./relative";
 import { isThemeId } from "./themes";
 import type { SpaceMember } from "./space";
-import type { PopularityBand, SexTag, TrendWord } from "./types";
+import type { PopularityBand, TrendWord } from "./types";
 
 /** FR-W17. "own" is the user's photo in IndexedDB (photo.ts). */
 export type Background = "none" | "fabric" | "notebook" | "nursery" | "own";
@@ -45,7 +45,6 @@ export function prefKey(userId: string, key: PrefKey): string {
   return `${PREFIX}${userId}:${key}`;
 }
 
-const SEX_TAGS: readonly SexTag[] = ["בן", "בת", "מתאים לכולם"];
 const BANDS: readonly PopularityBand[] = ["נפוץ", "בינוני", "נדיר"];
 const TRENDS: readonly TrendWord[] = ["בעלייה", "בירידה", "יציב"];
 const LENGTHS: readonly NameLength[] = ["קצר", "ארוך"];
@@ -60,7 +59,7 @@ function readFilters(raw: unknown): Filters {
   const out = defaultFilters();
   if (typeof raw !== "object" || raw === null) return out;
   const r = raw as Record<string, unknown>;
-  out.sex = oneOf(SEX_TAGS)(r.sex);
+  out.sex = readSex(r.sex);
   out.popularity = oneOf(BANDS)(r.popularity);
   out.trend = oneOf(TRENDS)(r.trend);
   out.letter = typeof r.letter === "string" && /^\p{L}$/u.test(r.letter) ? r.letter : null;

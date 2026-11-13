@@ -15,6 +15,7 @@ import {
   matches,
   nameLength,
   hasFilters,
+  readSex,
   sexToken,
   type FilterableCard,
   type Filters,
@@ -39,12 +40,14 @@ describe("filters on the 10 content names", () => {
   });
 
   it("'בת' gives girls only", () => {
-    expect(pick({ sex: "בת" })).toEqual(["יעל", "תמר", "אביגיל", "אלה"]);
+    expect(pick({ sex: ["בת"] })).toEqual(["יעל", "תמר", "אביגיל", "אלה"]);
   });
 
   it("'בן' and 'מתאים לכולם' split the rest", () => {
-    expect(pick({ sex: "בן" })).toEqual(["לביא"]);
-    expect(pick({ sex: "מתאים לכולם" })).toEqual(["זיו", "נועם", "שקד", "אריאל", "עמית"]);
+    expect(pick({ sex: ["בן"] })).toEqual(["לביא"]);
+    expect(pick({ sex: ["מתאים לכולם"] })).toEqual(["זיו", "נועם", "שקד", "אריאל", "עמית"]);
+    // Several at once: girls' names and names given to both.
+    expect(pick({ sex: ["בת", "מתאים לכולם"] })).toEqual(["זיו", "נועם", "יעל", "תמר", "שקד", "אריאל", "אביגיל", "עמית", "אלה"]);
   });
 
   it("'בעלייה' gives rising names only", () => {
@@ -74,13 +77,13 @@ describe("filters on the 10 content names", () => {
   });
 
   it("combines filters with AND", () => {
-    expect(pick({ sex: "בת", letter: "א" })).toEqual(["אביגיל", "אלה"]);
-    expect(pick({ sex: "בת", letter: "א", length: "קצר" })).toEqual(["אלה"]);
-    expect(pick({ sex: "בן", length: "ארוך" })).toEqual([]);
+    expect(pick({ sex: ["בת"], letter: "א" })).toEqual(["אביגיל", "אלה"]);
+    expect(pick({ sex: ["בת"], letter: "א", length: "קצר" })).toEqual(["אלה"]);
+    expect(pick({ sex: ["בן"], length: "ארוך" })).toEqual([]);
   });
 
   it("reset brings back every name", () => {
-    let f: Filters = { sex: "בת", popularity: "נדיר", trend: "בירידה", letter: "ת", length: "ארוך", themes: null, letterRange: null };
+    let f: Filters = { sex: ["בת"], popularity: "נדיר", trend: "בירידה", letter: "ת", length: "ארוך", themes: null, letterRange: null };
     expect(count(cards, f)).toBe(0);
     expect(isDefault(f)).toBe(false);
     f = defaultFilters();
@@ -112,12 +115,22 @@ describe("filter state", () => {
   it("hasFilters is true once any group is set, sex included", () => {
     expect(hasFilters(null)).toBe(false);
     expect(hasFilters(defaultFilters())).toBe(false);
-    expect(hasFilters({ ...defaultFilters(), sex: "בת" })).toBe(true);
+    expect(hasFilters({ ...defaultFilters(), sex: ["בת"] })).toBe(true);
     expect(hasFilters({ ...defaultFilters(), letter: "א" })).toBe(true);
   });
 
   it("sexToken gives ASCII tokens for analytics", () => {
-    expect(["בן", "בת", "מתאים לכולם", null].map((s) => sexToken(s as never))).toEqual(["boy", "girl", "unisex", "all"]);
+    expect([["בן"], ["בת"], ["מתאים לכולם"], null].map((s) => sexToken(s as never))).toEqual(["boy", "girl", "unisex", "all"]);
+    expect(sexToken(["בת", "מתאים לכולם"])).toBe("girl+unisex");
+  });
+
+  it("readSex keeps chip order, reads the old single value, and folds none or all three into null", () => {
+    expect(readSex(["מתאים לכולם", "בת"])).toEqual(["בת", "מתאים לכולם"]);
+    expect(readSex("בן")).toEqual(["בן"]);
+    expect(readSex(["בן", "בת", "מתאים לכולם"])).toBeNull();
+    expect(readSex([])).toBeNull();
+    expect(readSex(["x", 3])).toBeNull();
+    expect(readSex(null)).toBeNull();
   });
 });
 

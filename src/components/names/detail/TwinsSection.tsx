@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useUserId } from "@/components/names/AuthProvider";
 import { Chip, openNameSheet } from "@/components/names/ui";
 import { usePrefJson } from "@/components/names/usePrefJson";
+import { readSex } from "@/lib/names/filters";
 import { track } from "@/lib/names/track";
 import { twinsFor } from "@/lib/names/twins";
 import type { Card, NameDetail, Vote } from "@/lib/names/types";
@@ -34,7 +35,7 @@ export default function TwinsSection({
   const userId = useUserId();
   const on = usePrefJson(userId, "twins") === "true";
   const filtersJson = usePrefJson(userId, "filters");
-  const sex = filtersJson ? (JSON.parse(filtersJson) as { sex: Card["derived"]["sexTag"] | null }).sex : null;
+  const sex = useMemo(() => (filtersJson ? readSex((JSON.parse(filtersJson) as { sex?: unknown }).sex) : null), [filtersJson]);
   const twins = useMemo(
     () =>
       on && cards
