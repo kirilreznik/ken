@@ -1,12 +1,12 @@
 "use client";
 
-import { Suspense, useId, useRef } from "react";
+import { Suspense } from "react";
 import { createPortal } from "react-dom";
 import NestCard from "@/components/names/NestCard";
-import ScreenBackground from "@/components/names/ScreenBackground";
-import { Button, CloseIcon, Glass, IconButton, dotClass } from "@/components/names/ui";
+import MomentSheet from "@/components/names/MomentSheet";
+import { Button } from "@/components/names/ui";
 import { closeSheet, useLayerOpen } from "@/components/names/ui/layers";
-import { useModal, usePortalHost } from "@/components/names/ui/useModal";
+import { usePortalHost } from "@/components/names/ui/useModal";
 import { useNameStats } from "@/components/names/useCards";
 import { clearChoiceLabel, decisionTitle } from "@/lib/names/launch";
 import { countLine } from "@/lib/names/popularity";
@@ -41,61 +41,35 @@ function Gate(props: DecisionSheetProps) {
 
 function Panel({ name, shared, onClear }: DecisionSheetProps & { name: string }) {
   const { names } = useNameStats();
-  const panel = useRef<HTMLElement>(null);
-  const lineId = useId();
   const close = () => closeSheet("decision");
-  const onKeyDown = useModal(panel, close);
   const stats = names?.get(name);
 
   return (
-    <div data-names-layer className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-canvas">
-      <ScreenBackground blobs="match">
-        <section
-          ref={panel}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${decisionTitle(shared)}: ${name}`}
-          aria-describedby={lineId}
-          tabIndex={-1}
-          onKeyDown={onKeyDown}
-          className="names-sheet-in flex min-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col gap-6 px-5 pt-14 pb-8 text-ink outline-none"
-        >
-          <IconButton aria-label="סגירה" onClick={close} className="self-end">
-            <CloseIcon />
-          </IconButton>
-
-          <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
-            <p className="m-0 text-person font-bold text-ink">{decisionTitle(shared)}</p>
-            <Glass className="flex w-full flex-col items-center gap-3 rounded-xl px-6 py-8">
-              <h2 lang="he" className="m-0 text-match-name wrap-anywhere">
-                {name}
-              </h2>
-              <span aria-hidden="true" className={dotClass()} />
-              <p id={lineId} className="m-0 text-match-line text-ink-soft">
-                מזל טוב. השם נשמר כאן, ואפשר לשנות אותו בכל רגע.
-              </p>
-              {stats ? <p className="m-0 text-caption text-ink-soft">{countLine(stats)}</p> : null}
-            </Glass>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <Button onClick={close}>חזרה לרשימה</Button>
-            <Button
-              variant="link"
-              className="self-center"
-              onClick={() => {
-                onClear();
-                close();
-              }}
-            >
-              {clearChoiceLabel(name)}
-            </Button>
-          </div>
-
-          {/* The side offer comes after the sheet's own actions, so they stay above the fold. */}
-          <NestCard placement="decision" />
-        </section>
-      </ScreenBackground>
-    </div>
+    <MomentSheet
+      label={`${decisionTitle(shared)}: ${name}`}
+      eyebrow={decisionTitle(shared)}
+      name={name}
+      line="מזל טוב. השם נשמר כאן, ואפשר לשנות אותו בכל רגע."
+      meta={stats ? countLine(stats) : null}
+      onClose={close}
+      actions={
+        <>
+          <Button onClick={close}>חזרה לרשימה</Button>
+          <Button
+            variant="link"
+            className="self-center"
+            onClick={() => {
+              onClear();
+              close();
+            }}
+          >
+            {clearChoiceLabel(name)}
+          </Button>
+        </>
+      }
+    >
+      {/* The side offer comes after the sheet's own actions, so they stay above the fold. */}
+      <NestCard placement="decision" />
+    </MomentSheet>
   );
 }
