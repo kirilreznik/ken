@@ -5,6 +5,8 @@ import { useEffect, useSyncExternalStore, type KeyboardEvent, type RefObject } f
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+const TEXT_FIELD = 'input:not([type="checkbox"]):not([type="radio"]), textarea';
+
 const noSubscribe = () => () => {};
 
 /** The .nest-names wrapper sheets and dialogs portal into (keeps the scoped base styles). */
@@ -47,9 +49,29 @@ export function useModal(panel: RefObject<HTMLElement | null>, onClose: () => vo
     if (scrollLocks++ === 0) document.documentElement.style.overflow = "hidden";
 
     const target = el.querySelector<HTMLElement>("[data-autofocus]") ?? el;
-    target.focus({ preventScroll: true });
+    // A text field focused in the opening commit makes iOS Safari raise the keyboard and skip
+    // the panel's entrance; focus the panel now and the field once the entrance ends.
+    let focusTimer: number | undefined;
+    const focusTarget = () => {
+      window.clearTimeout(focusTimer);
+      el.removeEventListener("animationend", onAnimationEnd);
+      if (el.contains(document.activeElement) && document.activeElement !== el) return;
+      target.focus({ preventScroll: true });
+    };
+    const onAnimationEnd = (event: AnimationEvent) => {
+      if (event.target === el) focusTarget();
+    };
+    if (target.matches(TEXT_FIELD)) {
+      el.focus({ preventScroll: true });
+      el.addEventListener("animationend", onAnimationEnd);
+      focusTimer = window.setTimeout(focusTarget, 300);
+    } else {
+      target.focus({ preventScroll: true });
+    }
 
     return () => {
+      window.clearTimeout(focusTimer);
+      el.removeEventListener("animationend", onAnimationEnd);
       for (const node of madeInert) node.inert = false;
       stack.splice(stack.indexOf(el), 1);
       if (--scrollLocks === 0) document.documentElement.style.overflow = "";
