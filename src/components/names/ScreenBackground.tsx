@@ -104,6 +104,76 @@ function useOwnPhoto(userId: string | null, enabled: boolean): OwnPhoto | "loadi
   return "loading";
 }
 
+interface BackgroundLayerProps {
+  shown: Background;
+  blobs: "main" | "intro" | "match";
+  ownPhoto: OwnPhoto | null;
+}
+
+/** One background: the blobs, the photo, or the own photo with its scrim, plus the top scrim. */
+function BackgroundLayer({ shown, blobs, ownPhoto }: BackgroundLayerProps) {
+  return (
+    <>
+      {shown === "none" && blobs === "intro" ? (
+        <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-content">
+          <div className="absolute -top-15 -end-20 size-80 rounded-pill bg-peach opacity-25 blur-(--nest-blob-blur)" />
+        </div>
+      ) : null}
+
+      {shown === "none" && blobs === "match" ? (
+        <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-content">
+          <div className="absolute top-40 inset-x-0 mx-auto size-90 rounded-pill bg-peach opacity-25 blur-(--nest-blob-blur)" />
+        </div>
+      ) : null}
+
+      {shown === "none" && blobs === "main" ? (
+        <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-content">
+          <div className="absolute top-30 -end-30 size-75 rounded-pill bg-peach opacity-[0.22] blur-(--nest-blob-blur)" />
+          <div className="absolute bottom-20 -start-[90px] size-60 rounded-pill bg-peach opacity-[0.18] blur-(--nest-blob-blur)" />
+        </div>
+      ) : null}
+
+      {shown === "fabric" || shown === "notebook" || shown === "nursery" ? (
+        // The file the service worker precaches, as is: through the image optimizer it would
+        // be a URL that's only cached once fetched, so offline after one visit it was gone (NP-BUG-009).
+        <Image
+          key={shown}
+          src={photoUrl(shown)}
+          alt=""
+          priority
+          unoptimized
+          placeholder="blur"
+          blurDataURL={PHOTOS[shown].blurDataURL}
+          sizes="100vw"
+          className="object-cover"
+          fill
+        />
+      ) : null}
+
+      {shown === "own" && ownPhoto?.url ? (
+        <>
+          {/* An object URL of a local Blob: next/image can't optimize it. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={ownPhoto.url} alt="" className="absolute inset-0 size-full object-cover" />
+          <div
+            data-testid="names-own-scrim"
+            className="names-own-scrim absolute inset-0"
+            style={{ "--names-own-scrim": ownPhoto.scrim } as React.CSSProperties}
+          />
+        </>
+      ) : null}
+
+      {shown !== "none" ? (
+        <div className="absolute inset-x-0 top-0 h-(--nest-scrim-photo-height) bg-(image:--nest-scrim-photo)" />
+      ) : null}
+    </>
+  );
+}
+
+interface Leaving extends BackgroundLayerProps {
+  id: number;
+}
+
 interface ScreenBackgroundProps {
   /** Overrides the saved choice (e.g. a preview). */
   background?: Background;
@@ -127,60 +197,34 @@ export default function ScreenBackground({ background, blobs = "main", children 
   const shown: Background | null =
     choice === "own" && own === "loading" ? null : effectiveBackground(choice, !!ownPhoto?.url);
 
+  // Crossfade only on a change after the first paint, never on load or hydration.
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setArmed(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+  const [layer, setLayer] = useState<BackgroundLayerProps | null>(null);
+  const [leaving, setLeaving] = useState<Leaving | null>(null);
+  if (shown && (shown !== layer?.shown || blobs !== layer.blobs || ownPhoto !== layer.ownPhoto)) {
+    setLayer({ shown, blobs, ownPhoto });
+    if (armed && layer && layer.shown !== shown) setLeaving({ ...layer, id: (leaving?.id ?? 0) + 1 });
+  }
+
   return (
     <div data-names-bg={shown ?? "own"} className="relative isolate min-h-dvh">
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        {shown === "none" && blobs === "intro" ? (
-          <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-content">
-            <div className="absolute -top-15 -end-20 size-80 rounded-pill bg-peach opacity-25 blur-(--nest-blob-blur)" />
+        {shown ? <BackgroundLayer shown={shown} blobs={blobs} ownPhoto={ownPhoto} /> : null}
+
+        {/* The old background fades out over the new one (NP-103); a plain fade, so it stays under reduced motion. */}
+        {leaving ? (
+          <div
+            key={leaving.id}
+            data-motion="fade"
+            className="absolute inset-0 animate-[names-fade-out_var(--nest-duration-fast)_var(--nest-ease-out)_forwards]"
+            onAnimationEnd={() => setLeaving(null)}
+          >
+            <BackgroundLayer shown={leaving.shown} blobs={leaving.blobs} ownPhoto={leaving.ownPhoto} />
           </div>
-        ) : null}
-
-        {shown === "none" && blobs === "match" ? (
-          <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-content">
-            <div className="absolute top-40 inset-x-0 mx-auto size-90 rounded-pill bg-peach opacity-25 blur-(--nest-blob-blur)" />
-          </div>
-        ) : null}
-
-        {shown === "none" && blobs === "main" ? (
-          <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-content">
-            <div className="absolute top-30 -end-30 size-75 rounded-pill bg-peach opacity-[0.22] blur-(--nest-blob-blur)" />
-            <div className="absolute bottom-20 -start-[90px] size-60 rounded-pill bg-peach opacity-[0.18] blur-(--nest-blob-blur)" />
-          </div>
-        ) : null}
-
-        {shown === "fabric" || shown === "notebook" || shown === "nursery" ? (
-          // The file the service worker precaches, as is: through the image optimizer it would
-          // be a URL that's only cached once fetched, so offline after one visit it was gone (NP-BUG-009).
-          <Image
-            key={shown}
-            src={photoUrl(shown)}
-            alt=""
-            priority
-            unoptimized
-            placeholder="blur"
-            blurDataURL={PHOTOS[shown].blurDataURL}
-            sizes="100vw"
-            className="object-cover"
-            fill
-          />
-        ) : null}
-
-        {shown === "own" && ownPhoto?.url ? (
-          <>
-            {/* An object URL of a local Blob: next/image can't optimize it. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={ownPhoto.url} alt="" className="absolute inset-0 size-full object-cover" />
-            <div
-              data-testid="names-own-scrim"
-              className="names-own-scrim absolute inset-0"
-              style={{ "--names-own-scrim": ownPhoto.scrim } as React.CSSProperties}
-            />
-          </>
-        ) : null}
-
-        {shown && shown !== "none" ? (
-          <div className="absolute inset-x-0 top-0 h-(--nest-scrim-photo-height) bg-(image:--nest-scrim-photo)" />
         ) : null}
       </div>
 
