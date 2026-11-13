@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { iconButtonClass } from "@/components/names/ui/classes";
+import { useExit } from "@/components/names/ui/useExit";
 
 type RowMenuProps = {
   name: string;
@@ -37,6 +38,8 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
   const button = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   const menuId = useId();
+  // A short fade on close (NP-098): the menu stays, inert, until its exit animation ends.
+  const { mounted, closing, onClosed } = useExit(open);
 
   useLayoutEffect(() => {
     if (!open || !button.current || !menu.current) return;
@@ -101,15 +104,19 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
           <circle cx="12" cy="19" r="1.2" fill="currentColor" />
         </Icon>
       </button>
-      {open ? (
+      {mounted ? (
         <div
           ref={menu}
           id={menuId}
           role="menu"
           aria-label={`אפשרויות עבור ${name}`}
           data-motion="fade"
+          inert={closing}
           onKeyDown={onMenuKeyDown}
-          className={`names-glass names-menu-in absolute end-0 z-10 flex w-max max-w-[calc(min(100vw,480px)-2.5rem)] scroll-mb-[env(safe-area-inset-bottom)] flex-col rounded-md bg-surface p-1.5 ${up ? "bottom-full mb-1.5 origin-bottom-left ltr:origin-bottom-right" : "top-full mt-1.5 origin-top-left ltr:origin-top-right"}`}
+          onAnimationEnd={(event) => {
+            if (closing && event.target === event.currentTarget) onClosed();
+          }}
+          className={`names-glass ${closing ? "names-menu-out pointer-events-none" : "names-menu-in"} absolute end-0 z-10 flex w-max max-w-[calc(min(100vw,480px)-2.5rem)] scroll-mb-[env(safe-area-inset-bottom)] flex-col rounded-md bg-surface p-1.5 ${up ? "bottom-full mb-1.5 origin-bottom-left ltr:origin-bottom-right" : "top-full mt-1.5 origin-top-left ltr:origin-top-right"}`}
         >
           {onChoose ? (
             <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onChoose)}>

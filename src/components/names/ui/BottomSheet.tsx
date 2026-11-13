@@ -10,6 +10,7 @@ import { IconButton } from "./Button";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
 import { closeSheet, useLayerOpen } from "./layers";
 import { useToastLayer, useToastLift } from "./toastLift";
+import { useExit } from "./useExit";
 import { useModal, usePortalHost } from "./useModal";
 
 /**
@@ -55,9 +56,6 @@ const DRAG_CLOSE = DETENT_DRAG;
 const FULL_HEIGHT = "calc(100dvh - env(safe-area-inset-top))";
 // 28 px under the content (board 3), more on phones with a home indicator.
 const SAFE_BOTTOM = "pb-[max(1.75rem,env(safe-area-inset-bottom))]";
-// PRD 3.2.12: a tall sheet slides out in DURATION_FAST (DURATION_FADE with reduced motion, names.css);
-// it unmounts on animationend, or after this if that never fires.
-const EXIT_MS = DURATION_FAST + 100;
 // PRD 3.2.2: a card tap opens the sheet on pointerup. Quick taps that follow land on the scrim or
 // on the sliding panel's controls before it has slid in (DURATION_SHEET); for this long after opening,
 // clicks in the layer do nothing (no close, no decision).
@@ -102,23 +100,14 @@ function SheetGate(props: BottomSheetProps) {
   const open = useLayerOpen("sheet", props.name);
   const search = useSearchParams().toString();
   const host = usePortalHost();
-  // A tall sheet stays mounted while it slides out, unless another layer replaces it (no overlap).
-  const [mounted, setMounted] = useState(open);
-  const [closing, setClosing] = useState(false);
-  const onClosed = useCallback(() => setMounted(false), []);
-  if (open && (!mounted || closing)) {
-    setMounted(true);
-    setClosing(false);
-  } else if (!open && mounted && !closing) {
-    if (props.detents && !otherLayerOpen(search)) setClosing(true);
-    else setMounted(false);
-  }
+  // Every sheet stays mounted while it slides out (NP-098), unless another layer replaces it (no overlap).
+  const { mounted, closing, onClosed } = useExit(open, !otherLayerOpen(search));
   if (!mounted || !host) return null;
   return createPortal(<SheetPanel {...props} closing={closing} onClosed={onClosed} />, host);
 }
 
 type PanelProps = BottomSheetProps & {
-  /** Sliding out after the URL closed it: no longer modal, inert, gone on `onClosed`. */
+  /** Sliding out after the URL closed it: no longer modal, inert, gone on `onClosed` (useExit's timer is the fallback). */
   closing?: boolean;
   onClosed?: () => void;
 };
@@ -185,12 +174,6 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
       SETTLE,
     );
   }, [settles]);
-
-  useEffect(() => {
-    if (!closing) return;
-    const timer = window.setTimeout(() => onClosed?.(), EXIT_MS);
-    return () => window.clearTimeout(timer);
-  }, [closing, onClosed]);
 
   function onPointerDown(event: PointerEvent<HTMLButtonElement>) {
     if (event.button !== 0) return;
@@ -269,6 +252,9 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
         <button
           type="button"
           aria-label="סגירה"
+          // With a "סגירה" button in the header the handle is only for dragging: out of the Tab order
+          // and hidden from screen readers, so they hear one "סגירה" (NP-111).
+          aria-hidden={closeInHeader || closeButton ? true : undefined}
           tabIndex={closeInHeader || closeButton ? -1 : undefined}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}

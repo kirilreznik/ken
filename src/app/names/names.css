@@ -323,6 +323,21 @@
   }
 }
 
+/* Exits (NP-098): a dialog and a menu shrink back as they fade; `to` only. */
+@keyframes names-dialog-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes names-menu-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
 @keyframes names-spin {
   to {
     transform: rotate(1turn);
@@ -366,6 +381,14 @@
     animation: names-fade-out var(--nest-duration-fast) ease-in forwards;
   }
 
+  .nest-names .names-dialog-out {
+    animation: names-dialog-out var(--nest-duration-fast) ease-in forwards;
+  }
+
+  .nest-names .names-menu-out {
+    animation: names-menu-out var(--nest-duration-press) ease-in forwards;
+  }
+
   /* Desktop (PRD 3.2.4): the tall sheet is a centered panel, so it comes and goes like a dialog. */
   @media (min-width: 768px) {
     .nest-names [data-detent].names-sheet-in {
@@ -395,7 +418,9 @@
   }
 
   .nest-names .names-sheet-out,
-  .nest-names .names-scrim-out {
+  .nest-names .names-scrim-out,
+  .nest-names .names-dialog-out,
+  .nest-names .names-menu-out {
     animation: names-fade-out var(--nest-duration-fade) ease-in forwards !important;
   }
 }
