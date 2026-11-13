@@ -165,7 +165,7 @@ const EMPTY_PANEL_SURFACE: Record<EmptyPanelSurface, string> = {
 };
 
 const EMPTY_TITLE: Record<EmptyPanelSurface, string> = {
-  glass: "m-0 text-balance text-title font-bold text-ink",
+  glass: "m-0 text-balance text-title text-ink",
   card: "m-0 text-balance text-card-title text-ink",
 };
 

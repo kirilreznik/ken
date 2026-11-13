@@ -30,6 +30,30 @@ export const deckPanel = emptyPanelClass("glass");
 const SAVED_SHOWN = 10;
 
 /**
+ * Saved names as one plain line ("א · ב · ג"), not chips that look like buttons, ending in
+ * "ועוד {n}" when there are more than shown (NP-080). Shared with the round recap (PausePanel).
+ */
+export function SavedNames({ names, shown, label }: { names: readonly string[]; shown: number; label?: string }) {
+  const more = names.length - shown;
+  return (
+    <ol aria-label={label} className="m-0 flex list-none flex-wrap justify-center p-0 text-card-title text-ink">
+      {names.slice(0, shown).map((name, i) => (
+        <li key={name}>
+          {i > 0 ? <span aria-hidden="true" className="text-ink-soft">{"\u00a0·\u00a0"}</span> : null}
+          {name}
+        </li>
+      ))}
+      {more > 0 ? (
+        <li className="text-ink-soft">
+          <span aria-hidden="true">{"\u00a0·\u00a0"}</span>
+          ועוד {more.toLocaleString("he-IL")}
+        </li>
+      ) : null}
+    </ol>
+  );
+}
+
+/**
  * The deck's end states (FR-W14, the demo's .nd-empty): a glass panel where the card was.
  * The empty or finished filter offers "איפוס סינון"; at the end of the deck it lists the saved names and
  * links to "השמות שלי" and, when solo, to the invite screen.
@@ -76,18 +100,12 @@ export default function EmptyDeck({ state, saved, solo, onReset, takeFocus }: Em
             {saved.length > 0 ? (
               <>
                 <p className="text-intro text-ink-soft">השמות ששמרת:</p>
-                <ol className="flex flex-wrap justify-center gap-1.5">
-                  {saved.slice(0, SAVED_SHOWN).map((name) => (
-                    <li key={name} className="names-glass-soft rounded-pill px-3 py-1 text-card-title text-ink">
-                      {name}
-                    </li>
-                  ))}
-                </ol>
+                <SavedNames names={saved} shown={SAVED_SHOWN} />
               </>
             ) : (
-              <p className="text-intro text-ink-soft">לא נשמרו שמות הפעם.</p>
+              <p className="text-intro text-ink-soft">לא נשמרו שמות.</p>
             )}
-            <Button size="md" href="/names/lists">
+            <Button size="md" variant={saved.length > 0 ? "primary" : "secondary"} href="/names/lists">
               לשמות שלי
             </Button>
             {solo && (

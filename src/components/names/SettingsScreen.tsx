@@ -349,7 +349,7 @@ export default function SettingsScreen() {
                   className={`${rowAction} flex-col items-start! gap-0.5!`}
                 >
                   <span>יציאה מהבחירה המשותפת</span>
-                  <span className="text-caption font-normal text-stone">השמות ששמרת יישארו אצלך</span>
+                  <span className="text-caption font-medium text-stone">השמות ששמרת יישארו אצלך</span>
                 </button>
               </li>
             ) : null}
