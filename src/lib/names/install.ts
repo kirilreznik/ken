@@ -3,7 +3,7 @@
 // sheet with the share-menu steps. Nothing is offered when the app already runs installed.
 
 export const INSTALL_TITLE = "התקנה למסך הבית";
-export const INSTALL_STEPS = ["לוחצים על כפתור השיתוף", "ואז על 'הוספה למסך הבית'"] as const;
+export const INSTALL_STEPS = ["לוחצים על כפתור השיתוף", "ואז על ״הוספה למסך הבית״"] as const;
 export const INSTALL_HINT_TEXT = "אפשר להוסיף את בחירת השם למסך הבית ולפתוח אותה כמו אפליקציה.";
 /** The lists screen offers the install hint once this many names have a vote. */
 export const INSTALL_HINT_VOTES = 5;
