@@ -113,7 +113,7 @@ export default function Intro() {
             <b className={strong}>הבחירות נשארות פרטיות.</b>{" "}
             {isShared
               ? "הבחירה נעשית בנפרד, בכל טלפון. שם שנשמר אצל שניים או יותר יופיע בהתאמות, ועל דילוגים אף אחד לא יודע."
-              : "מה ששומרים ועל מה שמדלגים נשאר פרטי."}
+              : "אף אחד לא רואה מה שמרת ועל מה דילגת."}
           </Point>
           <Point
             icon={
@@ -122,7 +122,7 @@ export default function Intro() {
               </Icon>
             }
           >
-            <b className={strong}>עובד גם לבד.</b> מהשמות ששמרתם אפשר לצמצם לחמישייה <span className="whitespace-nowrap">בדו־קרב</span>.
+            <b className={strong}>עובד גם לבד.</b> מהשמות ששומרים אפשר לצמצם לחמישייה <span className="whitespace-nowrap">בדו־קרב</span>, ברשימות.
           </Point>
         </ul>
 
@@ -138,7 +138,6 @@ export default function Intro() {
             dir="rtl"
             autoComplete="family-name"
             maxLength={SURNAME_MAX}
-            placeholder="כדי לראות את השם המלא"
             value={surname}
             onChange={(e) => setSurname(e.target.value)}
             aria-describedby="surname-hint"
@@ -146,7 +145,7 @@ export default function Intro() {
             className={`${inputClass()} scroll-mb-34`}
           />
           <span id="surname-hint" className="text-caption text-ink-soft in-data-[names-bg=none]:text-stone">
-            נשמר רק במכשיר הזה.
+            כדי לראות את השם המלא על הכרטיס. נשמר רק במכשיר הזה.
           </span>
         </div>
 
