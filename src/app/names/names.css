@@ -106,6 +106,7 @@
   .nest-names *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    transition-property: none !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
     scroll-behavior: auto !important;
@@ -313,6 +314,27 @@
   }
 }
 
+/* Both menus (RowMenu, the skip button's menu) grow from the trigger's corner: each sets
+ * its transform-origin. */
+@keyframes names-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@keyframes names-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes names-pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+
 @layer components {
   .nest-names .names-sheet-in {
     animation: names-sheet-in var(--nest-duration-sheet) var(--nest-ease-out);
@@ -325,6 +347,15 @@
 
   .nest-names .names-dialog-in {
     animation: names-dialog-in var(--nest-duration-fast) ease-out;
+  }
+
+  .nest-names .names-menu-in {
+    animation: names-menu-in var(--nest-duration-press) var(--nest-ease-out);
+  }
+
+  /* Loading spinner (AuthCallback, JoinScreen). */
+  .nest-names .names-spinner {
+    animation: names-spin 1s linear infinite;
   }
 
   .nest-names .names-sheet-out {
@@ -347,12 +378,20 @@
   }
 }
 
-/* Reduced motion: sheets fade in and out in 160 ms, no slide (PRD 3.2.12). Unlayered and after
- * the reduced-motion switch-off above, so these win over it. */
+/* Reduced motion: sheets, dialogs, menus and the toast fade in and out in 160 ms, no slide or
+ * scale (PRD 3.2.12), so a dialog and its scrim fade together. The spinner pulses slowly instead
+ * of rotating. Unlayered and after the reduced-motion switch-off above, so these win over it. */
 @media (prefers-reduced-motion: reduce) {
   .nest-names .names-sheet-in,
-  .nest-names .names-scrim-in {
+  .nest-names .names-scrim-in,
+  .nest-names .names-dialog-in,
+  .nest-names .names-menu-in,
+  .nest-names .names-toast-in {
     animation: names-fade-in var(--nest-duration-fade) ease-out !important;
+  }
+
+  .nest-names .names-spinner {
+    animation: names-pulse 2s ease-in-out infinite !important;
   }
 
   .nest-names .names-sheet-out,

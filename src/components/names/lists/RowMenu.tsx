@@ -109,7 +109,7 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
           aria-label={`אפשרויות עבור ${name}`}
           data-motion="fade"
           onKeyDown={onMenuKeyDown}
-          className={`names-glass names-toast-in absolute end-0 z-10 flex w-max max-w-[calc(min(100vw,480px)-2.5rem)] scroll-mb-[env(safe-area-inset-bottom)] flex-col rounded-md bg-surface p-1.5 ${up ? "bottom-full mb-1.5" : "top-full mt-1.5"}`}
+          className={`names-glass names-menu-in absolute end-0 z-10 flex w-max max-w-[calc(min(100vw,480px)-2.5rem)] scroll-mb-[env(safe-area-inset-bottom)] flex-col rounded-md bg-surface p-1.5 ${up ? "bottom-full mb-1.5 origin-bottom-left ltr:origin-bottom-right" : "top-full mt-1.5 origin-top-left ltr:origin-top-right"}`}
         >
           {onChoose ? (
             <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onChoose)}>

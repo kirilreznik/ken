@@ -90,7 +90,7 @@ export default function AuthCallback() {
   return (
     <AuthLayout title="נכנסים…" hero={wordmark}>
       <div role="status" className="flex items-center gap-3 text-body text-ink-soft">
-        <span aria-hidden="true" className="size-5 animate-spin rounded-pill border-2 border-ink-soft/30 border-t-ink" />
+        <span aria-hidden="true" className="names-spinner size-5 rounded-pill border-2 border-ink-soft/30 border-t-ink" />
         רק רגע, מסיימים את הכניסה
       </div>
     </AuthLayout>
