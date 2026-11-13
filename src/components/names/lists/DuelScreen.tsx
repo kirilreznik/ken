@@ -28,7 +28,7 @@ import {
 } from "@/lib/names/duel";
 import { rowMeta, rowMetaText } from "@/lib/names/lists";
 import { getPref, setPref, subscribePrefs } from "@/lib/names/prefs";
-import { showToast } from "@/lib/names/toast";
+import { dismissToast, showToast } from "@/lib/names/toast";
 import type { NameStats } from "@/lib/names/types";
 import { track } from "@/lib/names/track";
 
@@ -41,6 +41,9 @@ function Icon({ size = 20, children, className }: { size?: number; children: Rea
 }
 
 const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0];
+
+// The "עצירה" toast; reopening the duel ends it so it doesn't cover the result's link (NP-097).
+let stopToastId: number | undefined;
 
 /** The saved duels (the duelState pref, one per source) as a stable JSON snapshot. */
 function useSavedDuels(userId: string | null): DuelSaves | null {
@@ -108,6 +111,16 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
   // The "דו־קרב" tab that opened this screen is gone; start from the title.
   useEffect(() => {
     if (!document.activeElement || document.activeElement === document.body) headingRef.current?.focus();
+    if (stopToastId !== undefined) dismissToast(stopToastId);
+  }, []);
+
+  // Its own page title while open (NP-163).
+  useEffect(() => {
+    const previous = document.title;
+    document.title = "דו־קרב · בחירת שם";
+    return () => {
+      document.title = previous;
+    };
   }, []);
 
   const save = (state: DuelState) => {
@@ -139,7 +152,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
 
   const stop = () => {
     if (duel) save(duel);
-    showToast("הדו־קרב נשמר. אפשר להמשיך מאותו מקום.");
+    stopToastId = showToast("הדו־קרב נשמר. אפשר להמשיך מאותו מקום.");
     onBack(source);
   };
 
@@ -244,7 +257,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                 aria-valuetext={roundText(p)}
                 className="h-1.5 overflow-hidden rounded-pill bg-line"
               >
-                <div className="h-1.5 rounded-pill bg-clay" style={{ width: `${barPercent}%` }} />
+                <div className="h-1.5 rounded-pill bg-clay transition-[width] duration-(--nest-duration-fast) ease-out" style={{ width: `${barPercent}%` }} />
               </div>
               {resolved?.restarted ? (
                 <p className="m-0 text-person text-ink-soft">הרשימה השתנתה מאז, אז הדו־קרב מתחיל מחדש.</p>
@@ -272,18 +285,26 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                           data-duel-pick={i === 0 ? "a" : "b"}
                           aria-describedby={m ? `duel-meta-${i}` : undefined}
                           onClick={(event) => choose(name, event.timeStamp)}
-                          className="@container flex min-h-[180px] flex-col items-center justify-center gap-1.5 rounded-xl bg-surface px-4 text-ink shadow-hero"
+                          className="@container flex min-h-[180px] touch-manipulation flex-col items-center justify-center gap-1.5 rounded-xl bg-surface px-4 text-ink shadow-hero transition-transform duration-(--nest-duration-press) motion-safe:active:scale-97"
                         >
-                          {/* A narrow card (Page Zoom 150 %) steps the name down a size, and a name too long for a line breaks anywhere (NP-BUG-012). */}
-                          <span className="max-w-full text-center text-duel-name wrap-anywhere @max-[16rem]:text-hero-name">{name}</span>
-                          {m ? (
-                            <span aria-hidden="true" className="text-caption font-medium text-stone">
-                              {m.short}
-                            </span>
-                          ) : null}
+                          {/* Each round's names fade in (NP-162); a plain fade, so it stays under reduced motion (data-motion). The button itself keeps focus. */}
+                          <span
+                            key={`${duel.picks}-${name}`}
+                            data-motion="fade"
+                            className="flex max-w-full animate-[names-fade-in_var(--nest-duration-fade)_ease-out] flex-col items-center gap-1.5"
+                          >
+                            {/* A narrow card (Page Zoom 150 %) steps the name down a size, and a name too long for a line breaks anywhere (NP-BUG-012). */}
+                            <span className="max-w-full text-center text-duel-name wrap-anywhere @max-[16rem]:text-hero-name">{name}</span>
+                            {m ? (
+                              <span aria-hidden="true" className="text-caption font-medium text-stone">
+                                {m.short}
+                              </span>
+                            ) : null}
+                          </span>
                         </button>
+                        {/* hidden, not sr-only: read once as the button's description (NP-164). */}
                         {m ? (
-                          <span id={`duel-meta-${i}`} className="sr-only">
+                          <span id={`duel-meta-${i}`} hidden>
                             {m.full}
                           </span>
                         ) : null}
