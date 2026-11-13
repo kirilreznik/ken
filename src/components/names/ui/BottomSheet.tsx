@@ -411,7 +411,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
 function heightClass(tall: boolean, detent: Detent): string {
   if (!tall) return "max-h-[calc(100dvh-2.5rem)]";
   // Desktop: a centered panel with all corners round, as high as its content up to 90dvh (NP-050).
-  const panel = "md:h-auto md:max-h-[90dvh] md:max-w-[480px] md:rounded-xl";
+  const panel = "md:h-auto md:max-h-[90dvh] md:max-w-content md:rounded-xl";
   return detent === "full"
     ? `h-[calc(100dvh-env(safe-area-inset-top))] ${panel}`
     : `max-h-[70dvh] ${panel}`;

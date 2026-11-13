@@ -42,6 +42,7 @@
   --nest-space-5: 20px;
   --nest-space-6: 24px;
   --nest-space-8: 32px;
+  --nest-content-max: 480px;
   --nest-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --nest-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --nest-duration-press: 150ms;
@@ -194,6 +195,7 @@
   --shadow-card: var(--nest-shadow-card);
   --shadow-hero: var(--nest-shadow-hero);
   --shadow-glass: var(--nest-shadow-glass);
+  --container-content: var(--nest-content-max);
   --color-white-30: var(--nest-white-30);
   --color-white-55: var(--nest-white-55);
   --color-white-60: var(--nest-white-60);

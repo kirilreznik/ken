@@ -12,7 +12,7 @@ import ReportSheet from "./ReportSheet";
 export default function AboutScreen() {
   return (
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
-      <main className="mx-auto flex w-full max-w-[480px] flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <main className="mx-auto flex w-full max-w-content flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
           <BackButton />
           <h1 className="m-0 min-w-0 flex-1 text-title">על הנתונים</h1>

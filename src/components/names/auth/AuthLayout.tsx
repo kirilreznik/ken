@@ -51,7 +51,7 @@ export default function AuthLayout({ title, lead, backHref, onBack, hero, footer
       />
       <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-(--nest-scrim-photo-height) bg-(image:--nest-scrim-photo)" />
 
-      <main className="relative mx-auto flex min-h-dvh w-full max-w-[480px] flex-col gap-6 px-5 pt-[max(56px,env(safe-area-inset-top))] pb-[max(32px,env(safe-area-inset-bottom))]">
+      <main className="relative mx-auto flex min-h-dvh w-full max-w-content flex-col gap-6 px-5 pt-[max(56px,env(safe-area-inset-top))] pb-[max(32px,env(safe-area-inset-bottom))]">
         {onBack ? (
           <button type="button" onClick={onBack} aria-label="חזרה" data-control className={`${iconButtonClass()} ${BACK_PLACE}`}>
             {backIcon}

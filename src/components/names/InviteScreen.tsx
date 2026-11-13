@@ -145,7 +145,7 @@ export default function InviteScreen() {
 
   return (
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
-      <main className="mx-auto flex w-full max-w-[480px] flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <main className="mx-auto flex w-full max-w-content flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
           <IconButton aria-label="חזרה" onClick={back}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">

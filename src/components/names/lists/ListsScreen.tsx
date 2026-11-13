@@ -195,7 +195,7 @@ export default function ListsScreen() {
 
   return (
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
-      <main className="mx-auto flex w-full max-w-[480px] flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <main className="mx-auto flex w-full max-w-content flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         {/* Under 360 px the row takes the deck header's 12 px edges and tighter gaps, so "השמות שלי" keeps its width at 320 px (NP-BUG-005). */}
         <header className="flex items-center gap-2 max-[22.5rem]:-mx-2 max-[22.5rem]:gap-1.5">
           <IconButton aria-label="חזרה" onClick={back}>

@@ -186,13 +186,13 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
       {/* The glow lights the cards or the ranking only; the few-names and loading states stay plain (NP-168). */}
       {ready && duel && p ? (
         <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-          <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-[480px]">
+          <div className="absolute inset-y-0 start-0 end-0 mx-auto max-w-content">
             <div className="absolute top-65 inset-x-0 mx-auto size-70 rounded-pill bg-peach opacity-20 blur-(--nest-blob-blur)" />
           </div>
         </div>
       ) : null}
 
-      <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col gap-5 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <main className="mx-auto flex min-h-dvh w-full max-w-content flex-col gap-5 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
           <IconButton aria-label="חזרה" onClick={() => onBack(source)}>
             <Icon className="ltr:-scale-x-100">

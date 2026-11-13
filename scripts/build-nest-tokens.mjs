@@ -115,6 +115,8 @@ const theme = [
   ...colors.map((t) => [`color-${t.name}`, `var(--nest-${t.name})`]),
   ...radii.map((t) => [t.name, `var(--nest-${t.name})`]),
   ...shadows.map((t) => [t.name, `var(--nest-${t.name})`]),
+  // The page column: max-w-content (NP-064).
+  ["container-content", "var(--nest-content-max)"],
   // Overlay colors (white-55, ink-45 …) get Tailwind names too: bg-ink-45, not bg-(--nest-ink-45) (NP-066).
   ...Object.keys(extras)
     .filter((k) => /^(white|ink|peach-pale)-\d+$/.test(k))
