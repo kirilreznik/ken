@@ -17,7 +17,7 @@ export default function CardPeople({ people, inSheet = false }: { people: readon
         <li key={p.name} className="flex items-center gap-2">
           <span
             aria-hidden="true"
-            className="flex size-6.5 flex-none items-center justify-center rounded-pill bg-(--nest-white-55) text-tag font-extrabold text-ink in-data-[names-bg=none]:bg-sand"
+            className="flex size-6.5 flex-none items-center justify-center rounded-pill bg-white-55 text-tag font-extrabold text-ink in-data-[names-bg=none]:bg-sand"
           >
             {p.initial}
           </span>

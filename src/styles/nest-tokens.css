@@ -194,6 +194,15 @@
   --shadow-card: var(--nest-shadow-card);
   --shadow-hero: var(--nest-shadow-hero);
   --shadow-glass: var(--nest-shadow-glass);
+  --color-white-30: var(--nest-white-30);
+  --color-white-55: var(--nest-white-55);
+  --color-white-60: var(--nest-white-60);
+  --color-white-70: var(--nest-white-70);
+  --color-white-75: var(--nest-white-75);
+  --color-peach-pale-60: var(--nest-peach-pale-60);
+  --color-ink-35: var(--nest-ink-35);
+  --color-ink-45: var(--nest-ink-45);
+  --color-ink-75: var(--nest-ink-75);
   --shadow-button: var(--nest-shadow-button);
   --shadow-button-soft: var(--nest-shadow-button-soft);
   --shadow-card-raised: var(--nest-shadow-card-raised);

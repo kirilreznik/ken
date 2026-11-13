@@ -115,6 +115,10 @@ const theme = [
   ...colors.map((t) => [`color-${t.name}`, `var(--nest-${t.name})`]),
   ...radii.map((t) => [t.name, `var(--nest-${t.name})`]),
   ...shadows.map((t) => [t.name, `var(--nest-${t.name})`]),
+  // Overlay colors (white-55, ink-45 …) get Tailwind names too: bg-ink-45, not bg-(--nest-ink-45) (NP-066).
+  ...Object.keys(extras)
+    .filter((k) => /^(white|ink|peach-pale)-\d+$/.test(k))
+    .map((k) => [`color-${k}`, `var(--nest-${k})`]),
   ...Object.keys(extras)
     .filter((k) => k.startsWith("shadow-"))
     .map((k) => [k, `var(--nest-${k})`]),

@@ -23,7 +23,7 @@ type NameCardProps = Omit<ComponentPropsWithRef<"article">, "children"> & {
 };
 
 const stamp =
-  "pointer-events-none absolute top-5.5 rounded-sm border-3 border-current bg-(--nest-white-75) px-3 py-1 text-stamp";
+  "pointer-events-none absolute top-5.5 rounded-sm border-3 border-current bg-white-75 px-3 py-1 text-stamp";
 
 /**
  * A whole name card (E16 FR-5a, slim per FR-D19 / board 12), one glass article in this order:

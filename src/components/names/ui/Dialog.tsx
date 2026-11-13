@@ -40,7 +40,7 @@ function DialogPanel({ name, title, description, children }: DialogProps) {
 
   return (
     <div data-names-layer className="fixed inset-0 z-50 flex items-center justify-center p-5">
-      <div aria-hidden="true" className="names-scrim-in absolute inset-0 bg-(--nest-ink-45)" onClick={close} />
+      <div aria-hidden="true" className="names-scrim-in absolute inset-0 bg-ink-45" onClick={close} />
       <section
         ref={panel}
         role="alertdialog"

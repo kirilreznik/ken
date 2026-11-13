@@ -41,8 +41,8 @@ import { track } from "@/lib/names/track";
 const DELETE_DIALOG = "delete-account";
 
 const card = "m-0 list-none rounded-lg bg-surface p-0 shadow-card";
-const row = "border-b border-line first:rounded-t-lg last:rounded-b-lg last:border-b-0";
-const rowAction = "flex min-h-14 w-full rounded-[inherit] items-center gap-3 px-4 py-3 text-start text-body font-bold text-ink";
+const row = "group/row border-b border-line first:rounded-t-lg last:rounded-b-lg last:border-b-0";
+const rowAction = "flex min-h-14 w-full items-center group-first/row:rounded-t-lg group-last/row:rounded-b-lg gap-3 px-4 py-3 text-start text-body font-bold text-ink";
 
 function Chevron() {
   return (

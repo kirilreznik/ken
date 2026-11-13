@@ -239,7 +239,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     <div ref={layer} data-names-layer onClickCapture={onClickCapture} onPointerDownCapture={selectGuard ? armSelectGuard : undefined} className={`fixed inset-0 z-40 flex flex-col justify-end ${tall ? "md:justify-center md:px-5" : ""} ${closing ? "pointer-events-none" : ""} ${selectGuard ? "select-none [-webkit-touch-callout:none]" : ""}`}>
       <div
         aria-hidden="true"
-        className={`${closing ? "names-scrim-out" : "names-scrim-in"} absolute inset-0 bg-(--nest-ink-45)`}
+        className={`${closing ? "names-scrim-out" : "names-scrim-in"} absolute inset-0 bg-ink-45`}
         // A press on the scrim never takes focus out of the dialog (it only closes it, on click).
         onMouseDown={(event) => event.preventDefault()}
         onClick={closing ? undefined : close}
