@@ -17,8 +17,8 @@ export default function NamesOffline() {
     <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col justify-center gap-6 px-5 pt-[max(56px,env(safe-area-inset-top))] pb-[max(32px,env(safe-area-inset-bottom))] text-center">
       <Wordmark />
       <div className="flex flex-col gap-2">
-        <h1 className="text-display">אין חיבור לאינטרנט</h1>
-        <p className="text-card-title font-medium text-balance text-ink-soft">
+        <h1 className="text-display text-balance">אין חיבור לאינטרנט</h1>
+        <p className="text-card-title font-medium text-pretty text-ink-soft">
           העמוד הזה עוד לא שמור במכשיר. אפשר לחזור לבחירת שמות, או לנסות שוב כשהחיבור יחזור.
         </p>
       </div>

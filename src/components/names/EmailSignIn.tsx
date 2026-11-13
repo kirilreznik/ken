@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
-import AuthLayout from "@/components/names/auth/AuthLayout";
+import AuthLayout, { AUTH_LEAD_ID } from "@/components/names/auth/AuthLayout";
 import Wordmark from "@/components/names/auth/Wordmark";
 import { Button, inputClass, linkClass } from "@/components/names/ui";
 import CodeInput, { CODE_LENGTH } from "@/components/names/auth/CodeInput";
@@ -214,7 +214,7 @@ export default function EmailSignIn() {
                 if (error) setError(null);
               }}
               aria-invalid={shownError === INVALID_EMAIL_MESSAGE || undefined}
-              aria-describedby={shownError ? "email-sign-in-error" : undefined}
+              aria-describedby={shownError ? `${AUTH_LEAD_ID} email-sign-in-error` : AUTH_LEAD_ID}
               className={inputClass()}
             />
           </div>
@@ -263,7 +263,7 @@ export default function EmailSignIn() {
           }}
           onComplete={(c) => void verify(c)}
           invalid={shownError !== null}
-          describedBy={shownError ? "email-sign-in-error" : undefined}
+          describedBy={shownError ? `${AUTH_LEAD_ID} email-sign-in-error` : AUTH_LEAD_ID}
           autoFocus
           inputRef={codeRef}
         />

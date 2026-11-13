@@ -194,7 +194,7 @@ export default function ListsScreen() {
               <path d="M9 6l6 6-6 6" />
             </Icon>
           </IconButton>
-          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title outline-none max-[20rem]:min-w-max">
+          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title text-balance outline-none max-[20rem]:min-w-max">
             השמות שלי
           </h1>
           <IconButton href="/names/invite" aria-label="הזמנה לבחירה משותפת">
@@ -332,7 +332,7 @@ function MatchesPanel({ userId, state, onRetry, memberCount, names, canOpen, cho
   const online = useOnline();
   // The day to compare the last update with; the screen isn't open across midnight for long.
   const [openedAt] = useState(() => Date.now());
-  const intro = <p className="m-0 text-person text-ink-soft">{matchesIntro(memberCount)}</p>;
+  const intro = <p className="m-0 text-person text-pretty text-ink-soft">{matchesIntro(memberCount)}</p>;
   const updated =
     !online && state?.fetchedAt != null ? (
       <p className="m-0 text-caption text-stone">{updatedText(state.fetchedAt, openedAt)}</p>
@@ -561,7 +561,7 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
 
   return (
     <>
-      <p className="m-0 text-person text-ink-soft">השמות ששמרת, אלה שאהבת מאוד ראשונים.</p>
+      <p className="m-0 text-person text-pretty text-ink-soft">השמות ששמרת, אלה שאהבת מאוד ראשונים.</p>
       <ul ref={listRef} aria-label="שמות ששמרתי" className="m-0 list-none rounded-lg bg-surface p-0 shadow-card">
         {rows.map((row, i) => {
           const meta = row.custom ? null : rowMeta(names?.get(row.name));

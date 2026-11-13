@@ -9,8 +9,8 @@ function Part({ title, level, children }: { title: string; level: 2 | 3; childre
   const Heading = level === 2 ? "h2" : "h3";
   return (
     <div className="flex flex-col gap-1.5">
-      <Heading className="m-0 text-card-title">{title}</Heading>
-      <p className="m-0 text-body text-ink-soft">{children}</p>
+      <Heading className="m-0 text-card-title text-balance">{title}</Heading>
+      <p className="m-0 text-body text-pretty text-ink-soft">{children}</p>
     </div>
   );
 }

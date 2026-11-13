@@ -2,10 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import fabric from "../../../../public/landing/names-fabric.webp";
 
+/** The lead's id: fields in the panel point aria-describedby at it (NP-015). */
+export const AUTH_LEAD_ID = "auth-lead";
+
 interface AuthLayoutProps {
   title: string;
   lead?: React.ReactNode;
-  /** Optional round back link in the top start corner. */
+  /** Optional round back link in the top start corner, out of the flow so the hero keeps its place (NP-008). */
   backHref?: string;
   /** Above the panel (e.g. the wordmark or a preview card). */
   hero?: React.ReactNode;
@@ -34,13 +37,13 @@ export default function AuthLayout({ title, lead, backHref, hero, footer, childr
       />
       <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-(--nest-scrim-photo-height) bg-(image:--nest-scrim-photo)" />
 
-      <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col gap-6 px-5 pt-[max(56px,env(safe-area-inset-top))] pb-[max(32px,env(safe-area-inset-bottom))]">
+      <main className="relative mx-auto flex min-h-dvh w-full max-w-[480px] flex-col gap-6 px-5 pt-[max(56px,env(safe-area-inset-top))] pb-[max(32px,env(safe-area-inset-bottom))]">
         {backHref ? (
           <Link
             href={backHref}
             aria-label="חזרה"
             data-control
-            className="names-glass-soft flex size-11 items-center justify-center self-start rounded-pill text-ink"
+            className="names-glass-soft absolute start-5 top-[max(6px,env(safe-area-inset-top))] flex size-11 items-center justify-center rounded-pill text-ink"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">
               <path d="M9 6l6 6-6 6" />
@@ -52,10 +55,14 @@ export default function AuthLayout({ title, lead, backHref, hero, footer, childr
 
         <section aria-labelledby="auth-title" className="names-glass names-card-glass flex flex-col gap-6 rounded-xl p-6">
           <div className="flex flex-col gap-2">
-            <h1 id="auth-title" className="text-display">
+            <h1 id="auth-title" className="text-display text-balance">
               {title}
             </h1>
-            {lead ? <div className="text-card-title font-medium text-ink-soft">{lead}</div> : null}
+            {lead ? (
+              <div id={AUTH_LEAD_ID} className="text-card-title font-medium text-pretty text-ink-soft">
+                {lead}
+              </div>
+            ) : null}
           </div>
           {children}
         </section>

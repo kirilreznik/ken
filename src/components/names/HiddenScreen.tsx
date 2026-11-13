@@ -75,11 +75,11 @@ export default function HiddenScreen() {
               <path d="M9 6l6 6-6 6" />
             </svg>
           </IconButton>
-          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title outline-none">
+          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title text-balance outline-none">
             שמות שהסתרתי
           </h1>
         </header>
-        <p className="m-0 text-person font-medium text-ink-soft">שמות שהסתרת לא מופיעים בבחירה. אחרי החזרה השם יופיע בה שוב.</p>
+        <p className="m-0 text-person font-medium text-pretty text-ink-soft">שמות שהסתרת לא מופיעים בבחירה. אחרי החזרה השם יופיע בה שוב.</p>
 
         {!ready ? (
           <ListSkeleton />

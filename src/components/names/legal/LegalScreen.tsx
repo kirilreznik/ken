@@ -26,7 +26,7 @@ export default function LegalScreen({ doc, draft, contacts }: { doc: LegalDoc; d
       <main className="mx-auto flex w-full max-w-[480px] flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
           <BackButton />
-          <h1 className="m-0 min-w-0 flex-1 text-title">{doc.title}</h1>
+          <h1 className="m-0 min-w-0 flex-1 text-title text-balance">{doc.title}</h1>
         </header>
 
         {draft ? (
@@ -49,9 +49,9 @@ export default function LegalScreen({ doc, draft, contacts }: { doc: LegalDoc; d
           </p>
           {doc.sections.map((section) => (
             <section key={section.title} className="flex flex-col gap-1.5">
-              <h2 className="m-0 text-card-title">{section.title}</h2>
+              <h2 className="m-0 text-card-title text-balance">{section.title}</h2>
               {section.paragraphs?.map((p) => (
-                <p key={p} className="m-0 text-body text-ink-soft">
+                <p key={p} className="m-0 text-body text-pretty text-ink-soft">
                   <Text text={p} contacts={contacts} />
                 </p>
               ))}
