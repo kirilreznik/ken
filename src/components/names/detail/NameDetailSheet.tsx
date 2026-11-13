@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { Suspense, useDeferredValue, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import CardBible from "@/components/names/card/CardBible";
 import CardPeople from "@/components/names/card/CardPeople";
 import DecisionButtons, { type Decision } from "@/components/names/DecisionButtons";
@@ -103,8 +103,12 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Nam
       leaving.current = window.setTimeout(() => visits.end(), 0);
     };
   }, [visits]);
+  // NP-101: the opening commit holds the shell and the first sections, so the slide-in paints
+  // from its first frame; the rest (chart, similar names) follows in a background render.
+  const deferredName = useDeferredValue(card?.stats.name ?? null, null);
+  const rest = card !== null && deferredName === card.stats.name;
   const [body, setBody] = useState<HTMLDivElement | null>(null);
-  useSectionsSeen(visits, open ? body : null, `${card?.stats.name}|${details.state}|${similar.length}`);
+  useSectionsSeen(visits, open ? body : null, `${card?.stats.name}|${details.state}|${similar.length}|${rest}`);
 
   // FR-D6: a direct link opens once the deck has the name; Back then closes onto a clean page.
   const shown = named?.stats.name ?? null;
@@ -139,12 +143,16 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Nam
         />
         <CardBible bible={card.content.bible} inSheet />
         <CardPeople people={card.content.people} />
-        <TogetherSection together={togetherFor(card.stats.name, matches, memberCount)} />
-        <NumbersSection stats={card.stats} rank={rank} />
-        <SexSection {...card.derived} />
-        <FactsSection stats={card.stats} rank={rank} />
-        <SimilarSection similar={similar} onOpen={openSimilar} />
-        <SourceSection />
+        {rest ? (
+          <>
+            <TogetherSection together={togetherFor(card.stats.name, matches, memberCount)} />
+            <NumbersSection stats={card.stats} rank={rank} />
+            <SexSection {...card.derived} />
+            <FactsSection stats={card.stats} rank={rank} />
+            <SimilarSection similar={similar} onOpen={openSimilar} />
+            <SourceSection />
+          </>
+        ) : null}
       </div>
     </BottomSheet>
   );
