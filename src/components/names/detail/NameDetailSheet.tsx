@@ -138,7 +138,7 @@ function NameGate({ cards, surname, matches, memberCount, votes, onDecide }: Nam
           state={details.state}
         />
         <CardBible bible={card.content.bible} inSheet />
-        <CardPeople people={card.content.people} inSheet />
+        <CardPeople people={card.content.people} />
         <TogetherSection together={togetherFor(card.stats.name, matches, memberCount)} />
         <NumbersSection stats={card.stats} rank={rank} />
         <SexSection {...card.derived} />

@@ -53,7 +53,7 @@ export default function AboutContent({ hasName, onReport, level = 3 }: { hasName
 
       <Part level={level} title="הפירושים">
         פירוש קצר, מידע כללי על מקור השם ומשמעותו, וההערה מהתנ״ך. ההסברים נכתבו בעזרת בינה מלאכותית ועשויים להכיל
-        טעויות. האנשים הידועים נבדקו מול <bdi dir="ltr">Wikidata</bdi>.
+        טעויות. האנשים המוכרים נבדקו מול <bdi dir="ltr">Wikidata</bdi>.
       </Part>
 
       {/* About sits on "ללא רקע" (page and sheet), where the secondary pill is white with a line edge. */}
