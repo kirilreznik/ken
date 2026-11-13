@@ -357,7 +357,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                           <span className="sr-only">מקום {i + 1}:</span>
                           {/* Names with a card open "פרטי השם" like every list row; #1 a size up (NP-167). */}
                           <RowName onOpen={canOpen(name) ? () => onOpenName(name) : undefined}>
-                            <span className={`${i === 0 ? "text-section" : "text-row-name"} break-words`}>{name}</span>
+                            <span className={`${i === 0 ? "text-section" : "text-row-name"} wrap-anywhere`}>{name}</span>
                             {m ? (
                               <>
                                 <span aria-hidden="true" className="text-caption text-stone">
