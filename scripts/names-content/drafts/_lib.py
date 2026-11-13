@@ -39,3 +39,7 @@ def write(num, entries, about, themes=None):
 
 def hold(name, why):
     return (name, None, None, {"_hold": why})
+
+def bare(name):
+    """Owner decision 2026-11-13: an unclear CBS name joins the deck as written, with no niqqud guess and no intro."""
+    return (name, name, "")

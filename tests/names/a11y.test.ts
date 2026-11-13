@@ -54,6 +54,12 @@ describe("cardLabel", () => {
     );
   });
 
+  it("skips an empty intro", () => {
+    const zeev = byName.get("זיו")!;
+    const card = { ...zeev, content: { ...zeev.content, intro: "" }, derived: { ...zeev.derived, trend: null } };
+    expect(cardLabel(card)).toBe("זיו, מתאים לכולם, ניתן ל־302 תינוקות ב־2024, לפרטים נוספים: הקשה");
+  });
+
   it("omits the trend when it is null", () => {
     const card = { ...byName.get("זיו")!, derived: { ...byName.get("זיו")!.derived, trend: null } };
     expect(cardLabel(card)).toBe("זיו, מתאים לכולם, זיו הוא אור, זוהר וברק. שם קצר שניתן לבנים ולבנות, ניתן ל־302 תינוקות ב־2024, לפרטים נוספים: הקשה");

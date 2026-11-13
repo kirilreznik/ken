@@ -16,7 +16,8 @@
    ]
   },
   "גאן": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "גאן",
+   "intro": ""
   },
   "גניפר": {
    "niqqud": "גֶ'נִיפֶר",
@@ -86,7 +87,8 @@
    ]
   },
   "אספה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אספה",
+   "intro": ""
   },
   "צפניה": {
    "niqqud": "צְפַנְיָה",
@@ -102,7 +104,8 @@
    ]
   },
   "בוני": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "בוני",
+   "intro": ""
   },
   "ליבנה": {
    "niqqud": "לִבְנֶה",
@@ -131,7 +134,8 @@
    "intro": "עשירה, מלאת שפע."
   },
   "מושית": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מושית",
+   "intro": ""
   },
   "קלריס": {
    "niqqud": "קְלָרִיס",
@@ -141,7 +145,8 @@
    ]
   },
   "מגלי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מגלי",
+   "intro": ""
   },
   "לוסיאנה": {
    "niqqud": "לוּסְיָאנָה",
@@ -288,10 +293,12 @@
    ]
   },
   "תיקי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "תיקי",
+   "intro": ""
   },
   "מקונן": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מקונן",
+   "intro": ""
   },
   "גינת": {
    "niqqud": "גִּינַת",
@@ -308,7 +315,8 @@
    ]
   },
   "דוברת": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "דוברת",
+   "intro": ""
   },
   "יעד": {
    "niqqud": "יַעַד",
@@ -389,7 +397,8 @@
    ]
   },
   "שפי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "שפי",
+   "intro": ""
   },
   "קרן-אור": {
    "niqqud": "קֶרֶן־אוֹר",
@@ -406,7 +415,8 @@
    ]
   },
   "ראות": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "ראות",
+   "intro": ""
   },
   "רמונה": {
    "niqqud": "רָמוֹנָה",
@@ -440,10 +450,12 @@
    ]
   },
   "גרמי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "גרמי",
+   "intro": ""
   },
   "דדי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "דדי",
+   "intro": ""
   },
   "תמירה": {
    "niqqud": "תְּמִירָה",
@@ -470,7 +482,8 @@
    ]
   },
   "אימי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אימי",
+   "intro": ""
   },
   "משכית": {
    "niqqud": "מַשְׂכִּית",
@@ -505,7 +518,8 @@
    ]
   },
   "מלה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מלה",
+   "intro": ""
   },
   "עלית": {
    "niqqud": "עִלִּית",
@@ -569,7 +583,8 @@
    ]
   },
   "סנאית": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "סנאית",
+   "intro": ""
   },
   "דונלד": {
    "niqqud": "דּוֹנַלְד",
@@ -601,7 +616,8 @@
    ]
   },
   "בירן": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "בירן",
+   "intro": ""
   },
   "ארנית": {
    "niqqud": "אָרְנִית",
@@ -656,7 +672,8 @@
    ]
   },
   "טרויה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "טרויה",
+   "intro": ""
   },
   "יהלומית": {
    "niqqud": "יַהֲלוֹמִית",
@@ -684,10 +701,12 @@
    "intro": "ירא־אל: מי שירא את האל."
   },
   "נואית": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "נואית",
+   "intro": ""
   },
   "פרידי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "פרידי",
+   "intro": ""
   },
   "שיא": {
    "niqqud": "שִׂיא",
@@ -701,14 +720,16 @@
    ]
   },
   "מרית": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מרית",
+   "intro": ""
   },
   "רצון": {
    "niqqud": "רָצוֹן",
    "intro": "רצון, משאלה וחסד."
   },
   "אושיק": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אושיק",
+   "intro": ""
   },
   "צלילה": {
    "niqqud": "צְלִילָה",
@@ -718,7 +739,8 @@
    ]
   },
   "שיריי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "שיריי",
+   "intro": ""
   },
   "ולדי": {
    "niqqud": "וָלָדִי",
@@ -790,7 +812,8 @@
    ]
   },
   "אלקיים": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אלקיים",
+   "intro": ""
   },
   "פארן": {
    "niqqud": "פָּארָן",
@@ -817,7 +840,8 @@
    }
   },
   "מישר": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מישר",
+   "intro": ""
   },
   "עמיטל": {
    "niqqud": "עַמִּיטַל",
@@ -827,7 +851,8 @@
    ]
   },
   "הילור": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "הילור",
+   "intro": ""
   },
   "רקיע": {
    "niqqud": "רָקִיעַ",
@@ -891,7 +916,8 @@
    ]
   },
   "לאוני": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לאוני",
+   "intro": ""
   },
   "הד": {
    "niqqud": "הֵד",
@@ -901,7 +927,8 @@
    ]
   },
   "טילי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "טילי",
+   "intro": ""
   },
   "אדרה": {
    "niqqud": "אַדָּרָה",
@@ -933,7 +960,8 @@
    "intro": "דור־לי: הדור שלי."
   },
   "אשבל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אשבל",
+   "intro": ""
   },
   "נגבה": {
    "niqqud": "נֶגְבָּה",
@@ -943,7 +971,8 @@
    ]
   },
   "סייפן": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "סייפן",
+   "intro": ""
   }
  }
 }

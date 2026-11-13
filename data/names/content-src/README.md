@@ -37,7 +37,7 @@ node scripts/names-content/build-themes.mjs             # check theme lists, bui
 
 ## Batches 8–13: site-listed names (2026-11-13)
 
-Batches 1–7 cover every name given 5+ times in 2024. Batches 8–13 add the 905 CBS names below that cutoff that pass the Jewish-sector rule and are listed on at least one Israeli baby-name site (israelibaby, baby-land, materna, pampers; scanned 2026-11-13 for name strings only, never their meanings). Order: names on 2+ sites first, then by births since 2000. Unclear names are held like any other batch. These names have no story or similar names yet (the name sheet shows the intro alone), so `DETAILS-REPORT.md` warns that they have no details entry.
+Batches 1–7 cover every name given 5+ times in 2024. Batches 8–13 add the 905 CBS names below that cutoff that pass the Jewish-sector rule and are listed on at least one Israeli baby-name site (israelibaby, baby-land, materna, pampers; scanned 2026-11-13 for name strings only, never their meanings). Order: names on 2+ sites first, then by births since 2000. Owner decision 2026-11-13: the names in these batches whose origin or meaning is unclear are not held but join the deck as written (`bare()` in `_lib.py`: the name with no niqqud guess and an empty intro; the card then shows no intro line). These names have no story or similar names yet (the name sheet shows the intro alone), so `DETAILS-REPORT.md` warns that they have no details entry.
 
 ## Writing rules (E16 spec §2)
 
