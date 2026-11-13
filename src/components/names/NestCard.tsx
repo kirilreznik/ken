@@ -75,7 +75,7 @@ export default function NestCard({ placement }: { placement: NestCardPlacement }
           נעדכן אותך כש־<bdi>Nest</bdi> יוצאת. אפשר לבטל בהגדרות.
         </p>
       ) : (
-        <Button size="md" onClick={() => void optIn()} aria-busy={saving} aria-disabled={saving}>
+        <Button variant="secondary" size="md" onClick={() => void optIn()} aria-busy={saving} aria-disabled={saving}>
           {saving ? "שומרים…" : "לעדכן אותי כשהיא יוצאת"}
         </Button>
       )}
