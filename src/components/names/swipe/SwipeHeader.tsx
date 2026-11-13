@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { IconButton, dotClass, openSheet } from "@/components/names/ui";
 import { PRESS } from "@/components/names/ui/classes";
 import { savedLabel } from "@/lib/names/a11y";
@@ -31,6 +31,14 @@ function Icon({ size = 20, children }: { size?: number; children: ReactNode }) {
 // 320 px (200% zoom on a phone) the row wraps; under 360 px the title is visually hidden.
 // `saved` is null while the votes couldn't be read (NP-073): the pill shows no count then.
 export default function SwipeHeader({ saved, filtered = false }: { saved: number | null; filtered?: boolean }) {
+  // NP-104: the count pulses when it grows, so a save shows where the name went. The key
+  // remounts the count to replay the animation; a drop (undo) or the first load doesn't pulse.
+  const [prevSaved, setPrevSaved] = useState(saved);
+  const [pulse, setPulse] = useState(0);
+  if (saved !== prevSaved) {
+    if (prevSaved !== null && saved !== null && saved > prevSaved) setPulse((n) => n + 1);
+    setPrevSaved(saved);
+  }
   return (
     <header data-clarity-unmask="true" className="flex items-center gap-2 px-5 pt-4 pb-2 max-[20rem]:flex-wrap max-[22.5rem]:px-3">
       {/* A gear, not a hamburger: the button opens the settings page, not a menu. */}
@@ -68,7 +76,11 @@ export default function SwipeHeader({ saved, filtered = false }: { saved: number
         <Icon size={18}>
           <path d="M6 4h12v16l-6-4-6 4z" />
         </Icon>
-        {saved === null ? null : <bdi className="tabular-nums">{formatCount(saved)}</bdi>}
+        {saved === null ? null : (
+          <bdi key={pulse} className={`tabular-nums ${pulse ? "names-count-pulse" : ""}`}>
+            {formatCount(saved)}
+          </bdi>
+        )}
       </Link>
     </header>
   );

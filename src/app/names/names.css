@@ -352,6 +352,13 @@
   }
 }
 
+/* The saved count on save (NP-104): grows a little and settles, under 300 ms. */
+@keyframes names-count-pulse {
+  40% {
+    transform: scale(1.25);
+  }
+}
+
 @keyframes names-pulse {
   50% {
     opacity: 0.4;
@@ -395,6 +402,11 @@
 
   .nest-names .names-step-in {
     animation: names-step-in var(--nest-duration-fast) var(--nest-ease-out);
+  }
+
+  .nest-names .names-count-pulse {
+    display: inline-block;
+    animation: names-count-pulse var(--nest-duration-card) var(--nest-ease-out);
   }
 
   /* Loading spinner (AuthCallback, JoinScreen). */
@@ -450,6 +462,10 @@
 
   .nest-names .names-spinner {
     animation: names-pulse 2s ease-in-out infinite !important;
+  }
+
+  .nest-names .names-count-pulse {
+    animation: none !important;
   }
 
   .nest-names .names-sheet-out,
