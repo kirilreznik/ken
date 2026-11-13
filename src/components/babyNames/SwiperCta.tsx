@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 /**
- * The way into the swiper. Sign-ups are invite-only for now (Auth hook 0012), so the line under
- * the button says so and points to the waitlist on the landing page.
+ * The way into the swiper. Guests can swipe 100 names before signing in (guest mode), so the
+ * button goes straight to the deck and says no sign-up is needed.
  */
 export default function SwiperCta({ name, compact = false }: { name?: string; compact?: boolean }) {
   return (
@@ -17,17 +17,12 @@ export default function SwiperCta({ name, compact = false }: { name?: string; co
       </p>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <Link
-          href="/names/welcome"
+          href="/names"
           className="inline-flex h-12 items-center justify-center rounded-pill bg-ink px-6 text-button text-surface"
         >
-          לבחירת שם באפליקציה
+          לנסות עכשיו, בלי הרשמה
         </Link>
-        <span className="text-caption text-stone">
-          ההרשמה כרגע בהזמנה.{" "}
-          <Link href="/#waitlist" className="inline-flex min-h-11 items-center font-bold text-ink-soft underline underline-offset-2">
-            להשארת אימייל
-          </Link>
-        </span>
+        <span className="text-caption text-stone">חינם. 100 השמות הראשונים בלי חשבון, ואחר כך נרשמים כדי לשמור.</span>
       </div>
     </aside>
   );
