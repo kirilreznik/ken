@@ -52,7 +52,7 @@ export function hiddenAgainText(name: string): string {
 }
 
 /** The segments of "השמות שלי" (`?tab=`). */
-export type ListsTab = "saved" | "matches" | "duel";
+export type ListsTab = "saved" | "matches" | "duel" | "pairs";
 
 /**
  * The tab to show for `?tab=`; anything unknown is "שמרתי". "התאמות" shows in a solo space too,
@@ -61,6 +61,8 @@ export type ListsTab = "saved" | "matches" | "duel";
 export function listsTab(param: string | null): ListsTab {
   if (param === "duel") return "duel";
   if (param === "matches") return "matches";
+  // "זוגות" shows only with "מצפים לתאומים" on; the screen falls back to "שמרתי" when it's off.
+  if (param === "pairs") return "pairs";
   return "saved";
 }
 

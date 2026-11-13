@@ -1,0 +1,5469 @@
+{
+ "_about": "Latin spellings for the name swiper. Built by scripts/names-content/build-latin.mjs; do not edit by hand. `he`: the Academy of the Hebrew Language's simplified transliteration rules, derived from the card's niqqud (exceptions in content-src/latin-overrides.json). `intl`: the international form from content-src/latin-international.json (Bible forms checked against the KJV text).",
+ "names": {
+  "אריאל": {
+   "he": "Ariel"
+  },
+  "יוסף": {
+   "he": "Yosef",
+   "intl": "Joseph"
+  },
+  "אורי": {
+   "he": "Uri"
+  },
+  "דוד": {
+   "he": "David"
+  },
+  "לביא": {
+   "he": "Lavi"
+  },
+  "אביגיל": {
+   "he": "Avigayil",
+   "intl": "Abigail"
+  },
+  "עומר": {
+   "he": "Omer"
+  },
+  "איילה": {
+   "he": "Ayala"
+  },
+  "רפאל": {
+   "he": "Refael"
+  },
+  "אדם": {
+   "he": "Adam"
+  },
+  "מרים": {
+   "he": "Miryam",
+   "intl": "Miriam"
+  },
+  "ארי": {
+   "he": "Ari"
+  },
+  "שרה": {
+   "he": "Sara",
+   "intl": "Sarah"
+  },
+  "אליה": {
+   "he": "Eliya"
+  },
+  "משה": {
+   "he": "Moshe",
+   "intl": "Moses"
+  },
+  "נועם": {
+   "he": "Noam"
+  },
+  "יהודה": {
+   "he": "Yehuda",
+   "intl": "Judah"
+  },
+  "מאיה": {
+   "he": "Maya"
+  },
+  "תמר": {
+   "he": "Tamar"
+  },
+  "אברהם": {
+   "he": "Avraham",
+   "intl": "Abraham"
+  },
+  "אסתר": {
+   "he": "Ester",
+   "intl": "Esther"
+  },
+  "ישראל": {
+   "he": "Yisrael"
+  },
+  "איתן": {
+   "he": "Eitan"
+  },
+  "דניאל": {
+   "he": "Daniyel",
+   "intl": "Daniel"
+  },
+  "ליבי": {
+   "he": "Libi"
+  },
+  "יעל": {
+   "he": "Yael"
+  },
+  "נועה": {
+   "he": "Noa"
+  },
+  "מיכאל": {
+   "he": "Mikhael",
+   "intl": "Michael"
+  },
+  "יהונתן": {
+   "he": "Yehonatan",
+   "intl": "Jonathan"
+  },
+  "חנה": {
+   "he": "Hana",
+   "intl": "Hannah"
+  },
+  "הלל": {
+   "he": "Hilel"
+  },
+  "יעקב": {
+   "he": "Yaakov",
+   "intl": "Jacob"
+  },
+  "ליה": {
+   "he": "Liya"
+  },
+  "שמעון": {
+   "he": "Shimon",
+   "intl": "Simeon"
+  },
+  "יצחק": {
+   "he": "Yitshak",
+   "intl": "Isaac"
+  },
+  "אוריה": {
+   "he": "Uriya"
+  },
+  "שמואל": {
+   "he": "Shmuel",
+   "intl": "Samuel"
+  },
+  "אלה": {
+   "he": "Ela"
+  },
+  "חיה": {
+   "he": "Haya"
+  },
+  "אדל": {
+   "he": "Adel"
+  },
+  "אימרי": {
+   "he": "Imri"
+  },
+  "איתי": {
+   "he": "Itai"
+  },
+  "גפן": {
+   "he": "Gefen"
+  },
+  "חיים": {
+   "he": "Hayim"
+  },
+  "רבקה": {
+   "he": "Rivka",
+   "intl": "Rebekah"
+  },
+  "רחל": {
+   "he": "Rahel",
+   "intl": "Rachel"
+  },
+  "אהרון": {
+   "he": "Aharon",
+   "intl": "Aaron"
+  },
+  "עלמה": {
+   "he": "Alma"
+  },
+  "שלמה": {
+   "he": "Shlomo",
+   "intl": "Solomon"
+  },
+  "טליה": {
+   "he": "Talya"
+  },
+  "נאיה": {
+   "he": "Naya"
+  },
+  "אור": {
+   "he": "Or"
+  },
+  "רות": {
+   "he": "Rut",
+   "intl": "Ruth"
+  },
+  "שירה": {
+   "he": "Shira"
+  },
+  "יונתן": {
+   "he": "Yonatan",
+   "intl": "Jonathan"
+  },
+  "מיכל": {
+   "he": "Mikhal",
+   "intl": "Michal"
+  },
+  "נויה": {
+   "he": "Noya"
+  },
+  "יהלי": {
+   "he": "Yahali"
+  },
+  "גאיה": {
+   "he": "Gaya"
+  },
+  "ארבל": {
+   "he": "Arbel"
+  },
+  "נטע": {
+   "he": "Neta"
+  },
+  "מאיר": {
+   "he": "Meir"
+  },
+  "נעמי": {
+   "he": "Naomi"
+  },
+  "רוני": {
+   "he": "Roni"
+  },
+  "לאה": {
+   "he": "Lea",
+   "intl": "Leah"
+  },
+  "יאיר": {
+   "he": "Yair"
+  },
+  "ליאם": {
+   "he": "Liam"
+  },
+  "מרדכי": {
+   "he": "Mordekhai",
+   "intl": "Mordecai"
+  },
+  "ליאן": {
+   "he": "Layan"
+  },
+  "הודיה": {
+   "he": "Hodaya"
+  },
+  "מלכה": {
+   "he": "Malka"
+  },
+  "רומי": {
+   "he": "Romi"
+  },
+  "אביב": {
+   "he": "Aviv"
+  },
+  "בנימין": {
+   "he": "Binyamin",
+   "intl": "Benjamin"
+  },
+  "אליהו": {
+   "he": "Eliyahu",
+   "intl": "Elijah"
+  },
+  "עמנואל": {
+   "he": "Imanuel",
+   "intl": "Emmanuel"
+  },
+  "אמה": {
+   "he": "Ema",
+   "intl": "Emma"
+  },
+  "יובל": {
+   "he": "Yuval"
+  },
+  "מנחם": {
+   "he": "Menahem"
+  },
+  "איתמר": {
+   "he": "Itamar"
+  },
+  "שחר": {
+   "he": "Shahar"
+  },
+  "אגם": {
+   "he": "Agam"
+  },
+  "ישי": {
+   "he": "Yishai",
+   "intl": "Jesse"
+  },
+  "נגה": {
+   "he": "Nogah"
+  },
+  "ריף": {
+   "he": "Rif"
+  },
+  "יהודית": {
+   "he": "Yehudit"
+  },
+  "הדסה": {
+   "he": "Hadasa",
+   "intl": "Hadassah"
+  },
+  "בניה": {
+   "he": "Bnaya"
+  },
+  "עידו": {
+   "he": "Ido"
+  },
+  "אלמה": {
+   "he": "Alma"
+  },
+  "מיאל": {
+   "he": "Miel"
+  },
+  "תהילה": {
+   "he": "Tehila"
+  },
+  "שילה": {
+   "he": "Shilo"
+  },
+  "מעיין": {
+   "he": "Mayan"
+  },
+  "הראל": {
+   "he": "Harel"
+  },
+  "עמית": {
+   "he": "Amit"
+  },
+  "עילאי": {
+   "he": "Ilai"
+  },
+  "אמיר": {
+   "he": "Amir"
+  },
+  "ליב": {
+   "he": "Liv"
+  },
+  "אלישבע": {
+   "he": "Elisheva"
+  },
+  "רום": {
+   "he": "Rom"
+  },
+  "לין": {
+   "he": "Lin"
+  },
+  "אבישג": {
+   "he": "Avishag"
+  },
+  "שקד": {
+   "he": "Shaked"
+  },
+  "עדי": {
+   "he": "Adi"
+  },
+  "נתנאל": {
+   "he": "Netanel",
+   "intl": "Nathanael"
+  },
+  "אפרת": {
+   "he": "Efrat"
+  },
+  "נבו": {
+   "he": "Nevo"
+  },
+  "נוה": {
+   "he": "Nave"
+  },
+  "רני": {
+   "he": "Rani"
+  },
+  "טוהר": {
+   "he": "Tohar"
+  },
+  "לני": {
+   "he": "Leni"
+  },
+  "דבורה": {
+   "he": "Dvora",
+   "intl": "Deborah"
+  },
+  "נתן": {
+   "he": "Natan",
+   "intl": "Nathan"
+  },
+  "ניב": {
+   "he": "Niv"
+  },
+  "שי": {
+   "he": "Shai"
+  },
+  "שי-לי": {
+   "he": "Shai-Li"
+  },
+  "הללי": {
+   "he": "Haleli"
+  },
+  "אלון": {
+   "he": "Alon"
+  },
+  "עדן": {
+   "he": "Eden"
+  },
+  "ינאי": {
+   "he": "Yanai"
+  },
+  "ניתאי": {
+   "he": "Nitai"
+  },
+  "כרם": {
+   "he": "Kerem"
+  },
+  "נעמה": {
+   "he": "Naama"
+  },
+  "עוז": {
+   "he": "Oz"
+  },
+  "צבי": {
+   "he": "Tsvi"
+  },
+  "הדר": {
+   "he": "Hadar"
+  },
+  "בן": {
+   "he": "Ben"
+  },
+  "הילה": {
+   "he": "Hila"
+  },
+  "נהוראי": {
+   "he": "Nehorai"
+  },
+  "בר": {
+   "he": "Bar"
+  },
+  "ראם": {
+   "he": "Reem"
+  },
+  "גיא": {
+   "he": "Gai"
+  },
+  "דור": {
+   "he": "Dor"
+  },
+  "מאור": {
+   "he": "Maor"
+  },
+  "אלי": {
+   "he": "Eli"
+  },
+  "זיו": {
+   "he": "Ziv"
+  },
+  "אריאה": {
+   "he": "Arya"
+  },
+  "הדס": {
+   "he": "Hadas"
+  },
+  "גבריאל": {
+   "he": "Gavriel",
+   "intl": "Gabriel"
+  },
+  "כרמל": {
+   "he": "Karmel"
+  },
+  "מלאכי": {
+   "he": "Malakhi",
+   "intl": "Malachi"
+  },
+  "אמילי": {
+   "he": "Emili",
+   "intl": "Emily"
+  },
+  "אוריאל": {
+   "he": "Uriel"
+  },
+  "נריה": {
+   "he": "Neriya"
+  },
+  "תהל": {
+   "he": "Tehel"
+  },
+  "אריה": {
+   "he": "Arye"
+  },
+  "ים": {
+   "he": "Yam"
+  },
+  "שלום": {
+   "he": "Shalom"
+  },
+  "נחמה": {
+   "he": "Nehama"
+  },
+  "מאורי": {
+   "he": "Meori"
+  },
+  "עופרי": {
+   "he": "Ofri"
+  },
+  "ברכה": {
+   "he": "Brakha"
+  },
+  "אביטל": {
+   "he": "Avital"
+  },
+  "מריה": {
+   "he": "Marya"
+  },
+  "יהושע": {
+   "he": "Yehoshua",
+   "intl": "Joshua"
+  },
+  "ידידיה": {
+   "he": "Yedidya"
+  },
+  "אלחנן": {
+   "he": "Elhanan"
+  },
+  "צפורה": {
+   "he": "Tsipora",
+   "intl": "Zipporah"
+  },
+  "מיקה": {
+   "he": "Mika"
+  },
+  "רועי": {
+   "he": "Roi"
+  },
+  "נחמן": {
+   "he": "Nahman"
+  },
+  "יגל": {
+   "he": "Yagel"
+  },
+  "תום": {
+   "he": "Tom"
+  },
+  "אופיר": {
+   "he": "Ofir"
+  },
+  "אן": {
+   "he": "An",
+   "intl": "Anne"
+  },
+  "ניל": {
+   "he": "Nil"
+  },
+  "רון": {
+   "he": "Ron"
+  },
+  "דן": {
+   "he": "Dan"
+  },
+  "יסכה": {
+   "he": "Yiska"
+  },
+  "עומרי": {
+   "he": "Omri"
+  },
+  "יהב": {
+   "he": "Yahav"
+  },
+  "שוהם": {
+   "he": "Shoham"
+  },
+  "אביה": {
+   "he": "Aviya"
+  },
+  "יאר": {
+   "he": "Yaer"
+  },
+  "ירדן": {
+   "he": "Yarden"
+  },
+  "לוי": {
+   "he": "Levi"
+  },
+  "ליאו": {
+   "he": "Leo"
+  },
+  "עברי": {
+   "he": "Ivri"
+  },
+  "אביתר": {
+   "he": "Evyatar"
+  },
+  "זוהר": {
+   "he": "Zohar"
+  },
+  "ליבא": {
+   "he": "Liba"
+  },
+  "חוה": {
+   "he": "Hava",
+   "intl": "Eve"
+  },
+  "שייה": {
+   "he": "Shaya"
+  },
+  "סול": {
+   "he": "Sol"
+  },
+  "אודיה": {
+   "he": "Odya"
+  },
+  "כפיר": {
+   "he": "Kfir"
+  },
+  "ליאל": {
+   "he": "Liel"
+  },
+  "שולמית": {
+   "he": "Shulamit"
+  },
+  "סהר": {
+   "he": "Sahar"
+  },
+  "עידן": {
+   "he": "Idan"
+  },
+  "אביאל": {
+   "he": "Aviel"
+  },
+  "שיר": {
+   "he": "Shir"
+  },
+  "מילה": {
+   "he": "Mila"
+  },
+  "שושנה": {
+   "he": "Shoshana"
+  },
+  "רותם": {
+   "he": "Rotem"
+  },
+  "אליעזר": {
+   "he": "Eliezer"
+  },
+  "איה": {
+   "he": "Aya"
+  },
+  "דין": {
+   "he": "Din"
+  },
+  "פנחס": {
+   "he": "Pinhas"
+  },
+  "שיינא": {
+   "he": "Sheina"
+  },
+  "רוי": {
+   "he": "Roi"
+  },
+  "יסמין": {
+   "he": "Yasmin"
+  },
+  "אמיליה": {
+   "he": "Emilya",
+   "intl": "Emilia"
+  },
+  "מוריה": {
+   "he": "Moriya"
+  },
+  "יולי": {
+   "he": "Yuli"
+  },
+  "אלרואי": {
+   "he": "Elroi"
+  },
+  "כרמי": {
+   "he": "Karmi"
+  },
+  "הלני": {
+   "he": "Heleni"
+  },
+  "נדב": {
+   "he": "Nadav"
+  },
+  "גלי": {
+   "he": "Gali"
+  },
+  "ברוך": {
+   "he": "Barukh"
+  },
+  "גל": {
+   "he": "Gal"
+  },
+  "שמחה": {
+   "he": "Simha"
+  },
+  "נפתלי": {
+   "he": "Naftali",
+   "intl": "Naphtali"
+  },
+  "פלג": {
+   "he": "Peleg"
+  },
+  "בתיה": {
+   "he": "Bitya"
+  },
+  "סאן": {
+   "he": "San"
+  },
+  "טל": {
+   "he": "Tal"
+  },
+  "אמונה": {
+   "he": "Emuna"
+  },
+  "אלעזר": {
+   "he": "Elazar"
+  },
+  "מילאן": {
+   "he": "Milan"
+  },
+  "ריי": {
+   "he": "Rei",
+   "intl": "Ray"
+  },
+  "יחיאל": {
+   "he": "Yehiel"
+  },
+  "אליאב": {
+   "he": "Eliav"
+  },
+  "פיגא": {
+   "he": "Feiga"
+  },
+  "עמיחי": {
+   "he": "Amihai"
+  },
+  "הילי": {
+   "he": "Hili"
+  },
+  "ליאור": {
+   "he": "Lior"
+  },
+  "רז": {
+   "he": "Raz"
+  },
+  "דביר": {
+   "he": "Dvir"
+  },
+  "יהל": {
+   "he": "Yahel"
+  },
+  "גילי": {
+   "he": "Gili"
+  },
+  "אשר": {
+   "he": "Asher"
+  },
+  "עקיבא": {
+   "he": "Akiva"
+  },
+  "אפרים": {
+   "he": "Efrayim",
+   "intl": "Ephraim"
+  },
+  "אמיתי": {
+   "he": "Amitai"
+  },
+  "ינון": {
+   "he": "Yinon"
+  },
+  "אדר": {
+   "he": "Adar"
+  },
+  "מיכאלה": {
+   "he": "Mikhaela"
+  },
+  "אופק": {
+   "he": "Ofek"
+  },
+  "גיטל": {
+   "he": "Gitl"
+  },
+  "דריה": {
+   "he": "Darya"
+  },
+  "אלימלך": {
+   "he": "Elimelekh"
+  },
+  "בת שבע": {
+   "he": "Bat Sheva"
+  },
+  "שילת": {
+   "he": "Shilat"
+  },
+  "שני": {
+   "he": "Shani"
+  },
+  "מאי": {
+   "he": "Mai"
+  },
+  "קדם": {
+   "he": "Kedem"
+  },
+  "תאיר": {
+   "he": "Tair"
+  },
+  "נילי": {
+   "he": "Nili"
+  },
+  "שניאור": {
+   "he": "Shneor"
+  },
+  "עז": {
+   "he": "Oz"
+  },
+  "תומר": {
+   "he": "Tomer"
+  },
+  "יוכבד": {
+   "he": "Yokheved"
+  },
+  "עמליה": {
+   "he": "Amalya"
+  },
+  "פאר": {
+   "he": "Peer"
+  },
+  "ורד": {
+   "he": "Vered"
+  },
+  "אושר": {
+   "he": "Osher"
+  },
+  "אייר": {
+   "he": "Iyar"
+  },
+  "ניצן": {
+   "he": "Nitsan"
+  },
+  "יחזקאל": {
+   "he": "Yehezkel",
+   "intl": "Ezekiel"
+  },
+  "ארז": {
+   "he": "Erez"
+  },
+  "עתי": {
+   "he": "Iti"
+  },
+  "דרור": {
+   "he": "Dror"
+  },
+  "בארי": {
+   "he": "Beeri"
+  },
+  "שיה": {
+   "he": "Shaya"
+  },
+  "אורה": {
+   "he": "Ora"
+  },
+  "רעי": {
+   "he": "Rei"
+  },
+  "בלומה": {
+   "he": "Bluma"
+  },
+  "אייל": {
+   "he": "Ayal"
+  },
+  "אמי": {
+   "he": "Ami"
+  },
+  "יואב": {
+   "he": "Yoav"
+  },
+  "מתן": {
+   "he": "Matan"
+  },
+  "אוריאן": {
+   "he": "Orian"
+  },
+  "רונה": {
+   "he": "Rona"
+  },
+  "דניאלה": {
+   "he": "Daniyela"
+  },
+  "יואל": {
+   "he": "Yoel",
+   "intl": "Joel"
+  },
+  "תבל": {
+   "he": "Tevel"
+  },
+  "טובה": {
+   "he": "Tova"
+  },
+  "הינדא": {
+   "he": "Hinda"
+  },
+  "יערה": {
+   "he": "Yara"
+  },
+  "תבור": {
+   "he": "Tavor"
+  },
+  "אבישי": {
+   "he": "Avishai"
+  },
+  "שון": {
+   "he": "Shon",
+   "intl": "Sean"
+  },
+  "ארין": {
+   "he": "Erin"
+  },
+  "נגב": {
+   "he": "Negev"
+  },
+  "אחיה": {
+   "he": "Ahiya"
+  },
+  "אמרי": {
+   "he": "Imri"
+  },
+  "ירין": {
+   "he": "Yarin"
+  },
+  "טומי": {
+   "he": "Tomi"
+  },
+  "לילה": {
+   "he": "Laila"
+  },
+  "רוז": {
+   "he": "Roz",
+   "intl": "Rose"
+  },
+  "אליענה": {
+   "he": "Eliana"
+  },
+  "איימי": {
+   "he": "Eimi",
+   "intl": "Amy"
+  },
+  "אסיף": {
+   "he": "Asif"
+  },
+  "סופיה": {
+   "he": "Sofiya",
+   "intl": "Sophia"
+  },
+  "זאב": {
+   "he": "Zeev"
+  },
+  "איב": {
+   "he": "Iv",
+   "intl": "Eve"
+  },
+  "סימה": {
+   "he": "Sima"
+  },
+  "עדינה": {
+   "he": "Adina"
+  },
+  "הילל": {
+   "he": "Heilel"
+  },
+  "אסף": {
+   "he": "Asaf"
+  },
+  "גוני": {
+   "he": "Goni"
+  },
+  "ארייה": {
+   "he": "Arye"
+  },
+  "פנינה": {
+   "he": "Pnina"
+  },
+  "דב": {
+   "he": "Dov"
+  },
+  "אוראל": {
+   "he": "Orel"
+  },
+  "צופיה": {
+   "he": "Tsofiya"
+  },
+  "ישעיה": {
+   "he": "Yeshaya"
+  },
+  "דני": {
+   "he": "Dani"
+  },
+  "שפרה": {
+   "he": "Shifra"
+  },
+  "טום": {
+   "he": "Tom"
+  },
+  "מנור": {
+   "he": "Manor"
+  },
+  "אודל": {
+   "he": "Odel"
+  },
+  "בת": {
+   "he": "Bat"
+  },
+  "מרום": {
+   "he": "Marom"
+  },
+  "אלמוג": {
+   "he": "Almog"
+  },
+  "דורי": {
+   "he": "Dori"
+  },
+  "יפה": {
+   "he": "Yafa"
+  },
+  "יאן": {
+   "he": "Yan"
+  },
+  "רנה": {
+   "he": "Rina"
+  },
+  "סיני": {
+   "he": "Sinai"
+  },
+  "רואי": {
+   "he": "Roi"
+  },
+  "אורין": {
+   "he": "Orin"
+  },
+  "איליי": {
+   "he": "Ilai"
+  },
+  "איילת": {
+   "he": "Ayelet"
+  },
+  "יותם": {
+   "he": "Yotam"
+  },
+  "רננה": {
+   "he": "Renana"
+  },
+  "גיל": {
+   "he": "Gil"
+  },
+  "אדיר": {
+   "he": "Adir"
+  },
+  "אלאור": {
+   "he": "Elor"
+  },
+  "עילי": {
+   "he": "Ili"
+  },
+  "עדיה": {
+   "he": "Adaya"
+  },
+  "נרי": {
+   "he": "Neri"
+  },
+  "ראובן": {
+   "he": "Reuven",
+   "intl": "Reuben"
+  },
+  "דינה": {
+   "he": "Dina",
+   "intl": "Dinah"
+  },
+  "שיראל": {
+   "he": "Shirel"
+  },
+  "אלונה": {
+   "he": "Alona"
+  },
+  "שיינדל": {
+   "he": "Sheindl"
+  },
+  "ברי": {
+   "he": "Bri"
+  },
+  "יוטא": {
+   "he": "Yuta"
+  },
+  "ענר": {
+   "he": "Aner"
+  },
+  "קאי": {
+   "he": "Kai"
+  },
+  "אילן": {
+   "he": "Ilan"
+  },
+  "עטרה": {
+   "he": "Atara"
+  },
+  "תפארת": {
+   "he": "Tiferet"
+  },
+  "אהובה": {
+   "he": "Ahuva"
+  },
+  "אלישע": {
+   "he": "Elisha"
+  },
+  "ניר": {
+   "he": "Nir"
+  },
+  "צור": {
+   "he": "Tsur"
+  },
+  "פערל": {
+   "he": "Perl"
+  },
+  "רינה": {
+   "he": "Rina"
+  },
+  "תמרה": {
+   "he": "Tamara"
+  },
+  "לורן": {
+   "he": "Loren",
+   "intl": "Lauren"
+  },
+  "משי": {
+   "he": "Meshi"
+  },
+  "מייה": {
+   "he": "Maya"
+  },
+  "אורן": {
+   "he": "Oren"
+  },
+  "שליו": {
+   "he": "Slav"
+  },
+  "עדיאל": {
+   "he": "Adiel"
+  },
+  "ענבר": {
+   "he": "Inbar"
+  },
+  "שלו": {
+   "he": "Shalev"
+  },
+  "צביה": {
+   "he": "Tsivya"
+  },
+  "לילי": {
+   "he": "Lili",
+   "intl": "Lily"
+  },
+  "פריאל": {
+   "he": "Priel"
+  },
+  "אלקנה": {
+   "he": "Elkana"
+  },
+  "אחינועם": {
+   "he": "Ahinoam"
+  },
+  "בילא": {
+   "he": "Bila"
+  },
+  "אמור": {
+   "he": "Amor"
+  },
+  "נח": {
+   "he": "Noah"
+  },
+  "בראל": {
+   "he": "Barel"
+  },
+  "נינה": {
+   "he": "Nina"
+  },
+  "אראל": {
+   "he": "Erel"
+  },
+  "אלומה": {
+   "he": "Aluma"
+  },
+  "און": {
+   "he": "On"
+  },
+  "לב": {
+   "he": "Lev"
+  },
+  "מילי": {
+   "he": "Mili"
+  },
+  "נורי": {
+   "he": "Nuri"
+  },
+  "מבשר": {
+   "he": "Mevaser"
+  },
+  "אלכס": {
+   "he": "Aleks",
+   "intl": "Alex"
+  },
+  "לייה": {
+   "he": "Laya"
+  },
+  "לוריא": {
+   "he": "Lurya"
+  },
+  "דורון": {
+   "he": "Doron"
+  },
+  "קורן": {
+   "he": "Koren"
+  },
+  "לירי": {
+   "he": "Liri"
+  },
+  "גילה": {
+   "he": "Gila"
+  },
+  "אושרי": {
+   "he": "Oshri"
+  },
+  "ליליאן": {
+   "he": "Lilian",
+   "intl": "Lillian"
+  },
+  "יעלה": {
+   "he": "Yaala"
+  },
+  "ליאה": {
+   "he": "Lia"
+  },
+  "רעות": {
+   "he": "Reut"
+  },
+  "בועז": {
+   "he": "Boaz"
+  },
+  "נחום": {
+   "he": "Nahum"
+  },
+  "אליאור": {
+   "he": "Elior"
+  },
+  "אלרועי": {
+   "he": "Elroi"
+  },
+  "יפתח": {
+   "he": "Yiftah"
+  },
+  "לוטם": {
+   "he": "Lotem"
+  },
+  "רייזל": {
+   "he": "Reizl"
+  },
+  "מנוחה": {
+   "he": "Menuha"
+  },
+  "מטר": {
+   "he": "Matar"
+  },
+  "יונה": {
+   "he": "Yona",
+   "intl": "Jonah"
+  },
+  "אילון": {
+   "he": "Eilon"
+  },
+  "בצלאל": {
+   "he": "Betsalel"
+  },
+  "דולב": {
+   "he": "Dulev"
+  },
+  "לירוי": {
+   "he": "Leiroi"
+  },
+  "זואי": {
+   "he": "Zoi",
+   "intl": "Zoe"
+  },
+  "גור": {
+   "he": "Gur"
+  },
+  "תגל": {
+   "he": "Tagel"
+  },
+  "לינוי": {
+   "he": "Linoi"
+  },
+  "רובי": {
+   "he": "Rubi"
+  },
+  "נסיה": {
+   "he": "Nisya"
+  },
+  "מישל": {
+   "he": "Mishel",
+   "intl": "Michelle"
+  },
+  "אלינור": {
+   "he": "Elinor"
+  },
+  "ליאב": {
+   "he": "Liav"
+  },
+  "לאו": {
+   "he": "Leo"
+  },
+  "ברק": {
+   "he": "Barak"
+  },
+  "אילת": {
+   "he": "Eilat"
+  },
+  "דר": {
+   "he": "Dar"
+  },
+  "גולן": {
+   "he": "Golan"
+  },
+  "גולדה": {
+   "he": "Golda"
+  },
+  "נלי": {
+   "he": "Neli"
+  },
+  "עובדיה": {
+   "he": "Ovadya",
+   "intl": "Obadiah"
+  },
+  "דילן": {
+   "he": "Dilan",
+   "intl": "Dylan"
+  },
+  "טוביה": {
+   "he": "Toviya"
+  },
+  "איטה": {
+   "he": "Ita"
+  },
+  "גבע": {
+   "he": "Geva"
+  },
+  "קרני": {
+   "he": "Karni"
+  },
+  "גלעד": {
+   "he": "Gilad"
+  },
+  "סתיו": {
+   "he": "Stav"
+  },
+  "ליעד": {
+   "he": "Liad"
+  },
+  "שיאל": {
+   "he": "Shaiel"
+  },
+  "לאל": {
+   "he": "Lael"
+  },
+  "עזרא": {
+   "he": "Ezra"
+  },
+  "רם": {
+   "he": "Ram"
+  },
+  "אסיה": {
+   "he": "Asya"
+  },
+  "יער": {
+   "he": "Yaar"
+  },
+  "פלא": {
+   "he": "Pele"
+  },
+  "רוחמה": {
+   "he": "Ruhama"
+  },
+  "ירחמיאל": {
+   "he": "Yerahmel"
+  },
+  "אווה": {
+   "he": "Eva"
+  },
+  "ג'וליה": {
+   "he": "Julya",
+   "intl": "Julia"
+  },
+  "פריידא": {
+   "he": "Freida"
+  },
+  "הוד": {
+   "he": "Hod"
+  },
+  "אלישיב": {
+   "he": "Elyashiv"
+  },
+  "חושן": {
+   "he": "Hoshen"
+  },
+  "צורי": {
+   "he": "Tsuri"
+  },
+  "שמריהו": {
+   "he": "Shmaryahu"
+  },
+  "חן": {
+   "he": "Hen"
+  },
+  "נוי": {
+   "he": "Noi"
+  },
+  "סאלי": {
+   "he": "Sali"
+  },
+  "ליעם": {
+   "he": "Liam"
+  },
+  "אוליביה": {
+   "he": "Olivya",
+   "intl": "Olivia"
+  },
+  "איידל": {
+   "he": "Eidl"
+  },
+  "ראשית": {
+   "he": "Reshit"
+  },
+  "אנה": {
+   "he": "Ana"
+  },
+  "איתיאל": {
+   "he": "Itiel"
+  },
+  "יוחנן": {
+   "he": "Yohanan"
+  },
+  "יששכר": {
+   "he": "Yisakhar",
+   "intl": "Issachar"
+  },
+  "בניהו": {
+   "he": "Bnayahu"
+  },
+  "אשירה": {
+   "he": "Ashira"
+  },
+  "שאול": {
+   "he": "Shaul",
+   "intl": "Saul"
+  },
+  "ליהי": {
+   "he": "Lihi"
+  },
+  "כליל": {
+   "he": "Klil"
+  },
+  "אליאל": {
+   "he": "Eliel"
+  },
+  "לונה": {
+   "he": "Luna"
+  },
+  "אלרום": {
+   "he": "Elrom"
+  },
+  "תיאו": {
+   "he": "Teo",
+   "intl": "Theo"
+  },
+  "נאוה": {
+   "he": "Nava"
+  },
+  "לי": {
+   "he": "Li"
+  },
+  "חגי": {
+   "he": "Hagai"
+  },
+  "אליס": {
+   "he": "Alis",
+   "intl": "Alice"
+  },
+  "רזיאל": {
+   "he": "Raziel"
+  },
+  "ארד": {
+   "he": "Arad"
+  },
+  "אל": {
+   "he": "El"
+  },
+  "סימא": {
+   "he": "Sima"
+  },
+  "תכלת": {
+   "he": "Tekhelet"
+  },
+  "אביר": {
+   "he": "Abir"
+  },
+  "ליבר": {
+   "he": "Liber"
+  },
+  "חנוך": {
+   "he": "Hanokh",
+   "intl": "Enoch"
+  },
+  "שחרי": {
+   "he": "Shahari"
+  },
+  "חגית": {
+   "he": "Hagit"
+  },
+  "שגיא": {
+   "he": "Sagi"
+  },
+  "מעוז": {
+   "he": "Maoz"
+  },
+  "פסיה": {
+   "he": "Pesya"
+  },
+  "קשת": {
+   "he": "Keshet"
+  },
+  "אביחי": {
+   "he": "Avihai"
+  },
+  "מלי": {
+   "he": "Mali"
+  },
+  "מיתר": {
+   "he": "Meitar"
+  },
+  "ישעיהו": {
+   "he": "Yeshayahu",
+   "intl": "Isaiah"
+  },
+  "אבינועם": {
+   "he": "Avinoam"
+  },
+  "דקל": {
+   "he": "Dekel"
+  },
+  "הניה": {
+   "he": "Hanya"
+  },
+  "מיי": {
+   "he": "Mei",
+   "intl": "May"
+  },
+  "רן": {
+   "he": "Ran"
+  },
+  "אודליה": {
+   "he": "Odalya"
+  },
+  "אדוה": {
+   "he": "Adva"
+  },
+  "יוחאי": {
+   "he": "Yohai"
+  },
+  "שמשון": {
+   "he": "Shimshon",
+   "intl": "Samson"
+  },
+  "עזריאל": {
+   "he": "Azriel"
+  },
+  "אלנתן": {
+   "he": "Elnatan"
+  },
+  "איילת השחר": {
+   "he": "Ayelet Hashahar"
+  },
+  "אלעאי": {
+   "he": "Ilai"
+  },
+  "מיליה": {
+   "he": "Milya"
+  },
+  "נחמיה": {
+   "he": "Nehemya",
+   "intl": "Nehemiah"
+  },
+  "טויבא": {
+   "he": "Toiba"
+  },
+  "דנה": {
+   "he": "Dana"
+  },
+  "טלי": {
+   "he": "Tali"
+  },
+  "ליאנה": {
+   "he": "Liana"
+  },
+  "אפק": {
+   "he": "Afek"
+  },
+  "ישכר": {
+   "he": "Yisakhar"
+  },
+  "בלה": {
+   "he": "Bela"
+  },
+  "מתניה": {
+   "he": "Matanya"
+  },
+  "שרגא": {
+   "he": "Shraga"
+  },
+  "תהלה": {
+   "he": "Tehila"
+  },
+  "מירל": {
+   "he": "Mirl"
+  },
+  "מורי": {
+   "he": "Mori"
+  },
+  "קמה": {
+   "he": "Kama"
+  },
+  "תומאס": {
+   "he": "Tomas",
+   "intl": "Thomas"
+  },
+  "אלכסנדר": {
+   "he": "Aleksander",
+   "intl": "Alexander"
+  },
+  "ספיר": {
+   "he": "Sapir"
+  },
+  "שירי": {
+   "he": "Shiri"
+  },
+  "נאור": {
+   "he": "Naor"
+  },
+  "אפיק": {
+   "he": "Afik"
+  },
+  "אמלי": {
+   "he": "Emeli"
+  },
+  "גיטי": {
+   "he": "Giti"
+  },
+  "שובי": {
+   "he": "Shuvi"
+  },
+  "גרשון": {
+   "he": "Gershon"
+  },
+  "אביגדור": {
+   "he": "Avigdor"
+  },
+  "תאי": {
+   "he": "Tai"
+  },
+  "ניסים": {
+   "he": "Nisim"
+  },
+  "ציון": {
+   "he": "Tsiyon",
+   "intl": "Zion"
+  },
+  "לירן": {
+   "he": "Liran"
+  },
+  "ליאון": {
+   "he": "Leon"
+  },
+  "חרות": {
+   "he": "Herut"
+  },
+  "שילי": {
+   "he": "Shili"
+  },
+  "סאני": {
+   "he": "Sani"
+  },
+  "תיאה": {
+   "he": "Tea"
+  },
+  "מיאור": {
+   "he": "Mior"
+  },
+  "אוהד": {
+   "he": "Ohad"
+  },
+  "אביעד": {
+   "he": "Aviad"
+  },
+  "מינה": {
+   "he": "Mina"
+  },
+  "אביאור": {
+   "he": "Avior"
+  },
+  "לשם": {
+   "he": "Leshem"
+  },
+  "אוליבר": {
+   "he": "Oliver"
+  },
+  "שי-אל": {
+   "he": "Shai-El"
+  },
+  "באר": {
+   "he": "Beer"
+  },
+  "תמיר": {
+   "he": "Tamir"
+  },
+  "גליה": {
+   "he": "Galya"
+  },
+  "שחף": {
+   "he": "Shahaf"
+  },
+  "רביד": {
+   "he": "Ravid"
+  },
+  "לורין": {
+   "he": "Lorin"
+  },
+  "מתנאל": {
+   "he": "Matanel"
+  },
+  "דגן": {
+   "he": "Dagan"
+  },
+  "דוריה": {
+   "he": "Doriya"
+  },
+  "עופר": {
+   "he": "Ofer"
+  },
+  "דיאנה": {
+   "he": "Diana"
+  },
+  "אריאלה": {
+   "he": "Ariela"
+  },
+  "גד": {
+   "he": "Gad"
+  },
+  "קים": {
+   "he": "Kim"
+  },
+  "פרומה": {
+   "he": "Fruma"
+  },
+  "סוף": {
+   "he": "Suf"
+  },
+  "טוב": {
+   "he": "Tov"
+  },
+  "לאור": {
+   "he": "Laor"
+  },
+  "יקיר": {
+   "he": "Yakir"
+  },
+  "מייקל": {
+   "he": "Maikel",
+   "intl": "Michael"
+  },
+  "הילני": {
+   "he": "Heleni"
+  },
+  "אילנה": {
+   "he": "Ilana"
+  },
+  "עליזה": {
+   "he": "Aliza"
+  },
+  "שלי": {
+   "he": "Sheli"
+  },
+  "רעיה": {
+   "he": "Raya"
+  },
+  "מנדל": {
+   "he": "Mendl"
+  },
+  "לישי": {
+   "he": "Lishai"
+  },
+  "איתם": {
+   "he": "Eitam"
+  },
+  "שטערנא": {
+   "he": "Shterna"
+  },
+  "אסא": {
+   "he": "Asa"
+  },
+  "פרידא": {
+   "he": "Frida"
+  },
+  "ארגמן": {
+   "he": "Argaman"
+  },
+  "לירון": {
+   "he": "Liron"
+  },
+  "מור": {
+   "he": "Mor"
+  },
+  "מרגלית": {
+   "he": "Margalit"
+  },
+  "מנשה": {
+   "he": "Menashe",
+   "intl": "Manasseh"
+  },
+  "עמרם": {
+   "he": "Amram"
+  },
+  "מתתיהו": {
+   "he": "Matityahu"
+  },
+  "יקותיאל": {
+   "he": "Yekutiel"
+  },
+  "טהר": {
+   "he": "Tohar"
+  },
+  "פסח": {
+   "he": "Pesah"
+  },
+  "לורי": {
+   "he": "Lori"
+  },
+  "מינדל": {
+   "he": "Mindl"
+  },
+  "פייגי": {
+   "he": "Feigi"
+  },
+  "אלתר": {
+   "he": "Alter"
+  },
+  "ריו": {
+   "he": "Rio"
+  },
+  "שבות": {
+   "he": "Shvut"
+  },
+  "מלודי": {
+   "he": "Melodi",
+   "intl": "Melody"
+  },
+  "טנא": {
+   "he": "Tene"
+  },
+  "זהבה": {
+   "he": "Zehava"
+  },
+  "ליאורה": {
+   "he": "Liora"
+  },
+  "אסנת": {
+   "he": "Osnat"
+  },
+  "שגב": {
+   "he": "Segev"
+  },
+  "אלדר": {
+   "he": "Eldar"
+  },
+  "זכריה": {
+   "he": "Zkharya",
+   "intl": "Zechariah"
+  },
+  "אליסף": {
+   "he": "Elyasaf"
+  },
+  "טובי": {
+   "he": "Tovi"
+  },
+  "ליר": {
+   "he": "Lir"
+  },
+  "תחיה": {
+   "he": "Tehiya"
+  },
+  "אלינוי": {
+   "he": "Elinoi"
+  },
+  "שיינה": {
+   "he": "Sheina"
+  },
+  "מושקא": {
+   "he": "Mushka"
+  },
+  "אריאנה": {
+   "he": "Ariana"
+  },
+  "תמה": {
+   "he": "Tama"
+  },
+  "לביאה": {
+   "he": "Levia"
+  },
+  "קיילא": {
+   "he": "Keila"
+  },
+  "נחל": {
+   "he": "Nahal"
+  },
+  "נטלי": {
+   "he": "Natali",
+   "intl": "Natalie"
+  },
+  "מרק": {
+   "he": "Mark"
+  },
+  "גדעון": {
+   "he": "Gidon",
+   "intl": "Gideon"
+  },
+  "גאולה": {
+   "he": "Geula"
+  },
+  "גבריאלה": {
+   "he": "Gavriela"
+  },
+  "אמיל": {
+   "he": "Emil"
+  },
+  "חנניה": {
+   "he": "Hananya"
+  },
+  "פז": {
+   "he": "Paz"
+  },
+  "אילי": {
+   "he": "Eili"
+  },
+  "חננאל": {
+   "he": "Hananel"
+  },
+  "זלמן": {
+   "he": "Zalman"
+  },
+  "עמיאל": {
+   "he": "Amiel"
+  },
+  "אנדי": {
+   "he": "Andi",
+   "intl": "Andy"
+  },
+  "שריי": {
+   "he": "Sarai"
+  },
+  "נצר": {
+   "he": "Netser"
+  },
+  "אשחר": {
+   "he": "Ashaher"
+  },
+  "אולי": {
+   "he": "Oli"
+  },
+  "לידור": {
+   "he": "Lidor"
+  },
+  "יוני": {
+   "he": "Yoni"
+  },
+  "אלירז": {
+   "he": "Eliraz"
+  },
+  "נוריאל": {
+   "he": "Nuriel"
+  },
+  "רימון": {
+   "he": "Rimon"
+  },
+  "נעומי": {
+   "he": "Naomi"
+  },
+  "צוף": {
+   "he": "Tsuf"
+  },
+  "זיסל": {
+   "he": "Zisl"
+  },
+  "מלאני": {
+   "he": "Melani",
+   "intl": "Melanie"
+  },
+  "ליבה": {
+   "he": "Liba"
+  },
+  "דון": {
+   "he": "Don"
+  },
+  "אשל": {
+   "he": "Eshel"
+  },
+  "נירי": {
+   "he": "Niri"
+  },
+  "מתאו": {
+   "he": "Mateo"
+  },
+  "אלעד": {
+   "he": "Elad"
+  },
+  "אורית": {
+   "he": "Orit"
+  },
+  "אורלי": {
+   "he": "Orli"
+  },
+  "דליה": {
+   "he": "Dalya"
+  },
+  "יגאל": {
+   "he": "Yigal"
+  },
+  "חדוה": {
+   "he": "Hedva"
+  },
+  "להב": {
+   "he": "Lahav"
+  },
+  "משולם": {
+   "he": "Meshulam"
+  },
+  "עשהאל": {
+   "he": "Asahel"
+  },
+  "תומי": {
+   "he": "Tomi"
+  },
+  "אילור": {
+   "he": "Ilor"
+  },
+  "ריילי": {
+   "he": "Reili",
+   "intl": "Riley"
+  },
+  "אביבה": {
+   "he": "Aviva"
+  },
+  "עמוס": {
+   "he": "Amos"
+  },
+  "אריק": {
+   "he": "Erik",
+   "intl": "Eric"
+  },
+  "רחלי": {
+   "he": "Raheli"
+  },
+  "לאון": {
+   "he": "Leon"
+  },
+  "אליסה": {
+   "he": "Elisa"
+  },
+  "מוריאל": {
+   "he": "Moriel"
+  },
+  "מירון": {
+   "he": "Meiron"
+  },
+  "אלטע": {
+   "he": "Alte"
+  },
+  "בל": {
+   "he": "Bel"
+  },
+  "גון": {
+   "he": "Gon"
+  },
+  "אלטר": {
+   "he": "Alter"
+  },
+  "נוהר": {
+   "he": "Nohar"
+  },
+  "נצח": {
+   "he": "Netsah"
+  },
+  "יענטא": {
+   "he": "Yenta"
+  },
+  "גומא": {
+   "he": "Gome"
+  },
+  "ליטל": {
+   "he": "Lital"
+  },
+  "יורם": {
+   "he": "Yoram"
+  },
+  "מירי": {
+   "he": "Miri"
+  },
+  "יוגב": {
+   "he": "Yogev"
+  },
+  "חי": {
+   "he": "Hai"
+  },
+  "מאירה": {
+   "he": "Meira"
+  },
+  "אליעד": {
+   "he": "Eliad"
+  },
+  "טלאור": {
+   "he": "Talor"
+  },
+  "דיאן": {
+   "he": "Dian"
+  },
+  "אלחי": {
+   "he": "Elhai"
+  },
+  "עיליי": {
+   "he": "Ilai"
+  },
+  "אליקים": {
+   "he": "Elyakim"
+  },
+  "גולדי": {
+   "he": "Goldi"
+  },
+  "נהורה": {
+   "he": "Nehora"
+  },
+  "אלרוי": {
+   "he": "Elroi"
+  },
+  "אהבה": {
+   "he": "Ahava"
+  },
+  "שובה": {
+   "he": "Shuva"
+  },
+  "ירון": {
+   "he": "Yaron"
+  },
+  "אבנר": {
+   "he": "Avner",
+   "intl": "Abner"
+  },
+  "סער": {
+   "he": "Saar"
+  },
+  "מריאנה": {
+   "he": "Maryana"
+  },
+  "שרי": {
+   "he": "Sarai"
+  },
+  "ניסן": {
+   "he": "Nisan"
+  },
+  "צילה": {
+   "he": "Tsila"
+  },
+  "ברוריה": {
+   "he": "Brurya"
+  },
+  "חביבה": {
+   "he": "Haviva"
+  },
+  "סמואל": {
+   "he": "Samuel"
+  },
+  "סלין": {
+   "he": "Selin",
+   "intl": "Celine"
+  },
+  "גדליה": {
+   "he": "Gedalya"
+  },
+  "מילכה": {
+   "he": "Milka"
+  },
+  "צירל": {
+   "he": "Tsirl"
+  },
+  "קירה": {
+   "he": "Kira"
+  },
+  "פורת": {
+   "he": "Porat"
+  },
+  "רייזי": {
+   "he": "Reizi"
+  },
+  "ראיין": {
+   "he": "Rayan"
+  },
+  "יערי": {
+   "he": "Yaari"
+  },
+  "בילי": {
+   "he": "Bili"
+  },
+  "עטי": {
+   "he": "Ati"
+  },
+  "ישעי": {
+   "he": "Yishi"
+  },
+  "אלאורי": {
+   "he": "Elori"
+  },
+  "קרן": {
+   "he": "Keren"
+  },
+  "מירב": {
+   "he": "Merav"
+  },
+  "קורל": {
+   "he": "Koral"
+  },
+  "שניר": {
+   "he": "Snir"
+  },
+  "חני": {
+   "he": "Hani"
+  },
+  "הלן": {
+   "he": "Helen"
+  },
+  "אבשלום": {
+   "he": "Avshalom",
+   "intl": "Absalom"
+  },
+  "דותן": {
+   "he": "Dotan"
+  },
+  "תרצה": {
+   "he": "Tirtsa"
+  },
+  "בתאל": {
+   "he": "Batel"
+  },
+  "עוזיאל": {
+   "he": "Uziel"
+  },
+  "רונאל": {
+   "he": "Ronel"
+  },
+  "מליסה": {
+   "he": "Melisa",
+   "intl": "Melissa"
+  },
+  "לידר": {
+   "he": "Lider"
+  },
+  "שלהבת": {
+   "he": "Shalhevet"
+  },
+  "דוראל": {
+   "he": "Dorel"
+  },
+  "ערבה": {
+   "he": "Arava"
+  },
+  "תלמה": {
+   "he": "Talma"
+  },
+  "יהלום": {
+   "he": "Yahalom"
+  },
+  "מנדי": {
+   "he": "Mendi"
+  },
+  "שבע": {
+   "he": "Sheva"
+  },
+  "איטא": {
+   "he": "Ita"
+  },
+  "נהר": {
+   "he": "Nahar"
+  },
+  "עמיעד": {
+   "he": "Amiad"
+  },
+  "שינא": {
+   "he": "Sheina"
+  },
+  "נס": {
+   "he": "Nes"
+  },
+  "עיטם": {
+   "he": "Eitam"
+  },
+  "שילו": {
+   "he": "Shilo"
+  },
+  "שלם": {
+   "he": "Shalem"
+  },
+  "טבע": {
+   "he": "Teva"
+  },
+  "כנה": {
+   "he": "Kana"
+  },
+  "אליאם": {
+   "he": "Eliam"
+  },
+  "מזל": {
+   "he": "Mazal"
+  },
+  "ערן": {
+   "he": "Eran"
+  },
+  "דפנה": {
+   "he": "Dafna"
+  },
+  "ורדה": {
+   "he": "Varda"
+  },
+  "אליזבט": {
+   "he": "Elizabet",
+   "intl": "Elizabeth"
+  },
+  "ריקי": {
+   "he": "Riki",
+   "intl": "Ricky"
+  },
+  "מיכה": {
+   "he": "Mikha",
+   "intl": "Micah"
+  },
+  "אסתי": {
+   "he": "Esti"
+  },
+  "זוהרה": {
+   "he": "Zuhra"
+  },
+  "עטרת": {
+   "he": "Ateret"
+  },
+  "דיויד": {
+   "he": "Deivid"
+  },
+  "נחשון": {
+   "he": "Nahshon"
+  },
+  "אמליה": {
+   "he": "Amalya"
+  },
+  "בת ציון": {
+   "he": "Bat Tsiyon"
+  },
+  "קינן": {
+   "he": "Keinan"
+  },
+  "רווה": {
+   "he": "Rave"
+  },
+  "שינדל": {
+   "he": "Sheindl"
+  },
+  "הארי": {
+   "he": "Hari",
+   "intl": "Harry"
+  },
+  "לוקה": {
+   "he": "Luka",
+   "intl": "Luca"
+  },
+  "דיה": {
+   "he": "Daya"
+  },
+  "מבשרת": {
+   "he": "Mevaseret"
+  },
+  "עדין": {
+   "he": "Adin"
+  },
+  "בתשבע": {
+   "he": "Batsheva"
+  },
+  "תור": {
+   "he": "Tor"
+  },
+  "דבש": {
+   "he": "Dvash"
+  },
+  "אמן": {
+   "he": "Amen"
+  },
+  "לוקא": {
+   "he": "Luka",
+   "intl": "Luca"
+  },
+  "רועה": {
+   "he": "Roe"
+  },
+  "טשארנא": {
+   "he": "Tsharna"
+  },
+  "מפל": {
+   "he": "Mapal"
+  },
+  "שרית": {
+   "he": "Sarit"
+  },
+  "לילך": {
+   "he": "Lilakh"
+  },
+  "שירלי": {
+   "he": "Shirli",
+   "intl": "Shirley"
+  },
+  "אהוד": {
+   "he": "Ehud"
+  },
+  "בת אל": {
+   "he": "Bat El"
+  },
+  "יפית": {
+   "he": "Yafit"
+  },
+  "אלכסנדרה": {
+   "he": "Aleksandra",
+   "intl": "Alexandra"
+  },
+  "אורון": {
+   "he": "Oron"
+  },
+  "מקס": {
+   "he": "Maks",
+   "intl": "Max"
+  },
+  "אדריאן": {
+   "he": "Adrian"
+  },
+  "מישאל": {
+   "he": "Mishael"
+  },
+  "פרץ": {
+   "he": "Perets"
+  },
+  "לוסי": {
+   "he": "Lusi",
+   "intl": "Lucy"
+  },
+  "מאשה": {
+   "he": "Masha"
+  },
+  "יעלי": {
+   "he": "Yaali"
+  },
+  "ניקה": {
+   "he": "Nika"
+  },
+  "מנואל": {
+   "he": "Manuel"
+  },
+  "מינדי": {
+   "he": "Mindi"
+  },
+  "חזקיהו": {
+   "he": "Hizkiyahu"
+  },
+  "מלכי": {
+   "he": "Malki"
+  },
+  "איידי": {
+   "he": "Eidi"
+  },
+  "נוייה": {
+   "he": "Noya"
+  },
+  "עמנואלה": {
+   "he": "Imanuela"
+  },
+  "ביתיה": {
+   "he": "Bitya"
+  },
+  "מילאנה": {
+   "he": "Milana"
+  },
+  "הענדל": {
+   "he": "Hendl"
+  },
+  "הנדל": {
+   "he": "Hendl"
+  },
+  "אור-יה": {
+   "he": "Or-Ya"
+  },
+  "לי-יה": {
+   "he": "Li-Ya"
+  },
+  "זיסי": {
+   "he": "Zisi"
+  },
+  "סיון": {
+   "he": "Sivan"
+  },
+  "אורטל": {
+   "he": "Ortal"
+  },
+  "ויקטוריה": {
+   "he": "Viktorya",
+   "intl": "Victoria"
+  },
+  "רותי": {
+   "he": "Ruti"
+  },
+  "צליל": {
+   "he": "Tslil"
+  },
+  "מילנה": {
+   "he": "Milena"
+  },
+  "אביהו": {
+   "he": "Avihu"
+  },
+  "אסי": {
+   "he": "Asi"
+  },
+  "ג'ולי": {
+   "he": "Juli",
+   "intl": "Julie"
+  },
+  "טופז": {
+   "he": "Tofaz"
+  },
+  "גיטה": {
+   "he": "Gita"
+  },
+  "בינה": {
+   "he": "Bina"
+  },
+  "רגב": {
+   "he": "Regev"
+  },
+  "חסיה": {
+   "he": "Hasya"
+  },
+  "שמעיה": {
+   "he": "Shmaya"
+  },
+  "עילם": {
+   "he": "Eilam"
+  },
+  "אנאבל": {
+   "he": "Anabel",
+   "intl": "Annabelle"
+  },
+  "שריה": {
+   "he": "Sraya"
+  },
+  "שיינדי": {
+   "he": "Sheindi"
+  },
+  "אביגל": {
+   "he": "Avigal"
+  },
+  "לבונה": {
+   "he": "Levona"
+  },
+  "ניבי": {
+   "he": "Nivi"
+  },
+  "קיילי": {
+   "he": "Keili",
+   "intl": "Kylie"
+  },
+  "רויזא": {
+   "he": "Roiza"
+  },
+  "אפריל": {
+   "he": "April"
+  },
+  "פריידי": {
+   "he": "Freidi"
+  },
+  "היא-לי": {
+   "he": "Hi-Li"
+  },
+  "פדות": {
+   "he": "Pedut"
+  },
+  "מגן": {
+   "he": "Magen"
+  },
+  "גב": {
+   "he": "Gav"
+  },
+  "אורייה": {
+   "he": "Uriya"
+  },
+  "תלם": {
+   "he": "Telem"
+  },
+  "ליהוא": {
+   "he": "Lihu"
+  },
+  "קיארה": {
+   "he": "Kyara",
+   "intl": "Chiara"
+  },
+  "מון": {
+   "he": "Mun"
+  },
+  "מילוא": {
+   "he": "Milo"
+  },
+  "אבינתן": {
+   "he": "Avinatan"
+  },
+  "אבי": {
+   "he": "Avi"
+  },
+  "מיטל": {
+   "he": "Meital"
+  },
+  "אלירן": {
+   "he": "Eliran"
+  },
+  "אדוארד": {
+   "he": "Edvard",
+   "intl": "Edward"
+  },
+  "חנן": {
+   "he": "Hanan"
+  },
+  "רוזה": {
+   "he": "Roza"
+  },
+  "לינדה": {
+   "he": "Linda"
+  },
+  "סופי": {
+   "he": "Sofi",
+   "intl": "Sophie"
+  },
+  "כנרת": {
+   "he": "Kineret"
+  },
+  "רובין": {
+   "he": "Robin"
+  },
+  "תם": {
+   "he": "Tam"
+  },
+  "ג'ון": {
+   "he": "Jon",
+   "intl": "John"
+  },
+  "מתי": {
+   "he": "Mati"
+  },
+  "קסם": {
+   "he": "Kesem"
+  },
+  "אנג'לה": {
+   "he": "Anjela",
+   "intl": "Angela"
+  },
+  "לוטן": {
+   "he": "Lotan"
+  },
+  "קלמן": {
+   "he": "Kalman"
+  },
+  "שלוה": {
+   "he": "Shalva"
+  },
+  "קמילה": {
+   "he": "Kamila",
+   "intl": "Camila"
+  },
+  "דוריאן": {
+   "he": "Dorian"
+  },
+  "יקירה": {
+   "he": "Yakira"
+  },
+  "שבתי": {
+   "he": "Shabtai"
+  },
+  "ריזל": {
+   "he": "Reizl"
+  },
+  "קיילה": {
+   "he": "Keila"
+  },
+  "ברית": {
+   "he": "Brit"
+  },
+  "אמבר": {
+   "he": "Amber"
+  },
+  "אלישמע": {
+   "he": "Elishama"
+  },
+  "נחלה": {
+   "he": "Nahala"
+  },
+  "ידיד": {
+   "he": "Yedid"
+  },
+  "ג'ויס": {
+   "he": "Jois",
+   "intl": "Joyce"
+  },
+  "מלכות": {
+   "he": "Malkhut"
+  },
+  "אהוביה": {
+   "he": "Ahuvya"
+  },
+  "הלליה": {
+   "he": "Haleliya"
+  },
+  "מייקי": {
+   "he": "Maiki"
+  },
+  "דובער": {
+   "he": "Dober"
+  },
+  "שובאל": {
+   "he": "Shoval"
+  },
+  "שמש": {
+   "he": "Shemesh"
+  },
+  "אריא": {
+   "he": "Arya"
+  },
+  "תאו": {
+   "he": "Teo",
+   "intl": "Theo"
+  },
+  "רבקי": {
+   "he": "Rivki"
+  },
+  "כתר": {
+   "he": "Keter"
+  },
+  "נהרי": {
+   "he": "Nahari"
+  },
+  "גליקא": {
+   "he": "Glika"
+  },
+  "ענבל": {
+   "he": "Inbal"
+  },
+  "נופר": {
+   "he": "Nufar"
+  },
+  "איליה": {
+   "he": "Ilya"
+  },
+  "ניקול": {
+   "he": "Nikol"
+  },
+  "לירז": {
+   "he": "Liraz"
+  },
+  "נמרוד": {
+   "he": "Nimrod"
+  },
+  "פרידה": {
+   "he": "Frida"
+  },
+  "הגר": {
+   "he": "Hagar"
+  },
+  "תקוה": {
+   "he": "Tikva"
+  },
+  "ליליה": {
+   "he": "Lilya"
+  },
+  "ארנון": {
+   "he": "Arnon"
+  },
+  "עדה": {
+   "he": "Ada"
+  },
+  "נדיה": {
+   "he": "Nadya"
+  },
+  "בלהה": {
+   "he": "Bilha"
+  },
+  "שביט": {
+   "he": "Shavit"
+  },
+  "צוריאל": {
+   "he": "Tsuriel"
+  },
+  "יועד": {
+   "he": "Yoad"
+  },
+  "ויליאם": {
+   "he": "Vilyam",
+   "intl": "William"
+  },
+  "פרל": {
+   "he": "Perl"
+  },
+  "שראל": {
+   "he": "Sarel"
+  },
+  "ג'וי": {
+   "he": "Joi",
+   "intl": "Joy"
+  },
+  "בילה": {
+   "he": "Bila"
+  },
+  "נתיב": {
+   "he": "Nativ"
+  },
+  "לי-אור": {
+   "he": "Li-Or"
+  },
+  "ברקת": {
+   "he": "Bareket"
+  },
+  "תמרי": {
+   "he": "Tamari"
+  },
+  "איילון": {
+   "he": "Ayalon"
+  },
+  "רפאלה": {
+   "he": "Refaela"
+  },
+  "אלישי": {
+   "he": "Elishai"
+  },
+  "רנן": {
+   "he": "Ranan"
+  },
+  "קמיל": {
+   "he": "Kamil",
+   "intl": "Camille"
+  },
+  "אדרת": {
+   "he": "Aderet"
+  },
+  "אידל": {
+   "he": "Eidl"
+  },
+  "לי-ים": {
+   "he": "Li-Yam"
+  },
+  "דפני": {
+   "he": "Dafni"
+  },
+  "קלואי": {
+   "he": "Kloi",
+   "intl": "Chloe"
+  },
+  "ליונל": {
+   "he": "Lionel"
+  },
+  "רעכל": {
+   "he": "Rekhl"
+  },
+  "נוב": {
+   "he": "Nov"
+  },
+  "אלירם": {
+   "he": "Eliram"
+  },
+  "זרח": {
+   "he": "Zerah"
+  },
+  "זליג": {
+   "he": "Zelig"
+  },
+  "ברוק": {
+   "he": "Bruk",
+   "intl": "Brooke"
+  },
+  "עימנואל": {
+   "he": "Imanuel"
+  },
+  "גלבוע": {
+   "he": "Gilboa"
+  },
+  "מיקאלה": {
+   "he": "Mikaela"
+  },
+  "שאשא": {
+   "he": "Shasha"
+  },
+  "אליאורה": {
+   "he": "Eliora"
+  },
+  "אייבי": {
+   "he": "Aivi",
+   "intl": "Ivy"
+  },
+  "אודם": {
+   "he": "Odem"
+  },
+  "אלטא": {
+   "he": "Alta"
+  },
+  "איליין": {
+   "he": "Elein"
+  },
+  "נל": {
+   "he": "Nel"
+  },
+  "סטערנא": {
+   "he": "Sterna"
+  },
+  "כחל": {
+   "he": "Kahal"
+  },
+  "תיאודור": {
+   "he": "Teodor",
+   "intl": "Theodore"
+  },
+  "מתיא": {
+   "he": "Matiya"
+  },
+  "שדה": {
+   "he": "Sade"
+  },
+  "מיילו": {
+   "he": "Mailo",
+   "intl": "Milo"
+  },
+  "עמיה": {
+   "he": "Amya"
+  },
+  "בראשית": {
+   "he": "Breshit"
+  },
+  "רונה-לי": {
+   "he": "Rona-Li"
+  },
+  "גינענדל": {
+   "he": "Ginendl"
+  },
+  "אל-ים": {
+   "he": "El-Yam"
+  },
+  "עורי": {
+   "he": "Uri"
+  },
+  "לי-נס": {
+   "he": "Li-Nes"
+  },
+  "שרון": {
+   "he": "Sharon"
+  },
+  "ענת": {
+   "he": "Anat"
+  },
+  "יניב": {
+   "he": "Yaniv"
+  },
+  "רונית": {
+   "he": "Ronit"
+  },
+  "ליאת": {
+   "he": "Liat"
+  },
+  "מורן": {
+   "he": "Moran"
+  },
+  "ילנה": {
+   "he": "Yelena"
+  },
+  "רונן": {
+   "he": "Ronen"
+  },
+  "איריס": {
+   "he": "Iris"
+  },
+  "מרינה": {
+   "he": "Marina"
+  },
+  "גלית": {
+   "he": "Galit"
+  },
+  "בוריס": {
+   "he": "Boris"
+  },
+  "לימור": {
+   "he": "Limor"
+  },
+  "שירן": {
+   "he": "Shiran"
+  },
+  "אולגה": {
+   "he": "Olga"
+  },
+  "ולדימיר": {
+   "he": "Vladimir"
+  },
+  "סבטלנה": {
+   "he": "Svetlana"
+  },
+  "נורית": {
+   "he": "Nurit"
+  },
+  "טטיאנה": {
+   "he": "Tatyana",
+   "intl": "Tatiana"
+  },
+  "רויטל": {
+   "he": "Revital"
+  },
+  "דמיטרי": {
+   "he": "Dmitri",
+   "intl": "Dmitry"
+  },
+  "נטליה": {
+   "he": "Natalya",
+   "intl": "Natalia"
+  },
+  "יבגני": {
+   "he": "Yevgeni",
+   "intl": "Evgeny"
+  },
+  "דורית": {
+   "he": "Dorit"
+  },
+  "לאוניד": {
+   "he": "Leonid"
+  },
+  "יוליה": {
+   "he": "Yulya",
+   "intl": "Yulia"
+  },
+  "יוסי": {
+   "he": "Yosi"
+  },
+  "אורנה": {
+   "he": "Orna"
+  },
+  "עודד": {
+   "he": "Oded"
+  },
+  "יפעת": {
+   "he": "Yifat"
+  },
+  "עינת": {
+   "he": "Einat"
+  },
+  "סיגל": {
+   "he": "Sigal"
+  },
+  "שלומית": {
+   "he": "Shlomit"
+  },
+  "סמדר": {
+   "he": "Smadar"
+  },
+  "רינת": {
+   "he": "Rinat"
+  },
+  "ויקטור": {
+   "he": "Viktor",
+   "intl": "Victor"
+  },
+  "אתי": {
+   "he": "Eti"
+  },
+  "אינה": {
+   "he": "Ina",
+   "intl": "Inna"
+  },
+  "אירית": {
+   "he": "Irit"
+  },
+  "שלומי": {
+   "he": "Shlomi"
+  },
+  "סרגיי": {
+   "he": "Sergei",
+   "intl": "Sergey"
+  },
+  "אילנית": {
+   "he": "Ilanit"
+  },
+  "עינב": {
+   "he": "Einav"
+  },
+  "רומן": {
+   "he": "Roman"
+  },
+  "גלינה": {
+   "he": "Galina"
+  },
+  "רמי": {
+   "he": "Rami"
+  },
+  "סיגלית": {
+   "he": "Sigalit"
+  },
+  "קארין": {
+   "he": "Karin"
+  },
+  "אמנון": {
+   "he": "Amnon"
+  },
+  "מקסים": {
+   "he": "Maksim",
+   "intl": "Maxim"
+  },
+  "אולג": {
+   "he": "Oleg"
+  },
+  "לריסה": {
+   "he": "Larisa"
+  },
+  "רחמים": {
+   "he": "Rahamim"
+  },
+  "עדנה": {
+   "he": "Edna"
+  },
+  "אלינה": {
+   "he": "Alina"
+  },
+  "שובל": {
+   "he": "Shoval"
+  },
+  "יבגניה": {
+   "he": "Yevgenya",
+   "intl": "Evgenia"
+  },
+  "מירה": {
+   "he": "Mira"
+  },
+  "כרמלה": {
+   "he": "Karmela"
+  },
+  "רוית": {
+   "he": "Revayat"
+  },
+  "זיוה": {
+   "he": "Ziva"
+  },
+  "קרין": {
+   "he": "Karin"
+  },
+  "כרמית": {
+   "he": "Karmit"
+  },
+  "רוברט": {
+   "he": "Robert"
+  },
+  "אלן": {
+   "he": "Alen",
+   "intl": "Alan"
+  },
+  "שרונה": {
+   "he": "Sharona"
+  },
+  "מרי": {
+   "he": "Meri"
+  },
+  "ארקדי": {
+   "he": "Arkadi",
+   "intl": "Arkady"
+  },
+  "אושרת": {
+   "he": "Asheret"
+  },
+  "פבל": {
+   "he": "Pavel"
+  },
+  "יאנה": {
+   "he": "Yana"
+  },
+  "אוסנת": {
+   "he": "Osnat"
+  },
+  "פולינה": {
+   "he": "Polina"
+  },
+  "בני": {
+   "he": "Beni"
+  },
+  "שירז": {
+   "he": "Shiraz"
+  },
+  "ריטה": {
+   "he": "Rita"
+  },
+  "צחי": {
+   "he": "Tsahi"
+  },
+  "מוטי": {
+   "he": "Moti"
+  },
+  "הרצל": {
+   "he": "Hertsl"
+  },
+  "סוזן": {
+   "he": "Suzan",
+   "intl": "Susan"
+  },
+  "עירית": {
+   "he": "Irit"
+  },
+  "דניס": {
+   "he": "Denis"
+  },
+  "עידית": {
+   "he": "Idit"
+  },
+  "ויטלי": {
+   "he": "Vitali",
+   "intl": "Vitaly"
+  },
+  "כוכבה": {
+   "he": "Kokhava"
+  },
+  "אלדד": {
+   "he": "Eldad"
+  },
+  "סוניה": {
+   "he": "Sonya",
+   "intl": "Sonia"
+  },
+  "תמי": {
+   "he": "Tami"
+  },
+  "דורין": {
+   "he": "Dorin"
+  },
+  "קובי": {
+   "he": "Kovi"
+  },
+  "רפי": {
+   "he": "Rafi"
+  },
+  "אלנה": {
+   "he": "Elena"
+  },
+  "אנדריי": {
+   "he": "Andrei",
+   "intl": "Andrey"
+  },
+  "עפרה": {
+   "he": "Ofra"
+  },
+  "עמיר": {
+   "he": "Amir"
+  },
+  "אנסטסיה": {
+   "he": "Anastasya",
+   "intl": "Anastasia"
+  },
+  "ליזה": {
+   "he": "Liza"
+  },
+  "ציונה": {
+   "he": "Tsiyona"
+  },
+  "עופרה": {
+   "he": "Ofra"
+  },
+  "ירדנה": {
+   "he": "Yardena"
+  },
+  "לבנה": {
+   "he": "Levana"
+  },
+  "אושרית": {
+   "he": "Oshrit"
+  },
+  "יריב": {
+   "he": "Yariv"
+  },
+  "קלרה": {
+   "he": "Klara",
+   "intl": "Clara"
+  },
+  "אביבית": {
+   "he": "Avivit"
+  },
+  "עוזי": {
+   "he": "Uzi"
+  },
+  "אבירם": {
+   "he": "Aviram"
+  },
+  "ניצה": {
+   "he": "Nitsa"
+  },
+  "דקלה": {
+   "he": "Dikla"
+  },
+  "עמי": {
+   "he": "Ami"
+  },
+  "נירית": {
+   "he": "Nirit"
+  },
+  "סנדרה": {
+   "he": "Sandra"
+  },
+  "דלית": {
+   "he": "Dalit"
+  },
+  "מרטין": {
+   "he": "Martin"
+  },
+  "ימית": {
+   "he": "Yamit"
+  },
+  "ארתור": {
+   "he": "Artur",
+   "intl": "Arthur"
+  },
+  "שגית": {
+   "he": "Sagit"
+  },
+  "דיקלה": {
+   "he": "Dikla"
+  },
+  "ששון": {
+   "he": "Sason"
+  },
+  "רגינה": {
+   "he": "Regina"
+  },
+  "מירית": {
+   "he": "Mirit"
+  },
+  "ורה": {
+   "he": "Vera"
+  },
+  "גדי": {
+   "he": "Gedi"
+  },
+  "דנית": {
+   "he": "Danit"
+  },
+  "סמי": {
+   "he": "Sami"
+  },
+  "איציק": {
+   "he": "Itsik"
+  },
+  "לינור": {
+   "he": "Linor"
+  },
+  "ולריה": {
+   "he": "Valerya",
+   "intl": "Valeria"
+  },
+  "פיליפ": {
+   "he": "Filip",
+   "intl": "Philip"
+  },
+  "ורוניקה": {
+   "he": "Veronika",
+   "intl": "Veronica"
+  },
+  "יונית": {
+   "he": "Yonit"
+  },
+  "דגנית": {
+   "he": "Deganit"
+  },
+  "סימונה": {
+   "he": "Simona"
+  },
+  "שבתאי": {
+   "he": "Shabtai"
+  },
+  "גבי": {
+   "he": "Gabi"
+  },
+  "נירה": {
+   "he": "Nira"
+  },
+  "קורין": {
+   "he": "Korin"
+  },
+  "קטי": {
+   "he": "Keiti"
+  },
+  "אידה": {
+   "he": "Ida"
+  },
+  "קרינה": {
+   "he": "Karina"
+  },
+  "ליבנת": {
+   "he": "Livnat"
+  },
+  "שגיב": {
+   "he": "Sagiv"
+  },
+  "ולנטינה": {
+   "he": "Valentina"
+  },
+  "זהבית": {
+   "he": "Zehavit"
+  },
+  "סטיבן": {
+   "he": "Stiven",
+   "intl": "Steven"
+  },
+  "הלנה": {
+   "he": "Helena"
+  },
+  "בטי": {
+   "he": "Beti",
+   "intl": "Betty"
+  },
+  "אוקסנה": {
+   "he": "Oksana"
+  },
+  "שמרית": {
+   "he": "Shimrit"
+  },
+  "בת חן": {
+   "he": "Bat Hen"
+  },
+  "ויקי": {
+   "he": "Viki",
+   "intl": "Vicky"
+  },
+  "ג'סיקה": {
+   "he": "Jesika",
+   "intl": "Jessica"
+  },
+  "ליז": {
+   "he": "Liz"
+  },
+  "שולה": {
+   "he": "Shula"
+  },
+  "פזית": {
+   "he": "Pazit"
+  },
+  "זויה": {
+   "he": "Zoya"
+  },
+  "חופית": {
+   "he": "Hofit"
+  },
+  "אורנית": {
+   "he": "Ornit"
+  },
+  "אודי": {
+   "he": "Udi"
+  },
+  "חלי": {
+   "he": "Hali"
+  },
+  "מוניקה": {
+   "he": "Monika"
+  },
+  "גיורא": {
+   "he": "Giyora"
+  },
+  "דורה": {
+   "he": "Dora"
+  },
+  "רענן": {
+   "he": "Raanan"
+  },
+  "אופירה": {
+   "he": "Ofira"
+  },
+  "לורה": {
+   "he": "Lora",
+   "intl": "Laura"
+  },
+  "ישראלה": {
+   "he": "Yisrela"
+  },
+  "אופל": {
+   "he": "Opal"
+  },
+  "טניה": {
+   "he": "Tanya"
+  },
+  "סוזי": {
+   "he": "Suzi"
+  },
+  "הנרי": {
+   "he": "Henri",
+   "intl": "Henry"
+  },
+  "יניר": {
+   "he": "Yanir"
+  },
+  "סטפני": {
+   "he": "Stefani",
+   "intl": "Stephanie"
+  },
+  "איזבלה": {
+   "he": "Izabela",
+   "intl": "Isabella"
+  },
+  "אבלין": {
+   "he": "Evlin",
+   "intl": "Evelyn"
+  },
+  "ארטיום": {
+   "he": "Artiom",
+   "intl": "Artyom"
+  },
+  "אושרה": {
+   "he": "Oshra"
+  },
+  "צח": {
+   "he": "Tsah"
+  },
+  "לינה": {
+   "he": "Lina"
+  },
+  "אדי": {
+   "he": "Edi"
+  },
+  "ציפי": {
+   "he": "Tsipi"
+  },
+  "אבירן": {
+   "he": "Aviran"
+  },
+  "ברברה": {
+   "he": "Barbara"
+  },
+  "ליסה": {
+   "he": "Lisa"
+  },
+  "אילונה": {
+   "he": "Ilona"
+  },
+  "פאני": {
+   "he": "Fani",
+   "intl": "Fanny"
+  },
+  "עמירם": {
+   "he": "Amiram"
+  },
+  "מיקי": {
+   "he": "Miki"
+  },
+  "עדית": {
+   "he": "Adit"
+  },
+  "פרלה": {
+   "he": "Perla"
+  },
+  "ריבה": {
+   "he": "Riva"
+  },
+  "קטרין": {
+   "he": "Katrin"
+  },
+  "אניטה": {
+   "he": "Anita"
+  },
+  "ג'רמי": {
+   "he": "Jeremi",
+   "intl": "Jeremy"
+  },
+  "ניקיטה": {
+   "he": "Nikita"
+  },
+  "שנהב": {
+   "he": "Shenhav"
+  },
+  "צדוק": {
+   "he": "Tsadok"
+  },
+  "סטפן": {
+   "he": "Stefan"
+  },
+  "אירנה": {
+   "he": "Irena"
+  },
+  "גילת": {
+   "he": "Gilat"
+  },
+  "סוזנה": {
+   "he": "Suzana"
+  },
+  "איזבל": {
+   "he": "Izavel",
+   "intl": "Isabelle"
+  },
+  "פלורה": {
+   "he": "Flora"
+  },
+  "ורדית": {
+   "he": "Vardit"
+  },
+  "אורפז": {
+   "he": "Orpaz"
+  },
+  "רביב": {
+   "he": "Reviv"
+  },
+  "מני": {
+   "he": "Mani"
+  },
+  "אדית": {
+   "he": "Edit"
+  },
+  "מוניק": {
+   "he": "Monik",
+   "intl": "Monique"
+  },
+  "קסניה": {
+   "he": "Ksenya",
+   "intl": "Ksenia"
+  },
+  "סברינה": {
+   "he": "Sabrina"
+  },
+  "פטר": {
+   "he": "Peter"
+  },
+  "חנית": {
+   "he": "Hanit"
+  },
+  "אלברטו": {
+   "he": "Alberto"
+  },
+  "לואיס": {
+   "he": "Luis"
+  },
+  "רוזי": {
+   "he": "Rozi"
+  },
+  "רקפת": {
+   "he": "Rakefet"
+  },
+  "לנה": {
+   "he": "Lena"
+  },
+  "קלאודיה": {
+   "he": "Klaudya"
+  },
+  "קטיה": {
+   "he": "Katya"
+  },
+  "איבון": {
+   "he": "Ivon",
+   "intl": "Yvonne"
+  },
+  "קארן": {
+   "he": "Karen"
+  },
+  "אריקה": {
+   "he": "Erika"
+  },
+  "מריו": {
+   "he": "Mario"
+  },
+  "פאולה": {
+   "he": "Paula"
+  },
+  "טימור": {
+   "he": "Timur"
+  },
+  "צפריר": {
+   "he": "Tsafrir"
+  },
+  "חבצלת": {
+   "he": "Havatselet"
+  },
+  "ירמיהו": {
+   "he": "Yirmyahu",
+   "intl": "Jeremiah"
+  },
+  "יוספה": {
+   "he": "Yosefa"
+  },
+  "חזי": {
+   "he": "Hezi"
+  },
+  "דרורה": {
+   "he": "Drora"
+  },
+  "קריסטינה": {
+   "he": "Kristina"
+  },
+  "תימור": {
+   "he": "Timor"
+  },
+  "מגי": {
+   "he": "Megi"
+  },
+  "ליפז": {
+   "he": "Lifaz"
+  },
+  "אפי": {
+   "he": "Efi"
+  },
+  "פיטר": {
+   "he": "Piter",
+   "intl": "Peter"
+  },
+  "מייק": {
+   "he": "Maik",
+   "intl": "Mike"
+  },
+  "יערית": {
+   "he": "Yaarit"
+  },
+  "ליליאנה": {
+   "he": "Lilyana"
+  },
+  "מיטב": {
+   "he": "Meitav"
+  },
+  "רשל": {
+   "he": "Rashel",
+   "intl": "Rachelle"
+  },
+  "קרלוס": {
+   "he": "Karlos",
+   "intl": "Carlos"
+  },
+  "עתליה": {
+   "he": "Atalya"
+  },
+  "פרי": {
+   "he": "Pri"
+  },
+  "יום": {
+   "he": "Yom"
+  },
+  "זמירה": {
+   "he": "Zmira"
+  },
+  "חמדה": {
+   "he": "Hemda"
+  },
+  "רוזליה": {
+   "he": "Rozalya"
+  },
+  "חמוטל": {
+   "he": "Hamutal"
+  },
+  "יזהר": {
+   "he": "Yizhar"
+  },
+  "אנטוני": {
+   "he": "Antoni",
+   "intl": "Anthony"
+  },
+  "ג'ואל": {
+   "he": "Joel"
+  },
+  "אשרת": {
+   "he": "Asheret"
+  },
+  "צביקה": {
+   "he": "Tsvika"
+  },
+  "סטיב": {
+   "he": "Stiv",
+   "intl": "Steve"
+  },
+  "צופית": {
+   "he": "Tsufit"
+  },
+  "סשה": {
+   "he": "Sasha"
+  },
+  "קרולינה": {
+   "he": "Karolina",
+   "intl": "Carolina"
+  },
+  "אדריאנה": {
+   "he": "Adriana"
+  },
+  "סנדי": {
+   "he": "Sendi",
+   "intl": "Sandy"
+  },
+  "ארנה": {
+   "he": "Orna"
+  },
+  "דודו": {
+   "he": "Dudu"
+  },
+  "שושי": {
+   "he": "Shoshi"
+  },
+  "ניבה": {
+   "he": "Niva"
+  },
+  "כריסטינה": {
+   "he": "Kristina",
+   "intl": "Christina"
+  },
+  "אבידן": {
+   "he": "Avidan"
+  },
+  "עובד": {
+   "he": "Oved"
+  },
+  "קתרין": {
+   "he": "Katrin",
+   "intl": "Catherine"
+  },
+  "מרקו": {
+   "he": "Marko",
+   "intl": "Marco"
+  },
+  "נתנאלה": {
+   "he": "Netanela"
+  },
+  "חניתה": {
+   "he": "Hanita"
+  },
+  "טמיר": {
+   "he": "Tamir"
+  },
+  "כלנית": {
+   "he": "Kalanit"
+  },
+  "דודי": {
+   "he": "Dodi"
+  },
+  "ג'ק": {
+   "he": "Jek",
+   "intl": "Jack"
+  },
+  "גדליהו": {
+   "he": "Gedalyahu"
+  },
+  "ג'ונתן": {
+   "he": "Jonatan",
+   "intl": "Jonathan"
+  },
+  "רמה": {
+   "he": "Rama"
+  },
+  "נתי": {
+   "he": "Nati"
+  },
+  "קלי": {
+   "he": "Keli",
+   "intl": "Kelly"
+  },
+  "מורין": {
+   "he": "Morin"
+  },
+  "ארן": {
+   "he": "Oren"
+  },
+  "ריצ'רד": {
+   "he": "Richard"
+  },
+  "אופרי": {
+   "he": "Ofri"
+  },
+  "שם": {
+   "he": "Shem"
+  },
+  "גניה": {
+   "he": "Ganya"
+  },
+  "רוברטו": {
+   "he": "Roberto"
+  },
+  "אראלה": {
+   "he": "Arela"
+  },
+  "רווית": {
+   "he": "Revavit"
+  },
+  "תובל": {
+   "he": "Tuval"
+  },
+  "נרקיס": {
+   "he": "Narkis"
+  },
+  "זבולון": {
+   "he": "Zvulun",
+   "intl": "Zebulun"
+  },
+  "ליזי": {
+   "he": "Lizi"
+  },
+  "אליסיה": {
+   "he": "Alisya",
+   "intl": "Alicia"
+  },
+  "דומיניק": {
+   "he": "Dominik",
+   "intl": "Dominic"
+  },
+  "גונן": {
+   "he": "Gonen"
+  },
+  "אניה": {
+   "he": "Anya"
+  },
+  "פביאן": {
+   "he": "Fabyan"
+  },
+  "ארינה": {
+   "he": "Arina"
+  },
+  "ראול": {
+   "he": "Raul"
+  },
+  "נינט": {
+   "he": "Ninet"
+  },
+  "תומס": {
+   "he": "Tomas",
+   "intl": "Thomas"
+  },
+  "אלקה": {
+   "he": "Elka"
+  },
+  "בשמת": {
+   "he": "Bosmat"
+  },
+  "גיתית": {
+   "he": "Gitit"
+  },
+  "ליגל": {
+   "he": "Ligal"
+  },
+  "גלילה": {
+   "he": "Glila"
+  },
+  "אמנדה": {
+   "he": "Amanda"
+  },
+  "אודט": {
+   "he": "Odet"
+  },
+  "שאנל": {
+   "he": "Shanel",
+   "intl": "Chanel"
+  },
+  "בן-ציון": {
+   "he": "Ben-Tsiyon"
+  },
+  "עמיקם": {
+   "he": "Amikam"
+  },
+  "צמח": {
+   "he": "Tsemah"
+  },
+  "קוראל": {
+   "he": "Koral"
+  },
+  "זמיר": {
+   "he": "Zamir"
+  },
+  "דונה": {
+   "he": "Dona",
+   "intl": "Donna"
+  },
+  "אלזה": {
+   "he": "Elza",
+   "intl": "Elsa"
+  },
+  "עזריה": {
+   "he": "Azarya"
+  },
+  "ליעוז": {
+   "he": "Lioz"
+  },
+  "אלמז": {
+   "he": "Almaz"
+  },
+  "ימימה": {
+   "he": "Yemima"
+  },
+  "רחלה": {
+   "he": "Rahela"
+  },
+  "שירית": {
+   "he": "Shirit"
+  },
+  "ניראל": {
+   "he": "Nirel"
+  },
+  "סיימון": {
+   "he": "Saimon",
+   "intl": "Simon"
+  },
+  "הילית": {
+   "he": "Hilit"
+  },
+  "אוריאנה": {
+   "he": "Oriana"
+  },
+  "דרורית": {
+   "he": "Drorit"
+  },
+  "כוכב": {
+   "he": "Kokhav"
+  },
+  "עזר": {
+   "he": "Ezer"
+  },
+  "גנית": {
+   "he": "Ganit"
+  },
+  "בכור": {
+   "he": "Bekhor"
+  },
+  "אשלי": {
+   "he": "Ashli",
+   "intl": "Ashley"
+  },
+  "גואל": {
+   "he": "Goel"
+  },
+  "בקי": {
+   "he": "Beki",
+   "intl": "Becky"
+  },
+  "ליזט": {
+   "he": "Lizet"
+  },
+  "מלכיאל": {
+   "he": "Malkiel"
+  },
+  "נטשה": {
+   "he": "Natasha"
+  },
+  "לאונרדו": {
+   "he": "Leonardo"
+  },
+  "נופית": {
+   "he": "Nofit"
+  },
+  "סבסטיאן": {
+   "he": "Sebastian"
+  },
+  "אליחי": {
+   "he": "Elihai"
+  },
+  "תדהר": {
+   "he": "Tidhar"
+  },
+  "מילן": {
+   "he": "Milan"
+  },
+  "בריינדל": {
+   "he": "Breindl"
+  },
+  "גמליאל": {
+   "he": "Gamliel"
+  },
+  "טירן": {
+   "he": "Tiran"
+  },
+  "צאלה": {
+   "he": "Tseela"
+  },
+  "מסרט": {
+   "he": "Meseret"
+  },
+  "אנבל": {
+   "he": "Anabel",
+   "intl": "Annabelle"
+  },
+  "פלורנס": {
+   "he": "Florens",
+   "intl": "Florence"
+  },
+  "נצחיה": {
+   "he": "Nitshiya"
+  },
+  "שחק": {
+   "he": "Shahak"
+  },
+  "ניק": {
+   "he": "Nik"
+  },
+  "דיאגו": {
+   "he": "Diego"
+  },
+  "מרגרט": {
+   "he": "Margaret"
+  },
+  "שושן": {
+   "he": "Shushan"
+  },
+  "צהלה": {
+   "he": "Tsahola"
+  },
+  "אבא": {
+   "he": "Aba"
+  },
+  "לירם": {
+   "he": "Liram"
+  },
+  "קרלה": {
+   "he": "Karla",
+   "intl": "Carla"
+  },
+  "מרין": {
+   "he": "Marin"
+  },
+  "פיבי": {
+   "he": "Fibi",
+   "intl": "Phoebe"
+  },
+  "ריצרד": {
+   "he": "Richard"
+  },
+  "שמאי": {
+   "he": "Shamai"
+  },
+  "דיצה": {
+   "he": "Ditsa"
+  },
+  "נטעלי": {
+   "he": "Netali"
+  },
+  "ידין": {
+   "he": "Yadin"
+  },
+  "רנית": {
+   "he": "Ranit"
+  },
+  "דניה": {
+   "he": "Danya"
+  },
+  "ברנדה": {
+   "he": "Brenda"
+  },
+  "שנית": {
+   "he": "Shanit"
+  },
+  "אליצור": {
+   "he": "Elitsur"
+  },
+  "הלית": {
+   "he": "Helit"
+  },
+  "יהורם": {
+   "he": "Yehoram"
+  },
+  "קלייר": {
+   "he": "Kleir",
+   "intl": "Claire"
+  },
+  "עירא": {
+   "he": "Ira"
+  },
+  "אלרן": {
+   "he": "Elran"
+  },
+  "ויולט": {
+   "he": "Vaiolet",
+   "intl": "Violet"
+  },
+  "לטיסיה": {
+   "he": "Letisya",
+   "intl": "Leticia"
+  },
+  "חובב": {
+   "he": "Hovav"
+  },
+  "סלע": {
+   "he": "Sela"
+  },
+  "יפת": {
+   "he": "Yefet"
+  },
+  "ג'ולייט": {
+   "he": "Julyet",
+   "intl": "Juliet"
+  },
+  "אשד": {
+   "he": "Eshed"
+  },
+  "מידד": {
+   "he": "Meidad"
+  },
+  "גרציה": {
+   "he": "Gratsya"
+  },
+  "צפנת": {
+   "he": "Tsofnat"
+  },
+  "הינדל": {
+   "he": "Hindl"
+  },
+  "אתל": {
+   "he": "Etel"
+  },
+  "צוריה": {
+   "he": "Tsuriya"
+  },
+  "רהב": {
+   "he": "Rahav"
+  },
+  "תניה": {
+   "he": "Tanya"
+  },
+  "הדי": {
+   "he": "Hadi"
+  },
+  "רימונה": {
+   "he": "Rimona"
+  },
+  "פנינית": {
+   "he": "Pninit"
+  },
+  "מיגל": {
+   "he": "Migel",
+   "intl": "Miguel"
+  },
+  "לייב": {
+   "he": "Leib"
+  },
+  "ג'יימס": {
+   "he": "Jeims",
+   "intl": "James"
+  },
+  "שמוליק": {
+   "he": "Shmulik"
+  },
+  "אדלינה": {
+   "he": "Adelina"
+  },
+  "שלווה": {
+   "he": "Shalva"
+  },
+  "אייזיק": {
+   "he": "Aizik",
+   "intl": "Isaac"
+  },
+  "נטע-לי": {
+   "he": "Neta-Li"
+  },
+  "שקמה": {
+   "he": "Shikma"
+  },
+  "אמוץ": {
+   "he": "Amots"
+  },
+  "קרנית": {
+   "he": "Karnit"
+  },
+  "שונית": {
+   "he": "Shunit"
+  },
+  "עילית": {
+   "he": "Ilit"
+  },
+  "ראומה": {
+   "he": "Reuma"
+  },
+  "ערד": {
+   "he": "Arad"
+  },
+  "גידי": {
+   "he": "Gidi"
+  },
+  "נדיר": {
+   "he": "Nadir"
+  },
+  "לי-שי": {
+   "he": "Li-Shai"
+  },
+  "עירד": {
+   "he": "Irad"
+  },
+  "טלילה": {
+   "he": "Tlila"
+  },
+  "ניקי": {
+   "he": "Niki"
+  },
+  "טיראן": {
+   "he": "Tiran"
+  },
+  "יוכי": {
+   "he": "Yokhi"
+  },
+  "עמירה": {
+   "he": "Amira"
+  },
+  "אדמון": {
+   "he": "Admon"
+  },
+  "מרון": {
+   "he": "Meron"
+  },
+  "וויליאם": {
+   "he": "Viliam",
+   "intl": "William"
+  },
+  "נוית": {
+   "he": "Navit"
+  },
+  "הדרה": {
+   "he": "Hadara"
+  },
+  "דברת": {
+   "he": "Dovrat"
+  },
+  "חווה": {
+   "he": "Hava",
+   "intl": "Eve"
+  },
+  "יחיעם": {
+   "he": "Yehiam"
+  },
+  "סלעית": {
+   "he": "Salit"
+  },
+  "מורג": {
+   "he": "Morag"
+  },
+  "שרלוט": {
+   "he": "Sharlot",
+   "intl": "Charlotte"
+  },
+  "אומרי": {
+   "he": "Omri"
+  },
+  "סרג'יו": {
+   "he": "Serjo",
+   "intl": "Sergio"
+  },
+  "אוולינה": {
+   "he": "Evelina"
+  },
+  "כתריאל": {
+   "he": "Kitriel"
+  },
+  "גניפר": {
+   "he": "Jenifer",
+   "intl": "Jennifer"
+  },
+  "ליבת": {
+   "he": "Libat"
+  },
+  "חסידה": {
+   "he": "Hasida"
+  },
+  "סווטלנה": {
+   "he": "Svetlana"
+  },
+  "צורית": {
+   "he": "Tsurit"
+  },
+  "נבות": {
+   "he": "Navot"
+  },
+  "נירן": {
+   "he": "Niran"
+  },
+  "סביון": {
+   "he": "Savion"
+  },
+  "אמציה": {
+   "he": "Amatsya"
+  },
+  "חזקיה": {
+   "he": "Hizkiya"
+  },
+  "זיוית": {
+   "he": "Zivit"
+  },
+  "נעמן": {
+   "he": "Naaman"
+  },
+  "גני": {
+   "he": "Gani"
+  },
+  "דנאל": {
+   "he": "Daniel"
+  },
+  "ג'יין": {
+   "he": "Jein",
+   "intl": "Jane"
+  },
+  "עמינדב": {
+   "he": "Aminadav"
+  },
+  "ויטל": {
+   "he": "Vital"
+  },
+  "נאורה": {
+   "he": "Neora"
+  },
+  "יפעה": {
+   "he": "Yifa"
+  },
+  "איידן": {
+   "he": "Eiden",
+   "intl": "Aiden"
+  },
+  "גתית": {
+   "he": "Gitit"
+  },
+  "אביחיל": {
+   "he": "Avihayil"
+  },
+  "צפניה": {
+   "he": "Tsfanya"
+  },
+  "נהרה": {
+   "he": "Nehara"
+  },
+  "פייגל": {
+   "he": "Feigl"
+  },
+  "אמית": {
+   "he": "Amit"
+  },
+  "טים": {
+   "he": "Tim"
+  },
+  "יה-לי": {
+   "he": "Yah-Li"
+  },
+  "לארה": {
+   "he": "Lara"
+  },
+  "שירת": {
+   "he": "Shirat"
+  },
+  "ליבנה": {
+   "he": "Livne"
+  },
+  "דימה": {
+   "he": "Dima"
+  },
+  "שטרנא": {
+   "he": "Shterna"
+  },
+  "ויולטה": {
+   "he": "Violeta"
+  },
+  "אגנס": {
+   "he": "Agnes"
+  },
+  "ניקו": {
+   "he": "Niko"
+  },
+  "פולי": {
+   "he": "Poli"
+  },
+  "אלירון": {
+   "he": "Eliron"
+  },
+  "קייט": {
+   "he": "Keit",
+   "intl": "Kate"
+  },
+  "ישורון": {
+   "he": "Yeshurun"
+  },
+  "יגיל": {
+   "he": "Yagil"
+  },
+  "תרזה": {
+   "he": "Tereza"
+  },
+  "רע": {
+   "he": "Rea"
+  },
+  "לחן": {
+   "he": "Lahan"
+  },
+  "עשירה": {
+   "he": "Ashira"
+  },
+  "קלריס": {
+   "he": "Klaris",
+   "intl": "Clarice"
+  },
+  "רשף": {
+   "he": "Reshef"
+  },
+  "לוסיאנה": {
+   "he": "Lusyana",
+   "intl": "Luciana"
+  },
+  "גלאור": {
+   "he": "Galor"
+  },
+  "אלדן": {
+   "he": "Eldan"
+  },
+  "חדווה": {
+   "he": "Hedva"
+  },
+  "צמרת": {
+   "he": "Tsameret"
+  },
+  "לירום": {
+   "he": "Lirom"
+  },
+  "יהונדב": {
+   "he": "Yehonadav"
+  },
+  "אופאל": {
+   "he": "Opal"
+  },
+  "פליאה": {
+   "he": "Plia"
+  },
+  "חוליו": {
+   "he": "Hulio",
+   "intl": "Julio"
+  },
+  "עקיבה": {
+   "he": "Akiva"
+  },
+  "דייגו": {
+   "he": "Dyeigo",
+   "intl": "Diego"
+  },
+  "גסיקה": {
+   "he": "Jesika",
+   "intl": "Jessica"
+  },
+  "פועה": {
+   "he": "Pua"
+  },
+  "הינדי": {
+   "he": "Hindi"
+  },
+  "לילית": {
+   "he": "Lilit"
+  },
+  "תמנע": {
+   "he": "Timna"
+  },
+  "לי שי": {
+   "he": "Li Shai"
+  },
+  "גליל": {
+   "he": "Galil"
+  },
+  "ניצנה": {
+   "he": "Nitsana"
+  },
+  "לי-אל": {
+   "he": "Li-El"
+  },
+  "קלקידן": {
+   "he": "Kalkidan"
+  },
+  "מקדס": {
+   "he": "Mekdes"
+  },
+  "אחווה": {
+   "he": "Ahava"
+  },
+  "יתיר": {
+   "he": "Yatir"
+  },
+  "שיקמה": {
+   "he": "Shikma"
+  },
+  "ארזה": {
+   "he": "Arza"
+  },
+  "יונדב": {
+   "he": "Yonadav"
+  },
+  "לי אל": {
+   "he": "Li El"
+  },
+  "מתיתיהו": {
+   "he": "Matityahu"
+  },
+  "צרלס": {
+   "he": "Charls"
+  },
+  "זכאי": {
+   "he": "Zakai"
+  },
+  "הרצליה": {
+   "he": "Hertsliya"
+  },
+  "אלכסה": {
+   "he": "Aleksa"
+  },
+  "אתגר": {
+   "he": "Etgar"
+  },
+  "קרל": {
+   "he": "Karl"
+  },
+  "גדיאל": {
+   "he": "Gadiel"
+  },
+  "לירית": {
+   "he": "Lirit"
+  },
+  "מרגנית": {
+   "he": "Marganit"
+  },
+  "תמוז": {
+   "he": "Tamuz"
+  },
+  "סתוית": {
+   "he": "Stavit"
+  },
+  "יקי": {
+   "he": "Yaki"
+  },
+  "מריאנו": {
+   "he": "Maryano"
+  },
+  "מתת": {
+   "he": "Matat"
+  },
+  "רמית": {
+   "he": "Ramit"
+  },
+  "ירמי": {
+   "he": "Yirmi"
+  },
+  "יעלת חן": {
+   "he": "Yaalat Hen"
+  },
+  "אשרי": {
+   "he": "Ashrei"
+  },
+  "דובי": {
+   "he": "Dubi"
+  },
+  "אבישלום": {
+   "he": "Avishalom"
+  },
+  "דבורית": {
+   "he": "Dvorit"
+  },
+  "צוק": {
+   "he": "Tsuk"
+  },
+  "בן-אל": {
+   "he": "Ben-El"
+  },
+  "צרויה": {
+   "he": "Tsruya"
+  },
+  "גינת": {
+   "he": "Ginat"
+  },
+  "נוריה": {
+   "he": "Nuriya"
+  },
+  "פיי": {
+   "he": "Fei"
+  },
+  "אידו": {
+   "he": "Ido"
+  },
+  "נדיב": {
+   "he": "Nadiv"
+  },
+  "יעד": {
+   "he": "Yaad"
+  },
+  "אבידור": {
+   "he": "Avidor"
+  },
+  "אליעז": {
+   "he": "Eliaz"
+  },
+  "מצדה": {
+   "he": "Metsada"
+  },
+  "גיליה": {
+   "he": "Gilya"
+  },
+  "זילפה": {
+   "he": "Zilpa"
+  },
+  "זהורית": {
+   "he": "Zehorit"
+  },
+  "דינור": {
+   "he": "Dinur"
+  },
+  "אליהב": {
+   "he": "Elihav"
+  },
+  "איטן": {
+   "he": "Itan"
+  },
+  "אודיל": {
+   "he": "Odil"
+  },
+  "מקסין": {
+   "he": "Maksin",
+   "intl": "Maxine"
+  },
+  "וולטר": {
+   "he": "Valter",
+   "intl": "Walter"
+  },
+  "פלור": {
+   "he": "Flor"
+  },
+  "אלדור": {
+   "he": "Eldor"
+  },
+  "נופיה": {
+   "he": "Nofya"
+  },
+  "ברקאי": {
+   "he": "Barkai"
+  },
+  "קרן-אור": {
+   "he": "Keren-Or"
+  },
+  "פאולו": {
+   "he": "Paulo",
+   "intl": "Paolo"
+  },
+  "רמונה": {
+   "he": "Ramona"
+  },
+  "מרטינה": {
+   "he": "Martina"
+  },
+  "אשכר": {
+   "he": "Eshkar"
+  },
+  "זמר": {
+   "he": "Zemer"
+  },
+  "אשכול": {
+   "he": "Eshkol"
+  },
+  "תמירה": {
+   "he": "Tmira"
+  },
+  "חיותה": {
+   "he": "Hayuta"
+  },
+  "טלמור": {
+   "he": "Talmor"
+  },
+  "נטף": {
+   "he": "Nataf"
+  },
+  "אדירה": {
+   "he": "Adira"
+  },
+  "אנוש": {
+   "he": "Enosh"
+  },
+  "מקסימיליאן": {
+   "he": "Maksimilyan",
+   "intl": "Maximilian"
+  },
+  "משכית": {
+   "he": "Maskit"
+  },
+  "יואש": {
+   "he": "Yoash"
+  },
+  "אנגל": {
+   "he": "Enjel",
+   "intl": "Angel"
+  },
+  "שבח": {
+   "he": "Shevah"
+  },
+  "דוריאל": {
+   "he": "Doriel"
+  },
+  "צבר": {
+   "he": "Tsabar"
+  },
+  "אלסיה": {
+   "he": "Alesya"
+  },
+  "עלית": {
+   "he": "Ilit"
+  },
+  "בינת": {
+   "he": "Binat"
+  },
+  "צחית": {
+   "he": "Tsahit"
+  },
+  "אבינדב": {
+   "he": "Avinadav"
+  },
+  "שי-יה": {
+   "he": "Shai-Yah"
+  },
+  "יאשיהו": {
+   "he": "Yoshiyahu"
+  },
+  "פרננדה": {
+   "he": "Fernanda"
+  },
+  "מגל": {
+   "he": "Magal"
+  },
+  "טל-אור": {
+   "he": "Tal-Or"
+  },
+  "אלפרדו": {
+   "he": "Alfredo"
+  },
+  "צופנת": {
+   "he": "Tsofenet"
+  },
+  "שימעון": {
+   "he": "Shimon"
+  },
+  "לירוז": {
+   "he": "Liroz"
+  },
+  "בושמת": {
+   "he": "Bosmat"
+  },
+  "שחם": {
+   "he": "Shaham"
+  },
+  "העני": {
+   "he": "Heni"
+  },
+  "יודפת": {
+   "he": "Yodfat"
+  },
+  "דונלד": {
+   "he": "Donald"
+  },
+  "חוף": {
+   "he": "Hof"
+  },
+  "עזי": {
+   "he": "Uzi"
+  },
+  "אוצר": {
+   "he": "Otsar"
+  },
+  "אלבה": {
+   "he": "Alba"
+  },
+  "יון": {
+   "he": "Yon"
+  },
+  "ארנית": {
+   "he": "Ornit"
+  },
+  "יכין": {
+   "he": "Yakhin"
+  },
+  "ריצארד": {
+   "he": "Richard"
+  },
+  "עמל": {
+   "he": "Amal"
+  },
+  "דובב": {
+   "he": "Dovev"
+  },
+  "מנגיסטו": {
+   "he": "Mengistu"
+  },
+  "גת": {
+   "he": "Gat"
+  },
+  "נובה": {
+   "he": "Nova"
+  },
+  "נדר": {
+   "he": "Neder"
+  },
+  "פוריה": {
+   "he": "Poriya"
+  },
+  "אבגיל": {
+   "he": "Avigal"
+  },
+  "עתיר": {
+   "he": "Atir"
+  },
+  "לי-און": {
+   "he": "Li-On"
+  },
+  "יהלומית": {
+   "he": "Yahalomit"
+  },
+  "רוויה": {
+   "he": "Revaya"
+  },
+  "ווביט": {
+   "he": "Ubit"
+  },
+  "כנען": {
+   "he": "Knaan"
+  },
+  "יראל": {
+   "he": "Yirel"
+  },
+  "גורן": {
+   "he": "Goren"
+  },
+  "אליעם": {
+   "he": "Eliam"
+  },
+  "שיא": {
+   "he": "Si"
+  },
+  "גפנית": {
+   "he": "Gafnit"
+  },
+  "יובב": {
+   "he": "Yovav"
+  },
+  "אליעוז": {
+   "he": "Elioz"
+  },
+  "צהלי": {
+   "he": "Tsaholi"
+  },
+  "רצון": {
+   "he": "Ratson"
+  },
+  "צלילה": {
+   "he": "Tslila"
+  },
+  "ניתן": {
+   "he": "Nitan"
+  },
+  "ולדי": {
+   "he": "Valadi"
+  },
+  "אבישר": {
+   "he": "Avishar"
+  },
+  "עוגן": {
+   "he": "Ogen"
+  },
+  "בת אור": {
+   "he": "Bat Or"
+  },
+  "קטלינה": {
+   "he": "Katalina",
+   "intl": "Catalina"
+  },
+  "אביאלה": {
+   "he": "Aviela"
+  },
+  "אושן": {
+   "he": "Oshen",
+   "intl": "Ocean"
+  },
+  "פלד": {
+   "he": "Peled"
+  },
+  "שלהב": {
+   "he": "Shalhav"
+  },
+  "עוזיה": {
+   "he": "Uziya"
+  },
+  "מזלי": {
+   "he": "Mazali"
+  },
+  "ויקה": {
+   "he": "Vika"
+  },
+  "אוליבייה": {
+   "he": "Olivye",
+   "intl": "Olivier"
+  },
+  "פארן": {
+   "he": "Paran"
+  },
+  "שבא": {
+   "he": "Shva"
+  },
+  "עמיטל": {
+   "he": "Amital"
+  },
+  "רקיע": {
+   "he": "Rakia"
+  },
+  "נבון": {
+   "he": "Navon"
+  },
+  "תות": {
+   "he": "Tut"
+  },
+  "איבונה": {
+   "he": "Ivona"
+  },
+  "תלתן": {
+   "he": "Tiltan"
+  },
+  "תאנה": {
+   "he": "Teena"
+  },
+  "ג'ורג'יה": {
+   "he": "Jorjiya",
+   "intl": "Georgia"
+  },
+  "שפר": {
+   "he": "Shefer"
+  },
+  "בת-עמי": {
+   "he": "Bat-Ami"
+  },
+  "עבריה": {
+   "he": "Ivriya"
+  },
+  "קתי": {
+   "he": "Kati"
+  },
+  "הד": {
+   "he": "Hed"
+  },
+  "אדרה": {
+   "he": "Adara"
+  },
+  "גברי": {
+   "he": "Gavri"
+  },
+  "הראלה": {
+   "he": "Harela"
+  },
+  "אנטונלה": {
+   "he": "Antonela",
+   "intl": "Antonella"
+  },
+  "גאות": {
+   "he": "Geut"
+  },
+  "צדף": {
+   "he": "Tsedef"
+  },
+  "אלרז": {
+   "he": "Elraz"
+  },
+  "דורלי": {
+   "he": "Dorli"
+  },
+  "אשבל": {
+   "he": "Ashbel"
+  },
+  "נגבה": {
+   "he": "Negba"
+  },
+  "זאבה": {
+   "he": "Zeeva"
+  },
+  "בניאל": {
+   "he": "Bniel"
+  },
+  "שיר-לי": {
+   "he": "Shir-Li"
+  },
+  "אורנת": {
+   "he": "Orenet"
+  },
+  "מגד": {
+   "he": "Meged"
+  },
+  "אלינתן": {
+   "he": "Elinatan"
+  },
+  "ברוכה": {
+   "he": "Brukha"
+  },
+  "נריאל": {
+   "he": "Neriel"
+  },
+  "יום-טוב": {
+   "he": "Yom-Tov"
+  },
+  "יפרח": {
+   "he": "Yifrah"
+  },
+  "רוזטה": {
+   "he": "Rozeta"
+  },
+  "יהושפט": {
+   "he": "Yehoshafat"
+  },
+  "ארמין": {
+   "he": "Armin"
+  },
+  "בר-יוחאי": {
+   "he": "Bar-Yohai"
+  },
+  "ברקן": {
+   "he": "Barkan"
+  },
+  "שפיר": {
+   "he": "Shapir"
+  },
+  "אנפה": {
+   "he": "Anafa"
+  },
+  "יפי": {
+   "he": "Yofi"
+  },
+  "אלירוי": {
+   "he": "Eliroi"
+  },
+  "צהל": {
+   "he": "Tsohal"
+  },
+  "אונית": {
+   "he": "Onit"
+  },
+  "עתרת": {
+   "he": "Ateret"
+  },
+  "נאמן": {
+   "he": "Neeman"
+  },
+  "נועד": {
+   "he": "Noad"
+  },
+  "אליטל": {
+   "he": "Elital"
+  },
+  "שם-טוב": {
+   "he": "Shem-Tov"
+  },
+  "אהובית": {
+   "he": "Ahuvit"
+  },
+  "עלוה": {
+   "he": "Alva"
+  },
+  "מירום": {
+   "he": "Meirom"
+  },
+  "טימותי": {
+   "he": "Timoti",
+   "intl": "Timothy"
+  },
+  "נצחונה": {
+   "he": "Nitshona"
+  },
+  "סנונית": {
+   "he": "Snunit"
+  },
+  "גזית": {
+   "he": "Gazit"
+  },
+  "אביגד": {
+   "he": "Avigad"
+  },
+  "אבימלך": {
+   "he": "Avimelekh"
+  },
+  "ינעם": {
+   "he": "Yinam"
+  },
+  "אורורה": {
+   "he": "Orora",
+   "intl": "Aurora"
+  },
+  "אלונית": {
+   "he": "Alonit"
+  },
+  "רזיאלה": {
+   "he": "Raziela"
+  },
+  "אורדן": {
+   "he": "Ordan"
+  },
+  "עודדה": {
+   "he": "Odeda"
+  },
+  "אביצור": {
+   "he": "Avitsur"
+  },
+  "גמא": {
+   "he": "Gome"
+  },
+  "דנאור": {
+   "he": "Danor"
+  },
+  "רננית": {
+   "he": "Renanit"
+  },
+  "דיתה": {
+   "he": "Dita"
+  },
+  "אנטוניה": {
+   "he": "Antonya"
+  },
+  "אביאם": {
+   "he": "Aviam"
+  },
+  "בריטני": {
+   "he": "Britni",
+   "intl": "Britney"
+  },
+  "ענן": {
+   "he": "Anan"
+  },
+  "אדלי": {
+   "he": "Adli"
+  },
+  "אביהוד": {
+   "he": "Avihud"
+  },
+  "אחיאל": {
+   "he": "Ahiel"
+  },
+  "מענית": {
+   "he": "Maanit"
+  },
+  "עתירה": {
+   "he": "Atira"
+  },
+  "צוקית": {
+   "he": "Tsukit"
+  },
+  "ג'ובאני": {
+   "he": "Jivani",
+   "intl": "Giovanni"
+  },
+  "חצב": {
+   "he": "Hatsav"
+  },
+  "שיבולת": {
+   "he": "Shibolet"
+  },
+  "מדיסון": {
+   "he": "Medison",
+   "intl": "Madison"
+  },
+  "יבין": {
+   "he": "Yavin"
+  },
+  "קארל": {
+   "he": "Karl"
+  },
+  "שר-אל": {
+   "he": "Shar-El"
+  },
+  "ויאולה": {
+   "he": "Viola"
+  },
+  "רביבה": {
+   "he": "Reviva"
+  },
+  "סתונית": {
+   "he": "Stavinit"
+  },
+  "רוממה": {
+   "he": "Romema"
+  },
+  "אודטה": {
+   "he": "Odeta"
+  },
+  "אבינר": {
+   "he": "Aviner"
+  },
+  "אחיהוד": {
+   "he": "Ahihud"
+  },
+  "צדק": {
+   "he": "Tsedek"
+  },
+  "טיליה": {
+   "he": "Tilya"
+  },
+  "משואה": {
+   "he": "Masua"
+  },
+  "לוצ'יה": {
+   "he": "Luchiya",
+   "intl": "Lucia"
+  },
+  "רחלית": {
+   "he": "Rahelit"
+  },
+  "בן-עמי": {
+   "he": "Ben-Ami"
+  },
+  "בכורה": {
+   "he": "Bekhora"
+  },
+  "לפיד": {
+   "he": "Lapid"
+  },
+  "סחלב": {
+   "he": "Sahlav"
+  },
+  "תירוש": {
+   "he": "Tirosh"
+  },
+  "הלגה": {
+   "he": "Helga"
+  },
+  "ברוש": {
+   "he": "Brosh"
+  },
+  "שקדיה": {
+   "he": "Shkediya"
+  },
+  "יסעור": {
+   "he": "Yisor"
+  },
+  "אביאסף": {
+   "he": "Aviasaf"
+  },
+  "אביעם": {
+   "he": "Aviam"
+  },
+  "טל-שחר": {
+   "he": "Tal-Shahar"
+  },
+  "נס-לי": {
+   "he": "Nes-Li"
+  },
+  "הרדוף": {
+   "he": "Harduf"
+  },
+  "נץ": {
+   "he": "Nets"
+  },
+  "שלף": {
+   "he": "Shelef"
+  },
+  "בשן": {
+   "he": "Bashan"
+  },
+  "דגניה": {
+   "he": "Deganya"
+  },
+  "יהואש": {
+   "he": "Yehoash"
+  },
+  "עזית": {
+   "he": "Azit"
+  },
+  "אורים": {
+   "he": "Urim"
+  },
+  "זניה": {
+   "he": "Zinya"
+  },
+  "טמירה": {
+   "he": "Tmira"
+  },
+  "אליפז": {
+   "he": "Elifaz"
+  },
+  "שירטל": {
+   "he": "Shirtal"
+  },
+  "מדבר": {
+   "he": "Midbar"
+  },
+  "צארלס": {
+   "he": "Charls"
+  },
+  "מכבית": {
+   "he": "Makabit"
+  },
+  "עלווה": {
+   "he": "Alva"
+  },
+  "תקומה": {
+   "he": "Tekuma"
+  },
+  "אבני": {
+   "he": "Avni"
+  },
+  "לי-פז": {
+   "he": "Li-Faz"
+  },
+  "ארמינה": {
+   "he": "Armina"
+  },
+  "יצהל": {
+   "he": "Yitshal"
+  },
+  "נאות": {
+   "he": "Neot"
+  },
+  "לואיג'י": {
+   "he": "Luiji",
+   "intl": "Luigi"
+  },
+  "אלישיה": {
+   "he": "Alishya",
+   "intl": "Alicia"
+  },
+  "אטד": {
+   "he": "Atad"
+  },
+  "גושוע": {
+   "he": "Joshua"
+  },
+  "עילום": {
+   "he": "Ilom"
+  },
+  "יופיה": {
+   "he": "Yofiya"
+  },
+  "קדוש": {
+   "he": "Kadosh"
+  },
+  "אדירם": {
+   "he": "Adiram"
+  },
+  "אלמגור": {
+   "he": "Almagor"
+  },
+  "אחלמה": {
+   "he": "Ahlama"
+  },
+  "מלכיאור": {
+   "he": "Malkior"
+  },
+  "גפנה": {
+   "he": "Gafna"
+  },
+  "בהט": {
+   "he": "Bahat"
+  },
+  "בנגמין": {
+   "he": "Benjamin"
+  },
+  "לי-עוז": {
+   "he": "Li-Oz"
+  },
+  "גן-יה": {
+   "he": "Gan-Ya"
+  },
+  "שירי-לי": {
+   "he": "Shiri-Li"
+  }
+ }
+}
