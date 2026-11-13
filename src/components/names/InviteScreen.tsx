@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, IconButton, inputClass, skeletonClass } from "@/components/names/ui";
+import { Button, IconButton, skeletonClass } from "@/components/names/ui";
 import { useOnline } from "@/components/names/useMatches";
 import { useSpace } from "@/components/names/useSpace";
 import { hasAppEntry } from "@/lib/names/appHistory";
@@ -13,7 +13,7 @@ import {
   clearInviteCache,
   COPIED_TEXT,
   createInvite,
-  expiryText,
+  expiryDate,
   inviteUrl,
   memberLabel,
   membersForList,
@@ -50,9 +50,8 @@ export default function InviteScreen() {
   const origin = useOrigin();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [attempt, setAttempt] = useState(0);
-  const [status, setStatus] = useState("");
   const [copyFailed, setCopyFailed] = useState(false);
-  const linkRef = useRef<HTMLInputElement>(null);
+  const linkRef = useRef<HTMLParagraphElement>(null);
   const { refresh } = space;
 
   const key = space.spaceId ? `${space.spaceId}:${space.members.length}:${attempt}` : null;
@@ -101,9 +100,8 @@ export default function InviteScreen() {
       await navigator.clipboard.writeText(url);
       copied = true;
     } catch {
-      const input = linkRef.current;
-      input?.focus();
-      input?.select();
+      const link = linkRef.current;
+      if (link) window.getSelection()?.selectAllChildren(link);
       try {
         copied = document.execCommand("copy");
       } catch {
@@ -113,7 +111,6 @@ export default function InviteScreen() {
     setCopyFailed(!copied);
     if (copied) {
       track("invite_shared", { method: "copy" });
-      setStatus(COPIED_TEXT);
       showToast(COPIED_TEXT);
     }
   };
@@ -155,64 +152,64 @@ export default function InviteScreen() {
           בוחרים שם ביחד? שולחים קישור, והבחירה נעשית בנפרד, בכל טלפון. שם שנשמר אצל שניים או יותר יופיע בהתאמות, ועל דילוגים אף אחד לא יודע.
         </p>
 
-        <section aria-labelledby="invite-link-title" className="flex flex-col gap-3 rounded-lg bg-surface p-4 shadow-card">
+        <section aria-labelledby="invite-link-title" className="flex flex-col gap-2">
           <h2 id="invite-link-title" className="m-0 text-card-title">
             קישור הזמנה
           </h2>
-          {invite && url ? (
-            <>
-              <input
-                ref={linkRef}
-                readOnly
-                value={url}
-                dir="ltr"
-                aria-label="קישור ההזמנה"
-                aria-describedby="invite-expiry"
-                onFocus={(e) => e.currentTarget.select()}
-                className={inputClass("link")}
-              />
-              <p id="invite-expiry" className="m-0 text-caption text-stone">
-                {expiryText(invite.expiresAt)} · הקישור עובד פעם אחת
-              </p>
-              <div className="flex flex-col gap-2.5 pt-1">
-                <Button onClick={share}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
-                  </svg>
-                  שליחת קישור הזמנה
-                </Button>
-                <Button variant="secondary" onClick={copy}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <rect x="9" y="9" width="11" height="11" rx="2" />
-                    <path d="M5 15V6a2 2 0 0 1 2-2h9" />
-                  </svg>
-                  העתקת הקישור
-                </Button>
-              </div>
-              {copyFailed ? (
-                <p role="alert" className="m-0 text-caption text-ink-soft">
-                  לא הצלחנו להעתיק. אפשר לסמן את הקישור ולהעתיק אותו.
+          <div className="flex flex-col gap-3 rounded-lg bg-surface p-4 shadow-card">
+            {invite && url ? (
+              <>
+                {/* The whole link wraps in a read-only well (NP-044), so the code at its end shows. */}
+                <p
+                  ref={linkRef}
+                  dir="ltr"
+                  className="m-0 rounded-md bg-sand px-3.5 py-3 text-start text-field text-ink select-all wrap-anywhere"
+                >
+                  {url}
                 </p>
-              ) : null}
-            </>
-          ) : !online && !invite ? (
-            <p className="m-0 text-person font-medium text-ink-soft">צריך חיבור לאינטרנט כדי ליצור קישור הזמנה.</p>
-          ) : failed ? (
-            <>
-              <p role="alert" className="m-0 text-person font-medium text-ink-soft">
-                לא הצלחנו ליצור קישור. אפשר לנסות שוב.
-              </p>
-              <Button variant="secondary" size="md" onClick={retry} className="self-start">
-                ניסיון חוזר
-              </Button>
-            </>
-          ) : waiting ? (
-            <div aria-busy="true" className="flex flex-col gap-3">
-              <div className={`h-11 rounded-md ${skeletonClass()}`} />
-              <div className={`h-14 rounded-pill ${skeletonClass()}`} />
-              <span className="sr-only">יוצרים קישור</span>
-            </div>
-          ) : null}
+                <p id="invite-expiry" className="m-0 text-caption text-stone">
+                  הקישור בתוקף עד <bdi>{expiryDate(invite.expiresAt)}</bdi> ועובד פעם אחת.
+                </p>
+                <div className="flex flex-col gap-2.5 pt-1">
+                  <Button onClick={share}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M12 3v12M7 8l5-5 5 5M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+                    </svg>
+                    שליחת קישור הזמנה
+                  </Button>
+                  <Button variant="secondary" onClick={copy}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="9" y="9" width="11" height="11" rx="2" />
+                      <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+                    </svg>
+                    העתקת הקישור
+                  </Button>
+                </div>
+                {copyFailed ? (
+                  <p role="alert" className="m-0 text-caption text-ink-soft">
+                    לא הצלחנו להעתיק. אפשר לסמן את הקישור ולהעתיק אותו.
+                  </p>
+                ) : null}
+              </>
+            ) : !online && !invite ? (
+              <p className="m-0 text-person font-medium text-ink-soft">צריך חיבור לאינטרנט כדי ליצור קישור הזמנה.</p>
+            ) : failed ? (
+              <>
+                <p role="alert" className="m-0 text-person font-medium text-ink-soft">
+                  לא הצלחנו ליצור קישור. אפשר לנסות שוב.
+                </p>
+                <Button variant="secondary" size="md" onClick={retry} className="self-start">
+                  ניסיון חוזר
+                </Button>
+              </>
+            ) : waiting ? (
+              <div aria-busy="true" className="flex flex-col gap-3">
+                <div className={`h-11 rounded-md ${skeletonClass()}`} />
+                <div className={`h-14 rounded-pill ${skeletonClass()}`} />
+                <span className="sr-only">יוצרים קישור</span>
+              </div>
+            ) : null}
+          </div>
         </section>
 
         {people.length > 0 ? (
@@ -222,17 +219,13 @@ export default function InviteScreen() {
             </h2>
             <ul className="m-0 list-none rounded-lg bg-surface p-0 shadow-card">
               {people.map((m) => (
-                <li key={m.userId} className="border-b border-line px-4 py-3.5 text-row-name break-words last:border-b-0">
+                <li key={m.userId} className="border-b border-line px-4 py-3.5 text-card-title break-words last:border-b-0">
                   {memberLabel(m, userId)}
                 </li>
               ))}
             </ul>
           </section>
         ) : null}
-
-        <p role="status" className="sr-only">
-          {status}
-        </p>
       </main>
     </div>
   );

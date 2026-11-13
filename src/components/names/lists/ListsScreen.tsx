@@ -66,7 +66,6 @@ export default function ListsScreen() {
   const { cards } = useCards();
   const { store, state } = useVotes(space.spaceId, user?.id ?? null);
   const matches = useMatches(space.spaceId, user?.id ?? null, space.isShared, state?.votes);
-  const [status, setStatus] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const tab = listsTab(params.get("tab"));
@@ -135,7 +134,6 @@ export default function ListsScreen() {
     if (!store) return;
     store.setVote(name, "keep", custom);
     if (tab !== "saved" && tab !== "duel") selectTab("saved");
-    setStatus(addedText(name));
     showToast(addedText(name));
   };
 
@@ -149,13 +147,11 @@ export default function ListsScreen() {
     track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null });
     store.setVote(name, kind, previous?.custom ?? false);
     const message = sheetVoteText(kind, name);
-    setStatus(message);
     const wasSaved = previous && (previous.vote === "keep" || previous.vote === "love");
     if (kind === "skip" && wasSaved) {
       const restore = () => {
         store.setVote(name, previous.vote, previous.custom);
         const back = sheetVoteText(previous.vote, name);
-        setStatus(back);
         showToast(back);
       };
       showToast(message, { action: { label: "ביטול", onAction: restore } });
@@ -299,10 +295,6 @@ export default function ListsScreen() {
             />
           )}
         </section>
-
-        <p role="status" className="sr-only">
-          {status}
-        </p>
       </main>
       <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
       <NameDetailSheet

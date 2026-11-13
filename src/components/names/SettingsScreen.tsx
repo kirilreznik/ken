@@ -142,7 +142,6 @@ export default function SettingsScreen() {
       await saveDisplayName(supabase, space.spaceId, user.id, name.trim());
       setDraft(null);
       track("display_name_changed");
-      setStatus(NAME_SAVED_TEXT);
       showToast(NAME_SAVED_TEXT);
     } catch (err) {
       reportClientLog({ area: "settings", message: "display name save failed", name: err instanceof Error ? err.name : undefined });
@@ -225,7 +224,6 @@ export default function SettingsScreen() {
       afterLeave(user.id);
       await space.refresh();
       closeDialog(LEAVE_DIALOG);
-      setStatus(LEAVE_DONE);
       showToast(LEAVE_DONE);
     } finally {
       setLeaving(false);

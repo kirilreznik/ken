@@ -21,9 +21,14 @@ export function inviteUrl(siteUrl: string | undefined, origin: string, code: str
 
 const dateFmt = new Intl.DateTimeFormat("he-IL", { day: "numeric", month: "long", year: "numeric" });
 
-/** "בתוקף עד 12 בנובמבר 2026" in the device's time zone (`format` is for tests). */
+/** "12 בנובמבר 2026" in the device's time zone (`format` is for tests). */
+export function expiryDate(expiresAt: string, format: Intl.DateTimeFormat = dateFmt): string {
+  return format.format(new Date(expiresAt));
+}
+
+/** "בתוקף עד 12 בנובמבר 2026". */
 export function expiryText(expiresAt: string, format: Intl.DateTimeFormat = dateFmt): string {
-  return `בתוקף עד ${format.format(new Date(expiresAt))}`;
+  return `בתוקף עד ${expiryDate(expiresAt, format)}`;
 }
 
 /** The members list: the user's own name as "{name} (אני)", everyone else by display name. */
