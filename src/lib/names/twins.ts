@@ -83,19 +83,19 @@ export interface TwinSuggestion {
 
 /**
  * Names that pair well with `card`, best first: deck names only, never hidden or skipped ones,
- * and only of `sex` when the sex filter is on.
+ * and only of the filter's sexes when the sex filter is on.
  */
 export function twinsFor<T extends TwinCard>(
   card: T,
   cards: readonly T[],
-  options: { votes?: ReadonlyMap<string, Vote>; sex?: SexTag | null; forms?: (name: string) => readonly string[]; limit?: number } = {},
+  options: { votes?: ReadonlyMap<string, Vote>; sex?: readonly SexTag[] | null; forms?: (name: string) => readonly string[]; limit?: number } = {},
 ): TwinSuggestion[] {
   const { votes, sex = null, forms, limit = TWIN_LIMIT } = options;
   const out: (TwinSuggestion & { score: number })[] = [];
   for (const other of cards) {
     const vote = votes?.get(other.stats.name);
     if (vote === "hidden" || vote === "skip") continue;
-    if (sex !== null && other.derived.sexTag !== sex) continue;
+    if (sex !== null && !sex.includes(other.derived.sexTag)) continue;
     const p = pairing(card, other, forms);
     if (p) out.push({ name: other.stats.name, sexTag: other.derived.sexTag, reasons: p.reasons, score: p.score });
   }

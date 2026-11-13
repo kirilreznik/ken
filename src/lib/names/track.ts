@@ -28,7 +28,7 @@ export const NAMES_EVENTS = {
   vote_undone: "ביטול took back a decision.",
   deck_exhausted: "The deck ran out of names. {votes}",
   filter_empty: "The filters left no names. {sex, sheet_filters}",
-  filter_sex: "The filter menu was applied with a different sex filter. {sex: 'boy' | 'girl' | 'unisex' | 'all'}",
+  filter_sex: "The filter menu was applied with a different sex filter. {sex: 'all' or the chosen tags joined by '+' in boy, girl, unisex order, e.g. 'girl+unisex'}",
   filters_reset: "The filters were reset from the empty deck.",
   session_end: "The page was hidden; running totals for the session. {votes, saves, duration_s}",
   invite_shared: "The invite link was shared or copied. {method: 'share' | 'copy'}",

@@ -21,7 +21,8 @@ export const RANGE_MAX = 7;
 
 /** E16 FR-10. `null` in a group means "all" (the default). */
 export interface Filters {
-  sex: SexTag | null;
+  /** Any of these sexes, e.g. ["בת", "מתאים לכולם"]; never an empty list or all three (that is `null`). */
+  sex: SexTag[] | null;
   popularity: PopularityBand | null;
   trend: TrendWord | null;
   letter: string | null;
@@ -58,9 +59,24 @@ export function hasFilters(filters: Filters | null): boolean {
   return !!filters && !isDefault(filters);
 }
 
-/** The sex filter as an ASCII token for analytics (the tags themselves are Hebrew). */
-export function sexToken(sex: SexTag | null): string {
-  return sex === "בן" ? "boy" : sex === "בת" ? "girl" : sex === "מתאים לכולם" ? "unisex" : "all";
+/** The sex chips' order. */
+export const SEX_TAGS: readonly SexTag[] = ["בן", "בת", "מתאים לכולם"];
+
+const SEX_TOKENS: Record<SexTag, string> = { בן: "boy", בת: "girl", "מתאים לכולם": "unisex" };
+
+/**
+ * A valid sex filter from any saved value: a list of tags, or a single tag saved before the
+ * filter became multi-select (2026-11-13). Unknown tags drop; none or all three is `null`.
+ */
+export function readSex(raw: unknown): SexTag[] | null {
+  const list = Array.isArray(raw) ? raw : [raw];
+  const tags = SEX_TAGS.filter((t) => list.includes(t));
+  return tags.length === 0 || tags.length === SEX_TAGS.length ? null : tags;
+}
+
+/** The sex filter as an ASCII token for analytics: "girl+unisex", "boy", "all". */
+export function sexToken(sex: readonly SexTag[] | null): string {
+  return sex && sex.length ? sex.map((t) => SEX_TOKENS[t]).join("+") : "all";
 }
 
 /** The fields of a card the filters read. */
@@ -88,7 +104,7 @@ export function firstLetter(name: string): string | null {
 
 export function matches(card: FilterableCard, filters: Filters): boolean {
   const { stats, derived } = card;
-  if (filters.sex !== null && derived.sexTag !== filters.sex) return false;
+  if (filters.sex !== null && !filters.sex.includes(derived.sexTag)) return false;
   if (filters.popularity !== null && derived.band !== filters.popularity) return false;
   if (filters.trend !== null && derived.trend?.word !== filters.trend) return false;
   if (filters.letter !== null && firstLetter(stats.name) !== filters.letter) return false;

@@ -55,7 +55,7 @@ describe("twinsFor and pairsAmong", () => {
   it("follows the sex filter and leaves out skipped names", () => {
     const votes = new Map([["לביא", "skip" as const]]);
     expect(twinsFor(ariel, all, { votes }).map((t) => t.name)).toEqual(["אריאלה"]);
-    expect(twinsFor(ariel, all, { sex: "בן" }).map((t) => t.name)).toEqual(["לביא"]);
+    expect(twinsFor(ariel, all, { sex: ["בן"] }).map((t) => t.name)).toEqual(["לביא"]);
   });
   it("makes pairs from saved names, best first", () => {
     expect(pairsAmong([maya, noya, dan]).map((p) => p.names)).toEqual([["מאיה", "נויה"]]);
