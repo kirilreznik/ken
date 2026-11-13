@@ -17,6 +17,8 @@ import { track } from "@/lib/names/track";
 
 export const EMAIL_SIGN_IN_PATH = "/names/sign-in/email";
 
+const GOOGLE_NEXT_STEP = "אפשר לנסות שוב או להיכנס עם קוד במייל.";
+
 /**
  * The two sign-in buttons of FR-W1 (no SMS, PRD 3.1.3). The join screen passes its code, which isn't in ?join=.
  * `guestLink` (welcome only) adds "continue without an account" to the swipe screen as a guest.
@@ -36,8 +38,9 @@ export default function WelcomeActions({ joinCode, guestLink = false }: { joinCo
       window.location.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));
       return;
     }
-    // Google's own failures read better as "Google sign-in failed" than as the generic line.
-    setError(kind === "other" ? GOOGLE_FAILED_MESSAGE : message);
+    // Google's own failures read better as "Google sign-in failed" than as the generic line,
+    // followed by the next step, as on the callback's failure screen (COPY-G1-07).
+    setError(kind === "other" ? `${GOOGLE_FAILED_MESSAGE}. ${GOOGLE_NEXT_STEP}` : message);
   }
 
   // FR-W2: Supabase sends the browser to Google, then back to /names/auth/callback (PKCE).
@@ -79,7 +82,8 @@ export default function WelcomeActions({ joinCode, guestLink = false }: { joinCo
           {/* eslint-disable-next-line @next/next/no-img-element -- tiny static brand mark */}
           <img src="/names/brand/google-g.svg" alt="" width={16} height={16} />
         </span>
-        כניסה עם Google
+        {/* While the browser waits for Google, say it's moving on (INT-G1-04); disabled gives the shared look. */}
+        {busy ? "מעבירים ל־Google…" : "כניסה עם Google"}
       </Button>
       <Button variant="secondary" href={withJoin(EMAIL_SIGN_IN_PATH, join)}>
         <svg className="me-1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

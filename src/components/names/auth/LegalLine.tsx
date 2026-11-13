@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { linkClass } from "../ui/classes";
 
-const LINK = "-my-3 inline-flex min-h-11 items-center font-bold text-ink underline underline-offset-2";
+const LINK = linkClass("inline");
 
 /**
  * The line under the welcome and join panels that points to the terms and privacy before

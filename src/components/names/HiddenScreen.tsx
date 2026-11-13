@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import { useUserId } from "@/components/names/AuthProvider";
-import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
+import { Button, ChevronIcon, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass } from "@/components/names/ui";
+import { ListSkeleton } from "@/components/names/lists/ListSkeleton";
 import { useNameStats } from "@/components/names/useCards";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
@@ -67,23 +68,19 @@ export default function HiddenScreen() {
 
   return (
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
-      <main className="mx-auto flex w-full max-w-[480px] flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <main className="mx-auto flex w-full max-w-content flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
           <IconButton aria-label="חזרה" onClick={back}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">
-              <path d="M9 6l6 6-6 6" />
-            </svg>
+            <ChevronIcon dir="back" />
           </IconButton>
-          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title outline-none">
+          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title text-balance outline-none">
             שמות שהסתרתי
           </h1>
         </header>
-        <p className="m-0 text-person font-medium text-ink-soft">שמות שהסתרת לא מופיעים בבחירה. אחרי החזרה השם יופיע בה שוב.</p>
+        <p className="m-0 text-person font-medium text-pretty text-ink-soft">שמות שהסתרת לא מופיעים בכרטיסים. ״החזרה״ מחזירה שם לכרטיסים.</p>
 
         {!ready ? (
-          <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-            <span className="sr-only">בטעינה</span>
-          </div>
+          <ListSkeleton />
         ) : state?.loadFailed ? (
           <VotesLoadFailed onRetry={() => void store?.reconcile()} />
         ) : hidden.length === 0 ? (

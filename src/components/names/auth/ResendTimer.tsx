@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { linkClass } from "../ui/classes";
 import { RESEND_SECONDS, resendAnnouncement, resendWaitText, secondsLeft } from "@/lib/names/resend";
 
 interface ResendTimerProps {
@@ -44,7 +45,7 @@ export default function ResendTimer({ sentAt, onResend, disabled, sending, sentN
         onClick={onResend}
         disabled={left > 0 || disabled || sending}
         aria-busy={sending || undefined}
-        className="min-h-11 rounded-pill px-1 text-card-title font-bold text-ink underline underline-offset-4 disabled:text-stone disabled:no-underline"
+        className={linkClass("standalone")}
       >
         {sending ? "שולחים…" : "שליחה חוזרת"}
       </button>

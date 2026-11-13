@@ -3,7 +3,7 @@ type SwipeFooterProps = {
   status: string;
   /** The name now on top, read after the status. */
   next?: string | null;
-  /** "אין חיבור · 3 בחירות ממתינות לסנכרון" (FR-W29), or null. */
+  /** "אין חיבור · 3 החלטות יישלחו כשהחיבור יחזור" (FR-W29), or null. */
   sync?: string | null;
 };
 

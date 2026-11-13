@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createStore, delMany, get, keys, set, type UseStore } from "idb-keyval";
+import { formatCount } from "./card";
 import { getSupabase } from "./supabase";
 
 /**
@@ -249,7 +250,7 @@ export function createMatchesStore({
 
 /** "{n} שמרו" for a match kept by 3 or more (FR-W19); null for two, the usual case. */
 export function keptByText(match: Match): string | null {
-  return match.keptByCount >= 3 ? `${match.keptByCount} שמרו` : null;
+  return match.keptByCount >= 3 ? `${formatCount(match.keptByCount)} שמרו` : null;
 }
 
 /** The line under the name on the match sheet (board 4). */
@@ -259,8 +260,8 @@ export function matchSheetLine(match: Match): string {
 
 /** The explainer above the "התאמות" list (board 5); never says who skipped what. */
 export function matchesIntro(memberCount: number): string {
-  if (memberCount < 2) return "התאמות יופיעו כשמישהו נוסף יבחר איתך. הדילוגים נשארים פרטיים.";
-  return "שמות שנשמרו אצל שניים או יותר. על דילוגים אף אחד לא יודע.";
+  if (memberCount < 2) return "התאמות יופיעו כשמישהו נוסף יבחר איתך. על מה דילגת נשאר רק אצלך.";
+  return "שמות שנשמרו אצל שניים או יותר. על מה דילגת נשאר רק אצלך.";
 }
 
 /** The newest match the user hasn't been shown on this device, or null. */

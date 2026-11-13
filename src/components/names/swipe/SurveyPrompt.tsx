@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { IconButton, openSheet } from "@/components/names/ui";
+import { ChevronIcon, CloseIcon, IconButton, openSheet } from "@/components/names/ui";
 import { track } from "@/lib/names/track";
 
 /**
@@ -19,9 +19,12 @@ export default function SurveyPrompt({ onDismiss }: { onDismiss: () => void }) {
           track("survey_prompt", { action: "open" });
           openSheet("survey");
         }}
-        className="min-h-11 min-w-0 flex-1 text-start text-person font-bold text-ink underline-offset-4 hover:underline"
+        aria-haspopup="dialog"
+        className="flex min-h-11 min-w-0 flex-1 items-center gap-1.5 text-start text-person font-bold text-ink"
       >
-        5 שאלות קצרות כדי לשפר את האפליקציה?
+        {/* A real question, underlined with a chevron so it reads as tappable (NP-130). */}
+        <span className="min-w-0 underline decoration-stone underline-offset-4">אפשר לשאול 5 שאלות קצרות על בחירת השם?</span>
+        <ChevronIcon dir="forward" size={16} className="flex-none text-ink-soft" />
       </button>
       <IconButton
         aria-label="לא עכשיו, להסתיר את השאלון"
@@ -30,9 +33,7 @@ export default function SurveyPrompt({ onDismiss }: { onDismiss: () => void }) {
           onDismiss();
         }}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-          <path d="M6 6l12 12M18 6L6 18" />
-        </svg>
+        <CloseIcon size={16} />
       </IconButton>
     </div>
   );

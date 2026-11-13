@@ -64,7 +64,7 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
       }
     >
       <form id={FORM_ID} noValidate onSubmit={submit} className="flex flex-col gap-1.5">
-        <p className="m-0 mb-2 text-body text-ink-soft">אפשר להוסיף שם שלא מופיע בבחירה. הוא יישמר ברשימה בלי נתונים.</p>
+        <p className="m-0 mb-2 text-body text-pretty text-ink-soft">אפשר להוסיף שם שאין לו כרטיס. הוא יישמר ברשימה, בלי מספרים ופירוש.</p>
         <label htmlFor="add-name" className="text-person font-bold text-ink">
           השם
         </label>
@@ -76,6 +76,8 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
           lang="he"
           autoComplete="off"
           enterKeyHint="done"
+          autoCorrect="off"
+          spellCheck={false}
           data-autofocus=""
           value={value}
           onChange={(e) => {
@@ -88,7 +90,7 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
         />
         {error ? (
           <span id="add-name-error" role="alert" className="flex items-center gap-1.5 text-caption font-bold text-urgent">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true" className="flex-none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true" className="flex-none">
               <circle cx="12" cy="12" r="9" />
               <path d="M12 7.5v5M12 16v.5" />
             </svg>

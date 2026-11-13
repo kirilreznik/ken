@@ -99,7 +99,7 @@ function Panel({ votes, sessions, onDone }: SurveySheetProps) {
     const supabase = getSupabase();
     if (sending || !supabase) return;
     if (!hasAnswer(answer)) {
-      setError("אפשר לענות על שאלה אחת לפחות, או לסגור.");
+      setError("צריך לענות על שאלה אחת לפחות. אפשר גם לסגור בלי לשלוח.");
       return;
     }
     setSending(true);
@@ -131,14 +131,14 @@ function Panel({ votes, sessions, onDone }: SurveySheetProps) {
             </p>
           ) : null}
           <Button type="submit" form={FORM_ID} className="w-full" aria-busy={sending} aria-disabled={sending}>
-            {sending ? "שולחים…" : "שליחה"}
+            {sending ? "שולחים…" : "שליחת התשובות"}
           </Button>
         </div>
       }
     >
       <form id={FORM_ID} noValidate onSubmit={(e) => void submit(e)} className="flex flex-col gap-6">
         <p className="m-0 text-body text-ink-soft">
-          חמש שאלות, כולן לא חובה. התשובות עוזרות לנו להבין למי זה מתאים. הן נשמרות בלי האימייל ובלי השם שלך.
+          5 שאלות, כולן לא חובה. התשובות עוזרות לנו להבין למי זה מתאים. הן נשמרות בלי המייל ובלי השם שלך.
         </p>
         <ChoiceGroup name="survey-disappointed" {...Q_DISAPPOINTED} value={answer.disappointed} onChange={(v) => set("disappointed", v)} />
         <div className="flex flex-col gap-2">

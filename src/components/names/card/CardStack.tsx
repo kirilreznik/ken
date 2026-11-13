@@ -1,4 +1,5 @@
 import type { ComponentProps } from "react";
+import type { DragKind } from "@/lib/names/gesture";
 import type { Card } from "@/lib/names/types";
 import NameCard from "./NameCard";
 
@@ -7,6 +8,8 @@ type CardStackProps = Omit<ComponentProps<typeof NameCard>, "card"> & {
   cards: Card[];
   /** Plays the enter animation on the current card (after a decision, not on first render). */
   enter?: boolean;
+  /** The current card is back from an undo that took this decision away: it returns the way it left (useSwipeDrag), not with the enter animation. */
+  returning?: DragKind | null;
 };
 
 const back = "names-glass-soft pointer-events-none absolute rounded-xl";
@@ -27,7 +30,7 @@ const back = "names-glass-soft pointer-events-none absolute rounded-xl";
  * to fit without scrolling (names.css, NP-BUG-010). Content-sized decks (under 20rem wide or
  * 30rem high, SwipeScreen) aren't containers, so there the card keeps every part.
  */
-export default function CardStack({ cards, enter = false, className = "", ...cardProps }: CardStackProps) {
+export default function CardStack({ cards, enter = false, returning = null, className = "", ...cardProps }: CardStackProps) {
   const [card, next, after] = cards;
   if (!card) return null;
   return (
@@ -41,8 +44,9 @@ export default function CardStack({ cards, enter = false, className = "", ...car
       <NameCard
         key={card.stats.name}
         card={card}
-        data-motion={enter ? "fade-in" : undefined}
-        className={`flex-1 ${enter ? "names-card-enter" : ""} ${className}`}
+        data-motion={returning ? "return" : enter ? "fade-in" : undefined}
+        data-return={returning ?? undefined}
+        className={`flex-1 ${enter && !returning ? "names-card-enter" : ""} ${className}`}
         {...cardProps}
       />
     </div>

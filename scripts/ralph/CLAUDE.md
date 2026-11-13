@@ -1,58 +1,30 @@
 # Ralph Agent Instructions
 
-You are an autonomous coding agent working on `kirilreznik/ken`: the Nest landing page (Next.js 16, React 19, Tailwind 4) and, in this run, the design polish of the name swiper PWA at `/names`.
+You are an autonomous coding agent working on `kirilreznik/ken`: the Nest landing page (Next.js 16, React 19, Tailwind 4) and, in this run, a fast code-only polish of the name swiper PWA at `/names`.
 
-## Current Run: design polish of the whole name swiper, with every design skill, + 3 QA cycles in mobile browsers
+## Current Run: second polish of the name swiper, CODE ONLY (the 117 queued P3 items)
 
-This run executes `tasks/prd-name-polish.md` via `scripts/ralph/prd.json` (installed from `scripts/ralph/prd-name-polish.json` by `scripts/ralph/run-name-polish.sh`). **Read `tasks/prd-name-polish.md` first, every iteration**: §3 (guardrails and decisions; this is a polish run, never a redesign), §5 (which design skill each lens uses), §6 (screens and groups), §7 (records), §8 (rules for every story), §10 (mobile browser check) and, for QA stories, §11. The earlier PRDs `tasks/prd-names-pwa.md` and `tasks/prd-name-detail.md` describe everything already built and every owner decision; read the parts your story touches. Accounts and settings are the owner's (`docs/names-pwa/SETUP.md`); never change them.
+This run executes `tasks/prd-name-polish-2.md` via `scripts/ralph/prd.json` (installed from `scripts/ralph/prd-name-polish-2.json` by `scripts/ralph/run-name-polish-2.sh`). **Read `tasks/prd-name-polish-2.md` §2 first, every iteration.** The owner asked for speed: write the code and move on. **No QA, no screenshots, no browsers, no Simulator, no tests, no build, no re-scoring** in item stories. The owner verifies later.
 
-**Design skills:** they are files in `.claude/skills/<name>/` (PRD §5). Each audit or polish story names the skills and files to read: read the `SKILL.md` and only the references the story names or the skill routes you to. Ralph can't ask the owner: where a skill says to ask, show a menu or wait, take the documented default (or the most conservative option) and write the assumption down. Skip skill steps that need Figma, Superdesign, an MCP server or claude.ai, and note it.
+**What each story is:** `US-B01` … `US-B72` each code 1–4 backlog items from `scripts/ralph/qa/name-polish-2/backlog.md` (the row has the files and the one-line change). Skip items already `done`/`dropped`. Read a finding in `scripts/ralph/qa/name-polish/findings/` only if the change isn't clear. Don't open skills. `US-END` runs lint and build once, writes a short summary and pushes.
 
-**Branch:** `ralph/name-polish`. The owner's start command creates it from `origin/claude/project-thread-79v2l8` (this PRD, on top of `ralph/name-detail`). If you're not on it, check it out; never create it from `main` while ken PR #17 is unmerged. Never commit to or push `main`.
+**Never touch the name data:** `data/names/**`, `scripts/names-content/**`, `scripts/build-names-data.mjs`, generated names JSON. **Don't build anything from ken PR #23** (search, Latin spelling, naming after a relative, twins).
 
-**Design source of truth:** the app's tokens (`src/styles/nest-tokens.css`, from `docs/names-pwa/brand/tokens.json`), its components (`src/components/names/ui/`, `card/`, `swipe/`, `detail/`), `docs/names-pwa/brand/BRAND.md`, the boards in `docs/names-pwa/design/`, and, from US-003 on, `PRODUCT.md` and `DESIGN.md` at the repo root. Existing token values are the owner's (PRD §3.1.2). There is no claude.ai access here; don't try to open canvas or artifact links.
+**Branch:** `ralph/name-polish-2`. If you're not on it, check it out. Never commit to or push `main`.
 
-**Backend:** the Supabase project in `.env.local` ("Nest (EU)"). This run needs no backend change. Never apply SQL, change auth settings or deploy functions.
+**Guardrails:** refine, never redesign (`tasks/prd-name-polish.md` §3.1). Tokens from `src/styles/nest-tokens.css` only; existing token values are the owner's; a new token goes through `docs/names-pwa/brand/tokens.json` + `npm run tokens:css`. RTL logical properties, Hebrew `aria-label`s, reduced-motion versions for new animations, no dependencies (`npm ci` only, never `npm install`), only `/names` code. Never change Supabase, Vercel or auth; never print secrets from `.env.local` or `scripts/ralph/.env.test.local`. Next 16's dev server writes `AGENTS.md`/`CLAUDE.md` at the repo root; never commit them.
 
-**Secrets:** `.env.local` and `scripts/ralph/.env.test.local` are gitignored. Never print, log or commit their values, codes, tokens or phone numbers. Refer to them by key name only.
-
-**Dependencies and lockfile:** install with `npm ci`, never a bare `npm install`. On this Mac (npm 11) `npm install` drops the `@esbuild/*` platform entries from `package-lock.json`, and Vercel's Linux build needs them. This run adds no dependency, even when a skill suggests one. Next 16's dev server writes `AGENTS.md` and `CLAUDE.md` into the repo root; they are gitignored, never commit them (`PRODUCT.md` and `DESIGN.md` at the root are this run's files and are committed).
-
-**Commits:** setup stories commit as their criteria say. Audit and triage stories commit only their records. Each polish story (`US-P01`…`US-P50`) commits once. QA stories (`US-QA{N}-{X}`) never commit and never fix; they only write to `scripts/ralph/qa/name-polish/` and `progress.txt`. `US-FIX{N}` commits once per cycle. `US-FINAL` makes one docs commit and pushes the branch. Never `git stash`, `git clean`, `git checkout .` or `git reset --hard`: uncommitted QA records must survive between iterations.
-
-**QA loop (hard cap of 3):** QA cycle N (10 stories, A–J, run in full every cycle, in real mobile browsers) → `US-FIX{N}`. A FIX story whose cycle found zero `open` bugs marks every remaining QA/FIX story `passes: true` with "skipped: QA clean after cycle N" and lets `US-FINAL` run. `US-FIX3` is the last fix pass. `US-FINAL` reports the true state and never rounds up.
-
-**US-000 runs first and gates everything.** If it can't pass (a browser, the Simulator, `cliclick`, the QA users or the skills folder), it writes the missing prerequisite at the top of `progress.txt` and stops. Don't start other stories.
+**Commits:** one per story, as its criteria say. Never `git stash`, `git clean`, `git checkout .` or `git reset --hard`.
 
 ## Your Task
 
-1. Read the PRD at `scripts/ralph/prd.json` (in the same directory as this file)
-2. Read the progress log at `scripts/ralph/progress.txt` (check the Codebase Patterns section first)
-3. Check you're on the branch from PRD `branchName` (see **Branch** above)
-4. Pick the **highest priority** user story where `passes: false` (lowest `priority` number)
-5. Implement that single user story, following `tasks/prd-name-polish.md` §8
-6. If the story changes code, run the checks: `npm run lint`, `npx tsc --noEmit`, `npm test`, `npm run build`
-7. For UI stories, do the browser check (below) until it matches
-8. If checks pass, commit as the story's criteria say (short imperative subject, e.g. `polish(names): NP-004 align the sheet header`)
-9. Update `scripts/ralph/prd.json`: set `passes: true` for the story, and put anything notable in its `notes`
-10. Append your progress to `scripts/ralph/progress.txt`
-
-## Next.js and libraries have changed. Don't trust memory.
-
-Before using a Next.js API, read the matching guide in `node_modules/next/dist/docs/` if it exists, otherwise https://nextjs.org/docs (version 16). For Supabase auth, read the `@supabase/supabase-js` / `@supabase/auth-js` source in `node_modules` or https://supabase.com/docs. Heed deprecation notices.
-
-## Mobile browser check (required for UI stories)
-
-The full recipe is `tasks/prd-name-polish.md` §10. In short, every UI story is checked in three mobile browsers, with the detail run's helpers:
-
-1. `curl -s -o /dev/null -w '%{http_code}' localhost:3000/names/welcome`; if it doesn't answer, start `nohup npm run dev > /tmp/names-dev.log 2>&1 &` and wait for it. Service worker, performance and QA stories use a production build on port 3100.
-2. Playwright WebKit as an iPhone 15 and Chromium as a Pixel 7, both with touch and a signed-in QA user: `scripts/ralph/qa/name-detail/mobile.mjs`. Taps with the touchscreen, drags with its touch `drag()` helper.
-3. Mobile Safari in the iOS Simulator: `scripts/ralph/qa/name-detail/sim.mjs` and the notes in `scripts/ralph/qa/name-detail/SIMULATOR.md`.
-4. Save screenshots to `scripts/ralph/qa/name-polish/shots/` (US-001 adds the option), read each PNG and compare it with the board PNG, its `.dc.html`, the tokens and the item's before screenshot.
-5. Fix and repeat until it matches. Not "close enough". Deliberate differences go in the story's `notes`.
-
-A frontend story is not complete until this loop finds a clean match in all three. If a browser or the Simulator can't run, write that in `progress.txt` as a blocker; never skip the check.
-
+1. Read `scripts/ralph/prd.json` and the Codebase Patterns at the top of `scripts/ralph/progress.txt`
+2. Check you're on the branch from PRD `branchName`
+3. Pick the **highest priority** user story where `passes: false`
+4. Code it (fast, see above); the only check is `npx tsc --noEmit` (US-END also runs `npm run lint` and `npm run build`)
+5. Commit as the story says
+6. Update `scripts/ralph/prd.json`: `passes: true`, anything notable in `notes`
+7. Append a short entry to `scripts/ralph/progress.txt`
 
 ## Progress Report Format
 
@@ -74,8 +46,7 @@ Reusable learnings go in a `## Codebase Patterns` section at the TOP of `scripts
 
 ## Quality Requirements
 
-- ALL commits pass `npm run lint` (0 errors), `npx tsc --noEmit`, `npm test` and `npm run build`
-- Don't commit broken code
+- `npx tsc --noEmit` passes on every commit; lint and build are checked once in US-END
 - Keep changes focused and minimal
 - Design tokens only, RTL logical properties, ≥ 44 px targets, Hebrew `aria-label`s, status never by color alone, gender-neutral Hebrew, no due date anywhere
 

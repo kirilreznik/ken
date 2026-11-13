@@ -19,7 +19,7 @@ import {
   type Sample,
   type Velocity,
 } from "@/lib/names/gesture";
-import { DURATION_FADE, DURATION_SNAP, EASE_OUT } from "@/styles/nest-motion";
+import { DURATION_CARD, DURATION_FADE, DURATION_SNAP, EASE_OUT } from "@/styles/nest-motion";
 
 type Drag = {
   id: number;
@@ -61,12 +61,18 @@ function swallowNextClick() {
 /** The card is off its place (a drag, a fling, the snap back): the stack shows the back cards whole (names.css). */
 const moving = (el: HTMLElement, on: boolean) => el.toggleAttribute("data-moving", on);
 
+/** Sets one swipe stamp's opacity on the span itself, so only the stamp repaints (NP-093). */
+function stamp(el: HTMLElement, kind: DragKind, value: number) {
+  const span = el.querySelector<HTMLElement>(`[data-stamp="${kind}"]`);
+  if (span) span.style.opacity = value ? String(value) : "";
+}
+
 function paint(el: HTMLElement, transform: string, keep = 0, skip = 0, love = 0) {
   el.style.transform = transform;
   moving(el, transform !== "");
-  el.style.setProperty("--keep", String(keep));
-  el.style.setProperty("--skip", String(skip));
-  el.style.setProperty("--love", String(love));
+  stamp(el, "keep", keep);
+  stamp(el, "skip", skip);
+  stamp(el, "love", love);
 }
 
 /**
@@ -118,7 +124,8 @@ function flyingCopy(node: HTMLElement): HTMLElement {
  * flies off (so the next card is live at once), or snaps back. The keep side is read from the action buttons when the drag starts (PRD
  * 3.2.12). A card whose content fits keeps every touch gesture (touch-action: none) so a swipe
  * up can love it; a card that scrolls leaves vertical touch to scrolling (pan-y), and the
- * "אהבתי מאוד" button stays the way to love it by touch.
+ * "אהבתי מאוד" button stays the way to love it by touch. Content-sized decks cap the card at
+ * the viewport (SwipeScreen) so a long card there scrolls too (NP-087).
  *
  * Spread `card` on the current card; it's keyed by name, so each card gets a fresh element.
  * `fly(kind)` sends the card off the same way for the buttons and the keys (FR-W11); with
@@ -161,6 +168,14 @@ export function useSwipeDrag({
     if (refocus.current) {
       refocus.current = false;
       node.focus({ preventScroll: true });
+    }
+    // A card an undo brings back (CardStack's data-return) comes in the reverse of its fling (NP-091).
+    const back = node.dataset.return as DragKind | undefined;
+    if (back) {
+      const frames = reducedMotion()
+        ? [{ opacity: 0 }, { opacity: 1 }]
+        : [{ transform: flingTo(back, keepDir()), opacity: 0.4 }, { transform: "none", opacity: 1 }];
+      node.animate(frames, { duration: reducedMotion() ? DURATION_FADE : DURATION_CARD, easing: EASE_OUT });
     }
     const fit = () => {
       node.style.touchAction = node.scrollHeight > node.clientHeight + 1 ? "pan-y" : "none";
@@ -216,7 +231,7 @@ export function useSwipeDrag({
     const frames = reducedMotion()
       ? [{ opacity: 1 }, { opacity: 0 }]
       : [{ transform: from }, { transform: flingTo(kind, dir), opacity: 0.4 }];
-    if (kind === "love" && !reducedMotion()) copy.style.setProperty("--love", "1");
+    if (kind === "love" && !reducedMotion()) stamp(copy, "love", 1);
     const timing = release
       ? flingTiming(
           flingDistance(kind, release.dx, release.dy, copy.offsetWidth, copy.offsetHeight),
@@ -268,6 +283,8 @@ export function useSwipeDrag({
       if (start === "x" || start === "up") {
         s.mode = start;
         e.currentTarget.setPointerCapture(e.pointerId);
+        // A card still playing its entrance jumps to its end, so it's opaque and under the finger (NP-090).
+        for (const a of e.currentTarget.getAnimations()) a.finish();
       }
       if (!s.mode) return;
     }

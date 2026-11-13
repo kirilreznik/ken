@@ -41,6 +41,9 @@ const RULES: Rule[] = [
   { name: "physical property", re: /(?<![\w-])(?:left|right)\s*:/g },
   { name: "physical property", re: /\b(?:margin|padding|border|scrollMargin|scrollPadding)(?:Left|Right)\b/g },
   { name: "physical property", re: /\b(?:float|clear|text-align|textAlign)\s*:\s*["'`]?(?:left|right)\b/g },
+  // A heading role sets its own weight (DESIGN.md Typography); a weight utility on it overrides the token.
+  { name: "heading weight override", re: /(?<![\w-])text-(?:title|section|display|row-name)(?![\w-])[^"'`\n]*(?<![\w-])font-(?:normal|medium|semibold|bold|extrabold|black)(?![\w-])/g },
+  { name: "heading weight override", re: /(?<![\w-])font-(?:normal|medium|semibold|bold|extrabold|black)(?![\w-])[^"'`\n]*(?<![\w-])text-(?:title|section|display|row-name)(?![\w-])/g },
 ];
 
 type Hit = { file: string; line: number; rule: string; text: string };

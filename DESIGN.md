@@ -240,10 +240,12 @@ Each token sets size, line height and weight together (Tailwind `text-<name>`).
 - **Section** (`text-section`) and **Row name** (`text-row-name`): section headings inside a screen; the name in a list row.
 - **Card title** (`text-card-title`): card and list-item titles, the surname line, the text-link button.
 - **Button** (`text-button`): large button labels. **Intro** (`text-intro`): the card's intro line, the decision pills. **Field** (`text-field`, 16 px): every text field; iOS Safari zooms the page into a focused field under 16 px and stays zoomed after the keyboard closes.
-- **Body** (`text-body`): running text in cards and sheets, the toast, the base size of `.nest-names`. **Quote** (`text-quote`), **Ref** (`text-ref`), **Person** (`text-person`): the verse, its reference and a known-person row; `text-person` also sets the "השמות שלי" pill.
-- **Note** (`text-note`), **Match line** (`text-match-line`), **Stat** (`text-stat`, the number in a stat tile), **Stamp** (`text-stamp`, the swipe stamps), **Peek** (`text-peek`, the name on the farther peeking card).
-- **Caption** (`text-caption`): metadata, chip labels, the card's position line.
-- **Tag** (`text-tag`) and **Label** (`text-label`): the sex tag, section labels in the detail sheet, small badges.
+- **Body** (`text-body`): running text in cards and sheets, the toast, menu and settings rows, the base size of `.nest-names`. **Quote** (`text-quote`): the verse.
+- **Person** (`text-person`, 13 px): the app's small label. A known-person row, the "השמות שלי" pill, and also segments, field labels, eyebrows ("יש התאמה"), quiet links, empty-panel lines and list metadata. Reach for it for any small label on a control or above a field.
+- **Ref** (`text-ref`, 12 px): small meta. The verse's reference and a fact's source, and also the card's stat and boys/girls bar labels and the background sheet's option labels.
+- **Note** (`text-note`), **Match line** (`text-match-line`), **Stat** (`text-stat`, the number in a stat tile), **Stamp** (`text-stamp`, the swipe stamps), **Peek** (`text-peek`, the name on the farther peeking card; the filters sheet's letter-range row also uses it, bold).
+- **Caption** (`text-caption`): metadata, chip labels, the card's position line, hints under rows and fields.
+- **Tag** (`text-tag`) and **Label** (`text-label`): the sex tag (`tagClass("sm")`) and the "חדש" badge (`tagClass("xs")`). Section labels come in two looks by surface: `text-tag` `ink-soft` in sheets (`detail/Section`), `text-label` `stone` over a settings group.
 
 ### Named Rules
 **The Token-Only Type Rule.** No literal font size anywhere in names code; `tests/names/designGuard.test.ts` fails the build on one. A genuinely new style is a new token in the token script.
@@ -252,7 +254,7 @@ Each token sets size, line height and weight together (Tailwind `text-<name>`).
 
 ## Layout
 
-A single column for a phone. The screen side gutter is `space-5` (`px-5`), narrowing to `px-3` under 22.5rem; card padding is `space-5`/`space-4`; gaps between card sections follow `space-3` (`gap-3`); chips and small controls sit `space-2` apart. Content is capped at `max-w-md` and centered on wider screens.
+A single column for a phone. The screen side gutter is `space-5` (`px-5`), narrowing to `px-3` under 22.5rem; card padding is `space-5`/`space-4`; gaps between card sections follow `space-3` (`gap-3`); chips and small controls sit `space-2` apart. Content is capped at `max-w-content` (`content-max`, 480 px) and centered on wider screens; never a literal `max-w-[480px]`.
 
 The swipe screen is a fixed stack, top to bottom: header (title, background, filter and settings buttons, the "השמות שלי" pill), quick chips, the card stack (current card plus two peeking cards, −3° and +2°), the action bar (three equal decision pills and undo), and the status footer (screen-reader only). The offline sync line is an opaque surface pill that floats just above the action bar, over the gap under the card, so its arrival and departure move nothing (CLS 0). The card never scrolls at 390 × 844; it is slim and points to the detail sheet.
 
@@ -296,10 +298,11 @@ All in `src/components/names/ui/` unless noted. Fix a pattern in the shared comp
 - **Primary** (`variant="primary"`): ink pill, white text; `lg` is 56 px tall with `text-button` and `shadow-button`, `md` is 44 px with bold `text-body`. One per screen or sheet: the main action.
 - **Secondary** (`variant="secondary"`): strong-glass pill with ink text ("לכל הפרטים", "דילוג"-style quiet actions); solid surface with a `line` border on "ללא רקע".
 - **Peach** (`variant="peach"`): a round `peach-soft` button with `clay-deep` icon; needs a Hebrew `aria-label`.
-- **Link** (`variant="link"`): underlined ink text, `text-card-title`, at least 44 px tall.
+- **Link** (`variant="link"`): underlined ink text, `text-card-title`, at least 44 × 44 px. It is `linkClass("standalone")`.
+- **Text links** (`linkClass()`, `ui/classes.ts`): one bold underlined look in three variants, every one at least 44 × 44 px (`min-h-11 min-w-11`, label centered). `inline` sits in running text: `ink`, inherits the text's size, offset 2; its `trim` hides part of the tap area from the line (`line` `-my-3` keeps a text line's height, `row` `-my-1.5` keeps the about sheet's 32 px source rows, `none` for a link on its own row such as onboarding's legal links and the Nest card's "מה זה Nest?"). `standalone` is an action on its own ("שינוי כתובת", "שליחה חוזרת", the error page's "לבחירת שמות"): `text-card-title` `ink`, offset 4. `quiet` is a secondary action ("איפוס" in the filters header, the duel's "עצירה"): `text-person` `ink-soft`, offset 4. Disabled links turn `stone` without the underline. The toast's action (on the ink pill) and the survey prompt's row keep their own looks.
 - **IconButton**: 44 px round soft-glass button with an icon only; the Hebrew `aria-label` is required by its type. For close ("סגירה"), filters, background, settings, row menus.
 - **Row menu** (`lists/RowMenu`): strong-glass `radius-md` menu anchored to its button's end. It opens below the button, or above it when it wouldn't fit below the screen (less the home-bar inset) and there's more room above. Width from content (`w-max`), at most the page's content width; a long label (the choose item carries the name) wraps inside it, items stay ≥ 44 px. A name the user added gets no "לא להציג יותר" (it was never in the deck).
-- **Pressed / disabled:** press scales to 0.95 in 150 ms (`motion-safe` only); disabled is 60% opacity. `touch-manipulation` on all.
+- **Pressed / disabled:** `PRESS` and `DISABLED` in `ui/classes.ts`, the only copies (the decision pills, undo and the saved pill import them). Press scales to 0.95 in 150 ms (`motion-safe` only, never while disabled). A disabled button or chip is opaque and the same on every background: a `line` fill with `stone` text, no shadow or edge ("not yet", not a photo-tinted pill), so a deck bar behind an end or pause panel goes flat and quiet. Fields and checkboxes dim to 60% instead. `touch-manipulation` on all.
 - **Controls aren't text:** one base rule in `names.css` gives every `button`, control role (`button`, `tab`, `switch`, `radio`, `menuitem`), checkbox/radio label and `a[data-control]` no text selection, no iOS long-press callout or drag, `touch-action: manipulation`, and the pointer cursor (not when disabled). A link that looks like a button or row carries `data-control` (`Button`/`IconButton` with `href` add it); inline text links stay content and keep their callout.
 - **No pull-to-refresh:** `html` and `body` get `overscroll-behavior-y: none` while a `/names` screen is mounted (`:has(.nest-names)`, so the landing keeps it). A pull past the top doesn't drag the screen down or reload it; inner scrollers (sheets, the card) use `overscroll-contain`.
 
@@ -340,7 +343,7 @@ The card above the welcome and join panels takes only the height the panel leave
 - Sending and signing in are separate busy states: during a resend the link reads "שולחים…" (`aria-busy`) and "כניסה" keeps its label. After a resend, "שלחנו קוד חדש. הקוד הקודם כבר לא עובד." shows in the error slot (`text-caption` `ink-soft`); the timer's status announces it once with the new countdown. The countdown is `ink` with `tabular-nums` (never `stone` on the glass over a photo).
 
 ### Legal line (`auth/LegalLine.tsx`)
-The line under the welcome and join panels ("בהמשך מאשרים את תנאי השימוש ומדיניות הפרטיות"): one element for both screens, a `names-glass` (strong) pill with `radius-lg`, `text-caption` `ink` text and bold underlined `ink` links, ≥ 4.5:1 over the photo's darkest fold. Each link owns a 44 px tall tap area (`-my-3 inline-flex min-h-11`) without growing the pill, and the "ו" stays with "מדיניות הפרטיות" when the line wraps at 320 px.
+The line under the welcome and join panels ("בהמשך מאשרים את תנאי השימוש ומדיניות הפרטיות"): one element for both screens, a `names-glass` (strong) pill with `radius-lg`, `text-caption` `ink` text and bold underlined `ink` links, ≥ 4.5:1 over the photo's darkest fold. Each link owns a 44 px tall tap area (`linkClass("inline")`) without growing the pill, and the "ו" stays with "מדיניות הפרטיות" when the line wraps at 320 px.
 
 ### Wordmark and the 404 / offline pages (`auth/Wordmark.tsx`)
 Every entry screen (welcome, sign-in, callback, onboarding, join, 404, offline) shows the same `Wordmark` above its content: the SVG at 85 × 32, centred. The 404 is an auth screen like its siblings (`AuthLayout`: photo, glass panel, `text-display` title, one-line lead "אולי הקישור השתנה.", the primary ink button "לבחירת שמות"). Offline stays on the canvas (precached, no photo to load) in the same 480 px column: wordmark, `text-display` title, balanced `text-card-title` lead, the same primary button. The service worker precaches the wordmark so offline shows it.
@@ -372,9 +375,36 @@ The same card stands in for "התאמות" when `name_matches` failed online wit
 While the names data loads, the card's room shows `DeckSkeleton`: the card's glass outline (`names-glass names-card-glass`, `radius-xl`) with quiet `sand` lines where the sex tag, count, name, intro, boys/girls bar and the two number tiles will be, `aria-busy` and an sr-only "השמות נטענים". The card replaces it in place. If the load fails, `DeckLoadError` is the deck's glass end panel (`emptyPanelClass("glass")`) with "לא הצלחנו לטעון את השמות." / "אפשר לנסות שוב." and "ניסיון חוזר" (`md`), announced through `role="status"`; a retry shows the skeleton again, then the card (focus moves to it) or the error (focus back on the button). `deckSlot` in `lib/names/deck.ts` picks which one shows.
 
 ### Checkboxes (`checkboxClass`)
-Onboarding's three consents and the filter sheet's "מספר אותיות מותאם אישית" use `checkboxClass()` (`ui/classes.ts`): a drawn 24 px box (`appearance: none`, half of `radius-sm`, so it never reads as a radio), `surface` fill and a 2 px edge at ≥ 3:1 like the fields: `stone` on solid surfaces, `ink-soft` on glass. Checked is an `ink` box with a `surface` tick (`names.css` `.names-checkbox`), so the state is told by the mark, not the color. Invalid and unchecked turns the edge `urgent`. The whole label row is the ≥ 44 px target; focus is the global 2 px ink outline 2 px off the box (on the ink box an outline on its edge would vanish). A box whose words name documents (onboarding's terms) keeps its label plain and puts the links on their own row under it (`ps-9`, `text-caption` bold underlined `ink`, each `inline-flex min-h-11`): inline links in a wrapping label can't own 44 px without covering the next line's words, so a tap meant for the box would open a tab.
+Onboarding's three consents and the filter sheet's "מספר אותיות מותאם אישית" use `checkboxClass()` (`ui/classes.ts`): a drawn 24 px box (`appearance: none`, half of `radius-sm`, so it never reads as a radio), `surface` fill and a 2 px edge at ≥ 3:1 like the fields: `stone` on solid surfaces, `ink-soft` on glass. Checked is an `ink` box with a `surface` tick (`names.css` `.names-checkbox`), so the state is told by the mark, not the color. Invalid and unchecked turns the edge `urgent`. The whole label row is the ≥ 44 px target; focus is the global 2 px ink outline 2 px off the box (on the ink box an outline on its edge would vanish). A box whose words name documents (onboarding's terms) keeps its label plain and puts the links on their own row under it (`ps-9`, `text-caption`, each `linkClass("inline", "none")`): inline links in a wrapping label can't own 44 px without covering the next line's words, so a tap meant for the box would open a tab.
 
 Onboarding keeps the two required confirmations (age, terms) together and sets the optional updates opt-in apart below a `border-line` hairline (`mt-2 pt-4`). The line under the button names what is still missing (`missingHint`, `lib/names/onboarding.ts`): "אפשר להמשיך אחרי שממלאים שם, מאשרים גיל ומסכימים לתנאים.", shortening as items are done; never counts boxes. After a submit, an invalid age or terms box is `aria-describedby` that line too.
+
+### Secondary press (`FADE_PRESS`, `ROW_PRESS`)
+Links, rows and tiles don't scale. `FADE_PRESS` dims to 70% on any background (text links, the filters sheet's rows); `ROW_PRESS` takes a `sand` fill (rows and tiles on white: settings rows, list rows). Neither changes while disabled.
+
+### Segments (`segmentGroupClass`, `segmentClass`)
+The lists tabs and the duel's source toggle: a white pill group (`surface`, `line` border, `p-1`, `gap-1`) with equal columns. Each segment is ≥ 44 px, `text-person` bold; selected is `ink` with `surface` text, unselected `ink-soft` with a `sand` hover. Tabs carry `aria-selected` (or the toggle `aria-pressed`), so the state isn't told by color alone.
+
+### Tags and the dot (`tagClass`, `dotClass`)
+A tag is a `peach-soft` pill with `clay-deep` text: `sm` (`text-tag`) for the sex tag on the card and the detail header, `xs` (`text-label`) for the "חדש" badge in a list row. Not a control. The dot is a 10 px `clay` circle (`dotClass`) beside an eyebrow (intro, match, decision), a list row or the new-match badge; it always sits next to words, never says something alone.
+
+### Loading skeletons (`skeletonClass`)
+Static bars, no shimmer (nothing to reduce for motion): `canvas` is `sand` on the canvas and white cards, `glass` is a well inside a glass card (`DeckSkeleton`). The container carries `aria-busy` and an sr-only line on what loads; the real content replaces the skeleton in place.
+
+### Menus (`lists/RowMenu`, `swipe/SkipButton`)
+Strong-glass `radius-md` panel, `p-1.5`, opening with `names-menu-in` (reduced motion: no scale). Items are `role="menuitem"` rows: ≥ 44 px, `px-3.5`, `radius-sm`, `text-body` bold `ink`, an optional 20 px icon at the start, `sand` on hover and on keyboard focus. Escape and a tap outside close it and return focus to the trigger.
+
+### Settings rows (`SettingsScreen.tsx`)
+Groups are white `radius-lg` `shadow-card` cards with a `text-label` `stone` heading above them. Rows are split by a `line` hairline; each action row is ≥ 56 px, `px-4 py-3`, `text-body` bold `ink` with `ROW_PRESS`, and a `stone` chevron at the end when it leads to another screen (mirrored in LTR). A row's state or value sits in words under its title, never only in a color.
+
+### Icons
+Inline SVG, 24 × 24 viewBox, `stroke="currentColor"`, 2 px stroke with round caps and joins (Feather/Lucide family), `aria-hidden` and drawn at 18–24 px (16 px inside caption lines, `ErrorMark`). The control carries the Hebrew `aria-label`, not the icon. Direction-bearing icons (chevrons, back) flip with `ltr:-scale-x-100` so they point the way of the reading direction.
+
+### Page shell
+Every full screen (settings, lists, hidden, invite, about, legal, the auth screens through `AuthLayout`) is a `main` column: `mx-auto w-full max-w-content`, `px-5`, top padding `env(safe-area-inset-top)` plus 16 px and bottom padding `env(safe-area-inset-bottom)` plus 24 px. Screens with a back button put a `BackButton` and the `text-title` title in one header row.
+
+### Full-screen moments (`MatchSheet`, `DecisionSheet`)
+A match or the final decision takes the whole screen instead of a sheet: a fixed layer (`data-names-layer`, `z-40`, `bg-canvas` under the screen background) that scrolls inside itself (`overscroll-contain`), bound to `?sheet=` like a sheet so Back closes it, with the same modal focus trap. Inside: the clay-dot eyebrow, the name at its moment size (`text-match-name`), a reading panel on card glass, and one primary action.
 
 ### Navigation
 No tab bar. The swipe header's "השמות שלי" ink pill and the settings button lead to lists and settings; other screens have a `BackButton` and a title. Lists switches between "שמרתי", "התאמות" and "דו־קרב" with segments in the URL (`?tab=`).

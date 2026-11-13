@@ -1,3 +1,4 @@
+import { formatCount } from "./card";
 import { matchesRelative, type RelativeFilter } from "./relative";
 import { hasAnyTheme, type ThemeId } from "./themes";
 import type { CardDerived, NameStats, PopularityBand, SexTag, TrendWord } from "./types";
@@ -125,7 +126,7 @@ export function letterValue(letter: string | null): string {
 
 export function lengthValue(length: NameLength | null, range: LetterRange | null = null): string {
   if (range) return rangeValue(range);
-  return length === "קצר" ? "קצר, עד 3 אותיות" : length === "ארוך" ? "ארוך, 5 אותיות ומעלה" : "קצר וארוך";
+  return length === "קצר" ? "קצר, עד 3 אותיות" : length === "ארוך" ? "ארוך, 5 אותיות ומעלה" : "כל האורכים";
 }
 
 /** "בין 3 ל־5 אותיות", "4 אותיות", "5 אותיות ומעלה" for the custom range. */
@@ -146,5 +147,5 @@ export function clampRange(min: number, max: number): LetterRange {
 
 /** The filters sheet's apply button (FR-W16). */
 export function applyLabel(n: number): string {
-  return n === 1 ? "הצגת שם אחד" : `הצגת ${n} שמות`;
+  return n === 1 ? "הצגת שם אחד" : `הצגת ${formatCount(n)} שמות`;
 }

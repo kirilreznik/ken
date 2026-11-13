@@ -14,6 +14,8 @@ interface CodeInputProps {
   /** Called once each time the field reaches 6 digits (typing, paste or SMS/email autofill). */
   onComplete: (code: string) => void;
   disabled?: boolean;
+  /** Kept focusable but not editable while its request is in flight (NP-006). */
+  readOnly?: boolean;
   invalid?: boolean;
   /** Id of the hint or error text under the field. */
   describedBy?: string;
@@ -32,6 +34,7 @@ export default function CodeInput({
   onChange,
   onComplete,
   disabled,
+  readOnly,
   invalid,
   describedBy,
   autoFocus,
@@ -71,6 +74,7 @@ export default function CodeInput({
         autoFocus={autoFocus}
         value={value}
         disabled={disabled}
+        readOnly={readOnly}
         aria-invalid={invalid || undefined}
         aria-describedby={describedBy}
         onChange={(e) => handle(e.target.value)}

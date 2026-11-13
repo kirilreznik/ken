@@ -19,7 +19,7 @@ import { sheetVoteText, statusText } from "@/lib/names/a11y";
 import { markAppEntry } from "@/lib/names/appHistory";
 import { buildDeck, deckProgress, deckSlot, hashSeed } from "@/lib/names/deck";
 import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
-import type { Decision } from "@/lib/names/gesture";
+import type { Decision, DragKind } from "@/lib/names/gesture";
 import { matchToShow, withSeen, type Match } from "@/lib/names/matches";
 import { RECAP_VOTES, countSession, pauseAfterVote, pauseToShow, sessionTotals, surveyDue, type Pause } from "@/lib/names/launch";
 import { getPref, setPref } from "@/lib/names/prefs";
@@ -88,6 +88,8 @@ export default function SwipeScreen() {
   const [status, setStatus] = useState("");
   const [next, setNext] = useState<string | null>(null);
   const [entered, setEntered] = useState(false);
+  // The card the last undo brought back and the way it had left, so it returns from there (NP-091).
+  const [returning, setReturning] = useState<{ name: string; kind: DragKind } | null>(null);
 
   useEffect(markAppEntry, []);
 
@@ -225,12 +227,14 @@ export default function SwipeScreen() {
     if (pause) return;
     const { state: next, entry } = undoVote({ votes, undo: undoStack });
     if (!entry) return;
+    const undone = votes.get(entry.name);
     track("vote_undone");
     drag.holdFocus();
     setUndoStack(next.undo);
     if (entry.previous) store.setVote(entry.name, entry.previous);
     else store.removeVote(entry.name);
     setTop(entry.name);
+    setReturning(undone ? { name: entry.name, kind: undone === "hidden" ? "skip" : undone } : null);
     setEntered(true);
     setStatus(statusText("undo", entry.name));
     setNext(null);
@@ -273,7 +277,6 @@ export default function SwipeScreen() {
     const next = applyVote({ votes, undo: undoStack }, name, kind);
     setUndoStack(next.state.undo);
     store.setVote(name, kind);
-    setEntered(true);
     setStatus(statusText(kind, name));
     setNext(null);
     showToast(sheetVoteText(kind, name));
@@ -301,10 +304,13 @@ export default function SwipeScreen() {
               <CardStack
                 cards={deck.cards}
                 enter={entered}
+                returning={returning?.name === deck.cards[0]?.stats.name ? returning.kind : null}
                 position={progress.position}
                 total={progress.total}
                 surname={surname}
-                className={`min-h-0 ${dragClass}`}
+                // Content-sized decks (zoom, short screens) cap the card under the viewport so it
+                // scrolls itself (pan-y, useSwipeDrag) and the page can still reach the bar (NP-087).
+                className={`min-h-0 max-[20rem]:max-h-[80dvh] [@media(max-height:30rem)]:max-h-[80dvh] ${dragClass}`}
                 aria-describedby={SWIPE_KEYS_ID}
                 corner={<AboutLink />}
                 onDetails={openDetails("button")}

@@ -1,4 +1,6 @@
-import DecisionButtons, { DISABLED, Icon, PRESS, type Decision } from "../DecisionButtons";
+import DecisionButtons, { type Decision } from "../DecisionButtons";
+import { Icon } from "../ui/icons";
+import { DISABLED, PRESS } from "../ui/classes";
 
 // "ביטול" is a small round button at the end of the row, not a row of its own under it.
 // Under 17rem (200 % zoom, large text) three pills can't hold their words at 44 px or more, so

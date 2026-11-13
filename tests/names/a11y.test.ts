@@ -93,16 +93,17 @@ describe("statusText", () => {
     expect(statusText("love", name)).toBe(`השם ${name} נשמר, ראשון ברשימה`);
     expect(statusText("hidden", name)).toBe(`השם ${name} לא יוצג שוב`);
     expect(statusText("skip", name)).toBe(`דילוג על ${name}`);
-    expect(statusText("undo", name)).toBe(`בוטל: ${name}`);
+    expect(statusText("undo", name)).toBe(`ההחלטה על ${name} בוטלה`);
   });
 });
 
 describe("sheetVoteText", () => {
   it("names the choice and the name", () => {
-    expect(sheetVoteText("keep", "זיו")).toBe("נשמר: זיו");
-    expect(sheetVoteText("love", "זיו")).toBe("אהבתי מאוד: זיו");
-    expect(sheetVoteText("skip", "זיו")).toBe("דילוג: זיו");
-    expect(sheetVoteText("hidden", "זיו")).toBe("דילוג: זיו");
+    // The same sentence as the deck's status (NP-128).
+    expect(sheetVoteText("keep", "זיו")).toBe("השם זיו נשמר");
+    expect(sheetVoteText("love", "זיו")).toBe("השם זיו נשמר, ראשון ברשימה");
+    expect(sheetVoteText("skip", "זיו")).toBe("דילוג על זיו");
+    expect(sheetVoteText("hidden", "זיו")).toBe("השם זיו לא יוצג שוב");
   });
 });
 

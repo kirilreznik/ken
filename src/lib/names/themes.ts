@@ -31,7 +31,7 @@ export const THEME_LABELS: Record<ThemeId, string> = {
   unisex: "יוניסקס",
   special: "מיוחדים",
   strength: "כוח",
-  land: "אדמה/יבשה",
+  land: "אדמה ויבשה",
   water: "ים ומים",
   bible: "שמות מהתנ״ך",
   animals: "בעלי חיים",

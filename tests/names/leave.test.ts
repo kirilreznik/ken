@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { leaveBody, leaveReason, leaveSpace } from "@/lib/names/leave";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-const client = (result: unknown) => ({ rpc: async () => result }) as unknown as SupabaseClient;
+const client = (result: unknown) => ({ rpc: () => ({ abortSignal: async () => result }) }) as unknown as SupabaseClient;
 
 describe("leave a shared space", () => {
   it("names who stays, or says it neutrally", () => {
-    expect(leaveBody(["נועה"])).toContain("ההתאמות עם נועה יימחקו");
+    expect(leaveBody(["נועה"])).toContain("ההתאמות עם \u2068נועה\u2069 יימחקו");
     expect(leaveBody([""])).toContain("ההתאמות עם מי שבוחר איתך יימחקו");
-    expect(leaveBody(["נועה", "דן"])).toContain("נועה, דן");
+    expect(leaveBody(["נועה", "דן"])).toContain("\u2068נועה\u2069, \u2068דן\u2069");
   });
 
   it("reads names_leave errors", () => {

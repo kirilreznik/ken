@@ -2,6 +2,8 @@
 
 import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { iconButtonClass } from "@/components/names/ui/classes";
+import { CheckIcon, Icon } from "@/components/names/ui/icons";
+import { useExit } from "@/components/names/ui/useExit";
 
 type RowMenuProps = {
   name: string;
@@ -15,16 +17,9 @@ type RowMenuProps = {
 const ITEM =
   "flex min-h-11 w-full items-center gap-2 rounded-sm px-3.5 py-2 text-start text-body font-bold text-ink hover:bg-sand focus-visible:bg-sand";
 
-function Icon({ children }: { children: React.ReactNode }) {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="flex-none">
-      {children}
-    </svg>
-  );
-}
 
 /**
- * A "שמרתי" row's menu (FR-W18): "הסרה מהרשימה" and "לא להציג יותר" (not for a name the user
+ * A "שמרתי" row's menu (FR-W18): "הסרה מהרשימה" and "לא להציג שוב" (not for a name the user
  * added: it was never in the deck, so there's nothing to stop showing). Same behavior as the
  * skip menu: focus goes to the first item, arrows move, Escape returns focus, Tab or a tap
  * outside close it. It opens under its button, or above it when it wouldn't fit below (a row near the
@@ -37,6 +32,8 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
   const button = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
   const menuId = useId();
+  // A short fade on close (NP-098): the menu stays, inert, until its exit animation ends.
+  const { mounted, closing, onClosed } = useExit(open);
 
   useLayoutEffect(() => {
     if (!open || !button.current || !menu.current) return;
@@ -50,8 +47,18 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
   useEffect(() => {
     if (!open) return;
     menu.current?.querySelector<HTMLButtonElement>("[role=menuitem]")?.focus();
+    // A tap outside only dismisses (NP-141): the click that follows it is swallowed once, so it
+    // doesn't also open the row or button underneath.
+    const swallow = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
     const outside = (e: Event) => {
-      if (!wrap.current?.contains(e.target as Node)) setOpen(false);
+      if (wrap.current?.contains(e.target as Node)) return;
+      setOpen(false);
+      document.addEventListener("click", swallow, { capture: true, once: true });
+      // A pointerdown with no click after it (a scroll, a drag) mustn't eat the next real tap.
+      setTimeout(() => document.removeEventListener("click", swallow, true), 600);
     };
     document.addEventListener("pointerdown", outside, true);
     return () => document.removeEventListener("pointerdown", outside, true);
@@ -93,35 +100,38 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
         onClick={() => setOpen((o) => !o)}
-        className={iconButtonClass()}
+        className={iconButtonClass("plain")}
       >
-        <Icon>
+        <Icon size={18}>
           <circle cx="12" cy="5" r="1.2" fill="currentColor" />
           <circle cx="12" cy="12" r="1.2" fill="currentColor" />
           <circle cx="12" cy="19" r="1.2" fill="currentColor" />
         </Icon>
       </button>
-      {open ? (
+      {mounted ? (
         <div
           ref={menu}
           id={menuId}
           role="menu"
           aria-label={`אפשרויות עבור ${name}`}
           data-motion="fade"
+          inert={closing}
           onKeyDown={onMenuKeyDown}
-          className={`names-glass names-toast-in absolute end-0 z-10 flex w-max max-w-[calc(min(100vw,480px)-2.5rem)] scroll-mb-[env(safe-area-inset-bottom)] flex-col rounded-md bg-surface p-1.5 ${up ? "bottom-full mb-1.5" : "top-full mt-1.5"}`}
+          onAnimationEnd={(event) => {
+            if (closing && event.target === event.currentTarget) onClosed();
+          }}
+          className={`names-glass ${closing ? "names-menu-out pointer-events-none" : "names-menu-in"} absolute end-0 z-10 flex w-max max-w-[calc(min(100vw,480px)-2.5rem)] scroll-mb-[env(safe-area-inset-bottom)] flex-col rounded-md bg-surface p-1.5 ${up ? "bottom-full mb-1.5 origin-bottom-left ltr:origin-bottom-right" : "top-full mt-1.5 origin-top-left ltr:origin-top-right"}`}
         >
           {onChoose ? (
             <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onChoose)}>
-              <Icon>
-                <path d="M5 12.5l4.5 4.5L19 7.5" />
-              </Icon>
+              <CheckIcon size={18} />
               {chooseLabel ?? "זה השם שבחרנו"}
             </button>
           ) : null}
+          {onChoose && (onRemove || onHide) ? <div role="separator" className="mx-1.5 my-1 border-t border-line" /> : null}
           {onRemove ? (
             <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onRemove)}>
-              <Icon>
+              <Icon size={18}>
                 <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
               </Icon>
               הסרה מהרשימה
@@ -129,12 +139,12 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
           ) : null}
           {onHide ? (
           <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onHide)}>
-            <Icon>
+            <Icon size={18}>
               <path d="M3 3l18 18" />
               <path d="M10.6 5.1A10.5 10.5 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-2.9 3.8M6.6 6.6A17 17 0 0 0 2.5 12S6 19 12 19a9.6 9.6 0 0 0 5.4-1.6" />
               <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
             </Icon>
-            לא להציג יותר
+            לא להציג שוב
           </button>
           ) : null}
         </div>

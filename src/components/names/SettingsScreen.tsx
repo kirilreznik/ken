@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import DisplaySettings from "@/components/names/DisplaySettings";
-import { Button, Dialog, IconButton, closeDialog, inputClass, openDialog } from "@/components/names/ui";
+import { Button, ChevronIcon, Dialog, IconButton, ROW_PRESS, closeDialog, inputClass, openDialog } from "@/components/names/ui";
 import { InstallSheet, useInstall } from "@/components/names/pwa/Install";
 import { useSpace } from "@/components/names/useSpace";
 import {
@@ -42,13 +42,19 @@ import { track } from "@/lib/names/track";
 const DELETE_DIALOG = "delete-account";
 
 const card = "m-0 list-none rounded-lg bg-surface p-0 shadow-card";
-const row = "border-b border-line first:rounded-t-lg last:rounded-b-lg last:border-b-0";
-const rowAction = "flex min-h-14 w-full rounded-[inherit] items-center gap-3 px-4 py-3 text-start text-body font-bold text-ink";
+const row = "group/row border-b border-line first:rounded-t-lg last:rounded-b-lg last:border-b-0";
+const rowAction = `flex min-h-14 w-full items-center group-first/row:rounded-t-lg group-last/row:rounded-b-lg gap-3 px-4 py-3 text-start text-body font-bold text-ink ${ROW_PRESS}`;
 
 function Chevron() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ms-auto shrink-0 text-stone ltr:-scale-x-100">
-      <path d="M15 6l-6 6 6 6" />
+    <ChevronIcon dir="forward" size={18} className="ms-auto flex-none text-stone" />
+  );
+}
+
+function Trash() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
+      <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
     </svg>
   );
 }
@@ -93,6 +99,8 @@ export default function SettingsScreen() {
   const [optIn, setOptIn] = useState<boolean | null>(null);
   const [optInError, setOptInError] = useState<string | null>(null);
   const [savingOptIn, setSavingOptIn] = useState(false);
+  const savingOptInRef = useRef(false);
+  const wantedOptIn = useRef(false);
   const [signingOut, setSigningOut] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -117,7 +125,9 @@ export default function SettingsScreen() {
     const supabase = getSupabase();
     if (!user || !supabase || savingName) return;
     if (!nameValid) {
-      setNameError(`צריך שם, עד ${DISPLAY_NAME_MAX} תווים.`);
+      setNameError(
+        name.trim() === "" ? "צריך לכתוב שם." : `השם ארוך מדי. אפשר עד ${DISPLAY_NAME_MAX} תווים.`,
+      );
       return;
     }
     if (!changed) return;
@@ -131,7 +141,6 @@ export default function SettingsScreen() {
       await saveDisplayName(supabase, space.spaceId, user.id, name.trim());
       setDraft(null);
       track("display_name_changed");
-      setStatus(NAME_SAVED_TEXT);
       showToast(NAME_SAVED_TEXT);
     } catch (err) {
       reportClientLog({ area: "settings", message: "display name save failed", name: err instanceof Error ? err.name : undefined });
@@ -141,28 +150,40 @@ export default function SettingsScreen() {
     }
   }
 
-  async function toggleOptIn() {
+  // Every tap counts (NP-155): a tap while saving only moves the wanted value; the save resends it.
+  function toggleOptIn() {
     const supabase = getSupabase();
-    if (!supabase || savingOptIn) return;
+    if (!supabase) return;
     if (isOffline()) {
       setOptInError(SETTINGS_OFFLINE_TEXT);
       return;
     }
     const next = !optedIn;
     setOptIn(next);
-    setSavingOptIn(true);
     setOptInError(null);
+    wantedOptIn.current = next;
+    if (!savingOptInRef.current) void saveOptIn(supabase);
+  }
+
+  async function saveOptIn(supabase: NonNullable<ReturnType<typeof getSupabase>>) {
+    savingOptInRef.current = true;
+    setSavingOptIn(true);
     try {
-      const { error } = await supabase.auth.updateUser({ data: optInMetadata(next) });
-      if (error) throw error;
+      let sent: boolean;
+      do {
+        sent = wantedOptIn.current;
+        const { error } = await supabase.auth.updateUser({ data: optInMetadata(sent) });
+        if (error) throw error;
+      } while (wantedOptIn.current !== sent);
       setOptIn(null);
-      track("opt_in_changed", { opt_in: next });
-      setStatus(next ? OPT_IN_ON_TEXT : OPT_IN_OFF_TEXT);
+      track("opt_in_changed", { opt_in: sent });
+      setStatus(sent ? OPT_IN_ON_TEXT : OPT_IN_OFF_TEXT);
     } catch (err) {
       reportClientLog({ area: "settings", message: "opt-in save failed", name: err instanceof Error ? err.name : undefined });
       setOptIn(null);
       setOptInError(isOffline() ? SETTINGS_OFFLINE_TEXT : SETTINGS_ERROR_TEXT);
     } finally {
+      savingOptInRef.current = false;
       setSavingOptIn(false);
     }
   }
@@ -202,7 +223,6 @@ export default function SettingsScreen() {
       afterLeave(user.id);
       await space.refresh();
       closeDialog(LEAVE_DIALOG);
-      setStatus(LEAVE_DONE);
       showToast(LEAVE_DONE);
     } finally {
       setLeaving(false);
@@ -244,12 +264,10 @@ export default function SettingsScreen() {
 
   return (
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
-      <main className="mx-auto flex w-full max-w-[480px] flex-col gap-5 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <main className="mx-auto flex w-full max-w-content flex-col gap-5 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         <header className="flex items-center gap-2">
           <IconButton aria-label="חזרה" onClick={back}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">
-              <path d="M9 6l6 6-6 6" />
-            </svg>
+            <ChevronIcon dir="back" />
           </IconButton>
           <h1 className="m-0 min-w-0 flex-1 text-title">הגדרות</h1>
         </header>
@@ -265,8 +283,11 @@ export default function SettingsScreen() {
                   <input
                     id="settings-name"
                     type="text"
-                    dir="rtl"
+                    dir="auto"
                     autoComplete="given-name"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    enterKeyHint="done"
                     maxLength={DISPLAY_NAME_MAX}
                     value={name}
                     onChange={(e) => {
@@ -277,7 +298,7 @@ export default function SettingsScreen() {
                     aria-describedby="settings-name-hint"
                     className={`${inputClass()} min-w-0 flex-1`}
                   />
-                  <Button type="submit" variant="secondary" size="md" aria-disabled={!changed || savingName} aria-busy={savingName} className="aria-disabled:opacity-60">
+                  <Button type="submit" variant="secondary" size="md" aria-disabled={!changed || savingName} aria-busy={savingName}>
                     {savingName ? "שומרים…" : "שמירה"}
                   </Button>
                 </div>
@@ -297,7 +318,7 @@ export default function SettingsScreen() {
               {method.kind === "google" ? (
                 <span className="text-body text-ink">Google</span>
               ) : (
-                <bdi dir="ltr" className="self-start text-body break-all text-ink">
+                <bdi dir="ltr" className="self-start text-body wrap-anywhere text-ink">
                   {method.email}
                 </bdi>
               )}
@@ -308,21 +329,24 @@ export default function SettingsScreen() {
                 role="switch"
                 aria-checked={optedIn}
                 aria-busy={savingOptIn}
+                aria-labelledby="settings-optin-title"
                 aria-describedby="settings-optin-hint"
                 onClick={toggleOptIn}
-                className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-start"
+                className={`flex min-h-14 w-full items-center gap-3 px-4 py-3 text-start group-first/row:rounded-t-lg group-last/row:rounded-b-lg ${ROW_PRESS}`}
               >
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="text-body font-bold text-ink">עדכון כש־Nest יוצאת לחנויות</span>
+                  <span id="settings-optin-title" className="text-body font-bold text-ink">
+                    עדכון כש־Nest יוצאת לחנויות
+                  </span>
                   <span id="settings-optin-hint" className="text-caption text-stone">
-                    {optedIn ? "פעיל" : "כבוי"} · לא חובה
+                    {savingOptIn ? "שומרים…" : optedIn ? "פעיל" : "כבוי"} · לא חובה
                   </span>
                 </span>
                 <span
                   aria-hidden="true"
                   className={`relative inline-flex h-8 w-13 shrink-0 items-center rounded-pill border-2 transition-colors duration-(--nest-duration-press) ease-out ${optedIn ? "border-ink bg-ink" : "border-stone bg-sand"}`}
                 >
-                  <span className={`absolute start-0.5 size-6 rounded-full bg-surface shadow-card transition-transform duration-(--nest-duration-press) ease-out ${optedIn ? "translate-x-5 rtl:-translate-x-5" : ""}`} />
+                  <span className={`absolute start-0.5 size-6 rounded-pill bg-surface shadow-card transition-transform duration-(--nest-duration-press) ease-out ${optedIn ? "translate-x-5 rtl:-translate-x-5" : ""}`} />
                 </span>
               </button>
               {optInError ? (
@@ -336,9 +360,9 @@ export default function SettingsScreen() {
 
         <DisplaySettings userId={user?.id ?? null} />
 
-        <Section title="בחירה ביחד">
+        <Section title="בחירה משותפת">
           <ul className={card}>
-            <LinkRow href="/names/invite">הזמנת מישהו לבחור ביחד</LinkRow>
+            <LinkRow href="/names/invite">הזמנה לבחירה משותפת</LinkRow>
             {space.isShared ? (
               <li className={row}>
                 <button
@@ -349,8 +373,8 @@ export default function SettingsScreen() {
                   }}
                   className={`${rowAction} flex-col items-start! gap-0.5!`}
                 >
-                  <span>יציאה מהבחירה המשותפת</span>
-                  <span className="text-caption font-normal text-stone">השמות ששמרת יישארו אצלך</span>
+                  <span className="text-urgent">יציאה מהבחירה המשותפת</span>
+                  <span className="text-caption font-medium text-stone">השמות ששמרת יישארו אצלך</span>
                 </button>
               </li>
             ) : null}
@@ -381,6 +405,7 @@ export default function SettingsScreen() {
           </li>
           <li className={row}>
             <button type="button" onClick={openDelete} className={`${rowAction} text-urgent`}>
+              <Trash />
               מחיקת החשבון
             </button>
           </li>
@@ -392,29 +417,30 @@ export default function SettingsScreen() {
       </main>
 
       <InstallSheet />
-      <Dialog name={LEAVE_DIALOG} title={LEAVE_TITLE} description={leaveBody(others)}>
+      <Dialog name={LEAVE_DIALOG} title={LEAVE_TITLE} description={leaveBody(others)} busy={leaving}>
         {leaveError ? (
           <p role="alert" className="m-0 text-caption font-bold text-urgent">
             {leaveError}
           </p>
         ) : null}
-        <Button onClick={() => void confirmLeave()} aria-disabled={leaving} aria-busy={leaving} className="aria-disabled:opacity-60">
+        <Button onClick={() => void confirmLeave()} aria-disabled={leaving} aria-busy={leaving}>
           {leaving ? "יוצאים…" : "יציאה מהבחירה המשותפת"}
         </Button>
-        <Button variant="secondary" data-autofocus="" onClick={() => closeDialog(LEAVE_DIALOG)}>
+        <Button variant="secondary" data-autofocus="" onClick={() => !leaving && closeDialog(LEAVE_DIALOG)}>
           ביטול
         </Button>
       </Dialog>
-      <Dialog name={DELETE_DIALOG} title={DELETE_TITLE} description={DELETE_BODY}>
+      <Dialog name={DELETE_DIALOG} title={DELETE_TITLE} description={DELETE_BODY} busy={deleting}>
         {deleteError ? (
           <p role="alert" className="m-0 text-caption font-bold text-urgent">
             {deleteError}
           </p>
         ) : null}
-        <Button onClick={confirmDelete} aria-disabled={deleting} aria-busy={deleting} className="aria-disabled:opacity-60">
+        <Button variant="secondary" onClick={confirmDelete} aria-disabled={deleting} aria-busy={deleting} className="text-urgent">
+          <Trash />
           {deleting ? "מוחקים…" : "מחיקה לצמיתות"}
         </Button>
-        <Button variant="secondary" data-autofocus="" onClick={() => closeDialog(DELETE_DIALOG)}>
+        <Button variant="secondary" data-autofocus="" onClick={() => !deleting && closeDialog(DELETE_DIALOG)}>
           ביטול
         </Button>
       </Dialog>

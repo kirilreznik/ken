@@ -16,7 +16,7 @@ export default function CardBible({ bible, inSheet = false }: { bible: NameConte
   const Well = inSheet ? "div" : "section";
   const well = (
     <Well
-      className="flex items-start gap-2.5 rounded-md bg-(--nest-peach-pale-60) px-3 py-2.5 in-data-[names-bg=none]:bg-peach-pale"
+      className="flex items-start gap-3 rounded-md bg-peach-pale-60 px-3 py-2.5 in-data-[names-bg=none]:bg-peach-pale"
     >
       <svg
         width="18"

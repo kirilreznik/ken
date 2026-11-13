@@ -21,7 +21,7 @@ export default function SimilarSection({ similar, onOpen }: { similar: readonly 
               onClick={onOpen ? () => onOpen(name) : undefined}
             >
               <span className="break-words">{name}</span>
-              <span className="font-normal text-ink-soft">· {sexTag}</span>
+              <span className="font-medium text-ink-soft">· {sexTag}</span>
             </Chip>
           </li>
         ))}

@@ -5,8 +5,9 @@ import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import RelativeSection from "@/components/names/RelativeSection";
 import ThemeIcon from "@/components/names/ThemeIcon";
-import { BottomSheet, Button, checkboxClass, closeSheet } from "@/components/names/ui";
+import { BottomSheet, Button, ChevronIcon, FADE_PRESS, ROW_PRESS, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
+import { formatCount } from "@/lib/names/card";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
   RANGE_MAX,
@@ -72,17 +73,6 @@ const LENGTHS: Option<NameLength | null>[] = [
   { value: "ארוך", label: lengthValue("ארוך") },
 ];
 
-// Board 3's chips: 40 px pills, white with a line border or ink when on; ::before makes the
-// hit area 44 px tall.
-function chipClass(on: boolean): string {
-  return [
-    "relative inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-pill px-3.5 text-person font-bold",
-    "before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-['']",
-    "transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95",
-    on ? "border border-ink bg-ink text-surface" : "border border-line bg-surface text-ink",
-  ].join(" ");
-}
-
 function ChipGroup<T>({
   legend,
   options,
@@ -108,7 +98,7 @@ function ChipGroup<T>({
               key={String(o.value)}
               type="button"
               aria-pressed={on}
-              className={chipClass(on)}
+              className={chipClass(on, "md")}
               onClick={() => onChange(toggle && on ? null : o.value)}
             >
               {o.label}
@@ -132,7 +122,7 @@ function ThemeGroup({ value, onChange }: { value: ThemeId[] | null; onChange: (v
     onChange(next.length ? THEME_IDS.filter((t) => next.includes(t)) : null);
   };
   const chip = (key: string, on: boolean, icon: ThemeId | "all", label: string, onClick: () => void) => (
-    <button key={key} type="button" aria-pressed={on} className={`${chipClass(on)} gap-1.5`} onClick={onClick}>
+    <button key={key} type="button" aria-pressed={on} className={`${chipClass(on, "md")} gap-1.5`} onClick={onClick}>
       <ThemeIcon theme={icon} />
       {label}
     </button>
@@ -141,32 +131,13 @@ function ThemeGroup({ value, onChange }: { value: ThemeId[] | null; onChange: (v
     <fieldset className="m-0 min-w-0 border-0 p-0" aria-describedby={hintId}>
       <legend className="mb-0.5 p-0 text-card-title">נושאים</legend>
       <p id={hintId} className="mb-2.5 text-caption text-stone">
-        ניתן לבחור כמה נושאים
+        אפשר לבחור כמה נושאים
       </p>
       <div className="flex flex-wrap gap-2">
         {chip("all", value === null, "all", "כל השמות", () => onChange(null))}
         {THEME_IDS.map((id) => chip(id, value?.includes(id) ?? false, id, THEME_LABELS[id], () => toggle(id)))}
       </div>
     </fieldset>
-  );
-}
-
-function Chevron() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="flex-none"
-    >
-      <path d="M15 6l-6 6 6 6" />
-    </svg>
   );
 }
 
@@ -212,6 +183,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   const hidden = hiddenCount(votes);
 
   function apply() {
+    if (n === 0) return;
     if (userId) {
       if (getPref(userId, "filters").sex !== draft.sex) track("filter_sex", { sex: sexToken(draft.sex) });
       if (draft.relative) {
@@ -240,7 +212,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       aria-expanded={picker === id}
       aria-controls={pickerId}
       onClick={() => setPicker((p) => (p === id ? null : id))}
-      className={`flex min-h-14 flex-col items-start justify-center gap-0.5 rounded-md border bg-surface px-3.5 py-2 text-start ${
+      className={`flex min-h-14 flex-col items-start justify-center gap-0.5 rounded-md border bg-surface px-3.5 py-2 text-start ${ROW_PRESS} ${
         picker === id ? "border-ink" : "border-line"
       }`}
     >
@@ -255,21 +227,17 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       title="סינון"
       closeButton
       headerEnd={
-        <button
-          type="button"
-          onClick={reset}
-          className="min-h-11 min-w-11 rounded-pill px-1 text-person font-bold text-ink-soft underline underline-offset-4"
-        >
+        <button type="button" onClick={reset} className={linkClass("quiet")}>
           איפוס
         </button>
       }
       footer={
         <>
-          <Button className="w-full" onClick={apply} disabled={n === null}>
-            {n === null ? "הצגת שמות" : applyLabel(n)}
+          <Button className="w-full tabular-nums" onClick={apply} disabled={n === null} aria-disabled={n === 0 || undefined}>
+            {n === null ? "הצגת שמות" : n === 0 ? "אין שמות שמתאימים" : applyLabel(n)}
           </Button>
           <p role="status" className="sr-only">
-            {n === null ? "" : `${n} שמות מתאימים`}
+            {n === null ? "" : n === 1 ? "שם אחד מתאים" : `${formatCount(n)} שמות מתאימים`}
           </p>
         </>
       }
@@ -320,12 +288,12 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
           href="/names/hidden"
           data-control
           aria-describedby={hiddenHintId}
-          className="flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink"
+          className={`flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink ${FADE_PRESS}`}
         >
           <span>שמות שהסתרתי</span>
           <span className="flex items-center gap-1.5 font-medium text-ink-soft">
             <bdi>{hidden}</bdi>
-            <Chevron />
+            <ChevronIcon dir="forward" size={18} />
           </span>
         </Link>
         <p id={hiddenHintId} className="m-0 px-3.5 text-caption text-stone">

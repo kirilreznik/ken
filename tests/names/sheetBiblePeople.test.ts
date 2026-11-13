@@ -35,18 +35,14 @@ describe("CardBible in the sheet (FR-D10)", () => {
 
 describe("CardPeople in the sheet (FR-D11)", () => {
   it("labels the section 'אנשים מוכרים בשם הזה' and shows up to 2 people", () => {
-    const html = people({ people: PEOPLE, inSheet: true });
+    const html = people({ people: PEOPLE });
     expect(html).toContain('<h3 class="text-tag text-ink-soft">אנשים מוכרים בשם הזה</h3>');
     expect(html).toContain("אריאל זילבר");
     expect(html).toContain("אריאל זאבי");
     expect(html).not.toContain("אריאל שלישי");
   });
 
-  it("keeps the card label off the sheet", () => {
-    expect(people({ people: PEOPLE })).toContain("אנשים ידועים בשם הזה");
-  });
-
   it("is hidden when there are no people", () => {
-    expect(people({ people: [], inSheet: true })).toBe("");
+    expect(people({ people: [] })).toBe("");
   });
 });

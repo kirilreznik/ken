@@ -6,7 +6,7 @@ import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
 import PanelNote, { CAPTION_ERROR, ErrorMark } from "@/components/names/auth/PanelNote";
 import Wordmark from "@/components/names/auth/Wordmark";
-import { Button, checkboxClass, inputClass } from "@/components/names/ui";
+import { Button, checkboxClass, inputClass, linkClass } from "@/components/names/ui";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { GENERIC_MESSAGE, handleAuthError, isOffline } from "@/lib/names/authErrors";
 import {
@@ -33,7 +33,7 @@ const wordmark = <Wordmark />;
 const checkboxRow = "flex min-h-11 cursor-pointer items-start gap-3 py-1 text-body text-ink";
 const checkbox = `mt-0.5 ${checkboxClass()}`;
 // Each link owns a 44 px tall tap area on its own row, apart from the box's label (NP-027).
-const legalLink = "inline-flex min-h-11 items-center font-bold text-ink underline underline-offset-2";
+const legalLink = linkClass("inline", "none");
 
 function NewTabLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -158,8 +158,11 @@ export default function Onboarding() {
             id="display-name"
             name="display-name"
             type="text"
-            dir="rtl"
+            dir="auto"
             autoComplete="given-name"
+            autoCorrect="off"
+            spellCheck={false}
+            enterKeyHint="done"
             required
             maxLength={DISPLAY_NAME_MAX}
             value={form.displayName}

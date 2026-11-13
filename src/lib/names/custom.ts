@@ -5,10 +5,10 @@ export const CUSTOM_NAME_MAX = 20;
 export type CustomNameError = "empty" | "not-hebrew" | "too-long" | "duplicate";
 
 export const CUSTOM_NAME_ERRORS: Record<CustomNameError, string> = {
-  empty: "צריך לכתוב שם",
-  "not-hebrew": "אפשר לכתוב רק אותיות בעברית",
-  "too-long": "עד 20 תווים",
-  duplicate: "כבר ברשימה",
+  empty: "צריך לכתוב שם.",
+  "not-hebrew": "השם צריך להיות באותיות בעברית.",
+  "too-long": `השם ארוך מדי. אפשר עד ${CUSTOM_NAME_MAX} תווים.`,
+  duplicate: "השם הזה כבר ברשימה ״שמרתי״.",
 };
 
 export type CustomNameResult =

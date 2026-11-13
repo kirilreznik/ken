@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { dismissToast, getToast, showToast, subscribeToast, TOAST_ACTION_DURATION, TOAST_DURATION } from "@/lib/names/toast";
+import { dismissToast, getToast, showToast, subscribeToast, TOAST_ACTION_DURATION, TOAST_DURATION, TOAST_EXIT } from "@/lib/names/toast";
+
+// A dismissed toast stays as leaving for TOAST_EXIT ms (its fade, NP-096), then unmounts.
+function expectGone() {
+  expect(getToast()?.leaving).toBe(true);
+  vi.advanceTimersByTime(TOAST_EXIT);
+  expect(getToast()).toBeNull();
+}
 
 describe("toast store", () => {
   beforeEach(() => {
@@ -19,8 +26,9 @@ describe("toast store", () => {
     vi.advanceTimersByTime(TOAST_DURATION - 1);
     expect(getToast()).not.toBeNull();
     vi.advanceTimersByTime(1);
-    expect(getToast()).toBeNull();
     expect(listener).toHaveBeenCalledTimes(2);
+    expectGone();
+    expect(listener).toHaveBeenCalledTimes(3);
     stop();
   });
 
@@ -29,7 +37,7 @@ describe("toast store", () => {
     vi.advanceTimersByTime(TOAST_DURATION);
     expect(getToast()?.action?.label).toBe("רענון");
     vi.advanceTimersByTime(TOAST_ACTION_DURATION - TOAST_DURATION);
-    expect(getToast()).toBeNull();
+    expectGone();
   });
 
   it("keeps a toast with a link as long as one with an action", () => {
@@ -37,7 +45,7 @@ describe("toast store", () => {
     vi.advanceTimersByTime(TOAST_DURATION);
     expect(getToast()?.link).toEqual({ label: "לשמות שהסתרתי", href: "/names/hidden" });
     vi.advanceTimersByTime(TOAST_ACTION_DURATION - TOAST_DURATION);
-    expect(getToast()).toBeNull();
+    expectGone();
   });
 
   it("replaces the current toast, and an old id can't dismiss the new one", () => {
@@ -46,7 +54,7 @@ describe("toast store", () => {
     dismissToast(first);
     expect(getToast()?.message).toBe("ב");
     vi.advanceTimersByTime(TOAST_DURATION);
-    expect(getToast()).toBeNull();
+    expectGone();
   });
 
   it("duration 0 stays until dismissed", () => {
@@ -54,7 +62,7 @@ describe("toast store", () => {
     vi.advanceTimersByTime(60_000);
     expect(getToast()?.id).toBe(id);
     dismissToast(id);
-    expect(getToast()).toBeNull();
+    expectGone();
   });
 
   it("marks only a toast that stays until dismissed as sticky (it sits clear of the card's button)", () => {

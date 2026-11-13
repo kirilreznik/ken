@@ -22,6 +22,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: canvasColor,
+  // Android: the keyboard shrinks the layout so sheet buttons stay above it, not under it.
+  interactiveWidget: "resizes-content",
 };
 
 export default function NamesLayout({ children }: { children: React.ReactNode }) {

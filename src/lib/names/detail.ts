@@ -35,9 +35,9 @@ export function rank2024(name: string, map: Map<string, number>): number | null 
   return map.get(name) ?? null;
 }
 
-/** "#2 בשנת 2024". */
+/** "מקום 2 בדירוג", after a line that already names 2024. */
 export function rankText(rank: number): string {
-  return `#${fmt.format(rank)} בשנת ${LAST_YEAR}`;
+  return `מקום ${fmt.format(rank)} בדירוג`;
 }
 
 export interface Compare2000 {
@@ -77,7 +77,7 @@ export interface FactTile {
  */
 export function factTiles(stats: Pick<NameStats, "m" | "f" | "y">, rank: number | null): FactTile[] {
   const tiles: FactTile[] = [{ key: "all-time", value: allTimeBirths(stats), label: ALL_TIME_LABEL }];
-  if (rank !== null) tiles.push({ key: "rank", value: `#${fmt.format(rank)}`, label: `בדירוג ${LAST_YEAR}` });
+  if (rank !== null) tiles.push({ key: "rank", value: `מקום ${fmt.format(rank)}`, label: `בדירוג ${LAST_YEAR}` });
   const compare = compare2000(stats);
   if (compare?.kind === "same") {
     tiles.push({ key: "compare", value: "בערך כמו", label: `בשנת ${FIRST_TREND_YEAR}` });
@@ -170,7 +170,8 @@ export function chartModel(
 }
 
 /** "{n} תינוקות" with thousands separators, "תינוק אחד" for one. */
-export const babies = (n: number) => (n === 1 ? "תינוק אחד" : `${fmt.format(n)} תינוקות`);
+// A year with no births reads "אף תינוק", not "0 תינוקות" (NP-115).
+export const babies = (n: number) => (n === 0 ? "אף תינוק" : n === 1 ? "תינוק אחד" : `${fmt.format(n)} תינוקות`);
 
 /**
  * The chart point an arrow key moves to (index 0 = FIRST_TREND_YEAR). The SVG is LTR, so Left is

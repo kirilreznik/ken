@@ -106,6 +106,7 @@
   .nest-names *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    transition-property: none !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
     scroll-behavior: auto !important;
@@ -313,18 +314,104 @@
   }
 }
 
+/* Both menus (RowMenu, the skip button's menu) grow from the trigger's corner: each sets
+ * its transform-origin. */
+@keyframes names-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+/* Exits (NP-098): a dialog and a menu shrink back as they fade; `to` only. */
+@keyframes names-dialog-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes names-menu-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+/* A sign-in step replacing the last one (NP-102): the new content rises 8 px as it fades in. */
+@keyframes names-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes names-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* The saved count on save (NP-104): grows a little and settles, under 300 ms. */
+@keyframes names-count-pulse {
+  40% {
+    transform: scale(1.25);
+  }
+}
+
+@keyframes names-pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+
 @layer components {
   .nest-names .names-sheet-in {
     animation: names-sheet-in var(--nest-duration-sheet) var(--nest-ease-out);
   }
 
   .nest-names .names-scrim-in,
-  .nest-names .names-toast-in {
-    animation: names-fade-in var(--nest-duration-fast) ease-out;
+  /* The toast (NP-096): a transition, not a keyframe, so a quick replacement doesn't restart
+   * from nothing. It rises 8 px from the bottom edge as it fades in, and goes back down as it
+   * fades out (data-leaving, TOAST_EXIT in lib/names/toast.ts). */
+  .nest-names .names-toast {
+    transition:
+      opacity var(--nest-duration-fast) ease-out,
+      transform var(--nest-duration-fast) var(--nest-ease-out);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  .nest-names .names-toast[data-leaving] {
+    opacity: 0;
+    transform: translateY(8px);
+    transition-duration: var(--nest-duration-fade);
+    transition-timing-function: ease-in;
   }
 
   .nest-names .names-dialog-in {
     animation: names-dialog-in var(--nest-duration-fast) ease-out;
+  }
+
+  .nest-names .names-menu-in {
+    animation: names-menu-in var(--nest-duration-press) var(--nest-ease-out);
+  }
+
+  .nest-names .names-step-in {
+    animation: names-step-in var(--nest-duration-fast) var(--nest-ease-out);
+  }
+
+  .nest-names .names-count-pulse {
+    display: inline-block;
+    animation: names-count-pulse var(--nest-duration-card) var(--nest-ease-out);
+  }
+
+  /* Loading spinner (AuthCallback, JoinScreen). */
+  .nest-names .names-spinner {
+    animation: names-spin 1s linear infinite;
   }
 
   .nest-names .names-sheet-out {
@@ -333,6 +420,14 @@
 
   .nest-names .names-scrim-out {
     animation: names-fade-out var(--nest-duration-fast) ease-in forwards;
+  }
+
+  .nest-names .names-dialog-out {
+    animation: names-dialog-out var(--nest-duration-fast) ease-in forwards;
+  }
+
+  .nest-names .names-menu-out {
+    animation: names-menu-out var(--nest-duration-press) ease-in forwards;
   }
 
   /* Desktop (PRD 3.2.4): the tall sheet is a centered panel, so it comes and goes like a dialog. */
@@ -347,16 +442,36 @@
   }
 }
 
-/* Reduced motion: sheets fade in and out in 160 ms, no slide (PRD 3.2.12). Unlayered and after
- * the reduced-motion switch-off above, so these win over it. */
+/* Reduced motion: sheets, dialogs, menus and the toast fade in and out in 160 ms, no slide or
+ * scale (PRD 3.2.12), so a dialog and its scrim fade together. The spinner pulses slowly instead
+ * of rotating. Unlayered and after the reduced-motion switch-off above, so these win over it. */
 @media (prefers-reduced-motion: reduce) {
   .nest-names .names-sheet-in,
-  .nest-names .names-scrim-in {
+  .nest-names .names-scrim-in,
+  .nest-names .names-dialog-in,
+  .nest-names .names-menu-in,
+  .nest-names .names-step-in {
     animation: names-fade-in var(--nest-duration-fade) ease-out !important;
   }
 
+  .nest-names .names-toast {
+    transform: none !important;
+    transition-property: opacity !important;
+    transition-duration: var(--nest-duration-fade) !important;
+  }
+
+  .nest-names .names-spinner {
+    animation: names-pulse 2s ease-in-out infinite !important;
+  }
+
+  .nest-names .names-count-pulse {
+    animation: none !important;
+  }
+
   .nest-names .names-sheet-out,
-  .nest-names .names-scrim-out {
+  .nest-names .names-scrim-out,
+  .nest-names .names-dialog-out,
+  .nest-names .names-menu-out {
     animation: names-fade-out var(--nest-duration-fade) ease-in forwards !important;
   }
 }

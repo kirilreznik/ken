@@ -10,7 +10,7 @@ import AuthLayout from "@/components/names/auth/AuthLayout";
 import LegalLine from "@/components/names/auth/LegalLine";
 import Wordmark from "@/components/names/auth/Wordmark";
 import { Button } from "@/components/names/ui";
-import { APP_PATH, WELCOME_PATH } from "@/lib/names/auth";
+import { APP_PATH, WAIT_DEADLINE_MS, WELCOME_PATH } from "@/lib/names/auth";
 import { reportClientLog } from "@/lib/names/clientLog";
 import {
   JOIN_COPY,
@@ -34,7 +34,7 @@ function displayNameOf(metadata: Record<string, unknown> | undefined): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-/** A finished (or failed) join: title, lead, one action, and a status line for screen readers. */
+/** A finished (or failed) join: title, lead and one action. */
 function Outcome({ title, lead, children }: { title: string; lead: React.ReactNode; children: React.ReactNode }) {
   return (
     <AuthLayout title={title} lead={lead} hero={wordmark}>
@@ -72,7 +72,12 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
   useEffect(() => {
     if (loading || !session || !onboarded || !userId || !code) return;
     let alive = true;
+    // NP-020: a hung names_join shows the error with its retry; a late answer still replaces it.
+    const timer = window.setTimeout(() => {
+      if (alive) setResult((prev) => (prev?.key === key ? prev : { key, outcome: { kind: "error" } }));
+    }, WAIT_DEADLINE_MS);
     void joinWithCode(userId, code, displayName).then((next) => {
+      window.clearTimeout(timer);
       if (!alive) return;
       if (next.kind === "error") void reportClientLog({ area: "join", message: "names_join failed" });
       if (next.kind === "joined") track("join_completed", { votes_moved: next.votesMoved });
@@ -81,90 +86,101 @@ export default function JoinScreen({ code: rawCode }: { code: string }) {
     });
     return () => {
       alive = false;
+      window.clearTimeout(timer);
     };
   }, [loading, session, onboarded, userId, code, displayName, key]);
 
-  // Without a stored session the signed-out screens show at once, also in the server HTML.
-  if (loading && stored) return <AuthSkeleton />;
-
-  const startHref = user ? nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, null) : APP_PATH;
-  // The button says where it goes: on to the intro, or back to the deck (NP-024).
-  const startLabel = startHref === INTRO_PATH ? "המשך" : "לבחירת שמות";
-
-  if (!code || outcome?.kind === "invalid") {
-    const copy = JOIN_COPY.invalid;
-    const invalid = (
-      <Outcome title={copy.title} lead={copy.lead}>
-        <p role="status" className="sr-only">
-          {`${copy.title}. ${copy.lead}`}
-        </p>
-        {session ? <Button href={startHref}>{startLabel}</Button> : <Button href={WELCOME_PATH}>לכניסה</Button>}
-      </Outcome>
-    );
-    return session ? invalid : <SignedOutView>{invalid}</SignedOutView>;
-  }
-
-  if (!session) {
-    return (
-      <SignedOutView>
-        <AuthLayout
-          title={JOIN_INVITED_TITLE}
-          lead={JOIN_INVITED_LEAD}
-          hero={
-            <>
-              {wordmark}
-              <PreviewCard />
-            </>
-          }
-          footer={<LegalLine />}
-        >
-          <WelcomeActions joinCode={code} />
-        </AuthLayout>
-      </SignedOutView>
-    );
-  }
-
-  if (!onboarded) return <AuthSkeleton />;
-
-  if (!outcome) {
-    return (
-      <AuthLayout title={JOIN_INVITED_TITLE} hero={wordmark}>
-        <div role="status" className="flex items-center gap-3 text-body text-ink-soft">
-          <span aria-hidden="true" className="size-5 animate-spin rounded-pill border-2 border-ink-soft/30 border-t-ink" />
-          רק רגע, מצטרפים לבחירה
-        </div>
-      </AuthLayout>
-    );
-  }
-
-  if (outcome.kind === "offline" || outcome.kind === "error") {
-    const copy = JOIN_COPY[outcome.kind];
-    return (
-      <Outcome title={copy.title} lead={copy.lead}>
-        <p role="status" className="sr-only">
-          {`${copy.title}. ${copy.lead}`}
-        </p>
-        <Button onClick={() => setAttempt((n) => n + 1)}>ניסיון חוזר</Button>
-      </Outcome>
-    );
-  }
-
-  const copy = JOIN_COPY[outcome.kind];
-  const moved = outcome.kind === "joined" && outcome.votesMoved;
+  // NP-023: one status region, mounted on first render, whose text changes with the outcome.
+  const [status, body] = view();
   return (
-    <Outcome
-      title={copy.title}
-      lead={
-        <>
-          <p>{copy.lead}</p>
-          {moved ? <p className="mt-2">{VOTES_MOVE_TEXT}</p> : null}
-        </>
-      }
-    >
+    <>
       <p role="status" className="sr-only">
-        {[`${copy.title}.`, copy.lead, moved ? VOTES_MOVE_TEXT : ""].join(" ").trim()}
+        {status}
       </p>
-      <Button href={startHref}>{startLabel}</Button>
-    </Outcome>
+      {body}
+    </>
   );
+
+  function view(): [string, React.ReactNode] {
+    // Without a stored session the signed-out screens show at once, also in the server HTML.
+    if (loading && stored) return ["", <AuthSkeleton key="skeleton" />];
+
+    const startHref = user ? nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, null) : APP_PATH;
+    // The button says where it goes: on to the intro, or back to the deck (NP-024).
+    const startLabel = startHref === INTRO_PATH ? "המשך" : "לבחירת שמות";
+
+    if (!code || outcome?.kind === "invalid") {
+      const copy = JOIN_COPY.invalid;
+      const invalid = (
+        <Outcome title={copy.title} lead={copy.lead}>
+          {session ? <Button href={startHref}>{startLabel}</Button> : <Button href={WELCOME_PATH}>לכניסה</Button>}
+        </Outcome>
+      );
+      return [`${copy.title}. ${copy.lead}`, session ? invalid : <SignedOutView>{invalid}</SignedOutView>];
+    }
+
+    if (!session) {
+      return [
+        "",
+        <SignedOutView key="invited">
+          <AuthLayout
+            title={JOIN_INVITED_TITLE}
+            lead={JOIN_INVITED_LEAD}
+            hero={
+              <>
+                {wordmark}
+                <PreviewCard />
+              </>
+            }
+            footer={<LegalLine />}
+          >
+            <WelcomeActions joinCode={code} />
+          </AuthLayout>
+        </SignedOutView>,
+      ];
+    }
+
+    if (!onboarded) return ["", <AuthSkeleton key="skeleton" />];
+
+    if (!outcome) {
+      const waiting = "רק רגע, מצטרפים לבחירה";
+      return [
+        waiting,
+        <AuthLayout key="waiting" title={JOIN_INVITED_TITLE} hero={wordmark}>
+          <div aria-hidden="true" className="flex items-center gap-3 text-body text-ink-soft">
+            <span className="names-spinner size-5 rounded-pill border-2 border-ink-soft/30 border-t-ink" />
+            {waiting}
+          </div>
+        </AuthLayout>,
+      ];
+    }
+
+    if (outcome.kind === "offline" || outcome.kind === "error") {
+      const copy = JOIN_COPY[outcome.kind];
+      return [
+        `${copy.title}. ${copy.lead}`,
+        <Outcome key="outcome" title={copy.title} lead={copy.lead}>
+          <Button onClick={() => setAttempt((n) => n + 1)}>ניסיון חוזר</Button>
+        </Outcome>,
+      ];
+    }
+
+    const copy = JOIN_COPY[outcome.kind];
+    const moved = outcome.kind === "joined" && outcome.votesMoved;
+    return [
+      [`${copy.title}.`, copy.lead, moved ? VOTES_MOVE_TEXT : ""].join(" ").trim(),
+      <Outcome
+        key="outcome"
+        title={copy.title}
+        lead={
+          <>
+            <p>{copy.lead}</p>
+            {moved ? <p className="mt-2">{VOTES_MOVE_TEXT}</p> : null}
+          </>
+        }
+      >
+        <Button href={startHref}>{startLabel}</Button>
+      </Outcome>,
+    ];
+  }
 }

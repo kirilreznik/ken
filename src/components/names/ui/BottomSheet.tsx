@@ -7,9 +7,11 @@ import { dismissScreenToast } from "@/lib/names/toast";
 import { otherLayerOpen, type SheetName } from "@/lib/names/urlLayer";
 import { DURATION_FAST, DURATION_SHEET, EASE_OUT } from "@/styles/nest-motion";
 import { IconButton } from "./Button";
+import { CloseIcon } from "./icons";
 import { DETENT_DRAG, detentAfterDrag, type Detent } from "./detents";
 import { closeSheet, useLayerOpen } from "./layers";
 import { useToastLayer, useToastLift } from "./toastLift";
+import { useExit } from "./useExit";
 import { useModal, usePortalHost } from "./useModal";
 
 /**
@@ -51,13 +53,12 @@ type BottomSheetProps = SheetHeading & {
 
 // Dragging the handle down this far (px) closes the sheet (or changes a tall sheet's height).
 const DRAG_CLOSE = DETENT_DRAG;
+// A pause this long (ms) between the last move and letting go means it wasn't a flick.
+const FLICK_HOLD_MS = 100;
 // Full height of a tall sheet: the screen minus the top safe area.
 const FULL_HEIGHT = "calc(100dvh - env(safe-area-inset-top))";
 // 28 px under the content (board 3), more on phones with a home indicator.
 const SAFE_BOTTOM = "pb-[max(1.75rem,env(safe-area-inset-bottom))]";
-// PRD 3.2.12: a tall sheet slides out in DURATION_FAST (DURATION_FADE with reduced motion, names.css);
-// it unmounts on animationend, or after this if that never fires.
-const EXIT_MS = DURATION_FAST + 100;
 // PRD 3.2.2: a card tap opens the sheet on pointerup. Quick taps that follow land on the scrim or
 // on the sliding panel's controls before it has slid in (DURATION_SHEET); for this long after opening,
 // clicks in the layer do nothing (no close, no decision).
@@ -70,9 +71,59 @@ const SELECT_GUARD_MS = 600;
 // A tall sheet settling after a handle drag (new detent or snap back), as the slide-in eases.
 const SETTLE = { duration: DURATION_FAST, easing: EASE_OUT } as const;
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-// PRD 3.2.4: from 768 px a tall sheet is a centered panel (max 480 px wide, 90vh) without detents.
+// PRD 3.2.4: from 768 px a tall sheet is a centered panel (max 480 px wide, 90dvh) without detents.
 const DESKTOP = "(min-width: 768px)";
 const desktop = () => window.matchMedia(DESKTOP).matches;
+// Past its limit the panel follows the finger less and less, then springs back on release (NP-108).
+const RUBBER = 0.55;
+const RUBBER_MAX = 120;
+// A drag that starts on one of these in the header / title row is theirs, not the sheet's (NP-107).
+const CONTROL = "button, a, input, select, textarea, label, [role=button], [role=switch], [role=tab], [contenteditable]";
+const onControl = (event: PointerEvent<HTMLElement>) =>
+  event.target instanceof Element && event.target.closest(CONTROL) !== null && event.currentTarget.contains(event.target.closest(CONTROL));
+const rubberband = (overshoot: number) => (overshoot * RUBBER_MAX * RUBBER) / (RUBBER_MAX + RUBBER * overshoot);
+/** FULL_HEIGHT in px (the safe-area inset only resolves in CSS). */
+function fullHeightPx(host: HTMLElement): number {
+  const probe = document.createElement("div");
+  probe.style.cssText = `position:fixed;visibility:hidden;height:${FULL_HEIGHT}`;
+  host.appendChild(probe);
+  const px = probe.getBoundingClientRect().height;
+  probe.remove();
+  return px;
+}
+// The scrolling content fades over this many px at an edge with more beyond it (NP-109).
+const FADE_PX = 24;
+function fadeMask(more: { top: boolean; bottom: boolean }): string | undefined {
+  if (!more.top && !more.bottom) return undefined;
+  const top = more.top ? `transparent 0, black ${FADE_PX}px` : "black 0";
+  const bottom = more.bottom ? `black calc(100% - ${FADE_PX}px), transparent 100%` : "black 100%";
+  return `linear-gradient(to bottom, ${top}, ${bottom})`;
+}
+function edgesOf(el: HTMLElement) {
+  return (m: { top: boolean; bottom: boolean }) => {
+    const top = el.scrollTop > 1;
+    const bottom = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+    return m.top === top && m.bottom === bottom ? m : { top, bottom };
+  };
+}
+/** Which edges of the scroller have content past them; follows scrolling and resizes. */
+function useScrollEdges(scroller: RefObject<HTMLDivElement | null>) {
+  const [more, setMore] = useState({ top: false, bottom: false });
+  const update = () => {
+    const el = scroller.current;
+    if (el) setMore(edgesOf(el));
+  };
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    // observe() reports the first size right away, so this also sets the starting edges.
+    const observer = new ResizeObserver(() => setMore(edgesOf(el)));
+    observer.observe(el);
+    for (const child of Array.from(el.children)) observer.observe(child);
+    return () => observer.disconnect();
+  }, [scroller]);
+  return { more, update };
+}
 /** A new `key` in an open sheet starts it over: content at the top, focus on [data-autofocus]. */
 function useContentReset(panel: RefObject<HTMLElement | null>, scroller: RefObject<HTMLDivElement | null>, key: string | undefined) {
   const shown = useRef(key);
@@ -102,23 +153,14 @@ function SheetGate(props: BottomSheetProps) {
   const open = useLayerOpen("sheet", props.name);
   const search = useSearchParams().toString();
   const host = usePortalHost();
-  // A tall sheet stays mounted while it slides out, unless another layer replaces it (no overlap).
-  const [mounted, setMounted] = useState(open);
-  const [closing, setClosing] = useState(false);
-  const onClosed = useCallback(() => setMounted(false), []);
-  if (open && (!mounted || closing)) {
-    setMounted(true);
-    setClosing(false);
-  } else if (!open && mounted && !closing) {
-    if (props.detents && !otherLayerOpen(search)) setClosing(true);
-    else setMounted(false);
-  }
+  // Every sheet stays mounted while it slides out (NP-098), unless another layer replaces it (no overlap).
+  const { mounted, closing, onClosed } = useExit(open, !otherLayerOpen(search));
   if (!mounted || !host) return null;
   return createPortal(<SheetPanel {...props} closing={closing} onClosed={onClosed} />, host);
 }
 
 type PanelProps = BottomSheetProps & {
-  /** Sliding out after the URL closed it: no longer modal, inert, gone on `onClosed`. */
+  /** Sliding out after the URL closed it: no longer modal, inert, gone on `onClosed` (useExit's timer is the fallback). */
   closing?: boolean;
   onClosed?: () => void;
 };
@@ -127,13 +169,17 @@ type PanelProps = BottomSheetProps & {
 export function SheetPanel({ name, title, header, headerEnd, closeInHeader = false, closeButton = false, footer, detents, onDetent, contentKey, closing = false, onClosed, children }: PanelProps) {
   const panel = useRef<HTMLElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
+  const edges = useScrollEdges(scroller);
   const footerRef = useToastLift({ layer: true });
   useToastLayer();
   useEffect(dismissScreenToast, []);
   useContentReset(panel, scroller, contentKey);
   // `detents`: a tall sheet on a phone; on desktop its handle only drags down to close.
-  const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean; detents: boolean } | null>(null);
-  // Down: the panel moves down by `offset` px. Up (tall sheets only): it grows to `height` px.
+  // `at`/`velocity`: the last move's time and the drag's speed in px/ms (down > 0), for flicks (NP-106).
+  // `full`: a tall sheet's full height in px, where its growth turns into a rubber band (NP-108).
+  const drag = useRef<{ startY: number; startHeight: number; dy: number; moved: boolean; detents: boolean; at: number; velocity: number; full: number } | null>(null);
+  // Down: the panel moves down by `offset` px. Up: a tall sheet grows to `height` px; past its
+  // limit (full height, or where it is for other sheets) it rubber-bands up (negative `offset`).
   const [offset, setOffset] = useState(0);
   const [height, setHeight] = useState<number | null>(null);
   const [detent, setDetent] = useState<Detent>("70");
@@ -186,38 +232,57 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     );
   }, [settles]);
 
-  useEffect(() => {
-    if (!closing) return;
-    const timer = window.setTimeout(() => onClosed?.(), EXIT_MS);
-    return () => window.clearTimeout(timer);
-  }, [closing, onClosed]);
-
-  function onPointerDown(event: PointerEvent<HTMLButtonElement>) {
+  function onPointerDown(event: PointerEvent<HTMLElement>) {
     if (event.button !== 0) return;
+    if (event.currentTarget !== event.target && onControl(event)) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     const startHeight = panel.current?.getBoundingClientRect().height ?? 0;
-    drag.current = { startY: event.clientY, startHeight, dy: 0, moved: false, detents: tall && !desktop() };
+    const detented = tall && !desktop();
+    const full = detented && layer.current ? fullHeightPx(layer.current) : 0;
+    drag.current = { startY: event.clientY, startHeight, dy: 0, moved: false, detents: detented, at: event.timeStamp, velocity: 0, full };
   }
 
-  function onPointerMove(event: PointerEvent<HTMLButtonElement>) {
+  function onPointerMove(event: PointerEvent<HTMLElement>) {
     if (!drag.current) return;
     const raw = event.clientY - drag.current.startY;
-    const dy = drag.current.detents ? raw : Math.max(0, raw);
+    const { detents: detented, startHeight, full } = drag.current;
+    const dy = detented ? raw : Math.max(0, raw);
+    const elapsed = event.timeStamp - drag.current.at;
+    if (elapsed > 0) {
+      // Smoothed so one jittery sample doesn't make or break a flick.
+      drag.current.velocity = 0.2 * drag.current.velocity + (0.8 * (dy - drag.current.dy)) / elapsed;
+      drag.current.at = event.timeStamp;
+    }
     drag.current.dy = dy;
     // Raw: a drag up on a sheet without detents doesn't move it, but it isn't a tap either.
     if (Math.abs(raw) > 6) drag.current.moved = true;
-    setOffset(Math.max(0, dy));
-    setHeight(dy < 0 ? drag.current.startHeight - dy : null);
+    if (raw >= 0) {
+      setOffset(dy);
+      setHeight(null);
+    } else if (detented) {
+      const grown = startHeight - raw;
+      setHeight(Math.min(grown, Math.max(full, startHeight)));
+      setOffset(grown > full ? -rubberband(grown - Math.max(full, startHeight)) : 0);
+    } else {
+      setOffset(-rubberband(-raw));
+      setHeight(null);
+    }
   }
 
-  function onPointerEnd() {
+  function onPointerEnd(event: PointerEvent<HTMLElement>) {
     if (!drag.current) return;
-    const { dy, moved, detents: detented } = drag.current;
-    const next = detented ? detentAfterDrag(detent, dy, DRAG_CLOSE) : dy >= DRAG_CLOSE ? "close" : detent;
+    const { dy, moved, detents: detented, at } = drag.current;
+    // A hold before letting go isn't a flick.
+    const velocity = event.timeStamp - at > FLICK_HOLD_MS ? 0 : drag.current.velocity;
+    const next = detented
+      ? detentAfterDrag(detent, dy, DRAG_CLOSE, velocity)
+      : detentAfterDrag("70", dy, DRAG_CLOSE, velocity) === "close"
+        ? "close"
+        : detent;
     if (next === "close") close();
     else {
       if (tall && moved && panel.current) {
-        settleFrom.current = { height: panel.current.getBoundingClientRect().height, offset: Math.max(0, dy) };
+        settleFrom.current = { height: panel.current.getBoundingClientRect().height, offset };
         setSettles((count) => count + 1);
       }
       setDetent(next);
@@ -226,8 +291,36 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
       setHeight(null);
     }
     // A drag isn't a tap: keep `moved` so the click that follows pointerup is ignored.
-    drag.current = moved ? { startY: 0, startHeight: 0, dy: 0, moved, detents: detented } : null;
+    drag.current = moved ? { startY: 0, startHeight: 0, dy: 0, moved, detents: detented, at: 0, velocity: 0, full: 0 } : null;
   }
+
+  // The browser took the pointer (scroll, system gesture): the sheet goes back to where it was, never closes (NP-105).
+  function onPointerCancel() {
+    if (!drag.current) return;
+    const { moved } = drag.current;
+    if (tall && moved && panel.current) {
+      settleFrom.current = { height: panel.current.getBoundingClientRect().height, offset };
+      setSettles((count) => count + 1);
+    }
+    setOffset(0);
+    setHeight(null);
+    drag.current = null;
+  }
+
+  // The header / title row drag the sheet like the handle (NP-107); a drag there isn't a click on it.
+  const rowDrag = {
+    onPointerDown,
+    onPointerMove,
+    onPointerUp: onPointerEnd,
+    onPointerCancel,
+    onClickCapture: (event: MouseEvent) => {
+      const moved = drag.current?.moved;
+      drag.current = null;
+      if (!moved) return;
+      event.stopPropagation();
+      event.preventDefault();
+    },
+  };
 
   function onHandleClick() {
     const moved = drag.current?.moved;
@@ -239,7 +332,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     <div ref={layer} data-names-layer onClickCapture={onClickCapture} onPointerDownCapture={selectGuard ? armSelectGuard : undefined} className={`fixed inset-0 z-40 flex flex-col justify-end ${tall ? "md:justify-center md:px-5" : ""} ${closing ? "pointer-events-none" : ""} ${selectGuard ? "select-none [-webkit-touch-callout:none]" : ""}`}>
       <div
         aria-hidden="true"
-        className={`${closing ? "names-scrim-out" : "names-scrim-in"} absolute inset-0 bg-(--nest-ink-45)`}
+        className={`${closing ? "names-scrim-out" : "names-scrim-in"} absolute inset-0 bg-ink-45`}
         // A press on the scrim never takes focus out of the dialog (it only closes it, on click).
         onMouseDown={(event) => event.preventDefault()}
         onClick={closing ? undefined : close}
@@ -257,32 +350,40 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
         }}
         data-names-bg="none"
         data-detent={tall ? detent : undefined}
-        style={
-          height !== null
-            ? { height, maxHeight: FULL_HEIGHT }
-            : offset
-              ? { transform: `translateY(${offset}px)` }
-              : undefined
-        }
+        style={{
+          ...(height !== null ? { height, maxHeight: FULL_HEIGHT } : null),
+          ...(offset ? { transform: `translateY(${offset}px)` } : null),
+        }}
         className={`${closing ? "names-sheet-out" : "names-sheet-in"} relative mx-auto flex w-full max-w-lg flex-col rounded-t-xl bg-surface text-ink outline-none ${heightClass(tall, detent)} ${offset || height !== null || tall ? "" : "transition-transform duration-(--nest-duration-fast)"}`}
       >
         <button
           type="button"
           aria-label="סגירה"
+          // With a "סגירה" button in the header the handle is only for dragging: out of the Tab order
+          // and hidden from screen readers, so they hear one "סגירה" (NP-111).
+          aria-hidden={closeInHeader || closeButton ? true : undefined}
           tabIndex={closeInHeader || closeButton ? -1 : undefined}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerEnd}
-          onPointerCancel={onPointerEnd}
+          onPointerCancel={onPointerCancel}
           onClick={onHandleClick}
           className="relative z-10 mx-auto -mb-1.75 flex h-11 w-24 shrink-0 cursor-grab touch-none justify-center rounded-pill pt-3 active:cursor-grabbing"
         >
           <span aria-hidden="true" className="h-1.25 w-10 rounded-pill bg-line" />
         </button>
-        {header ? <div className="shrink-0 px-5 pb-3">{header(titleId)}</div> : null}
-        <div ref={scroller} className={`flex min-h-0 flex-col gap-5 ${tall ? "flex-1" : ""} overflow-y-auto overscroll-contain px-5 ${footer ? "pb-5" : SAFE_BOTTOM}`}>
+        {header ? (
+          <div {...rowDrag} className="shrink-0 touch-none px-5 pb-3">
+            {header(titleId)}
+          </div>
+        ) : null}
+        <div
+          ref={scroller}
+          onScroll={edges.update}
+          style={{ maskImage: fadeMask(edges.more), WebkitMaskImage: fadeMask(edges.more) }}
+          className={`flex min-h-0 flex-col gap-5 ${tall ? "flex-1" : ""} overflow-y-auto overscroll-contain px-5 ${footer ? "pb-5" : SAFE_BOTTOM}`}>
           {header ? null : (
-            <div className="flex min-h-11 items-center justify-between gap-3">
+            <div {...rowDrag} className="flex min-h-11 touch-none items-center justify-between gap-3">
               <h2 id={titleId} className="text-title">
                 {title}
               </h2>
@@ -290,9 +391,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
                 <div className="flex items-center gap-2">
                   {headerEnd}
                   <IconButton aria-label="סגירה" onClick={close}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M6 6l12 12M18 6L6 18" />
-                    </svg>
+                    <CloseIcon />
                   </IconButton>
                 </div>
               ) : (
@@ -314,8 +413,8 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
 
 function heightClass(tall: boolean, detent: Detent): string {
   if (!tall) return "max-h-[calc(100dvh-2.5rem)]";
-  // Desktop: a centered panel with all corners round, as high as its content up to 90vh.
-  const panel = "md:h-auto md:max-h-[90vh] md:max-w-[480px] md:rounded-xl";
+  // Desktop: a centered panel with all corners round, as high as its content up to 90dvh (NP-050).
+  const panel = "md:h-auto md:max-h-[90dvh] md:max-w-content md:rounded-xl";
   return detent === "full"
     ? `h-[calc(100dvh-env(safe-area-inset-top))] ${panel}`
     : `max-h-[70dvh] ${panel}`;

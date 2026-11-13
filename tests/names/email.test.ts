@@ -41,7 +41,7 @@ describe("isEmail", () => {
 describe("emailError", () => {
   it("returns the Hebrew message for invalid input and null otherwise", () => {
     expect(emailError("name@")).toBe(EMAIL_ERROR);
-    expect(EMAIL_ERROR).toBe("צריך כתובת אימייל, למשל name@example.com");
+    expect(EMAIL_ERROR).toBe("צריך כתובת מייל, למשל name@example.com");
     expect(emailError("Name@Example.com")).toBeNull();
   });
 });

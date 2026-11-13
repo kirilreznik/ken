@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useId, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import ScreenBackground from "@/components/names/ScreenBackground";
-import { Button, Glass, IconButton } from "@/components/names/ui";
+import MomentSheet from "@/components/names/MomentSheet";
+import { Button } from "@/components/names/ui";
 import { closeSheet, openSheet, useLayerOpen } from "@/components/names/ui/layers";
-import { useModal, usePortalHost } from "@/components/names/ui/useModal";
+import { usePortalHost } from "@/components/names/ui/useModal";
 import { useNameStats } from "@/components/names/useCards";
 import { matchSheetLine, type Match } from "@/lib/names/matches";
 import { countLine } from "@/lib/names/popularity";
@@ -74,15 +74,12 @@ function MatchGate({ match, ready, cards, onSeen }: MatchSheetProps) {
 function MatchPanel({ match, cards, onSeen }: { match: Match; cards: readonly Card[] | null; onSeen: () => void }) {
   const router = useRouter();
   const { names } = useNameStats();
-  const panel = useRef<HTMLElement>(null);
-  const lineId = useId();
 
   const close = (action: "continue" | "close") => {
     track("match_cta", { action });
     onSeen();
     closeSheet("match");
   };
-  const onKeyDown = useModal(panel, () => close("close"));
 
   // Once per panel (it is keyed by the name), even when the matches are read again.
   const tracked = useRef(false);
@@ -101,51 +98,25 @@ function MatchPanel({ match, cards, onSeen }: { match: Match; cards: readonly Ca
 
   const card = cards?.find((c) => c.stats.name === match.name);
   const stats = card?.stats ?? names?.get(match.name);
-  const display = card?.content.niqqud || match.name;
 
   return (
-    <div data-names-layer className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-canvas">
-      <ScreenBackground blobs="match">
-        <section
-          ref={panel}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`יש התאמה: ${match.name}`}
-          aria-describedby={lineId}
-          tabIndex={-1}
-          onKeyDown={onKeyDown}
-          className="names-sheet-in flex min-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col gap-6 px-5 pt-14 pb-8 text-ink outline-none"
-        >
-          <IconButton aria-label="סגירה" onClick={() => close("close")} className="self-end">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" />
-            </svg>
-          </IconButton>
-
-          <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
-            <p className="m-0 text-person font-bold text-ink">יש התאמה</p>
-            <Glass className="flex w-full flex-col items-center gap-2.5 rounded-xl px-6 py-8">
-              <h2 lang="he" className="m-0 text-match-name break-words">
-                {display}
-              </h2>
-              <span aria-hidden="true" className="size-2.5 rounded-full bg-clay" />
-              <p id={lineId} className="m-0 text-match-line text-ink-soft">
-                {matchSheetLine(match)}
-              </p>
-              {stats ? <p className="m-0 text-caption text-ink-soft">{countLine(stats)}</p> : null}
-            </Glass>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <Button onClick={toList}>
-              לרשימת ההתאמות
-            </Button>
-            <Button variant="secondary" onClick={() => close("continue")} className="h-13! text-card-title">
-              להמשיך לבחור
-            </Button>
-          </div>
-        </section>
-      </ScreenBackground>
-    </div>
+    <MomentSheet
+      label={`יש התאמה: ${match.name}`}
+      eyebrow="יש התאמה"
+      name={card?.content.niqqud || match.name}
+      line={matchSheetLine(match)}
+      meta={stats ? countLine(stats) : null}
+      onClose={() => close("close")}
+      actions={
+        <>
+          <Button onClick={toList}>
+            לרשימת ההתאמות
+          </Button>
+          <Button variant="secondary" size="tall" onClick={() => close("continue")}>
+            להמשיך לבחור
+          </Button>
+        </>
+      }
+    />
   );
 }

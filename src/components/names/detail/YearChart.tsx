@@ -10,6 +10,8 @@ const HEIGHT = 148;
 const PAD: ChartPad = { top: 10, end: 8, bottom: 24, start: 40 };
 /** Gap between the chosen point and its label. */
 const TIP_GAP = 8;
+/** A touch that moves less than this (px) is a tap. */
+const TAP_SLOP = 6;
 
 const anchor = (i: number, n: number) => (i === 0 ? "start" : i === n - 1 ? "end" : "middle");
 
@@ -19,7 +21,7 @@ const anchor = (i: number, n: number) => (i === 0 ? "start" : i === n - 1 ? "end
  * the container's width so the labels keep their token size; LTR on the SVG only, like the
  * sparkline. A name with no 2000–2024 years shows the no-data line instead.
  *
- * Tap, drag or hover picks the nearest year and shows its count in a label above the point;
+ * Tap, sideways drag or hover picks the nearest year and shows its count in a label above the point;
  * focused, Left/Right (and Home/End) move the year. `touch-action: pan-y` keeps the sheet's
  * vertical scroll and gives sideways drags to the chart. Screen readers get the summary as the
  * chart's label, a hidden table of every year and a live line for the chosen year.
@@ -31,6 +33,7 @@ export default function YearChart({ stats }: { stats: Pick<NameStats, "y"> }) {
   const [width, setWidth] = useState(0);
   const [active, setActive] = useState<number | null>(null);
   const [tip, setTip] = useState({ w: 0, h: 0 });
+  const touch = useRef<{ x: number; y: number; scrubbing: boolean } | null>(null);
 
   useLayoutEffect(() => {
     const el = box.current;
@@ -64,9 +67,28 @@ export default function YearChart({ stats }: { stats: Pick<NameStats, "y"> }) {
     const x = event.clientX - box.current.getBoundingClientRect().left;
     setActive(model.nearestYear(x) - FIRST_TREND_YEAR);
   };
+  // A finger or pen shows a year only on a tap or a sideways drag: a scroll that starts on the
+  // chart leaves no label and no readout (NP-114).
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse") pick(event);
+    else touch.current = { x: event.clientX, y: event.clientY, scrubbing: false };
+  };
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    // A mouse hovers; a finger or pen only while it's down.
-    if (event.pointerType === "mouse" || event.buttons) pick(event);
+    if (event.pointerType === "mouse") return pick(event);
+    const start = touch.current;
+    if (!start || !event.buttons) return;
+    if (!start.scrubbing && Math.abs(event.clientX - start.x) > TAP_SLOP && Math.abs(event.clientX - start.x) > Math.abs(event.clientY - start.y)) start.scrubbing = true;
+    if (start.scrubbing) pick(event);
+  };
+  const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    const start = touch.current;
+    touch.current = null;
+    if (start && !start.scrubbing && Math.hypot(event.clientX - start.x, event.clientY - start.y) <= TAP_SLOP) pick(event);
+  };
+  // The browser took the touch to scroll: nothing stays picked.
+  const onPointerCancel = () => {
+    touch.current = null;
+    setActive(null);
   };
   const onPointerLeave = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "mouse") setActive(null);
@@ -79,8 +101,9 @@ export default function YearChart({ stats }: { stats: Pick<NameStats, "y"> }) {
   };
 
   const point = model && active !== null ? model.points[active] : null;
-  // The label sits centred above the point, kept inside the chart; below it when the point is near the top.
-  const tipX = point ? Math.min(Math.max(point.x - tip.w / 2, 0), width - tip.w) : 0;
+  // The label sits centred above the point, kept inside the plot (clear of the tick labels, NP-115);
+  // below it when the point is near the top.
+  const tipX = point ? Math.max(Math.min(Math.max(point.x - tip.w / 2, PAD.start), width - PAD.end - tip.w), 0) : 0;
   const above = point ? point.y - TIP_GAP - tip.h : 0;
   const tipY = point ? (above >= 0 ? above : Math.min(point.y + TIP_GAP, HEIGHT - tip.h)) : 0;
   const readout = point ? `ב־${point.year}: ${babies(point.value)}` : "";
@@ -93,8 +116,10 @@ export default function YearChart({ stats }: { stats: Pick<NameStats, "y"> }) {
         role="img"
         aria-label={chartLabel(stats)}
         aria-describedby={hintId}
-        onPointerDown={pick}
+        onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         onPointerLeave={onPointerLeave}
         onKeyDown={onKeyDown}
         className="relative cursor-crosshair select-none"

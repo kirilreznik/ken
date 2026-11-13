@@ -33,8 +33,10 @@ export function ToastRegion() {
       {toast ? (
         <div
           key={toast.id}
+          data-leaving={toast.leaving ? "" : undefined}
+          inert={toast.leaving}
           // With a link too, the two controls drop under the message when they don't fit beside it.
-          className={`names-toast-in pointer-events-auto flex min-h-11 max-w-md items-center gap-x-3 bg-ink py-1.5 ps-5 pe-2 text-body font-bold text-surface shadow-button ${
+          className={`names-toast pointer-events-auto flex min-h-11 max-w-md items-center gap-x-3 bg-ink py-1.5 ps-5 pe-2 text-body font-bold text-surface shadow-button ${
             toast.link ? "flex-wrap rounded-lg" : "rounded-pill"
           }`}
         >

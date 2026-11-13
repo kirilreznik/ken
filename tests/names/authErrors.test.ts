@@ -8,6 +8,7 @@ import {
   GENERIC_MESSAGE,
   OFFLINE_MESSAGE,
   RATE_LIMIT_MESSAGE,
+  SEND_FAILED_MESSAGE,
   WRONG_CODE_MESSAGE,
   clearsCode,
   authErrorKind,
@@ -113,7 +114,7 @@ describe("handleAuthError", () => {
   it("reports unknown errors by code and status only", () => {
     expect(handleAuthError("sign-in-email-send", new AuthApiError("user someone@example.com is odd", 500, "unexpected_failure"))).toEqual({
       kind: "other",
-      message: GENERIC_MESSAGE,
+      message: SEND_FAILED_MESSAGE,
     });
     expect(report).toHaveBeenCalledWith({ area: "sign-in-email-send", message: "auth error unexpected_failure 500" });
   });

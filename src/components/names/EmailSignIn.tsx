@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
-import AuthLayout from "@/components/names/auth/AuthLayout";
+import AuthLayout, { AUTH_LEAD_ID } from "@/components/names/auth/AuthLayout";
 import Wordmark from "@/components/names/auth/Wordmark";
-import { Button, inputClass } from "@/components/names/ui";
+import { Button, inputClass, linkClass } from "@/components/names/ui";
 import CodeInput, { CODE_LENGTH } from "@/components/names/auth/CodeInput";
 import PanelNote from "@/components/names/auth/PanelNote";
 import ResendTimer from "@/components/names/auth/ResendTimer";
@@ -13,8 +13,11 @@ import Turnstile, { captchaEnabled } from "@/components/names/auth/Turnstile";
 import { usePendingJoin } from "@/components/names/auth/usePendingJoin";
 import { CLOSED_PARAM, WELCOME_PATH } from "@/lib/names/auth";
 import {
+  EMPTY_EMAIL_MESSAGE,
   INVALID_EMAIL_MESSAGE,
   OFFLINE_MESSAGE,
+  RATE_LIMIT_CLEAR_MS,
+  RATE_LIMIT_MESSAGE,
   type AuthErrorKind,
   clearsCode,
   handleAuthError,
@@ -46,6 +49,8 @@ export default function EmailSignIn() {
   const online = useOnline();
 
   const [step, setStep] = useState<"email" | "code">("email");
+  // Set once the visitor moves between steps, so only a step change animates, not the first paint (NP-102).
+  const [moved, setMoved] = useState(false);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [sentAt, setSentAt] = useState(0);
@@ -63,6 +68,13 @@ export default function EmailSignIn() {
     if (loading || !user) return;
     router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
   }, [loading, user, join, router]);
+
+  // The rate-limit line goes once the wait is over (NP-035); a new address or send clears it sooner.
+  useEffect(() => {
+    if (error !== RATE_LIMIT_MESSAGE) return;
+    const timer = window.setTimeout(() => setError((e) => (e === RATE_LIMIT_MESSAGE ? null : e)), RATE_LIMIT_CLEAR_MS);
+    return () => window.clearTimeout(timer);
+  }, [error]);
 
   // Back online, "no connection" is stale: drop it (while offline ConnectionNote says it instead).
   useEffect(() => {
@@ -129,12 +141,13 @@ export default function EmailSignIn() {
   async function submitEmail(e: React.FormEvent) {
     e.preventDefault();
     if (!isValidEmail(email)) {
-      setError(INVALID_EMAIL_MESSAGE);
+      setError(email.trim() ? INVALID_EMAIL_MESSAGE : EMPTY_EMAIL_MESSAGE);
       return;
     }
     track("signin_started", { method: "email" });
     if (await sendCode()) {
       setCode("");
+      setMoved(true);
       setStep("code");
     }
   }
@@ -162,6 +175,7 @@ export default function EmailSignIn() {
   }
 
   function changeAddress() {
+    setMoved(true);
     setStep("email");
     setCode("");
     setError(null);
@@ -181,12 +195,12 @@ export default function EmailSignIn() {
 
   if (step === "email") {
     return (
-      <AuthLayout title="כניסה עם קוד במייל" lead="נשלח קוד בן 6 ספרות לכתובת שלך." backHref={backHref} hero={wordmark}>
+      <AuthLayout title="כניסה עם קוד במייל" lead="שולחים לכתובת שלך קוד בן 6 ספרות, ואיתו נכנסים." backHref={backHref} hero={wordmark} step={moved ? "email" : undefined}>
         <form noValidate onSubmit={submitEmail} className="flex flex-col gap-4">
           <ConnectionNote />
           <div className="flex flex-col gap-1.5">
             <label htmlFor="email" className="text-caption font-bold text-ink">
-              כתובת אימייל
+              כתובת מייל
             </label>
             <input
               id="email"
@@ -201,12 +215,14 @@ export default function EmailSignIn() {
               autoFocus
               placeholder="name@example.com"
               value={email}
+              // Typing waits for the send's answer, so the code goes to the address shown (NP-006).
+              readOnly={busy}
               onChange={(e) => {
                 setEmail(e.target.value);
                 if (error) setError(null);
               }}
-              aria-invalid={shownError === INVALID_EMAIL_MESSAGE || undefined}
-              aria-describedby={shownError ? "email-sign-in-error" : undefined}
+              aria-invalid={shownError === INVALID_EMAIL_MESSAGE || shownError === EMPTY_EMAIL_MESSAGE || undefined}
+              aria-describedby={shownError ? `${AUTH_LEAD_ID} email-sign-in-error` : AUTH_LEAD_ID}
               className={inputClass()}
             />
           </div>
@@ -233,8 +249,10 @@ export default function EmailSignIn() {
           אפשר לבדוק גם בתיקיית הספאם.
         </>
       }
-      backHref={backHref}
+      // Back returns to the email step with the address kept (NP-007).
+      onBack={changeAddress}
       hero={wordmark}
+      step="code"
     >
       <form
         noValidate
@@ -255,8 +273,9 @@ export default function EmailSignIn() {
           }}
           onComplete={(c) => void verify(c)}
           invalid={shownError !== null}
-          describedBy={shownError ? "email-sign-in-error" : undefined}
+          describedBy={shownError ? `${AUTH_LEAD_ID} email-sign-in-error` : AUTH_LEAD_ID}
           autoFocus
+          readOnly={busy}
           inputRef={codeRef}
         />
         {errorLine ??
@@ -278,11 +297,7 @@ export default function EmailSignIn() {
           sending={pending === "send"}
           sentNote={resent ? CODE_RESENT_TEXT : undefined}
         />
-        <button
-          type="button"
-          onClick={changeAddress}
-          className="min-h-11 rounded-pill px-1 text-card-title font-bold text-ink underline underline-offset-4"
-        >
+        <button type="button" onClick={changeAddress} className={linkClass("standalone")}>
           שינוי כתובת
         </button>
       </div>

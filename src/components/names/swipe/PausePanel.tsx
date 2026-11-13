@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import NestCard from "@/components/names/NestCard";
 import { Button, Glass, emptyTitleClass } from "@/components/names/ui";
-import { deckPanel, deckPanelWrap } from "./EmptyDeck";
+import { SavedNames, deckPanel, deckPanelWrap } from "./EmptyDeck";
 import { RECAP_NAMES, recapLine, type Pause } from "@/lib/names/launch";
 import { track } from "@/lib/names/track";
 
@@ -85,13 +85,7 @@ export default function PausePanel({ pause, totals, onContinue }: PausePanelProp
             </h2>
             <p id="names-pause-lead" className="m-0 text-intro text-ink-soft">{recapLine(opened.votes, opened.saves)}</p>
             {opened.names.length > 0 ? (
-              <ol aria-label="שמות ששמרת בסבב הזה" className="m-0 flex list-none flex-wrap justify-center gap-1.5 p-0">
-                {opened.names.slice(0, RECAP_NAMES).map((name) => (
-                  <li key={name} className="names-glass-soft rounded-pill px-3 py-1 text-card-title text-ink">
-                    {name}
-                  </li>
-                ))}
-              </ol>
+              <SavedNames names={opened.names} shown={RECAP_NAMES} label="שמות ששמרת בסבב הזה" />
             ) : null}
             <div className="flex flex-wrap justify-center gap-2">
               <Button

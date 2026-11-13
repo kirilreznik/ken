@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { CLOSED_PARAM, SIGNUPS_CLOSED_MESSAGE, WAITLIST_HREF } from "@/lib/names/auth";
 import PanelNote from "./auth/PanelNote";
+import { linkClass } from "./ui/classes";
 
 const noSubscribe = () => () => {};
 const readClosed = () => new URLSearchParams(window.location.search).get(CLOSED_PARAM) === "1";
@@ -19,8 +20,8 @@ export default function ClosedNotice() {
       {show ? (
         <PanelNote icon="info">
           {SIGNUPS_CLOSED_MESSAGE}{" "}
-          <Link href={WAITLIST_HREF} className="-my-3 inline-flex min-h-11 items-center font-bold underline underline-offset-2">
-            להשארת אימייל
+          <Link href={WAITLIST_HREF} className={linkClass("inline")}>
+            להשארת מייל
           </Link>
         </PanelNote>
       ) : null}

@@ -130,7 +130,7 @@ export default function SkipButton({ onSkip, onHide, disabled, className, presse
           aria-label="אפשרויות דילוג"
           data-motion="fade"
           onKeyDown={onMenuKeyDown}
-          className="names-glass names-toast-in absolute end-0 bg-surface bottom-full z-10 mb-2.5 rounded-md p-1.5"
+          className="names-glass names-menu-in absolute end-0 origin-bottom-left ltr:origin-bottom-right bg-surface bottom-full z-10 mb-2.5 rounded-md p-1.5"
         >
           <button
             ref={item}

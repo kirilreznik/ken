@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useUserId } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
-import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
-import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet } from "@/components/names/ui";
+import NameDetailSheet from "@/components/names/detail/LazyNameDetailSheet";
+import { Button, ChevronIcon, FADE_PRESS, HeartIcon, Icon, IconButton, collapseRow, dotClass, emptyLineClass, emptyPanelClass, emptyTitleClass, openNameSheet, openSheet, segmentClass, segmentGroupClass, tagClass } from "@/components/names/ui";
+import { ListSkeleton } from "./ListSkeleton";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
 import { useMatches, useOnline, useSeenMatches } from "@/components/names/useMatches";
@@ -17,17 +18,20 @@ import { usePrefJson } from "@/components/names/usePrefJson";
 import { useSpace } from "@/components/names/useSpace";
 import { useVotes } from "@/components/names/useVotes";
 import VotesLoadFailed from "./VotesLoadFailed";
+import { OfflineMark } from "@/components/names/auth/PanelNote";
 import type { Decision } from "@/components/names/DecisionButtons";
-import { DETAILS_HINT, sheetVoteText } from "@/lib/names/a11y";
+import { sheetVoteText } from "@/lib/names/a11y";
 import { APP_PATH } from "@/lib/names/auth";
 import { hasAppEntry } from "@/lib/names/appHistory";
+import { formatCount } from "@/lib/names/card";
 import { keptByText, matchesIntro, newMatches, updatedText, withSeen, type Match, type MatchesState } from "@/lib/names/matches";
 import { HIDDEN_LINK, addedText, listsTab, rowActionText, rowMeta, rowMetaText, rowUndoText, savedRows, type ListsTab, type SavedRow } from "@/lib/names/lists";
-import { MATCHES_LOAD_FAILED_TITLE } from "@/lib/names/offline";
+import { MATCHES_LOAD_FAILED_TITLE, OFFLINE_LINE } from "@/lib/names/offline";
 import { showToast } from "@/lib/names/toast";
 import type { NameStats, Vote } from "@/lib/names/types";
 import AddNameSheet from "./AddNameSheet";
 import DuelScreen from "./DuelScreen";
+import RowName from "./RowName";
 import PairsPanel from "./PairsPanel";
 import RowMenu from "./RowMenu";
 import { clearChoiceLabel, decideLabel } from "@/lib/names/launch";
@@ -42,13 +46,6 @@ function openDetails(name: string) {
   track("detail_opened", { source: "list" });
 }
 
-function Icon({ size = 20, children, className }: { size?: number; children: ReactNode; className?: string }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
-      {children}
-    </svg>
-  );
-}
 
 /**
  * FR-W18 "השמות שלי" (board 5): the header with back, invite and "הוספת שם", the segments
@@ -63,7 +60,6 @@ export default function ListsScreen() {
   const { cards } = useCards();
   const { store, state } = useVotes(space.spaceId, userId);
   const matches = useMatches(space.spaceId, userId, space.isShared, state?.votes);
-  const [status, setStatus] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   const twins = usePrefJson(userId, "twins") === "true";
@@ -89,8 +85,8 @@ export default function ListsScreen() {
   const surname = surnameJson ? (JSON.parse(surnameJson) as string) : "";
 
   const tabs: { id: ListsTab; label: string }[] = [
-    { id: "saved", label: ready && !loadFailed ? `שמרתי · ${rows.length}` : "שמרתי" },
-    { id: "matches", label: space.isShared && matches?.ready && matches.fetchedAt !== null ? `התאמות · ${matches.matches.length}` : "התאמות" },
+    { id: "saved", label: ready && !loadFailed ? `שמרתי ·\u00a0${formatCount(rows.length)}` : "שמרתי" },
+    { id: "matches", label: space.isShared && matches?.ready && matches.fetchedAt !== null ? `התאמות ·\u00a0${formatCount(matches.matches.length)}` : "התאמות" },
     { id: "duel", label: "דו־קרב" },
     ...(twins ? [{ id: "pairs" as const, label: "זוגות" }] : []),
   ];
@@ -137,8 +133,30 @@ export default function ListsScreen() {
     if (!store) return;
     store.setVote(name, "keep", custom);
     if (tab !== "saved" && tab !== "duel") selectTab("saved");
-    setStatus(addedText(name));
     showToast(addedText(name));
+  };
+
+  // PRD 3.2.6: a choice in the name sheet changes the vote through the store; the sheet stays
+  // open with the new choice pressed, and the toast (outside the sheet's inert page) says it.
+  // "דילוג" on a saved name takes it out of "שמרתי"; the toast's "ביטול" puts the old vote back.
+  const decideInSheet = (name: string, kind: Decision) => {
+    if (!store) return;
+    const previous = state?.votes.get(name);
+    if (previous?.vote === kind) return;
+    track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null });
+    store.setVote(name, kind, previous?.custom ?? false);
+    const message = sheetVoteText(kind, name);
+    const wasSaved = previous && (previous.vote === "keep" || previous.vote === "love");
+    if (kind === "skip" && wasSaved) {
+      const restore = () => {
+        store.setVote(name, previous.vote, previous.custom);
+        const back = sheetVoteText(previous.vote, name);
+        showToast(back);
+      };
+      showToast(message, { action: { label: "ביטול", onAction: restore } });
+    } else {
+      showToast(message);
+    }
   };
 
   if (tab === "duel") {
@@ -157,49 +175,32 @@ export default function ListsScreen() {
         chooseLabel={(name) => decideLabel(space.isShared, name)}
         onChoose={(name, _source, rank) => choose(name, "duel", { custom: customNames.has(name), rank })}
         onAddName={() => openSheet("add-name")}
+        canOpen={(name) => !customNames.has(name) && canOpen(name)}
+        onOpenName={openDetails}
       />
       <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
+      <NameDetailSheet
+        cards={cards}
+        surname={surname}
+        matches={space.isShared ? (matches?.matches ?? NO_MATCHES) : NO_MATCHES}
+        memberCount={space.members.length}
+        votes={votes}
+        onDecide={decideInSheet}
+      />
       {decision}
       </>
     );
   }
 
-  // PRD 3.2.6: a choice in the name sheet changes the vote through the store; the sheet stays
-  // open with the new choice pressed, and the toast (outside the sheet's inert page) says it.
-  // "דילוג" on a saved name takes it out of "שמרתי"; the toast's "ביטול" puts the old vote back.
-  const decideInSheet = (name: string, kind: Decision) => {
-    if (!store) return;
-    const previous = state?.votes.get(name);
-    if (previous?.vote === kind) return;
-    track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null });
-    store.setVote(name, kind, previous?.custom ?? false);
-    const message = sheetVoteText(kind, name);
-    setStatus(message);
-    const wasSaved = previous && (previous.vote === "keep" || previous.vote === "love");
-    if (kind === "skip" && wasSaved) {
-      const restore = () => {
-        store.setVote(name, previous.vote, previous.custom);
-        const back = sheetVoteText(previous.vote, name);
-        setStatus(back);
-        showToast(back);
-      };
-      showToast(message, { action: { label: "ביטול", onAction: restore } });
-    } else {
-      showToast(message);
-    }
-  };
-
   return (
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
-      <main className="mx-auto flex w-full max-w-[480px] flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
+      <main className="mx-auto flex w-full max-w-content flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         {/* Under 360 px the row takes the deck header's 12 px edges and tighter gaps, so "השמות שלי" keeps its width at 320 px (NP-BUG-005). */}
-        <header className="flex items-center gap-2 max-[22.5rem]:-mx-2 max-[22.5rem]:gap-1.5 max-[20rem]:flex-wrap">
+        <header className="flex items-center gap-2 max-[22.5rem]:-mx-2 max-[22.5rem]:gap-1.5">
           <IconButton aria-label="חזרה" onClick={back}>
-            <Icon className="ltr:-scale-x-100">
-              <path d="M9 6l6 6-6 6" />
-            </Icon>
+            <ChevronIcon dir="back" />
           </IconButton>
-          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title outline-none max-[20rem]:min-w-max">
+          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title text-balance outline-none">
             השמות שלי
           </h1>
           <IconButton href="/names/invite" aria-label="הזמנה לבחירה משותפת">
@@ -208,11 +209,12 @@ export default function ListsScreen() {
               <path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6" />
             </Icon>
           </IconButton>
-          <Button variant="secondary" size="md" aria-label="הוספת שם שלא ברשימה" onClick={() => openSheet("add-name")} className="text-person font-bold">
+          <Button variant="secondary" size="md" aria-label="הוספת שם שלא ברשימה" onClick={() => openSheet("add-name")} className="text-person font-bold max-[22.5rem]:w-11 max-[22.5rem]:px-0">
             <Icon size={16}>
               <path d="M12 5v14M5 12h14" />
             </Icon>
-            הוספת שם
+            {/* Under 360 px the button goes icon-only (its aria-label stays), so the title keeps one line (NP-144). */}
+            <span className="max-[22.5rem]:sr-only">הוספת שם</span>
           </Button>
         </header>
 
@@ -220,7 +222,7 @@ export default function ListsScreen() {
 
         {ready ? <InstallHint userId={userId} voteCount={state?.votes.size ?? 0} /> : null}
 
-        <div role="tablist" aria-label="רשימות" className="grid auto-cols-fr grid-flow-col gap-1 rounded-pill border border-line bg-surface p-1">
+        <div role="tablist" aria-label="רשימות" className={segmentGroupClass()}>
           {tabs.map((t) => {
             const selected = t.id === tab;
             return (
@@ -234,7 +236,7 @@ export default function ListsScreen() {
                 tabIndex={selected ? 0 : -1}
                 onClick={() => selectTab(t.id)}
                 onKeyDown={onTabKeyDown}
-                className={`min-h-11 rounded-pill px-2 text-person font-bold ${selected ? "bg-ink text-surface" : "text-ink-soft hover:bg-sand"}`}
+                className={segmentClass(selected)}
               >
                 {t.label}
               </button>
@@ -277,9 +279,7 @@ export default function ListsScreen() {
               latinOf={latinOf}
             />
           ) : space.loading ? (
-            <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-              <span className="sr-only">בטעינה</span>
-            </div>
+            <ListSkeleton />
           ) : !space.isShared ? (
             <SoloMatches />
           ) : (
@@ -295,10 +295,6 @@ export default function ListsScreen() {
             />
           )}
         </section>
-
-        <p role="status" className="sr-only">
-          {status}
-        </p>
       </main>
       <AddNameSheet names={names} saved={rows.map((r) => r.name)} onAdd={add} />
       <NameDetailSheet
@@ -342,17 +338,25 @@ function MatchesPanel({ userId, state, onRetry, memberCount, names, canOpen, cho
   const online = useOnline();
   // The day to compare the last update with; the screen isn't open across midnight for long.
   const [openedAt] = useState(() => Date.now());
-  const intro = <p className="m-0 text-person text-ink-soft">{matchesIntro(memberCount)}</p>;
-  const updated =
-    !online && state?.fetchedAt != null ? (
-      <p className="m-0 text-caption text-stone">{updatedText(state.fetchedAt, openedAt)}</p>
-    ) : null;
+  const intro = <p className="m-0 text-person text-pretty text-ink-soft">{matchesIntro(memberCount)}</p>;
+  // Always mounted (empty while online), so going offline is announced once (A11Y-G3-03).
+  const updated = (
+    <p role="status" className="m-0 text-caption text-stone empty:hidden">
+      {!online && state?.ready && state.fetchedAt != null ? (
+        <>
+          <OfflineMark />
+          {`${OFFLINE_LINE} ${updatedText(state.fetchedAt, openedAt)}.`}
+        </>
+      ) : null}
+    </p>
+  );
 
   // A failed first fetch says so (the store retries on focus and every 60 s), never a skeleton forever.
   if (state?.ready && state.fetchedAt === null && online && state.failed) {
     return (
       <>
         {intro}
+        {updated}
         <VotesLoadFailed title={MATCHES_LOAD_FAILED_TITLE} onRetry={onRetry} />
       </>
     );
@@ -363,9 +367,8 @@ function MatchesPanel({ userId, state, onRetry, memberCount, names, canOpen, cho
     return (
       <>
         {intro}
-        <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-          <span className="sr-only">בטעינה</span>
-        </div>
+        {updated}
+        <ListSkeleton />
       </>
     );
   }
@@ -426,16 +429,14 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
           return (
             <li key={match.name} className="flex items-center gap-3 border-b border-line py-3.5 ps-4 pe-2 last:border-b-0">
               <RowName onOpen={canOpen(match.name) ? () => openDetails(match.name) : undefined}>
-                <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                   <span className="text-row-name break-words">{match.name}</span>
                   {!seenAtOpen.has(match.name) ? (
-                    <span className="rounded-pill bg-peach-soft px-2 py-0.5 text-label text-clay-deep">חדש</span>
+                    <span className={tagClass("xs")}>חדש</span>
                   ) : null}
                   {match.lovedByCount > 0 ? (
                     <span className="flex items-center gap-1 text-caption font-bold text-ink-soft">
-                      <Icon size={16} className="fill-clay stroke-clay">
-                        <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
-                      </Icon>
+                      <HeartIcon size={16} className="self-center fill-clay stroke-clay" />
                       סומן ״אהבתי מאוד״
                     </span>
                   ) : null}
@@ -447,7 +448,9 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
                       {meta.trend ? (
                         <>
                           {" · "}
-                          {meta.trend.arrow} {meta.trend.word}
+                          <span className="whitespace-nowrap">
+                            {meta.trend.arrow} {meta.trend.word}
+                          </span>
                         </>
                       ) : null}
                     </span>
@@ -466,31 +469,6 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
   );
 }
 
-/**
- * The name part of a row. With `onOpen` (the name has a card) it's a button that opens the
- * name sheet, same look; without it, plain text (custom names have no sheet).
- */
-function RowName({ onOpen, children }: { onOpen?: () => void; children: ReactNode }) {
-  const className = "flex min-w-0 flex-1 flex-col gap-0.5";
-  if (!onOpen) return <div className={className}>{children}</div>;
-  return (
-    <button
-      type="button"
-      aria-haspopup="dialog"
-      // Safari doesn't focus a tapped button; focus it so the sheet gives focus back to this row.
-      onPointerDown={preloadNameDetail}
-      onFocus={preloadNameDetail}
-      onClick={(event) => {
-        event.currentTarget.focus({ preventScroll: true });
-        onOpen();
-      }}
-      className={`${className} min-h-11 justify-center rounded-sm text-start`}>
-      {children}
-      <span className="sr-only">, {DETAILS_HINT}</span>
-    </button>
-  );
-}
-
 function DuelLink({ title, from }: { title: string; from: "saved" | "matches" }) {
   return (
     <Link
@@ -498,7 +476,7 @@ function DuelLink({ title, from }: { title: string; from: "saved" | "matches" })
       replace
       scroll={false}
       data-control
-      className="flex items-center gap-3 rounded-lg bg-peach-soft px-4 py-3.5 text-ink"
+      className={`flex items-center gap-3 rounded-lg bg-peach-soft px-4 py-3.5 text-ink ${FADE_PRESS}`}
     >
       <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-md bg-surface">
         <Icon>
@@ -509,9 +487,7 @@ function DuelLink({ title, from }: { title: string; from: "saved" | "matches" })
         <span className="text-card-title">{title}</span>
         <span className="text-caption text-ink-soft">שני שמות בכל פעם, עד שנשארת חמישייה</span>
       </span>
-      <Icon size={18} className="ltr:-scale-x-100">
-        <path d="M15 6l-6 6 6 6" />
-      </Icon>
+      <ChevronIcon dir="forward" size={18} />
     </Link>
   );
 }
@@ -555,9 +531,7 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
 
   if (!ready) {
     return (
-      <div aria-busy="true" className="h-[78px] rounded-lg bg-surface shadow-card">
-        <span className="sr-only">בטעינה</span>
-      </div>
+      <ListSkeleton />
     );
   }
 
@@ -577,14 +551,14 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
 
   return (
     <>
-      <p className="m-0 text-person text-ink-soft">השמות ששמרת, אלה שאהבת מאוד ראשונים.</p>
+      <p className="m-0 text-person text-pretty text-ink-soft">השמות ששמרת, אלה שאהבת מאוד ראשונים.</p>
       <ul ref={listRef} aria-label="שמות ששמרתי" className="m-0 list-none rounded-lg bg-surface p-0 shadow-card">
         {rows.map((row, i) => {
           const meta = row.custom ? null : rowMeta(names?.get(row.name));
           return (
             <li key={row.name} className="flex items-center gap-3 border-b border-line py-3.5 ps-4 pe-2 last:border-b-0">
               <RowName onOpen={!row.custom && canOpen(row.name) ? () => openDetails(row.name) : undefined}>
-                <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                   <span className="text-row-name break-words">{row.name}</span>
                   {latinOf?.(row.name) ? (
                     <bdi dir="ltr" lang="en" className="text-caption text-stone">
@@ -593,9 +567,7 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
                   ) : null}
                   {row.vote === "love" ? (
                     <span className="flex items-center gap-1 text-caption font-bold text-ink-soft">
-                      <Icon size={16} className="fill-clay stroke-clay">
-                        <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
-                      </Icon>
+                      <HeartIcon size={16} className="self-center fill-clay stroke-clay" />
                       אהבתי מאוד
                     </span>
                   ) : null}
@@ -607,7 +579,9 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
                       {meta.trend ? (
                         <>
                           {" · "}
-                          {meta.trend.arrow} {meta.trend.word}
+                          <span className="whitespace-nowrap">
+                            {meta.trend.arrow} {meta.trend.word}
+                          </span>
                         </>
                       ) : null}
                     </span>
@@ -641,7 +615,7 @@ function SoloMatches() {
   useEffect(() => track("invite_prompt", { placement: "matches_tab", action: "shown" }), []);
   return (
     <div className={emptyPanelClass("card")}>
-      <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-full bg-peach-soft text-clay-deep">
+      <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-pill bg-peach-soft text-clay-deep">
         <Icon size={24}>
           <circle cx="9" cy="8" r="3.5" />
           <path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6" />
@@ -651,7 +625,7 @@ function SoloMatches() {
       <p className={emptyLineClass()}>
         אפשר להזמין מישהו נוסף. הבחירה נעשית בנפרד, בכל טלפון, ושם שנשמר אצל שניים או יותר יופיע כאן כהתאמה.
       </p>
-      <p className="m-0 text-caption text-stone">הדילוגים נשארים פרטיים. השמות ששמרת עוברים איתך.</p>
+      <p className="m-0 text-caption text-stone">על מה דילגת נשאר רק אצלך. השמות ששמרת עוברים איתך.</p>
       <Button size="md" href="/names/invite" onClick={() => track("invite_prompt", { placement: "matches_tab", action: "invite" })}>
         הזמנה לבחירה משותפת
       </Button>
@@ -663,10 +637,13 @@ function SoloMatches() {
 function ChosenBanner({ name, shared, onOpen, onClear }: { name: string; shared: boolean; onOpen: () => void; onClear: () => void }) {
   return (
     <div className="flex items-center gap-3 rounded-lg bg-peach-soft py-2 ps-4 pe-2 text-ink">
-      <span aria-hidden="true" className="size-2.5 flex-none rounded-full bg-clay" />
-      <button type="button" onClick={onOpen} className="flex min-h-11 min-w-0 flex-1 flex-col items-start justify-center text-start">
-        <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
-        <span className="text-row-name break-words">{name}</span>
+      <span aria-hidden="true" className={`flex-none ${dotClass()}`} />
+      <button type="button" aria-haspopup="dialog" onClick={onOpen} className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 text-start ${FADE_PRESS}`}>
+        <span className="flex min-w-0 flex-1 flex-col items-start justify-center">
+          <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
+          <span className="text-row-name break-words">{name}</span>
+        </span>
+        <ChevronIcon dir="forward" size={16} className="flex-none text-ink-soft" />
       </button>
       <Button variant="link" onClick={onClear} aria-label={clearChoiceLabel(name)} className="text-person!">
         ביטול הבחירה

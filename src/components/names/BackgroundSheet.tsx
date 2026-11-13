@@ -1,10 +1,10 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
-import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { useUserId } from "@/components/names/AuthProvider";
 import { useBackgroundChoice } from "@/components/names/ScreenBackground";
-import { BottomSheet, Button } from "@/components/names/ui";
+import { BottomSheet, Button, CheckIcon, FADE_PRESS, Icon } from "@/components/names/ui";
 import { photoUrl } from "@/lib/names/background";
 import { canvasColor } from "@/lib/names/brand";
 import { loadOwnPhoto, resizePhoto, saveOwnPhoto, subscribeOwnPhoto } from "@/lib/names/photo";
@@ -31,24 +31,6 @@ const OPTIONS: Option[] = [
   { id: "own", label: "תמונה משלי", sub: "מהגלריה" },
 ];
 
-function Icon({ size, strokeWidth = 2, children }: { size: number; strokeWidth?: number; children: ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="flex-none"
-    >
-      {children}
-    </svg>
-  );
-}
 
 /** This user's saved own photo as an object URL (null when there is none), following saves and deletes. */
 function useOwnThumb(userId: string | null): string | null {
@@ -89,14 +71,14 @@ export default function BackgroundSheet() {
       closeButton
     >
       <BackgroundOptions />
-      <p className="flex items-start gap-2.5 rounded-md bg-canvas px-3.5 py-3 text-note text-ink-soft">
+      <p className="flex items-start gap-3 rounded-md bg-canvas px-3.5 py-3 text-note text-ink-soft">
         <span className="mt-0.5">
           <Icon size={18}>
             <rect x="5" y="11" width="14" height="9" rx="2" />
             <path d="M8 11V8a4 4 0 0 1 8 0v3" />
           </Icon>
         </span>
-        <span>תמונה משלי נשמרת רק במכשיר הזה. היא לא עולה לשרת ולא מוצגת לשאר המשתתפים בבחירה.</span>
+        <span>תמונה משלך נשמרת רק במכשיר הזה. היא לא יוצאת ממנו ולא מוצגת לשאר המשתתפים בבחירה.</span>
       </p>
     </BottomSheet>
   );
@@ -132,13 +114,21 @@ function BackgroundOptions() {
     input.value = "";
     if (!file || !userId) return;
     setSaving(true);
+    // A photo that can't be read and a device that can't keep it get their own message (NP-132).
+    let blob: Blob;
     try {
-      const blob = await resizePhoto(file, canvasColor);
+      blob = await resizePhoto(file, canvasColor);
+    } catch {
+      setSaving(false);
+      showToast("אי אפשר לפתוח את התמונה הזו. אפשר לבחור תמונה אחרת.");
+      return;
+    }
+    try {
       await saveOwnPhoto(userId, blob);
       setPref(userId, "background", "own");
       showToast("התמונה נשמרה במכשיר הזה.");
     } catch {
-      showToast("אי אפשר לפתוח את התמונה הזו. אפשר לבחור תמונה אחרת.");
+      showToast("לא הצלחנו לשמור את התמונה במכשיר הזה. אפשר לנסות שוב.");
     } finally {
       setSaving(false);
     }
@@ -181,7 +171,7 @@ function BackgroundOptions() {
               aria-busy={(o.id === "own" && saving) || undefined}
               tabIndex={on ? 0 : -1}
               onClick={() => (o.id === "own" && !hasOwn ? choosePhoto() : pick(o.id))}
-              className="group flex flex-col items-stretch gap-1.5 rounded-md text-ink outline-none"
+              className={`group flex flex-col items-stretch gap-1.5 rounded-md text-ink outline-none ${FADE_PRESS}`}
             >
               <span
                 className={`relative flex h-30 items-center justify-center overflow-hidden rounded-md group-focus-visible:ring-2 group-focus-visible:ring-ink/50 group-focus-visible:ring-offset-4 ${
@@ -200,7 +190,7 @@ function BackgroundOptions() {
                   <img src={ownThumb} alt="" className="absolute inset-0 size-full object-cover" />
                 ) : null}
                 {o.id === "none" ? (
-                  <span aria-hidden="true" className="h-13 w-10 rounded-sm bg-surface shadow-(--nest-shadow-card-raised)" />
+                  <span aria-hidden="true" className="h-13 w-10 rounded-sm bg-surface shadow-card-raised" />
                 ) : null}
                 {o.id === "own" && !ownThumb ? (
                   <Icon size={26}>
@@ -210,10 +200,8 @@ function BackgroundOptions() {
                   </Icon>
                 ) : null}
                 {on ? (
-                  <span className="absolute end-1.5 top-1.5 flex size-5.5 items-center justify-center rounded-full bg-ink text-surface">
-                    <Icon size={14} strokeWidth={3}>
-                      <path d="M5 12l5 5 9-10" />
-                    </Icon>
+                  <span className="absolute end-1.5 top-1.5 flex size-5.5 items-center justify-center rounded-pill bg-ink text-surface">
+                    <CheckIcon size={14} />
                   </span>
                 ) : null}
               </span>

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, Glass } from "@/components/names/ui";
+import { Button, Glass, linkClass } from "@/components/names/ui";
 import { isOffline } from "@/lib/names/authErrors";
 import { reportClientLog } from "@/lib/names/clientLog";
 import { SETTINGS_ERROR_TEXT, SETTINGS_OFFLINE_TEXT, isOptedIn, optInMetadata } from "@/lib/names/settings";
@@ -78,7 +78,7 @@ export default function NestCard({ placement }: { placement: NestCardPlacement }
           נעדכן אותך כש־<bdi>Nest</bdi> יוצאת. אפשר לבטל בהגדרות.
         </p>
       ) : (
-        <Button size="md" onClick={() => void optIn()} aria-busy={saving} aria-disabled={saving}>
+        <Button variant="secondary" size="md" onClick={() => void optIn()} aria-busy={saving} aria-disabled={saving}>
           {saving ? "שומרים…" : "לעדכן אותי כשהיא יוצאת"}
         </Button>
       )}
@@ -92,7 +92,7 @@ export default function NestCard({ placement }: { placement: NestCardPlacement }
         target="_blank"
         rel="noopener"
         onClick={() => track("nest_card_tap", { placement, action: "learn" })}
-        className="inline-flex min-h-11 items-center text-person font-bold text-ink underline underline-offset-4"
+        className={`${linkClass("inline", "none")} text-person`}
       >
         <span>
           מה זה <bdi>Nest</bdi>?

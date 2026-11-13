@@ -34,9 +34,16 @@ export function buildCards(names: Map<string, NameStats>, content: Map<string, N
   return cards;
 }
 
+const fmt = new Intl.NumberFormat("he-IL");
+
+/** A count as the app shows it everywhere, with thousands separators ("1,284"; NP-079). */
+export function formatCount(n: number): string {
+  return fmt.format(n);
+}
+
 /** "שם {n} מתוך {total}": where the card sits in the filtered deck (FR-W12, the demo's wording). */
 export function positionText(n: number, total: number): string {
-  return `שם ${n} מתוך ${total}`;
+  return `שם ${formatCount(n)} מתוך ${formatCount(total)}`;
 }
 
 /** The name with the user's surname, or null when no surname is set (E16 FR-5). */

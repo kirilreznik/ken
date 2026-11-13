@@ -1,5 +1,6 @@
 export { Glass } from "./Glass";
-export { checkboxClass, emptyLineClass, emptyPanelClass, emptyTitleClass, inputClass } from "./classes";
+export { Icon, CloseIcon, CheckIcon, ChevronIcon, HeartIcon, BookmarkIcon } from "./icons";
+export { FADE_PRESS, ROW_PRESS, checkboxClass, chipClass, emptyLineClass, emptyPanelClass, emptyTitleClass, inputClass, linkClass, segmentClass, segmentGroupClass, skeletonClass, tagClass, dotClass } from "./classes";
 export { Button, IconButton } from "./Button";
 export { Chip } from "./Chip";
 export { BottomSheet } from "./BottomSheet";

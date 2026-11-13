@@ -3,9 +3,16 @@ import { reportClientLog } from "./clientLog";
 /** FR-W5: Supabase auth errors in Hebrew; raw English never reaches the screen. */
 export const WRONG_CODE_MESSAGE =
   "הקוד לא נכון או שפג תוקפו. אפשר להקליד שוב או לבקש קוד חדש כשהשליחה החוזרת תיפתח.";
-export const RATE_LIMIT_MESSAGE = "נשלחו יותר מדי קודים. אפשר לנסות שוב בעוד כמה דקות.";
+/** True for too many sends and too many typed codes alike (NP-035). */
+export const RATE_LIMIT_MESSAGE = "היו יותר מדי ניסיונות. אפשר לנסות שוב בעוד כמה דקות.";
+/** How long the rate-limit line stays: Supabase's per-address send window is 60 s (NP-035). */
+export const RATE_LIMIT_CLEAR_MS = 60_000;
 export const OFFLINE_MESSAGE = "אין חיבור לאינטרנט. אפשר להיכנס כשהחיבור יחזור.";
 export const GENERIC_MESSAGE = "משהו השתבש. אפשר לנסות שוב.";
+/** An unexpected failure says which step failed, picked by the area (NP-036). */
+export const SEND_FAILED_MESSAGE = "לא הצלחנו לשלוח את הקוד. אפשר לנסות שוב בעוד רגע.";
+export const VERIFY_FAILED_MESSAGE = "לא הצלחנו לבדוק את הקוד. אפשר לנסות שוב.";
+export const SAVE_FAILED_MESSAGE = "לא הצלחנו לשמור את הפרטים. אפשר לנסות שוב.";
 
 export type AuthErrorKind = "wrong-code" | "rate-limit" | "signups-closed" | "offline" | "other";
 
@@ -58,8 +65,16 @@ export function urlAuthError(search: string, hash: string): ErrorLike | null {
   return null;
 }
 
+/** The line for an unexpected failure in an area ("sign-in-email-send", "onboarding-save" …). */
+function otherMessage(area: string | undefined): string {
+  if (area === "sign-in-email-send") return SEND_FAILED_MESSAGE;
+  if (area === "sign-in-email-verify") return VERIFY_FAILED_MESSAGE;
+  if (area?.startsWith("onboarding")) return SAVE_FAILED_MESSAGE;
+  return GENERIC_MESSAGE;
+}
+
 /** The Hebrew line for an error kind ("signups-closed" goes to welcome?closed=1 instead). */
-export function authErrorMessage(kind: AuthErrorKind): string {
+export function authErrorMessage(kind: AuthErrorKind, area?: string): string {
   switch (kind) {
     case "wrong-code":
       return WRONG_CODE_MESSAGE;
@@ -68,7 +83,7 @@ export function authErrorMessage(kind: AuthErrorKind): string {
     case "offline":
       return OFFLINE_MESSAGE;
     default:
-      return GENERIC_MESSAGE;
+      return otherMessage(area);
   }
 }
 
@@ -88,7 +103,7 @@ export function reportAuthError(area: string, error: unknown): void {
 export function handleAuthError(area: string, error: unknown): { kind: AuthErrorKind; message: string | null } {
   const kind = authErrorKind(error);
   if (kind === "other") reportAuthError(area, error);
-  return { kind, message: kind === "signups-closed" ? null : authErrorMessage(kind) };
+  return { kind, message: kind === "signups-closed" ? null : authErrorMessage(kind, area) };
 }
 
 /**
@@ -118,4 +133,6 @@ export function isValidEmail(raw: string): boolean {
   return /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[^\s@.]{2,}$/.test(raw.trim());
 }
 
-export const INVALID_EMAIL_MESSAGE = "צריך כתובת אימייל, למשל name@example.com";
+/** An empty field and a typed but incomplete address each say their own thing (NP-034). */
+export const EMPTY_EMAIL_MESSAGE = "צריך כתובת מייל";
+export const INVALID_EMAIL_MESSAGE = "הכתובת לא שלמה. היא צריכה להיראות כמו name@example.com";

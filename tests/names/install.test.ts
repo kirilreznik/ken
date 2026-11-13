@@ -51,6 +51,6 @@ describe("showInstallHint", () => {
 
 describe("copy", () => {
   it("keeps the FR-W27 steps", () => {
-    expect(INSTALL_STEPS.join(" ")).toBe("לוחצים על כפתור השיתוף ואז על 'הוספה למסך הבית'");
+    expect(INSTALL_STEPS.join(" ")).toBe("לוחצים על כפתור השיתוף ואז על ״הוספה למסך הבית״");
   });
 });

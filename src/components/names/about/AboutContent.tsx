@@ -1,16 +1,16 @@
 import type { ReactNode } from "react";
-import { Button } from "@/components/names/ui";
+import { Button, linkClass } from "@/components/names/ui";
 import { CBS_ACCESSED, CBS_FILE, CBS_FILE_URL, CBS_LICENCE_URL, reportButtonLabel } from "@/lib/names/report";
 
 // 32 px tall on the board; -my-1.5 keeps that spacing while the hit area is 44 px.
-const sourceLink = "-my-1.5 inline-flex min-h-11 items-center text-person font-bold text-ink underline underline-offset-2";
+const sourceLink = `${linkClass("inline", "row")} text-person`;
 
 function Part({ title, level, children }: { title: string; level: 2 | 3; children: ReactNode }) {
   const Heading = level === 2 ? "h2" : "h3";
   return (
     <div className="flex flex-col gap-1.5">
-      <Heading className="m-0 text-card-title">{title}</Heading>
-      <p className="m-0 text-body text-ink-soft">{children}</p>
+      <Heading className="m-0 text-card-title text-balance">{title}</Heading>
+      <p className="m-0 text-body text-pretty text-ink-soft">{children}</p>
     </div>
   );
 }
@@ -32,13 +32,13 @@ function SourceLink({ href, children }: { href: string; children: ReactNode }) {
  */
 export default function AboutContent({ hasName, onReport, level = 3 }: { hasName: boolean; onReport: () => void; level?: 2 | 3 }) {
   return (
-    <div className="flex flex-col gap-4.5">
+    <div className="flex flex-col gap-4">
       <Part level={level} title="מספרי הלידות">
         המספרים הם תינוקות שנולדו בישראל וקיבלו את השם, לא אנשים שחיים היום. שמות שניתנו לפחות מ־5 תינוקות בשנה לא
         מתפרסמים באותה שנה.
       </Part>
 
-      <div className="flex flex-col gap-1.5 rounded-md bg-canvas p-3.5">
+      <div className="flex flex-col gap-1.5 rounded-md bg-canvas p-4">
         <span className="text-caption font-bold text-stone">מקור</span>
         <p className="m-0 text-person leading-5 text-ink">
           הלשכה המרכזית לסטטיסטיקה, הודעה לתקשורת 391/2025, שמות שניתנו ליילודים 1949–2024 (<bdi dir="ltr">{CBS_FILE}</bdi>).
@@ -53,7 +53,7 @@ export default function AboutContent({ hasName, onReport, level = 3 }: { hasName
 
       <Part level={level} title="הפירושים">
         פירוש קצר, מידע כללי על מקור השם ומשמעותו, וההערה מהתנ״ך. ההסברים נכתבו בעזרת בינה מלאכותית ועשויים להכיל
-        טעויות. האנשים הידועים נבדקו מול <bdi dir="ltr">Wikidata</bdi>.
+        טעויות. האנשים המוכרים נבדקו מול <bdi dir="ltr">Wikidata</bdi>.
       </Part>
 
       {/* About sits on "ללא רקע" (page and sheet), where the secondary pill is white with a line edge. */}

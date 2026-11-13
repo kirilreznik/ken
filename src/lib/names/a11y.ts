@@ -1,3 +1,4 @@
+import { formatCount } from "./card";
 import type { Card, CardDerived } from "./types";
 
 /** The intro ends with a full stop; drop it so the label doesn't read ".,". */
@@ -49,28 +50,20 @@ export function statusText(kind: StatusKind, name: string): string {
     case "hidden":
       return `השם ${name} לא יוצג שוב`;
     case "undo":
-      return `בוטל: ${name}`;
+      return `ההחלטה על ${name} בוטלה`;
   }
 }
 
 /**
  * The toast after a decision in the name sheet on a name that isn't the current card (PRD
- * 3.2.5): "נשמר: {name}", "אהבתי מאוד: {name}", "דילוג: {name}". A hidden name reads as "דילוג".
+ * 3.2.5): the same sentence as the deck's status (NP-128), so one act reads one way.
  */
 export function sheetVoteText(kind: Exclude<StatusKind, "undo">, name: string): string {
-  switch (kind) {
-    case "keep":
-      return `נשמר: ${name}`;
-    case "love":
-      return `אהבתי מאוד: ${name}`;
-    case "skip":
-    case "hidden":
-      return `דילוג: ${name}`;
-  }
+  return statusText(kind, name);
 }
 
 /** aria-label of the "השמות שלי" pill in the swipe header (FR-W10). */
 export function savedLabel(count: number | null): string {
   // null: the votes couldn't be read (NP-073), so there is no count to say.
-  return count === null ? "השמות שלי" : `השמות שלי: ${count} נשמרו`;
+  return count === null ? "השמות שלי" : count === 1 ? "השמות שלי: שם אחד נשמר" : `השמות שלי: ${formatCount(count)} נשמרו`;
 }
