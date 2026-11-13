@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
-import { useAuth } from "@/components/names/AuthProvider";
+import { useIsGuest, useUserId } from "@/components/names/AuthProvider";
 import AboutSheet from "@/components/names/about/AboutSheet";
 import CardStack from "@/components/names/card/CardStack";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
@@ -25,6 +25,7 @@ import { RECAP_VOTES, countSession, pauseAfterVote, pauseToShow, sessionTotals, 
 import { getPref, setPref } from "@/lib/names/prefs";
 import { showToast } from "@/lib/names/toast";
 import { currentSessionInfo, track } from "@/lib/names/track";
+import { guestPrompt, readGuestNudge, writeGuestNudge, type GuestVoteStore } from "@/lib/names/guest";
 import type { Vote } from "@/lib/names/types";
 import { isOpenKey } from "@/lib/names/keys";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
@@ -33,6 +34,7 @@ import ActionBar from "./ActionBar";
 import AboutLink from "./AboutLink";
 import { DeckLoadError, DeckSkeleton } from "./DeckLoad";
 import EmptyDeck from "./EmptyDeck";
+import GuestPanel from "./GuestPanel";
 import PausePanel from "./PausePanel";
 import RelativeChip from "./RelativeChip";
 import SurveyPrompt from "./SurveyPrompt";
@@ -58,8 +60,8 @@ type DecideMethod = "swipe" | "button" | "key" | "detail";
  * (optimistic, offline outbox) and "ביטול" takes back up to 10, putting the name back on top.
  */
 export default function SwipeScreen() {
-  const { user } = useAuth();
-  const userId = user?.id ?? null;
+  const userId = useUserId();
+  const guest = useIsGuest();
   const space = useSpace();
   const barRef = useToastLift();
   // "עדכון זמין" stays until tapped: it waits above the card's "לכל הפרטים", not on it (NP-BUG-011).
@@ -119,7 +121,22 @@ export default function SwipeScreen() {
   // A pause comes only after a decision in this visit (`entered`), never on opening the app,
   // and stays until it is answered (endPause writes the prefs that turn it off).
   const pauseInput = { solo, savedCount, invitePromptShown, sessionId, sessionVotes: totals.votes, recapSession };
-  const pause: Pause | null = userId && entered ? pauseToShow(pauseInput) : null;
+  // A guest's sign-in cards (lib/names/guest.ts): every 20 decisions one that can be put aside
+  // (only after a decision in this visit), and at 100 the wall, which stays.
+  const guestCount = useMemo(
+    () => (guest && store && state ? (store as GuestVoteStore).decidedCount() : 0),
+    [guest, store, state],
+  );
+  const [lastNudge, setLastNudge] = useState(readGuestNudge);
+  const guestKind = guest && state?.ready ? guestPrompt(guestCount, lastNudge) : null;
+  const guestCard = guestKind === "wall" || (guestKind === "nudge" && entered) ? guestKind : null;
+  const putNudgeAside = () => {
+    writeGuestNudge(guestCount);
+    setLastNudge(guestCount);
+  };
+  const guestOpensCard = (nextCount: number) => guest && guestPrompt(nextCount, lastNudge) !== null;
+  const launchPause: Pause | null = userId && entered ? pauseToShow(pauseInput) : null;
+  const pause: Pause | "guest" | null = guestCard ? "guest" : launchPause;
   const endPause = () => {
     if (!userId) return;
     if (pause === "invite") setPref(userId, "invitePromptShown", true);
@@ -127,7 +144,7 @@ export default function SwipeScreen() {
     if (sessionId && totals.votes >= RECAP_VOTES) setPref(userId, "recapSession", sessionId);
     else if (pause === "recap" && sessionId) setPref(userId, "recapSession", sessionId);
   };
-  const showSurvey = !!userId && !pause && surveyDue(sessionCount, votes.size, surveyState);
+  const showSurvey = !!userId && !guest && !pause && surveyDue(sessionCount, votes.size, surveyState);
 
   const ready = !!(cards && filters && userId && store && state?.ready);
   const deck = useMemo(
@@ -180,7 +197,7 @@ export default function SwipeScreen() {
     setStatus(statusText(kind, name));
     // Focus stays on the button, so screen-reader users hear the next name without going back to the card.
     // Not when this decision opens a pause: the panel covers the next card, and focus moves to it.
-    const opensPause = pauseAfterVote(pauseInput, {
+    const opensPause = guestOpensCard(guestCount + Number(!storedVotes?.has(name))) || pauseAfterVote(pauseInput, {
       previous: storedVotes?.get(name),
       saves: isSaved(kind),
       startedAt: session?.startedAt ?? null,
@@ -250,7 +267,7 @@ export default function SwipeScreen() {
   // Same store path as decide(), so the deck, undo and the session counters include it; the
   // card on top stays. The toast (a live region kept outside the sheet's inert page) says it.
   const decideOther = (name: string, kind: Decision) => {
-    if (!store || !deckNames.has(name)) return;
+    if (!store || !deckNames.has(name) || guestCard === "wall") return;
     if (votes.size === 0) track("first_vote");
     track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null });
     const next = applyVote({ votes, undo: undoStack }, name, kind);
@@ -276,8 +293,10 @@ export default function SwipeScreen() {
             drag.fly(key);
           }} className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 flex-col px-5 pt-1 max-[20rem]:min-h-100 max-[20rem]:px-3 [@media(max-height:30rem)]:min-h-100">
-            {slot === "pause" && pause ? (
-              <PausePanel key={pause} pause={pause} totals={totals} onContinue={endPause} />
+            {slot === "pause" && guestCard ? (
+              <GuestPanel key={`${guestCard}:${guestCount}`} kind={guestCard} count={guestCount} onLater={putNudgeAside} />
+            ) : slot === "pause" && launchPause ? (
+              <PausePanel key={launchPause} pause={launchPause} totals={totals} onContinue={endPause} />
             ) : slot === "card" && deck && progress ? (
               <CardStack
                 cards={deck.cards}

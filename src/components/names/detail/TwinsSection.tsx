@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useAuth } from "@/components/names/AuthProvider";
+import { useUserId } from "@/components/names/AuthProvider";
 import { Chip, openNameSheet } from "@/components/names/ui";
 import { usePrefJson } from "@/components/names/usePrefJson";
 import { track } from "@/lib/names/track";
@@ -31,8 +31,7 @@ export default function TwinsSection({
   votes: ReadonlyMap<string, Vote>;
   details: Map<string, NameDetail> | null;
 }) {
-  const { user } = useAuth();
-  const userId = user?.id ?? null;
+  const userId = useUserId();
   const on = usePrefJson(userId, "twins") === "true";
   const filtersJson = usePrefJson(userId, "filters");
   const sex = filtersJson ? (JSON.parse(filtersJson) as { sex: Card["derived"]["sexTag"] | null }).sex : null;
