@@ -35,6 +35,10 @@ node scripts/names-content/build-themes.mjs             # check theme lists, bui
 - An entry with `hold` is left out of the deck until the owner decides (unclear origin or meaning).
 - **Jewish-sector rule** (owner decision 2026-11-13, `scripts/names-content/sector.mjs`): the deck keeps a name only when most babies ever given it were in the CBS Jewish sector, or when since 2000 at least 100 Jewish babies got it and they are at least 10% of its births (shared names such as לין, איה, אדם). Exceptions go in `sector-overrides.json`. `build-themes` and `build-details` skip the names it leaves out.
 
+## Batches 8–13: site-listed names (2026-11-13)
+
+Batches 1–7 cover every name given 5+ times in 2024. Batches 8–13 add the 905 CBS names below that cutoff that pass the Jewish-sector rule and are listed on at least one Israeli baby-name site (israelibaby, baby-land, materna, pampers; scanned 2026-11-13 for name strings only, never their meanings). Order: names on 2+ sites first, then by births since 2000. Unclear names are held like any other batch. These names have no story or similar names yet (the name sheet shows the intro alone), so `DETAILS-REPORT.md` warns that they have no details entry.
+
 ## Writing rules (E16 spec §2)
 
 One short, neutral line on the origin and literal meaning. No claims about luck, character or destiny, no religious judgement, the same tone for every origin. When the origin or meaning is not certain, the entry is held, not guessed.

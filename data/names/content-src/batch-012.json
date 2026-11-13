@@ -1,0 +1,949 @@
+{
+ "_about": "Batch 12 (E16b): names 605-755 of the 905 site-listed names (2026-11-13 scan), drafted by Claude for owner spot-checks.",
+ "names": {
+  "שרלוט": {
+   "niqqud": "שַׁרְלוֹט",
+   "intro": "שרלוט, הצורה הנשית הצרפתית של שארל.",
+   "themes": [
+    "international"
+   ]
+  },
+  "סרג'יו": {
+   "niqqud": "סֶרְג'וֹ",
+   "intro": "סרג'יו, שם איטלקי וספרדי ממקור לטיני.",
+   "themes": [
+    "international"
+   ]
+  },
+  "גאן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "גניפר": {
+   "niqqud": "גֶ'נִיפֶר",
+   "intro": "גניפר, שם אנגלי ממקור ולשי: 'לבנה וטהורה'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "חסידה": {
+   "niqqud": "חֲסִידָה",
+   "intro": "חסידה, ציפור נודדת גדולה.",
+   "bible": {
+    "quote": "גם חסידה בשמים",
+    "book": "Jeremiah",
+    "ch": 8,
+    "v": 7
+   },
+   "themes": [
+    "animals"
+   ]
+  },
+  "סווטלנה": {
+   "niqqud": "סְווֶטְלָנָה",
+   "intro": "סווטלנה, כתיב של סבטלנה: 'מאירה'.",
+   "themes": [
+    "international",
+    "fire"
+   ]
+  },
+  "נירן": {
+   "niqqud": "נִירָן",
+   "intro": "ניר־רן: השדה שר.",
+   "themes": [
+    "land"
+   ]
+  },
+  "זיוית": {
+   "niqqud": "זִיוִית",
+   "intro": "זיוית, מלשון זיו: אור.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "גני": {
+   "niqqud": "גַּנִּי",
+   "intro": "גני, 'הגן שלי'.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "ג'יין": {
+   "niqqud": "גֵ'יין",
+   "intro": "ג'יין, צורה אנגלית של יוחנה.",
+   "themes": [
+    "international"
+   ]
+  },
+  "ויטל": {
+   "niqqud": "וִיטָל",
+   "intro": "ויטל, שם ספרדי מלטינית: 'חיים'."
+  },
+  "גתית": {
+   "niqqud": "גִּתִּית",
+   "intro": "גתית, כתיב של גיתית, כלי נגינה שמוזכר בתהלים.",
+   "themes": [
+    "poetry"
+   ]
+  },
+  "אספה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "צפניה": {
+   "niqqud": "צְפַנְיָה",
+   "intro": "צפניה, 'ה׳ צפן'. אחד מתרי עשר הנביאים.",
+   "bible": {
+    "quote": "אשר היה אל צפניה",
+    "book": "Zephaniah",
+    "ch": 1,
+    "v": 1
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "בוני": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ליבנה": {
+   "niqqud": "לִבְנֶה",
+   "intro": "ליבנה, עץ בעל גזע לבן. גם שם של עיר בתנ\"ך.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "ויולטה": {
+   "niqqud": "וִיוֹלֶטָה",
+   "intro": "ויולטה, 'סיגלית' באיטלקית ובספרדית.",
+   "themes": [
+    "international",
+    "nature"
+   ]
+  },
+  "אגנס": {
+   "niqqud": "אַגְנֶס",
+   "intro": "אגנס, שם בינלאומי מיוונית: 'טהורה'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "עשירה": {
+   "niqqud": "עֲשִׁירָה",
+   "intro": "עשירה, מלאת שפע."
+  },
+  "מושית": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "קלריס": {
+   "niqqud": "קְלָרִיס",
+   "intro": "קלריס, צורה צרפתית של קלרה: 'בהירה'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "מגלי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "לוסיאנה": {
+   "niqqud": "לוּסְיָאנָה",
+   "intro": "לוסיאנה, מלטינית 'אור'.",
+   "themes": [
+    "international",
+    "fire"
+   ]
+  },
+  "צמרת": {
+   "niqqud": "צַמֶּרֶת",
+   "intro": "צמרת, ראש העץ.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "חוליו": {
+   "niqqud": "חוּלְיוֹ",
+   "intro": "חוליו, הצורה הספרדית של יוליוס.",
+   "themes": [
+    "international"
+   ]
+  },
+  "דייגו": {
+   "niqqud": "דְּיֶיגוֹ",
+   "intro": "דייגו, כתיב של דיאגו, צורה ספרדית של יעקב.",
+   "themes": [
+    "international"
+   ]
+  },
+  "גסיקה": {
+   "niqqud": "גֶ'סִיקָה",
+   "intro": "גסיקה, כתיב של ג'סיקה.",
+   "themes": [
+    "international"
+   ]
+  },
+  "לילית": {
+   "niqqud": "לִילִית",
+   "intro": "לילית, מלשון לילה."
+  },
+  "תמנע": {
+   "niqqud": "תִּמְנָע",
+   "intro": "תמנע, שם מקראי. גם עמק בערבה.",
+   "bible": {
+    "quote": "ותמנע היתה פילגש",
+    "book": "Genesis",
+    "ch": 36,
+    "v": 12
+   },
+   "themes": [
+    "bible",
+    "israel"
+   ]
+  },
+  "ניצנה": {
+   "niqqud": "נִיצָנָה",
+   "intro": "ניצנה, מלשון ניצן.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "שיקמה": {
+   "niqqud": "שִׁקְמָה",
+   "intro": "שיקמה, כתיב של שקמה, עץ רחב שגדל בשפלה.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "צרלס": {
+   "niqqud": "צַ'רְלְס",
+   "intro": "צרלס, כתיב של צ'רלס: 'אדם חופשי'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "זכאי": {
+   "niqqud": "זַכַּאי",
+   "intro": "זכאי, מלשון זכות וזיכוי."
+  },
+  "הרצליה": {
+   "niqqud": "הֶרְצְלִיָּה",
+   "intro": "הרצליה, העיר שנקראה על שם הרצל.",
+   "themes": [
+    "israel"
+   ]
+  },
+  "קרל": {
+   "niqqud": "קַרְל",
+   "intro": "קרל, שם גרמני: 'אדם חופשי'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "לירית": {
+   "niqqud": "לִירִית",
+   "intro": "לירית, מלשון לירה ושירה.",
+   "themes": [
+    "poetry"
+   ]
+  },
+  "סתוית": {
+   "niqqud": "סְתָוִית",
+   "intro": "סתוית, פרח שפורח בסתיו.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "יקי": {
+   "niqqud": "יָקִי",
+   "intro": "יקי, צורת חיבה של יעקב."
+  },
+  "מריאנו": {
+   "niqqud": "מַרְיָאנוֹ",
+   "intro": "מריאנו, שם ספרדי ואיטלקי.",
+   "themes": [
+    "international"
+   ]
+  },
+  "אשרי": {
+   "niqqud": "אַשְׁרֵי",
+   "intro": "אשרי, מלשון אושר. גם המילה הראשונה בספר תהלים.",
+   "bible": {
+    "quote": "אשרי האיש",
+    "book": "Psalms",
+    "ch": 1,
+    "v": 1
+   },
+   "themes": [
+    "joy"
+   ]
+  },
+  "אבישלום": {
+   "niqqud": "אֲבִישָׁלוֹם",
+   "intro": "אבי־שלום: אבי הוא שלום. שם מקראי.",
+   "bible": {
+    "quote": "מעכה בת אבישלום",
+    "book": "I Kings",
+    "ch": 15,
+    "v": 2
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "תיקי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "מקונן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "גינת": {
+   "niqqud": "גִּינַת",
+   "intro": "גינת, מלשון גינה.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "פיי": {
+   "niqqud": "פֵיי",
+   "intro": "פיי, שם אנגלי: 'פיה'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "דוברת": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "יעד": {
+   "niqqud": "יַעַד",
+   "intro": "יעד, מטרה."
+  },
+  "אליעז": {
+   "niqqud": "אֱלִיעָז",
+   "intro": "אלי־עז: האל שלי הוא עוז.",
+   "themes": [
+    "strength"
+   ]
+  },
+  "מצדה": {
+   "niqqud": "מְצָדָה",
+   "intro": "מצדה, המבצר במדבר יהודה.",
+   "themes": [
+    "israel"
+   ]
+  },
+  "גיליה": {
+   "niqqud": "גִּילְיָה",
+   "intro": "גיל־יה: השמחה של ה׳.",
+   "themes": [
+    "joy"
+   ]
+  },
+  "זילפה": {
+   "niqqud": "זִלְפָּה",
+   "intro": "זילפה, שפחתה של לאה ואם גד ואשר.",
+   "bible": {
+    "quote": "ותקח את זלפה שפחתה",
+    "book": "Genesis",
+    "ch": 30,
+    "v": 9
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "זהורית": {
+   "niqqud": "זְהוֹרִית",
+   "intro": "זהורית, צבע אדום בוהק."
+  },
+  "אודיל": {
+   "niqqud": "אוֹדִיל",
+   "intro": "אודיל, שם צרפתי ממקור גרמני.",
+   "themes": [
+    "international"
+   ]
+  },
+  "מקסין": {
+   "niqqud": "מַקְסִין",
+   "intro": "מקסין, הצורה הנשית הצרפתית של מקסים.",
+   "themes": [
+    "international"
+   ]
+  },
+  "וולטר": {
+   "niqqud": "וָולְטֶר",
+   "intro": "וולטר, שם בינלאומי ממקור גרמני: 'מנהיג הצבא'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "פלור": {
+   "niqqud": "פְלוֹר",
+   "intro": "פלור, בצרפתית 'פרח'.",
+   "themes": [
+    "international",
+    "nature"
+   ]
+  },
+  "נופיה": {
+   "niqqud": "נוֹפְיָה",
+   "intro": "נוף־יה: הנוף של ה׳.",
+   "themes": [
+    "land"
+   ]
+  },
+  "שפי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "קרן-אור": {
+   "niqqud": "קֶרֶן־אוֹר",
+   "intro": "קרן־אור: קרן של אור.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "פאולו": {
+   "niqqud": "פָּאוּלוֹ",
+   "intro": "פאולו, הצורה האיטלקית והפורטוגזית של פאולוס.",
+   "themes": [
+    "international"
+   ]
+  },
+  "ראות": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רמונה": {
+   "niqqud": "רָמוֹנָה",
+   "intro": "רמונה, שם ספרדי, הצורה הנשית של רמון.",
+   "themes": [
+    "international"
+   ]
+  },
+  "מרטינה": {
+   "niqqud": "מַרְטִינָה",
+   "intro": "מרטינה, הצורה הנשית של מרטין.",
+   "themes": [
+    "international"
+   ]
+  },
+  "אשכר": {
+   "niqqud": "אֶשְׁכָּר",
+   "intro": "אשכר, מנחה ומתנה."
+  },
+  "אשכול": {
+   "niqqud": "אֶשְׁכּוֹל",
+   "intro": "אשכול, אשכול ענבים.",
+   "bible": {
+    "quote": "זמורה ואשכול ענבים",
+    "book": "Numbers",
+    "ch": 13,
+    "v": 23
+   },
+   "themes": [
+    "nature"
+   ]
+  },
+  "גרמי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "דדי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "תמירה": {
+   "niqqud": "תְּמִירָה",
+   "intro": "תמירה, גבוהה וזקופה, כמו תמר.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "חיותה": {
+   "niqqud": "חַיּוּתָה",
+   "intro": "חיותה, צורת חיבה של חיה: 'חיים'."
+  },
+  "אנוש": {
+   "niqqud": "אֱנוֹשׁ",
+   "intro": "אנוש, בן אדם. בנו של שת.",
+   "bible": {
+    "quote": "ויקרא את שמו אנוש",
+    "book": "Genesis",
+    "ch": 4,
+    "v": 26
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "אימי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "משכית": {
+   "niqqud": "מַשְׂכִּית",
+   "intro": "משכית, קישוט ותכשיט.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "אנגל": {
+   "niqqud": "אֵנְגֶ'ל",
+   "intro": "אנגל, באנגלית 'מלאך'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "שבח": {
+   "niqqud": "שֶׁבַח",
+   "intro": "שבח, תהילה.",
+   "themes": [
+    "poetry"
+   ]
+  },
+  "דוריאל": {
+   "niqqud": "דּוֹרִיאֵל",
+   "intro": "דור־אל: הדור של האל."
+  },
+  "אלסיה": {
+   "niqqud": "אַלֶסְיָה",
+   "intro": "אלסיה, שם איטלקי, צורה של אלכסנדרה.",
+   "themes": [
+    "international"
+   ]
+  },
+  "מלה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "עלית": {
+   "niqqud": "עִלִּית",
+   "intro": "עלית, כתיב של עילית: הטוב ביותר."
+  },
+  "יאשיהו": {
+   "niqqud": "יֹאשִׁיָּהוּ",
+   "intro": "יאשיהו, מלך יהודה.",
+   "bible": {
+    "quote": "בן שמנה שנה יאשיהו במלכו",
+    "book": "II Kings",
+    "ch": 22,
+    "v": 1
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "פרננדה": {
+   "niqqud": "פֶרְנַנְדָּה",
+   "intro": "פרננדה, הצורה הנשית של פרננדו.",
+   "themes": [
+    "international"
+   ]
+  },
+  "מגל": {
+   "niqqud": "מַגָּל",
+   "intro": "מגל, כלי לקציר תבואה.",
+   "themes": [
+    "land"
+   ]
+  },
+  "אלפרדו": {
+   "niqqud": "אַלְפְרֵדוֹ",
+   "intro": "אלפרדו, שם איטלקי וספרדי ממקור אנגלי.",
+   "themes": [
+    "international"
+   ]
+  },
+  "צופנת": {
+   "niqqud": "צוֹפֶנֶת",
+   "intro": "צופנת, מלשון צפון ונסתר."
+  },
+  "בושמת": {
+   "niqqud": "בָּשְׂמַת",
+   "intro": "בושמת, כתיב של בשמת, מלשון בושם."
+  },
+  "שחם": {
+   "niqqud": "שַׁחַם",
+   "intro": "שחם, סלע קשה.",
+   "themes": [
+    "land",
+    "strength"
+   ]
+  },
+  "יודפת": {
+   "niqqud": "יוֹדְפַת",
+   "intro": "יודפת, יישוב קדום בגליל.",
+   "themes": [
+    "israel"
+   ]
+  },
+  "סנאית": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "דונלד": {
+   "niqqud": "דּוֹנַלְד",
+   "intro": "דונלד, שם סקוטי: 'שליט העולם'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "חוף": {
+   "niqqud": "חוֹף",
+   "intro": "חוף, שפת הים.",
+   "themes": [
+    "water"
+   ]
+  },
+  "עזי": {
+   "niqqud": "עֻזִּי",
+   "intro": "עזי, 'העוז שלי'.",
+   "themes": [
+    "strength"
+   ]
+  },
+  "אלבה": {
+   "niqqud": "אַלְבָּה",
+   "intro": "אלבה, בספרדית ובאיטלקית 'שחר'.",
+   "themes": [
+    "international",
+    "fire"
+   ]
+  },
+  "בירן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ארנית": {
+   "niqqud": "אָרְנִית",
+   "intro": "ארנית, מלשון אורן.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "יכין": {
+   "niqqud": "יָכִין",
+   "intro": "יכין, 'יבסס'. שמו של אחד העמודים בבית המקדש.",
+   "bible": {
+    "quote": "ויקרא את שמו יכין",
+    "book": "I Kings",
+    "ch": 7,
+    "v": 21
+   },
+   "themes": [
+    "bible"
+   ]
+  },
+  "ריצארד": {
+   "niqqud": "רִיצַ'ארְד",
+   "intro": "ריצארד, כתיב של ריצ'רד.",
+   "themes": [
+    "international"
+   ]
+  },
+  "דובב": {
+   "niqqud": "דּוֹבֵב",
+   "intro": "דובב, 'מניע לדבר'.",
+   "bible": {
+    "quote": "דובב שפתי ישנים",
+    "book": "Song of Songs",
+    "ch": 7,
+    "v": 10
+   }
+  },
+  "מנגיסטו": {
+   "niqqud": "מֶנְגִיסְטוּ",
+   "intro": "מנגיסטו, באמהרית 'שלטון' או 'ממלכה'."
+  },
+  "נדר": {
+   "niqqud": "נֶדֶר",
+   "intro": "נדר, הבטחה."
+  },
+  "פוריה": {
+   "niqqud": "פּוֹרִיָּה",
+   "intro": "פוריה, מלשון פריון. גם יישוב ליד הכנרת.",
+   "themes": [
+    "israel"
+   ]
+  },
+  "טרויה": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "יהלומית": {
+   "niqqud": "יַהֲלוֹמִית",
+   "intro": "יהלומית, מלשון יהלום.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "ווביט": {
+   "niqqud": "וּבִּיט",
+   "intro": "ווביט, באמהרית 'יפה'.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "כנען": {
+   "niqqud": "כְּנַעַן",
+   "intro": "כנען, השם הקדום של ארץ ישראל.",
+   "themes": [
+    "israel"
+   ]
+  },
+  "יראל": {
+   "niqqud": "יִרְאֵל",
+   "intro": "ירא־אל: מי שירא את האל."
+  },
+  "נואית": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "פרידי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "שיא": {
+   "niqqud": "שִׂיא",
+   "intro": "שיא, הנקודה הגבוהה ביותר."
+  },
+  "אליעוז": {
+   "niqqud": "אֱלִיעוֹז",
+   "intro": "אלי־עוז: האל שלי הוא עוז.",
+   "themes": [
+    "strength"
+   ]
+  },
+  "מרית": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רצון": {
+   "niqqud": "רָצוֹן",
+   "intro": "רצון, משאלה וחסד."
+  },
+  "אושיק": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "צלילה": {
+   "niqqud": "צְלִילָה",
+   "intro": "צלילה, מלשון צליל.",
+   "themes": [
+    "poetry"
+   ]
+  },
+  "שיריי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "ולדי": {
+   "niqqud": "וָלָדִי",
+   "intro": "ולדי, צורת חיבה של ולדימיר.",
+   "themes": [
+    "international"
+   ]
+  },
+  "אבישר": {
+   "niqqud": "אֲבִישָׁר",
+   "intro": "אבי־שר: אבי שר."
+  },
+  "עוגן": {
+   "niqqud": "עֹגֶן",
+   "intro": "עוגן, מה שמחזיק ספינה במקומה.",
+   "themes": [
+    "water"
+   ]
+  },
+  "קטלינה": {
+   "niqqud": "קָטָלִינָה",
+   "intro": "קטלינה, צורה ספרדית ואיטלקית של קתרין.",
+   "themes": [
+    "international"
+   ]
+  },
+  "אביאלה": {
+   "niqqud": "אֲבִיאֵלָה",
+   "intro": "אביאלה, הצורה הנשית של אביאל: 'האל הוא אבי'."
+  },
+  "פלד": {
+   "niqqud": "פֶּלֶד",
+   "intro": "פלד, מלשון פלדה.",
+   "themes": [
+    "strength"
+   ]
+  },
+  "שלהב": {
+   "niqqud": "שַׁלְהָב",
+   "intro": "שלהב, להבה.",
+   "themes": [
+    "fire"
+   ]
+  },
+  "עוזיה": {
+   "niqqud": "עֻזִּיָּה",
+   "intro": "עוזיה, 'ה׳ עוזי'. מלך יהודה.",
+   "themes": [
+    "strength"
+   ]
+  },
+  "מזלי": {
+   "niqqud": "מַזָּלִי",
+   "intro": "מזלי, 'המזל שלי'."
+  },
+  "ויקה": {
+   "niqqud": "וִיקָה",
+   "intro": "ויקה, צורת חיבה של ויקטוריה.",
+   "themes": [
+    "international"
+   ]
+  },
+  "אוליבייה": {
+   "niqqud": "אוֹלִיבְיֶה",
+   "intro": "אוליבייה, שם צרפתי: 'עץ זית'.",
+   "themes": [
+    "international",
+    "nature"
+   ]
+  },
+  "אלקיים": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "פארן": {
+   "niqqud": "פָּארָן",
+   "intro": "פארן, מדבר בדרום. שם ישב ישמעאל.",
+   "bible": {
+    "quote": "וישב במדבר פארן",
+    "book": "Genesis",
+    "ch": 21,
+    "v": 21
+   },
+   "themes": [
+    "israel",
+    "land"
+   ]
+  },
+  "שבא": {
+   "niqqud": "שְׁבָא",
+   "intro": "שבא, הממלכה של מלכת שבא.",
+   "bible": {
+    "quote": "ומלכת שבא שמעת",
+    "book": "I Kings",
+    "ch": 10,
+    "v": 1
+   }
+  },
+  "מישר": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "עמיטל": {
+   "niqqud": "עַמִּיטַל",
+   "intro": "עמי־טל: העם שלי והטל.",
+   "themes": [
+    "water"
+   ]
+  },
+  "הילור": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "רקיע": {
+   "niqqud": "רָקִיעַ",
+   "intro": "רקיע, השמיים.",
+   "themes": [
+    "special"
+   ]
+  },
+  "נבון": {
+   "niqqud": "נָבוֹן",
+   "intro": "נבון, חכם ומבין."
+  },
+  "תות": {
+   "niqqud": "תּוּת",
+   "intro": "תות, הפרי.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "איבונה": {
+   "niqqud": "אִיבוֹנָה",
+   "intro": "איבונה, צורה של איבון.",
+   "themes": [
+    "international"
+   ]
+  },
+  "תלתן": {
+   "niqqud": "תִּלְתָּן",
+   "intro": "תלתן, צמח בעל שלושה עלים.",
+   "themes": [
+    "nature"
+   ]
+  },
+  "ג'ורג'יה": {
+   "niqqud": "גּ'וֹרְגִ'יָה",
+   "intro": "ג'ורג'יה, הצורה הנשית של ג'ורג': 'עובד אדמה'.",
+   "themes": [
+    "international"
+   ]
+  },
+  "שפר": {
+   "niqqud": "שֶׁפֶר",
+   "intro": "שפר, יופי.",
+   "themes": [
+    "beauty"
+   ]
+  },
+  "בת-עמי": {
+   "niqqud": "בַּת־עַמִּי",
+   "intro": "בת־עמי: בת העם שלי."
+  },
+  "עבריה": {
+   "niqqud": "עִבְרִיָּה",
+   "intro": "עבריה, הצורה הנשית של עברי."
+  },
+  "קתי": {
+   "niqqud": "קַתִּי",
+   "intro": "קתי, צורת חיבה של קתרין.",
+   "themes": [
+    "international"
+   ]
+  },
+  "לאוני": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "הד": {
+   "niqqud": "הֵד",
+   "intro": "הד, צליל שחוזר.",
+   "themes": [
+    "special"
+   ]
+  },
+  "טילי": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "אדרה": {
+   "niqqud": "אַדָּרָה",
+   "intro": "אדרה, מלשון אדר: הדר וגדולה."
+  },
+  "אנטונלה": {
+   "niqqud": "אַנְטוֹנֶלָה",
+   "intro": "אנטונלה, שם איטלקי, צורה של אנטוניה.",
+   "themes": [
+    "international"
+   ]
+  },
+  "גאות": {
+   "niqqud": "גֵּאוּת",
+   "intro": "גאות, עליית מי הים.",
+   "themes": [
+    "water"
+   ]
+  },
+  "צדף": {
+   "niqqud": "צֶדֶף",
+   "intro": "צדף, קונכייה.",
+   "themes": [
+    "water"
+   ]
+  },
+  "דורלי": {
+   "niqqud": "דּוֹרְלִי",
+   "intro": "דור־לי: הדור שלי."
+  },
+  "אשבל": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  },
+  "נגבה": {
+   "niqqud": "נֶגְבָּה",
+   "intro": "נגבה, מלשון נגב.",
+   "themes": [
+    "israel"
+   ]
+  },
+  "סייפן": {
+   "hold": "Origin or meaning not certain; owner to decide the intro."
+  }
+ }
+}
