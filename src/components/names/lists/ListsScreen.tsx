@@ -188,13 +188,13 @@ export default function ListsScreen() {
     <div data-names-bg="none" className="min-h-dvh bg-canvas">
       <main className="mx-auto flex w-full max-w-[480px] flex-col gap-4 px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-[calc(env(safe-area-inset-bottom)+24px)]">
         {/* Under 360 px the row takes the deck header's 12 px edges and tighter gaps, so "השמות שלי" keeps its width at 320 px (NP-BUG-005). */}
-        <header className="flex items-center gap-2 max-[22.5rem]:-mx-2 max-[22.5rem]:gap-1.5 max-[20rem]:flex-wrap">
+        <header className="flex items-center gap-2 max-[22.5rem]:-mx-2 max-[22.5rem]:gap-1.5">
           <IconButton aria-label="חזרה" onClick={back}>
             <Icon className="ltr:-scale-x-100">
               <path d="M9 6l6 6-6 6" />
             </Icon>
           </IconButton>
-          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title text-balance outline-none max-[20rem]:min-w-max">
+          <h1 ref={headingRef} tabIndex={-1} className="m-0 min-w-0 flex-1 text-title text-balance outline-none">
             השמות שלי
           </h1>
           <IconButton href="/names/invite" aria-label="הזמנה לבחירה משותפת">
@@ -203,11 +203,12 @@ export default function ListsScreen() {
               <path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6" />
             </Icon>
           </IconButton>
-          <Button variant="secondary" size="md" aria-label="הוספת שם שלא ברשימה" onClick={() => openSheet("add-name")} className="text-person font-bold">
+          <Button variant="secondary" size="md" aria-label="הוספת שם שלא ברשימה" onClick={() => openSheet("add-name")} className="text-person font-bold max-[22.5rem]:w-11 max-[22.5rem]:px-0">
             <Icon size={16}>
               <path d="M12 5v14M5 12h14" />
             </Icon>
-            הוספת שם
+            {/* Under 360 px the button goes icon-only (its aria-label stays), so the title keeps one line (NP-144). */}
+            <span className="max-[22.5rem]:sr-only">הוספת שם</span>
           </Button>
         </header>
 
@@ -414,14 +415,14 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
           return (
             <li key={match.name} className="flex items-center gap-3 border-b border-line py-3.5 ps-4 pe-2 last:border-b-0">
               <RowName onOpen={canOpen(match.name) ? () => openDetails(match.name) : undefined}>
-                <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                   <span className="text-row-name break-words">{match.name}</span>
                   {!seenAtOpen.has(match.name) ? (
                     <span className={tagClass("xs")}>חדש</span>
                   ) : null}
                   {match.lovedByCount > 0 ? (
                     <span className="flex items-center gap-1 text-caption font-bold text-ink-soft">
-                      <Icon size={16} className="fill-clay stroke-clay">
+                      <Icon size={16} className="self-center fill-clay stroke-clay">
                         <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
                       </Icon>
                       סומן ״אהבתי מאוד״
@@ -435,7 +436,9 @@ function MatchRows({ userId, matches, memberCount, names, canOpen, chooseLabel, 
                       {meta.trend ? (
                         <>
                           {" · "}
-                          {meta.trend.arrow} {meta.trend.word}
+                          <span className="whitespace-nowrap">
+                            {meta.trend.arrow} {meta.trend.word}
+                          </span>
                         </>
                       ) : null}
                     </span>
@@ -568,11 +571,11 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
           return (
             <li key={row.name} className="flex items-center gap-3 border-b border-line py-3.5 ps-4 pe-2 last:border-b-0">
               <RowName onOpen={!row.custom && canOpen(row.name) ? () => openDetails(row.name) : undefined}>
-                <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                   <span className="text-row-name break-words">{row.name}</span>
                   {row.vote === "love" ? (
                     <span className="flex items-center gap-1 text-caption font-bold text-ink-soft">
-                      <Icon size={16} className="fill-clay stroke-clay">
+                      <Icon size={16} className="self-center fill-clay stroke-clay">
                         <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
                       </Icon>
                       אהבתי מאוד
@@ -586,7 +589,9 @@ function SavedPanel({ ready, loadFailed, onRetry, rows, names, onAction, heading
                       {meta.trend ? (
                         <>
                           {" · "}
-                          {meta.trend.arrow} {meta.trend.word}
+                          <span className="whitespace-nowrap">
+                            {meta.trend.arrow} {meta.trend.word}
+                          </span>
                         </>
                       ) : null}
                     </span>
@@ -643,9 +648,14 @@ function ChosenBanner({ name, shared, onOpen, onClear }: { name: string; shared:
   return (
     <div className="flex items-center gap-3 rounded-lg bg-peach-soft py-2 ps-4 pe-2 text-ink">
       <span aria-hidden="true" className={`flex-none ${dotClass()}`} />
-      <button type="button" onClick={onOpen} className={`flex min-h-11 min-w-0 flex-1 flex-col items-start justify-center text-start ${FADE_PRESS}`}>
-        <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
-        <span className="text-row-name break-words">{name}</span>
+      <button type="button" aria-haspopup="dialog" onClick={onOpen} className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 text-start ${FADE_PRESS}`}>
+        <span className="flex min-w-0 flex-1 flex-col items-start justify-center">
+          <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
+          <span className="text-row-name break-words">{name}</span>
+        </span>
+        <Icon size={16} className="flex-none text-ink-soft ltr:-scale-x-100">
+          <path d="M15 6l-6 6 6 6" />
+        </Icon>
       </button>
       <Button variant="link" onClick={onClear} aria-label={clearChoiceLabel(name)} className="text-person!">
         ביטול הבחירה
