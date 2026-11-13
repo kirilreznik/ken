@@ -129,7 +129,8 @@
    "intro": "עזאם בערבית הוא נחוש."
   },
   "הני": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "הני",
+   "intro": "הני, צורת חיבה של חנה. גם 'דבש' באנגלית (Honey)."
   },
   "סקר": {
    "niqqud": "סַקְר",
@@ -279,7 +280,8 @@
    ]
   },
   "מוריאל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מוֹרִיאֵל",
+   "intro": "מוריאל, 'מורי אל': אלוהים הוא המורה שלי."
   },
   "מייסם": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -303,7 +305,11 @@
    "intro": "ג'יהאן בפרסית ובטורקית הוא העולם כולו."
   },
   "אוולין": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אוולין",
+   "intro": "אוולין, שם אנגלי וצרפתי.",
+   "themes": [
+    "international"
+   ]
   },
   "לוגין": {
    "niqqud": "לֻגֵ'ין",
@@ -323,7 +329,12 @@
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "בל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "בֶּל",
+   "intro": "בל, 'יפה' בצרפתית.",
+   "themes": [
+    "international",
+    "beauty"
+   ]
   },
   "ניסאן": {
    "niqqud": "נִיסַאן",
@@ -333,10 +344,15 @@
    ]
   },
   "גון": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "גּוֹן",
+   "intro": "גון, מלשון גוון: צבע."
   },
   "עיינה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "עיינה",
+   "intro": "עיינה, כנראה מלשון עין ומעיין.",
+   "themes": [
+    "water"
+   ]
   },
   "אלטר": {
    "niqqud": "אַלְטֶר",
@@ -533,7 +549,11 @@
    "intro": "טאלב בערבית הוא מי שמבקש, תלמיד."
   },
   "דיאן": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "דִּיאָן",
+   "intro": "דיאן, הצורה הצרפתית של דיאנה.",
+   "themes": [
+    "international"
+   ]
   },
   "אלחי": {
    "niqqud": "אֵלְחַי",
@@ -544,7 +564,8 @@
    "intro": "עז אלדין בערבית הוא 'כבוד הדת'."
   },
   "עיליי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "עִילַי",
+   "intro": "עיליי, כתיב של עילי: עליון."
   },
   "אליקים": {
    "niqqud": "אֶלְיָקִים",
@@ -560,7 +581,8 @@
    ]
   },
   "אילעי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אילעי",
+   "intro": "אילעי, כתיב של אלעאי, שמו של חכם בתלמוד."
   },
   "מירנה": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -573,7 +595,11 @@
    ]
   },
   "גוליה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "גוליה",
+   "intro": "גוליה, שם רוסי, צורת חיבה של יוליה.",
+   "themes": [
+    "international"
+   ]
   },
   "נהורה": {
    "niqqud": "נְהוֹרָה",
@@ -615,7 +641,8 @@
    "intro": "זין אלדין בערבית הוא 'יופי הדת'."
   },
   "שובה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "שׁוּבָה",
+   "intro": "שובה, מלשון שיבה: חזרה."
   },
   "גילאן": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -633,7 +660,8 @@
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "לאיו": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לאיו",
+   "intro": "לאיו, שם חדש, אולי צורה של לאו: 'אריה'."
   },
   "ירון": {
    "niqqud": "יָרוֹן",
@@ -862,7 +890,8 @@
    ]
   },
   "פרומט": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "פרומט",
+   "intro": "פרומט, שם ביידיש, כנראה מן 'פרום': אדוקה."
   },
   "רידא": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -892,7 +921,8 @@
    "intro": "ראיין בערבית הוא מי שרווה ושופע. באנגלית גם שם אירי."
   },
   "אילעאי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אילעאי",
+   "intro": "אילעאי, כתיב של אלעאי, שמו של חכם בתלמוד."
   },
   "יערי": {
    "niqqud": "יַעֲרִי",
@@ -913,13 +943,15 @@
    "intro": "בילי, צורת חיבה של ויליאם."
   },
   "עטי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "עַטִּי",
+   "intro": "עטי, צורת חיבה של עטרה."
   },
   "אזל": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "לוריאן": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לוריאן",
+   "intro": "לוריאן, שם חדש, כנראה צירוף של 'לורי' ו'אן'."
   },
   "תאג'": {
    "niqqud": "תַּאג'",
@@ -929,10 +961,12 @@
    ]
   },
   "לימאי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לימאי",
+   "intro": "לימאי, שם חדש, אולי מן 'לי' ו'מאי'."
   },
   "נסלי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "נסלי",
+   "intro": "נסלי, 'נס לי'."
   },
   "ישעי": {
    "niqqud": "יִשְׁעִי",
@@ -1135,7 +1169,11 @@
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "רונאל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "רוֹנְאֵל",
+   "intro": "רונאל, 'רון אל': שיר לאלוהים.",
+   "themes": [
+    "poetry"
+   ]
   },
   "מליסה": {
    "niqqud": "מֶלִיסָה",
@@ -1150,7 +1188,11 @@
    "intro": "חסאן בערבית הוא נאה וטוב."
   },
   "לידר": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "לִידֶר",
+   "intro": "לידר, 'שירים' ביידיש ובגרמנית.",
+   "themes": [
+    "poetry"
+   ]
   },
   "ג'ומעה": {
    "niqqud": "גֻּ'מְעָה",
@@ -1202,14 +1244,16 @@
    ]
   },
   "מנדי": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "מֶנְדִּי",
+   "intro": "מנדי, צורת חיבה של מנחם."
   },
   "שבע": {
    "niqqud": "שֶׁבַע",
    "intro": "שבע, כמו בת־שבע."
   },
   "איטא": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "אִיטָא",
+   "intro": "איטא, שם ביידיש, כנראה צורה של יהודית."
   },
   "נהר": {
    "niqqud": "נָהָר",
@@ -1232,7 +1276,11 @@
    "intro": "עמי־עד: העם שלי לעד."
   },
   "שינא": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "שֵׁינָא",
+   "intro": "שינא, שם ביידיש: 'יפה'.",
+   "themes": [
+    "beauty"
+   ]
   },
   "דיאר": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -1281,7 +1329,8 @@
    }
   },
   "פעסיל": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "פעסיל",
+   "intro": "פעסיל, שם ביידיש, כנראה צורה של בתיה."
   },
   "טבע": {
    "niqqud": "טֶבַע",
@@ -1291,7 +1340,17 @@
    ]
   },
   "כנה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "כַּנָּה",
+   "intro": "כנה, גפן צעירה.",
+   "bible": {
+    "quote": "וכנה אשר נטעה ימינך",
+    "book": "Psalms",
+    "ch": 80,
+    "v": 16
+   },
+   "themes": [
+    "nature"
+   ]
   },
   "אסר": {
    "hold": "Origin or meaning not certain; owner to decide the intro."
@@ -1324,7 +1383,8 @@
    "hold": "Origin or meaning not certain; owner to decide the intro."
   },
   "קוה": {
-   "hold": "Origin or meaning not certain; owner to decide the intro."
+   "niqqud": "קוה",
+   "intro": "קוה, מלשון קיווה: תקווה."
   },
   "ג'אית": {
    "hold": "Origin or meaning not certain; owner to decide the intro."

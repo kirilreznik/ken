@@ -17,7 +17,8 @@ export const DETAILS_HINT = "לפרטים נוספים: הקשה";
  * (E16 acceptance #5, FR-D19).
  */
 export function cardLabel({ stats, content, derived }: LabelCard): string {
-  const parts = [stats.name, derived.sexTag, clause(content.intro), derived.countLine];
+  // A card with no intro (an unclear name the owner kept as written) skips that part.
+  const parts = [stats.name, derived.sexTag, clause(content.intro), derived.countLine].filter(Boolean);
   if (derived.trend) parts.push(derived.trend.word);
   parts.push(DETAILS_HINT);
   return parts.join(", ");
