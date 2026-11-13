@@ -53,8 +53,18 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
   useEffect(() => {
     if (!open) return;
     menu.current?.querySelector<HTMLButtonElement>("[role=menuitem]")?.focus();
+    // A tap outside only dismisses (NP-141): the click that follows it is swallowed once, so it
+    // doesn't also open the row or button underneath.
+    const swallow = (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
     const outside = (e: Event) => {
-      if (!wrap.current?.contains(e.target as Node)) setOpen(false);
+      if (wrap.current?.contains(e.target as Node)) return;
+      setOpen(false);
+      document.addEventListener("click", swallow, { capture: true, once: true });
+      // A pointerdown with no click after it (a scroll, a drag) mustn't eat the next real tap.
+      setTimeout(() => document.removeEventListener("click", swallow, true), 600);
     };
     document.addEventListener("pointerdown", outside, true);
     return () => document.removeEventListener("pointerdown", outside, true);
@@ -96,7 +106,7 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
         onClick={() => setOpen((o) => !o)}
-        className={iconButtonClass()}
+        className={iconButtonClass("plain")}
       >
         <Icon>
           <circle cx="12" cy="5" r="1.2" fill="currentColor" />
@@ -126,6 +136,7 @@ export default function RowMenu({ name, onChoose, chooseLabel, onRemove, onHide 
               {chooseLabel ?? "זה השם שבחרנו"}
             </button>
           ) : null}
+          {onChoose && (onRemove || onHide) ? <div role="separator" className="mx-1.5 my-1 border-t border-line" /> : null}
           {onRemove ? (
             <button type="button" role="menuitem" tabIndex={-1} className={ITEM} onClick={() => act(onRemove)}>
               <Icon>

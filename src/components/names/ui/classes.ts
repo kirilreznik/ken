@@ -81,7 +81,11 @@ export function linkClass(variant: LinkVariant = "standalone", trim: LinkTrim = 
   }
 }
 
-export function iconButtonClass(): string {
+// "plain" (NP-142): a row's trigger inside a white list card, no glass disc; transparent at rest,
+// sand when pressed or open.
+export function iconButtonClass(variant: "glass" | "plain" = "glass"): string {
+  if (variant === "plain")
+    return ["inline-flex size-11 shrink-0 items-center justify-center rounded-pill text-ink-soft active:bg-sand aria-expanded:bg-sand aria-expanded:text-ink", PRESS].join(" ");
   return ["names-glass-soft inline-flex size-11 shrink-0 items-center justify-center rounded-pill text-ink", PRESS, DISABLED].join(" ");
 }
 
