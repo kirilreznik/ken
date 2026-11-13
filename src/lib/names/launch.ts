@@ -90,7 +90,7 @@ export function surveyDue(sessions: number, totalVotes: number, survey: "done" |
 /** Recap headline: "עברת על 30 שמות ושמרת 6". */
 export function recapLine(votes: number, saves: number): string {
   const seen = votes === 1 ? "שם אחד" : `${votes} שמות`;
-  if (saves === 0) return `עברת על ${seen}, עוד בלי שמירות בסבב הזה.`;
+  if (saves === 0) return `עברת על ${seen} ועוד לא שמרת אף אחד בסבב הזה.`;
   return `עברת על ${seen} ושמרת ${saves === 1 ? "אחד" : saves}.`;
 }
 

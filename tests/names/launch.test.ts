@@ -89,7 +89,7 @@ describe("copy", () => {
     expect(decideLabel(true, "נועה")).toBe("בחרנו בשם נועה");
     expect(recapLine(30, 6)).toBe("עברת על 30 שמות ושמרת 6.");
     expect(recapLine(30, 1)).toBe("עברת על 30 שמות ושמרת אחד.");
-    expect(recapLine(30, 0)).toContain("עוד בלי שמירות");
+    expect(recapLine(30, 0)).toBe("עברת על 30 שמות ועוד לא שמרת אף אחד בסבב הזה.");
   });
 
   it("names the chosen name when it is taken back, and when the undo brings it back", () => {
