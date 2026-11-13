@@ -20,7 +20,7 @@ export default function NumbersSection({ stats, rank }: { stats: Pick<NameStats,
           ב־<bdi dir="ltr">{LAST_YEAR}</bdi>: <Numbers text={babies(latest)} />
           {rank !== null ? (
             <>
-              , <Numbers text={rankText(rank)} /> בדירוג
+              , <Numbers text={rankText(rank)} />
             </>
           ) : null}
         </p>
