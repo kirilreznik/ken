@@ -1,4 +1,5 @@
 import BackButton from "@/components/names/BackButton";
+import { linkClass } from "@/components/names/ui/classes";
 import { LEGAL_DRAFT_BANNER, LEGAL_PLACEHOLDER, legalParts, type LegalContacts, type LegalDoc } from "@/lib/names/legal";
 
 function Text({ text, contacts }: { text: string; contacts: LegalContacts }) {
@@ -8,7 +9,7 @@ function Text({ text, contacts }: { text: string; contacts: LegalContacts }) {
     if (!value) return <strong key={i} className="font-bold text-ink">{LEGAL_PLACEHOLDER}</strong>;
     if (part.kind === "operator") return <bdi key={i}>{value}</bdi>;
     return (
-      <a key={i} href={`mailto:${value}`} dir="ltr" className="-my-3 inline-flex min-h-11 items-center max-w-full font-bold break-all text-ink underline underline-offset-2">
+      <a key={i} href={`mailto:${value}`} dir="ltr" className={`${linkClass("inline")} max-w-full break-all`}>
         {value}
       </a>
     );

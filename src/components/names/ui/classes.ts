@@ -47,10 +47,31 @@ export function buttonClass(variant: ButtonVariant = "primary", size: ButtonSize
     case "peach":
       return ["names-button-peach inline-flex shrink-0 items-center justify-center rounded-pill", ROUND[size], PRESS, DISABLED].join(" ");
     case "link":
-      return [
-        "inline-flex min-h-11 items-center gap-1.5 rounded-pill px-1 text-card-title font-bold text-ink underline underline-offset-4",
-        "disabled:text-stone disabled:no-underline aria-disabled:text-stone aria-disabled:no-underline",
-      ].join(" ");
+      return linkClass("standalone");
+  }
+}
+
+// Text links (DESIGN.md "Text links"), every one at least 44 × 44 px:
+// - "inline": a link inside running text; bold ink, inherits the text's size, offset 2. `trim` hides
+//   part of the 44 px tap area from the line around it: "line" keeps a text line's height, "row"
+//   keeps the about sheet's 32 px source rows, "none" is a link on its own row.
+// - "standalone": an action on its own (Button variant="link"): text-card-title, bold ink, offset 4.
+// - "quiet": a secondary action next to a title or under a list: text-person, bold ink-soft, offset 4.
+export type LinkVariant = "inline" | "standalone" | "quiet";
+export type LinkTrim = "line" | "row" | "none";
+
+const LINK = "inline-flex min-h-11 min-w-11 items-center justify-center font-bold underline";
+const LINK_DISABLED = "disabled:text-stone disabled:no-underline aria-disabled:text-stone aria-disabled:no-underline";
+const LINK_TRIM: Record<LinkTrim, string> = { line: "-my-3", row: "-my-1.5", none: "" };
+
+export function linkClass(variant: LinkVariant = "standalone", trim: LinkTrim = "line"): string {
+  switch (variant) {
+    case "inline":
+      return [LINK, LINK_TRIM[trim], "text-ink underline-offset-2"].filter(Boolean).join(" ");
+    case "standalone":
+      return `${LINK} gap-1.5 rounded-pill px-1 text-card-title text-ink underline-offset-4 ${LINK_DISABLED}`;
+    case "quiet":
+      return `${LINK} rounded-pill px-1 text-person text-ink-soft underline-offset-4 ${LINK_DISABLED}`;
   }
 }
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import ThemeIcon from "@/components/names/ThemeIcon";
-import { BottomSheet, Button, checkboxClass, closeSheet } from "@/components/names/ui";
+import { BottomSheet, Button, checkboxClass, closeSheet, linkClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
@@ -246,11 +246,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       title="סינון"
       closeButton
       headerEnd={
-        <button
-          type="button"
-          onClick={reset}
-          className="min-h-11 min-w-11 rounded-pill px-1 text-person font-bold text-ink-soft underline underline-offset-4"
-        >
+        <button type="button" onClick={reset} className={linkClass("quiet")}>
           איפוס
         </button>
       }

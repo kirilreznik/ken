@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect } from "react";
 import { Button } from "@/components/names/ui";
 import { reportClientLog } from "@/lib/names/clientLog";
@@ -23,9 +22,9 @@ export default function NamesError({ error, retry }: { error: Error & { digest?:
       <Button variant="primary" size="lg" onClick={() => retry()}>
         {ERROR_RETRY}
       </Button>
-      <Link href="/names" data-control className="inline-flex min-h-11 items-center px-4 text-card-title underline underline-offset-4">
+      <Button variant="link" href="/names">
         לבחירת שמות
-      </Link>
+      </Button>
     </main>
   );
 }

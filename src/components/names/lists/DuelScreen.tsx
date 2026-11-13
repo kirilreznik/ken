@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode } from "react";
-import { Button, IconButton, emptyPanelClass, emptyTitleClass, useToastLift } from "@/components/names/ui";
+import { Button, IconButton, emptyPanelClass, emptyTitleClass, linkClass, useToastLift } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
 import {
   currentPair,
@@ -298,11 +298,7 @@ export default function DuelScreen({ userId, from, ready, savedNames, matchNames
                 </div>
 
                 <div ref={stopRef} className="mt-auto flex items-center">
-                  <button
-                    type="button"
-                    onClick={stop}
-                    className="min-h-11 px-1 text-person font-bold text-ink-soft underline"
-                  >
+                  <button type="button" onClick={stop} className={linkClass("quiet")}>
                     עצירה, אפשר להמשיך אחר כך
                   </button>
                 </div>

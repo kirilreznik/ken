@@ -1,10 +1,10 @@
 "use client";
 
-import { openSheet } from "@/components/names/ui";
+import { linkClass, openSheet } from "@/components/names/ui";
 import { track } from "@/lib/names/track";
 
 // Text links like the about sheet's; -my-1.5 keeps the board's tight lines while each hit area is 44 px.
-const link = "-my-1.5 inline-flex min-h-11 items-center text-person font-bold text-ink underline underline-offset-2";
+const link = `${linkClass("inline", "row")} text-person`;
 
 /**
  * FR-D17 (board 14): the CBS source line, "על הנתונים" (the about sheet, as the card's corner

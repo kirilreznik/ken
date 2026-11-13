@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AuthSkeleton } from "@/components/names/AuthGuard";
 import AuthLayout from "@/components/names/auth/AuthLayout";
 import Wordmark from "@/components/names/auth/Wordmark";
-import { Button, inputClass } from "@/components/names/ui";
+import { Button, inputClass, linkClass } from "@/components/names/ui";
 import CodeInput, { CODE_LENGTH } from "@/components/names/auth/CodeInput";
 import PanelNote from "@/components/names/auth/PanelNote";
 import ResendTimer from "@/components/names/auth/ResendTimer";
@@ -277,11 +277,7 @@ export default function EmailSignIn() {
           sending={pending === "send"}
           sentNote={resent ? CODE_RESENT_TEXT : undefined}
         />
-        <button
-          type="button"
-          onClick={changeAddress}
-          className="min-h-11 rounded-pill px-1 text-card-title font-bold text-ink underline underline-offset-4"
-        >
+        <button type="button" onClick={changeAddress} className={linkClass("standalone")}>
           שינוי כתובת
         </button>
       </div>

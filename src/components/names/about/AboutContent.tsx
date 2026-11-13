@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import { Button } from "@/components/names/ui";
+import { Button, linkClass } from "@/components/names/ui";
 import { CBS_ACCESSED, CBS_FILE, CBS_FILE_URL, CBS_LICENCE_URL, reportButtonLabel } from "@/lib/names/report";
 
 // 32 px tall on the board; -my-1.5 keeps that spacing while the hit area is 44 px.
-const sourceLink = "-my-1.5 inline-flex min-h-11 items-center text-person font-bold text-ink underline underline-offset-2";
+const sourceLink = `${linkClass("inline", "row")} text-person`;
 
 function Part({ title, level, children }: { title: string; level: 2 | 3; children: ReactNode }) {
   const Heading = level === 2 ? "h2" : "h3";
