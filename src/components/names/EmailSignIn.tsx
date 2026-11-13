@@ -48,6 +48,8 @@ export default function EmailSignIn() {
   const online = useOnline();
 
   const [step, setStep] = useState<"email" | "code">("email");
+  // Set once the visitor moves between steps, so only a step change animates, not the first paint (NP-102).
+  const [moved, setMoved] = useState(false);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [sentAt, setSentAt] = useState(0);
@@ -144,6 +146,7 @@ export default function EmailSignIn() {
     track("signin_started", { method: "email" });
     if (await sendCode()) {
       setCode("");
+      setMoved(true);
       setStep("code");
     }
   }
@@ -171,6 +174,7 @@ export default function EmailSignIn() {
   }
 
   function changeAddress() {
+    setMoved(true);
     setStep("email");
     setCode("");
     setError(null);
@@ -190,7 +194,7 @@ export default function EmailSignIn() {
 
   if (step === "email") {
     return (
-      <AuthLayout title="כניסה עם קוד במייל" lead="שולחים לכתובת שלך קוד בן 6 ספרות, ואיתו נכנסים." backHref={backHref} hero={wordmark}>
+      <AuthLayout title="כניסה עם קוד במייל" lead="שולחים לכתובת שלך קוד בן 6 ספרות, ואיתו נכנסים." backHref={backHref} hero={wordmark} step={moved ? "email" : undefined}>
         <form noValidate onSubmit={submitEmail} className="flex flex-col gap-4">
           <ConnectionNote />
           <div className="flex flex-col gap-1.5">
@@ -247,6 +251,7 @@ export default function EmailSignIn() {
       // Back returns to the email step with the address kept (NP-007).
       onBack={changeAddress}
       hero={wordmark}
+      step="code"
     >
       <form
         noValidate

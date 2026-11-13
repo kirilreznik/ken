@@ -338,6 +338,14 @@
   }
 }
 
+/* A sign-in step replacing the last one (NP-102): the new content rises 8 px as it fades in. */
+@keyframes names-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
 @keyframes names-spin {
   to {
     transform: rotate(1turn);
@@ -385,6 +393,10 @@
     animation: names-menu-in var(--nest-duration-press) var(--nest-ease-out);
   }
 
+  .nest-names .names-step-in {
+    animation: names-step-in var(--nest-duration-fast) var(--nest-ease-out);
+  }
+
   /* Loading spinner (AuthCallback, JoinScreen). */
   .nest-names .names-spinner {
     animation: names-spin 1s linear infinite;
@@ -425,7 +437,8 @@
   .nest-names .names-sheet-in,
   .nest-names .names-scrim-in,
   .nest-names .names-dialog-in,
-  .nest-names .names-menu-in {
+  .nest-names .names-menu-in,
+  .nest-names .names-step-in {
     animation: names-fade-in var(--nest-duration-fade) ease-out !important;
   }
 
