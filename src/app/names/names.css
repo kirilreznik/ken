@@ -356,8 +356,25 @@
   }
 
   .nest-names .names-scrim-in,
-  .nest-names .names-toast-in {
-    animation: names-fade-in var(--nest-duration-fast) ease-out;
+  /* The toast (NP-096): a transition, not a keyframe, so a quick replacement doesn't restart
+   * from nothing. It rises 8 px from the bottom edge as it fades in, and goes back down as it
+   * fades out (data-leaving, TOAST_EXIT in lib/names/toast.ts). */
+  .nest-names .names-toast {
+    transition:
+      opacity var(--nest-duration-fast) ease-out,
+      transform var(--nest-duration-fast) var(--nest-ease-out);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  .nest-names .names-toast[data-leaving] {
+    opacity: 0;
+    transform: translateY(8px);
+    transition-duration: var(--nest-duration-fade);
+    transition-timing-function: ease-in;
   }
 
   .nest-names .names-dialog-in {
@@ -408,9 +425,14 @@
   .nest-names .names-sheet-in,
   .nest-names .names-scrim-in,
   .nest-names .names-dialog-in,
-  .nest-names .names-menu-in,
-  .nest-names .names-toast-in {
+  .nest-names .names-menu-in {
     animation: names-fade-in var(--nest-duration-fade) ease-out !important;
+  }
+
+  .nest-names .names-toast {
+    transform: none !important;
+    transition-property: opacity !important;
+    transition-duration: var(--nest-duration-fade) !important;
   }
 
   .nest-names .names-spinner {
