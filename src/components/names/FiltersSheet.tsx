@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import ThemeIcon from "@/components/names/ThemeIcon";
-import { BottomSheet, Button, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
+import { BottomSheet, Button, FADE_PRESS, ROW_PRESS, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
@@ -220,7 +220,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       aria-expanded={picker === id}
       aria-controls={pickerId}
       onClick={() => setPicker((p) => (p === id ? null : id))}
-      className={`flex min-h-14 flex-col items-start justify-center gap-0.5 rounded-md border bg-surface px-3.5 py-2 text-start ${
+      className={`flex min-h-14 flex-col items-start justify-center gap-0.5 rounded-md border bg-surface px-3.5 py-2 text-start ${ROW_PRESS} ${
         picker === id ? "border-ink" : "border-line"
       }`}
     >
@@ -295,7 +295,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
           href="/names/hidden"
           data-control
           aria-describedby={hiddenHintId}
-          className="flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink"
+          className={`flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink ${FADE_PRESS}`}
         >
           <span>שמות שהסתרתי</span>
           <span className="flex items-center gap-1.5 font-medium text-ink-soft">

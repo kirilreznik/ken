@@ -4,7 +4,7 @@ import Image, { type StaticImageData } from "next/image";
 import { useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
 import { useBackgroundChoice } from "@/components/names/ScreenBackground";
-import { BottomSheet, Button } from "@/components/names/ui";
+import { BottomSheet, Button, FADE_PRESS } from "@/components/names/ui";
 import { photoUrl } from "@/lib/names/background";
 import { canvasColor } from "@/lib/names/brand";
 import { loadOwnPhoto, resizePhoto, saveOwnPhoto, subscribeOwnPhoto } from "@/lib/names/photo";
@@ -182,7 +182,7 @@ function BackgroundOptions() {
               aria-busy={(o.id === "own" && saving) || undefined}
               tabIndex={on ? 0 : -1}
               onClick={() => (o.id === "own" && !hasOwn ? choosePhoto() : pick(o.id))}
-              className="group flex flex-col items-stretch gap-1.5 rounded-md text-ink outline-none"
+              className={`group flex flex-col items-stretch gap-1.5 rounded-md text-ink outline-none ${FADE_PRESS}`}
             >
               <span
                 className={`relative flex h-30 items-center justify-center overflow-hidden rounded-md group-focus-visible:ring-2 group-focus-visible:ring-ink/50 group-focus-visible:ring-offset-4 ${

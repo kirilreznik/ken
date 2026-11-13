@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { iconButtonClass } from "@/components/names/ui/classes";
 import fabric from "../../../../public/landing/names-fabric.webp";
 
 /** The lead's id: fields in the panel point aria-describedby at it (NP-015). */
@@ -43,7 +44,7 @@ export default function AuthLayout({ title, lead, backHref, hero, footer, childr
             href={backHref}
             aria-label="חזרה"
             data-control
-            className="names-glass-soft absolute start-5 top-[max(6px,env(safe-area-inset-top))] flex size-11 items-center justify-center rounded-pill text-ink"
+            className={`${iconButtonClass()} absolute start-5 top-[max(6px,env(safe-area-inset-top))]`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="ltr:-scale-x-100">
               <path d="M9 6l6 6-6 6" />

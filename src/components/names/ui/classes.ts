@@ -13,6 +13,11 @@ export function glassClass(variant: GlassVariant = "strong"): string {
 // Pressed state: scale 0.95, never under reduced motion, and never on a disabled control.
 export const PRESS =
   "touch-manipulation transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95 motion-safe:disabled:active:scale-100 motion-safe:aria-disabled:active:scale-100";
+// Pressed state for secondary controls (NP-058): links, rows and tiles don't scale; they dim
+// (FADE_PRESS, any background) or take a sand fill (ROW_PRESS, rows and tiles on white).
+export const FADE_PRESS =
+  "touch-manipulation transition-opacity duration-(--nest-duration-press) active:opacity-70 disabled:active:opacity-100 aria-disabled:active:opacity-100";
+export const ROW_PRESS = "touch-manipulation transition-colors duration-(--nest-duration-press) active:bg-sand";
 // Disabled buttons and chips ("not yet"): an opaque line fill with stone text (4.2:1) and no
 // shadow or edge, the same on every background. Opacity let the photo through, so an ink pill
 // turned brown and kept competing with the screen's real action.
@@ -61,7 +66,7 @@ export function buttonClass(variant: ButtonVariant = "primary", size: ButtonSize
 export type LinkVariant = "inline" | "standalone" | "quiet";
 export type LinkTrim = "line" | "row" | "none";
 
-const LINK = "inline-flex min-h-11 min-w-11 items-center justify-center font-bold underline";
+const LINK = `inline-flex min-h-11 min-w-11 items-center justify-center font-bold underline ${FADE_PRESS}`;
 const LINK_DISABLED = "disabled:text-stone disabled:no-underline aria-disabled:text-stone aria-disabled:no-underline";
 const LINK_TRIM: Record<LinkTrim, string> = { line: "-my-3", row: "-my-1.5", none: "" };
 

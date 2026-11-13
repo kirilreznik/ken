@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { Button, Dialog, IconButton, closeDialog, inputClass, openDialog } from "@/components/names/ui";
+import { Button, Dialog, IconButton, ROW_PRESS, closeDialog, inputClass, openDialog } from "@/components/names/ui";
 import { InstallSheet, useInstall } from "@/components/names/pwa/Install";
 import { useSpace } from "@/components/names/useSpace";
 import {
@@ -42,7 +42,7 @@ const DELETE_DIALOG = "delete-account";
 
 const card = "m-0 list-none rounded-lg bg-surface p-0 shadow-card";
 const row = "group/row border-b border-line first:rounded-t-lg last:rounded-b-lg last:border-b-0";
-const rowAction = "flex min-h-14 w-full items-center group-first/row:rounded-t-lg group-last/row:rounded-b-lg gap-3 px-4 py-3 text-start text-body font-bold text-ink";
+const rowAction = `flex min-h-14 w-full items-center group-first/row:rounded-t-lg group-last/row:rounded-b-lg gap-3 px-4 py-3 text-start text-body font-bold text-ink ${ROW_PRESS}`;
 
 function Chevron() {
   return (
@@ -309,7 +309,7 @@ export default function SettingsScreen() {
                 aria-busy={savingOptIn}
                 aria-describedby="settings-optin-hint"
                 onClick={toggleOptIn}
-                className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-start"
+                className={`flex min-h-14 w-full items-center gap-3 px-4 py-3 text-start group-first/row:rounded-t-lg group-last/row:rounded-b-lg ${ROW_PRESS}`}
               >
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="text-body font-bold text-ink">עדכון כש־Nest יוצאת לחנויות</span>

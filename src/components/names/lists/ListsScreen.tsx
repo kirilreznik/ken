@@ -8,7 +8,7 @@ import AboutSheet from "@/components/names/about/AboutSheet";
 import ReportSheet from "@/components/names/about/ReportSheet";
 import DecisionSheet from "@/components/names/DecisionSheet";
 import NameDetailSheet, { preloadNameDetail } from "@/components/names/detail/LazyNameDetailSheet";
-import { Button, IconButton, collapseRow, emptyLineClass, emptyPanelClass, dotClass, emptyTitleClass, openNameSheet, openSheet, segmentClass, segmentGroupClass, tagClass } from "@/components/names/ui";
+import { Button, FADE_PRESS, IconButton, collapseRow, emptyLineClass, emptyPanelClass, dotClass, emptyTitleClass, openNameSheet, openSheet, segmentClass, segmentGroupClass, tagClass } from "@/components/names/ui";
 import { ListSkeleton } from "./ListSkeleton";
 import { useChosen } from "@/components/names/useChosen";
 import { useCards, useNameStats } from "@/components/names/useCards";
@@ -472,7 +472,7 @@ function RowName({ onOpen, children }: { onOpen?: () => void; children: ReactNod
         event.currentTarget.focus({ preventScroll: true });
         onOpen();
       }}
-      className={`${className} min-h-11 justify-center rounded-sm text-start`}>
+      className={`${className} min-h-11 justify-center rounded-sm text-start ${FADE_PRESS}`}>
       {children}
       <span className="sr-only">, {DETAILS_HINT}</span>
     </button>
@@ -486,7 +486,7 @@ function DuelLink({ title, from }: { title: string; from: "saved" | "matches" })
       replace
       scroll={false}
       data-control
-      className="flex items-center gap-3 rounded-lg bg-peach-soft px-4 py-3.5 text-ink"
+      className={`flex items-center gap-3 rounded-lg bg-peach-soft px-4 py-3.5 text-ink ${FADE_PRESS}`}
     >
       <span aria-hidden="true" className="flex size-10 flex-none items-center justify-center rounded-md bg-surface">
         <Icon>
@@ -643,7 +643,7 @@ function ChosenBanner({ name, shared, onOpen, onClear }: { name: string; shared:
   return (
     <div className="flex items-center gap-3 rounded-lg bg-peach-soft py-2 ps-4 pe-2 text-ink">
       <span aria-hidden="true" className={`flex-none ${dotClass()}`} />
-      <button type="button" onClick={onOpen} className="flex min-h-11 min-w-0 flex-1 flex-col items-start justify-center text-start">
+      <button type="button" onClick={onOpen} className={`flex min-h-11 min-w-0 flex-1 flex-col items-start justify-center text-start ${FADE_PRESS}`}>
         <span className="text-caption font-bold text-ink-soft">{shared ? "השם שבחרנו" : "השם שבחרתי"}</span>
         <span className="text-row-name break-words">{name}</span>
       </button>
