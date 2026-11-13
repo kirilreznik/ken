@@ -76,6 +76,10 @@ const desktop = () => window.matchMedia(DESKTOP).matches;
 // Past its limit the panel follows the finger less and less, then springs back on release (NP-108).
 const RUBBER = 0.55;
 const RUBBER_MAX = 120;
+// A drag that starts on one of these in the header / title row is theirs, not the sheet's (NP-107).
+const CONTROL = "button, a, input, select, textarea, label, [role=button], [role=switch], [role=tab], [contenteditable]";
+const onControl = (event: PointerEvent<HTMLElement>) =>
+  event.target instanceof Element && event.target.closest(CONTROL) !== null && event.currentTarget.contains(event.target.closest(CONTROL));
 const rubberband = (overshoot: number) => (overshoot * RUBBER_MAX * RUBBER) / (RUBBER_MAX + RUBBER * overshoot);
 /** FULL_HEIGHT in px (the safe-area inset only resolves in CSS). */
 function fullHeightPx(host: HTMLElement): number {
@@ -223,8 +227,9 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     );
   }, [settles]);
 
-  function onPointerDown(event: PointerEvent<HTMLButtonElement>) {
+  function onPointerDown(event: PointerEvent<HTMLElement>) {
     if (event.button !== 0) return;
+    if (event.currentTarget !== event.target && onControl(event)) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     const startHeight = panel.current?.getBoundingClientRect().height ?? 0;
     const detented = tall && !desktop();
@@ -232,7 +237,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     drag.current = { startY: event.clientY, startHeight, dy: 0, moved: false, detents: detented, at: event.timeStamp, velocity: 0, full };
   }
 
-  function onPointerMove(event: PointerEvent<HTMLButtonElement>) {
+  function onPointerMove(event: PointerEvent<HTMLElement>) {
     if (!drag.current) return;
     const raw = event.clientY - drag.current.startY;
     const { detents: detented, startHeight, full } = drag.current;
@@ -259,7 +264,7 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     }
   }
 
-  function onPointerEnd(event: PointerEvent<HTMLButtonElement>) {
+  function onPointerEnd(event: PointerEvent<HTMLElement>) {
     if (!drag.current) return;
     const { dy, moved, detents: detented, at } = drag.current;
     // A hold before letting go isn't a flick.
@@ -296,6 +301,21 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
     setHeight(null);
     drag.current = null;
   }
+
+  // The header / title row drag the sheet like the handle (NP-107); a drag there isn't a click on it.
+  const rowDrag = {
+    onPointerDown,
+    onPointerMove,
+    onPointerUp: onPointerEnd,
+    onPointerCancel,
+    onClickCapture: (event: MouseEvent) => {
+      const moved = drag.current?.moved;
+      drag.current = null;
+      if (!moved) return;
+      event.stopPropagation();
+      event.preventDefault();
+    },
+  };
 
   function onHandleClick() {
     const moved = drag.current?.moved;
@@ -347,14 +367,18 @@ export function SheetPanel({ name, title, header, headerEnd, closeInHeader = fal
         >
           <span aria-hidden="true" className="h-1.25 w-10 rounded-pill bg-line" />
         </button>
-        {header ? <div className="shrink-0 px-5 pb-3">{header(titleId)}</div> : null}
+        {header ? (
+          <div {...rowDrag} className="shrink-0 touch-none px-5 pb-3">
+            {header(titleId)}
+          </div>
+        ) : null}
         <div
           ref={scroller}
           onScroll={edges.update}
           style={{ maskImage: fadeMask(edges.more), WebkitMaskImage: fadeMask(edges.more) }}
           className={`flex min-h-0 flex-col gap-5 ${tall ? "flex-1" : ""} overflow-y-auto overscroll-contain px-5 ${footer ? "pb-5" : SAFE_BOTTOM}`}>
           {header ? null : (
-            <div className="flex min-h-11 items-center justify-between gap-3">
+            <div {...rowDrag} className="flex min-h-11 touch-none items-center justify-between gap-3">
               <h2 id={titleId} className="text-title">
                 {title}
               </h2>
