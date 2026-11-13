@@ -128,7 +128,7 @@ function ThemeGroup({ value, onChange }: { value: ThemeId[] | null; onChange: (v
     <fieldset className="m-0 min-w-0 border-0 p-0" aria-describedby={hintId}>
       <legend className="mb-0.5 p-0 text-card-title">נושאים</legend>
       <p id={hintId} className="mb-2.5 text-caption text-stone">
-        ניתן לבחור כמה נושאים
+        אפשר לבחור כמה נושאים
       </p>
       <div className="flex flex-wrap gap-2">
         {chip("all", value === null, "all", "כל השמות", () => onChange(null))}
@@ -197,6 +197,7 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   const hidden = hiddenCount(votes);
 
   function apply() {
+    if (n === 0) return;
     if (userId) {
       if (getPref(userId, "filters").sex !== draft.sex) track("filter_sex", { sex: sexToken(draft.sex) });
       setPref(userId, "filters", draft);
@@ -241,8 +242,8 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
       }
       footer={
         <>
-          <Button className="w-full" onClick={apply} disabled={n === null}>
-            {n === null ? "הצגת שמות" : applyLabel(n)}
+          <Button className="w-full" onClick={apply} disabled={n === null} aria-disabled={n === 0 || undefined}>
+            {n === null ? "הצגת שמות" : n === 0 ? "אין שמות שמתאימים" : applyLabel(n)}
           </Button>
           <p role="status" className="sr-only">
             {n === null ? "" : `${n} שמות מתאימים`}

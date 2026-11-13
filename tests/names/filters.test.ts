@@ -132,7 +132,7 @@ describe("filters sheet labels", () => {
   it("button values and the apply label", () => {
     expect(letterValue(null)).toBe("כל האותיות");
     expect(letterValue("א")).toBe("א");
-    expect(lengthValue(null)).toBe("קצר וארוך");
+    expect(lengthValue(null)).toBe("כל האורכים");
     expect(lengthValue("קצר")).toContain("עד 3");
     expect(applyLabel(4)).toBe("הצגת 4 שמות");
     expect(applyLabel(0)).toBe("הצגת 0 שמות");

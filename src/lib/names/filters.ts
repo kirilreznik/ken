@@ -120,7 +120,7 @@ export function letterValue(letter: string | null): string {
 
 export function lengthValue(length: NameLength | null, range: LetterRange | null = null): string {
   if (range) return rangeValue(range);
-  return length === "קצר" ? "קצר, עד 3 אותיות" : length === "ארוך" ? "ארוך, 5 אותיות ומעלה" : "קצר וארוך";
+  return length === "קצר" ? "קצר, עד 3 אותיות" : length === "ארוך" ? "ארוך, 5 אותיות ומעלה" : "כל האורכים";
 }
 
 /** "בין 3 ל־5 אותיות", "4 אותיות", "5 אותיות ומעלה" for the custom range. */
