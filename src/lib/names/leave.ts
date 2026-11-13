@@ -12,14 +12,20 @@ import { clearSpaceCache } from "./space";
 
 export const LEAVE_DIALOG = "leave-space";
 export const LEAVE_TITLE = "לצאת מהבחירה המשותפת?";
-export const LEAVE_DONE = "יצאת מהבחירה המשותפת. השמות ששמרת איתך.";
+export const LEAVE_DONE = "יצאת מהבחירה המשותפת. השמות ששמרת נשארו אצלך.";
 export const LEAVE_OFFLINE = "אין חיבור לאינטרנט. אפשר לנסות שוב כשהחיבור יחזור.";
 export const LEAVE_FAILED = "היציאה לא הצליחה. אפשר לנסות שוב.";
 
-/** The dialog body, naming the others when their names are known. */
+/** FSI … PDI: a Latin or mixed-script name keeps its own direction inside the Hebrew sentence. */
+const isolate = (name: string) => `\u2068${name}\u2069`;
+const MAX_NAMED = 3;
+
+/** The dialog body, naming up to three of the others when their names are known. */
 export function leaveBody(others: readonly string[]): string {
   const who = others.filter(Boolean);
-  const them = who.length === 1 ? who[0] : who.length > 1 ? who.join(", ") : "מי שבוחר איתך";
+  const named = who.slice(0, MAX_NAMED).map(isolate).join(", ");
+  const rest = who.length - MAX_NAMED;
+  const them = who.length === 0 ? "מי שבוחר איתך" : rest > 0 ? `${named} ועוד ${rest}` : named;
   return `השמות ששמרת יישארו אצלך, ברשימה נפרדת. ההתאמות עם ${them} יימחקו, והבחירה המשותפת תימשך בלעדיך. כדי לחזור צריך קישור הזמנה חדש.`;
 }
 
