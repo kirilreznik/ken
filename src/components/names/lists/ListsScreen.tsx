@@ -624,7 +624,7 @@ function SoloMatches() {
       <p className={emptyLineClass()}>
         אפשר להזמין מישהו נוסף. הבחירה נעשית בנפרד, בכל טלפון, ושם שנשמר אצל שניים או יותר יופיע כאן כהתאמה.
       </p>
-      <p className="m-0 text-caption text-stone">הדילוגים נשארים פרטיים. השמות ששמרת עוברים איתך.</p>
+      <p className="m-0 text-caption text-stone">על מה דילגת נשאר רק אצלך. השמות ששמרת עוברים איתך.</p>
       <Button size="md" href="/names/invite" onClick={() => track("invite_prompt", { placement: "matches_tab", action: "invite" })}>
         הזמנה לבחירה משותפת
       </Button>

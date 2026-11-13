@@ -83,8 +83,8 @@ describe("helpers", () => {
     expect(keptByText(three)).toBe("3 שמרו");
     expect(matchSheetLine(two)).toBe("שניים שמרו את השם הזה.");
     expect(matchSheetLine(three)).toBe("3 שמרו את השם הזה.");
-    expect(matchesIntro(2)).toBe("שמות שנשמרו אצל שניים או יותר. על דילוגים אף אחד לא יודע.");
-    expect(matchesIntro(3)).toBe("שמות שנשמרו אצל שניים או יותר. על דילוגים אף אחד לא יודע.");
+    expect(matchesIntro(2)).toBe("שמות שנשמרו אצל שניים או יותר. על מה דילגת נשאר רק אצלך.");
+    expect(matchesIntro(3)).toBe("שמות שנשמרו אצל שניים או יותר. על מה דילגת נשאר רק אצלך.");
   });
 
   it("matchToShow picks the newest unseen match; withSeen adds every match once", () => {

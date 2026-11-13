@@ -260,8 +260,8 @@ export function matchSheetLine(match: Match): string {
 
 /** The explainer above the "התאמות" list (board 5); never says who skipped what. */
 export function matchesIntro(memberCount: number): string {
-  if (memberCount < 2) return "התאמות יופיעו כשמישהו נוסף יבחר איתך. הדילוגים נשארים פרטיים.";
-  return "שמות שנשמרו אצל שניים או יותר. על דילוגים אף אחד לא יודע.";
+  if (memberCount < 2) return "התאמות יופיעו כשמישהו נוסף יבחר איתך. על מה דילגת נשאר רק אצלך.";
+  return "שמות שנשמרו אצל שניים או יותר. על מה דילגת נשאר רק אצלך.";
 }
 
 /** The newest match the user hasn't been shown on this device, or null. */
