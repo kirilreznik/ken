@@ -4,7 +4,7 @@
 
 export type GlassVariant = "strong" | "soft";
 export type ButtonVariant = "primary" | "secondary" | "peach" | "link";
-export type ButtonSize = "lg" | "md";
+export type ButtonSize = "lg" | "tall" | "md";
 
 export function glassClass(variant: GlassVariant = "strong"): string {
   return variant === "soft" ? "names-glass-soft" : "names-glass";
@@ -25,10 +25,11 @@ const FIELD_DISABLED = "disabled:opacity-60 aria-disabled:opacity-60";
 
 const SIZE: Record<ButtonSize, string> = {
   lg: "h-14 gap-2 px-6 text-button",
+  tall: "h-13 gap-2 px-6 text-card-title",
   md: "h-11 gap-1.5 px-3.5 text-body font-bold",
 };
 
-const ROUND: Record<ButtonSize, string> = { lg: "size-14", md: "size-11" };
+const ROUND: Record<ButtonSize, string> = { lg: "size-14", tall: "size-13", md: "size-11" };
 
 export function buttonClass(variant: ButtonVariant = "primary", size: ButtonSize = "lg"): string {
   switch (variant) {
@@ -122,11 +123,18 @@ export function checkboxClass(): string {
 const CHIP = "inline-flex items-center justify-center rounded-pill px-3 py-1.5 text-caption font-bold";
 const CHIP_OFF = "names-glass-soft names-chip-off text-ink in-data-[names-bg=none]:text-ink-soft";
 
-export function chipClass(selected: boolean): string {
+// "md" is the filters sheet's chip (board 3): 44 px tall, white with a line edge when off; ::before
+// adds 2 px above and below.
+export type ChipSize = "sm" | "md";
+
+const CHIP_MD = "inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-pill px-3.5 text-person font-bold";
+
+export function chipClass(selected: boolean, size: ChipSize = "sm"): string {
+  const md = size === "md";
   return [
-    `relative ${CHIP}`,
-    "before:absolute before:-inset-x-1 before:-inset-y-2 before:content-['']",
-    selected ? "border border-ink bg-ink text-surface" : CHIP_OFF,
+    `relative ${md ? CHIP_MD : CHIP}`,
+    md ? "before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-['']" : "before:absolute before:-inset-x-1 before:-inset-y-2 before:content-['']",
+    selected ? "border border-ink bg-ink text-surface" : md ? "border border-line bg-surface text-ink" : CHIP_OFF,
     PRESS,
     DISABLED,
   ].join(" ");

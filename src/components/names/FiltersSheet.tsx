@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import ThemeIcon from "@/components/names/ThemeIcon";
-import { BottomSheet, Button, checkboxClass, closeSheet, linkClass } from "@/components/names/ui";
+import { BottomSheet, Button, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
@@ -70,17 +70,6 @@ const LENGTHS: Option<NameLength | null>[] = [
   { value: "ארוך", label: lengthValue("ארוך") },
 ];
 
-// Board 3's chips: 40 px pills, white with a line border or ink when on; ::before makes the
-// hit area 44 px tall.
-function chipClass(on: boolean): string {
-  return [
-    "relative inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded-pill px-3.5 text-person font-bold",
-    "before:absolute before:inset-x-0 before:-inset-y-0.5 before:content-['']",
-    "transition-transform duration-(--nest-duration-press) motion-safe:active:scale-95",
-    on ? "border border-ink bg-ink text-surface" : "border border-line bg-surface text-ink",
-  ].join(" ");
-}
-
 function ChipGroup<T>({
   legend,
   options,
@@ -106,7 +95,7 @@ function ChipGroup<T>({
               key={String(o.value)}
               type="button"
               aria-pressed={on}
-              className={chipClass(on)}
+              className={chipClass(on, "md")}
               onClick={() => onChange(toggle && on ? null : o.value)}
             >
               {o.label}
@@ -130,7 +119,7 @@ function ThemeGroup({ value, onChange }: { value: ThemeId[] | null; onChange: (v
     onChange(next.length ? THEME_IDS.filter((t) => next.includes(t)) : null);
   };
   const chip = (key: string, on: boolean, icon: ThemeId | "all", label: string, onClick: () => void) => (
-    <button key={key} type="button" aria-pressed={on} className={`${chipClass(on)} gap-1.5`} onClick={onClick}>
+    <button key={key} type="button" aria-pressed={on} className={`${chipClass(on, "md")} gap-1.5`} onClick={onClick}>
       <ThemeIcon theme={icon} />
       {label}
     </button>

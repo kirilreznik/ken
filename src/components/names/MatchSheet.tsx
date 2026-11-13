@@ -140,7 +140,7 @@ function MatchPanel({ match, cards, onSeen }: { match: Match; cards: readonly Ca
             <Button onClick={toList}>
               לרשימת ההתאמות
             </Button>
-            <Button variant="secondary" onClick={() => close("continue")} className="h-13! text-card-title">
+            <Button variant="secondary" size="tall" onClick={() => close("continue")}>
               להמשיך לבחור
             </Button>
           </div>
