@@ -162,7 +162,6 @@ function Panel({ name }: { name: string | null }) {
           lang="he"
           rows={4}
           maxLength={REPORT_MAX}
-          data-autofocus=""
           value={message}
           onChange={(e) => {
             setMessage(e.target.value);
