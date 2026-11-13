@@ -37,9 +37,16 @@ def write(num, entries, about, themes=None):
     json.dump({"_about": about, "names": names}, open(path, "w"), ensure_ascii=False, indent=1)
     print(f"{path}: {len(names)}")
 
+def _resolved(name):
+    """Best-effort card from resolved.py (owner decision 2026-11-13), or None."""
+    from resolved import R
+    if name not in R: return None
+    niqqud, intro, bible, themes = R[name]
+    return (name, niqqud or name, intro, bible, themes)
+
 def hold(name, why):
-    return (name, None, None, {"_hold": why})
+    return _resolved(name) or (name, None, None, {"_hold": why})
 
 def bare(name):
     """Owner decision 2026-11-13: an unclear CBS name joins the deck as written, with no niqqud guess and no intro."""
-    return (name, name, "")
+    return _resolved(name) or (name, name, "")

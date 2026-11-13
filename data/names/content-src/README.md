@@ -37,7 +37,11 @@ node scripts/names-content/build-themes.mjs             # check theme lists, bui
 
 ## Batches 8–13: site-listed names (2026-11-13)
 
-Batches 1–7 cover every name given 5+ times in 2024. Batches 8–13 add the 905 CBS names below that cutoff that pass the Jewish-sector rule and are listed on at least one Israeli baby-name site (israelibaby, baby-land, materna, pampers; scanned 2026-11-13 for name strings only, never their meanings). Order: names on 2+ sites first, then by births since 2000. Owner decision 2026-11-13: the names in these batches whose origin or meaning is unclear are not held but join the deck as written (`bare()` in `_lib.py`: the name with no niqqud guess and an empty intro; the card then shows no intro line). These names have no story or similar names yet (the name sheet shows the intro alone), so `DETAILS-REPORT.md` warns that they have no details entry.
+Batches 1–7 cover every name given 5+ times in 2024. Batches 8–13 add the 905 CBS names below that cutoff that pass the Jewish-sector rule and are listed on at least one Israeli baby-name site (israelibaby, baby-land, materna, pampers; scanned 2026-11-13 for name strings only, never their meanings). Order: names on 2+ sites first, then by births since 2000.  These names have no story or similar names yet (the name sheet shows the intro alone), so `DETAILS-REPORT.md` warns that they have no details entry.
+
+## Held names resolved (2026-11-13)
+
+Owner decision: no Jewish-sector name stays held. Every name that was held for an unclear origin (169 in batches 1–7, 113 in batches 8–13) gets a card from `scripts/names-content/drafts/resolved.py`, which `hold()` and `bare()` in `_lib.py` look up first. Those intros are Claude's best effort: "כנראה" / "אולי" mark a guess, and a name with an uncertain reading keeps no niqqud (the card shows it as written).
 
 ## Writing rules (E16 spec §2)
 

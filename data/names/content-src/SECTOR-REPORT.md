@@ -9,8 +9,8 @@ Owner decision 2026-11-13: this version of the swiper is for the Israeli, mainly
 
 Exceptions: add the name with a reason to `sector-overrides.json` (`keep` or `drop`) and rebuild.
 
-- Deck without the rule: 2200 cards
-- Deck with the rule: 1768 cards
+- Deck without the rule: 2369 cards
+- Deck with the rule: 1937 cards
 - Left out: 432 cards, plus 354 of the held names
 
 ## Kept although other sectors also use them
