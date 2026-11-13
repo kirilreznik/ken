@@ -47,7 +47,7 @@ describe("hiddenNames", () => {
 });
 
 it("restoredText", () => {
-  expect(restoredText("אלה")).toBe("השם אלה יחזור לבחירה");
+  expect(restoredText("אלה")).toBe("השם אלה יחזור לכרטיסים");
 });
 
 describe("listsTab", () => {

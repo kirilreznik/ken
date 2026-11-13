@@ -43,7 +43,7 @@ export const HIDDEN_LINK = { label: "לשמות שהסתרתי", href: "/names/h
 
 /** Live region text after "החזרה". */
 export function restoredText(name: string): string {
-  return `השם ${name} יחזור לבחירה`;
+  return `השם ${name} יחזור לכרטיסים`;
 }
 
 /** Toast text after "ביטול" on a restore: the name is hidden again. */

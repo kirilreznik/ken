@@ -79,7 +79,7 @@ export default function HiddenScreen() {
             שמות שהסתרתי
           </h1>
         </header>
-        <p className="m-0 text-person font-medium text-pretty text-ink-soft">שמות שהסתרת לא מופיעים בבחירה. אחרי החזרה השם יופיע בה שוב.</p>
+        <p className="m-0 text-person font-medium text-pretty text-ink-soft">שמות שהסתרת לא מופיעים בכרטיסים. ״החזרה״ מחזירה שם לכרטיסים.</p>
 
         {!ready ? (
           <ListSkeleton />

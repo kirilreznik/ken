@@ -64,7 +64,7 @@ function Panel({ names, saved, onAdd }: AddNameSheetProps) {
       }
     >
       <form id={FORM_ID} noValidate onSubmit={submit} className="flex flex-col gap-1.5">
-        <p className="m-0 mb-2 text-body text-pretty text-ink-soft">אפשר להוסיף שם שלא מופיע בבחירה. הוא יישמר ברשימה בלי נתונים.</p>
+        <p className="m-0 mb-2 text-body text-pretty text-ink-soft">אפשר להוסיף שם שאין לו כרטיס. הוא יישמר ברשימה, בלי מספרים ופירוש.</p>
         <label htmlFor="add-name" className="text-person font-bold text-ink">
           השם
         </label>

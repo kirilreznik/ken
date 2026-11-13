@@ -361,9 +361,9 @@ export default function SettingsScreen() {
           </ul>
         </Section>
 
-        <Section title="בחירה ביחד">
+        <Section title="בחירה משותפת">
           <ul className={card}>
-            <LinkRow href="/names/invite">הזמנת מישהו לבחור ביחד</LinkRow>
+            <LinkRow href="/names/invite">הזמנה לבחירה משותפת</LinkRow>
             {space.isShared ? (
               <li className={row}>
                 <button

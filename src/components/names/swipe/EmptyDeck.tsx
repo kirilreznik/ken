@@ -110,7 +110,7 @@ export default function EmptyDeck({ state, saved, solo, onReset, takeFocus }: Em
             </Button>
             {solo && (
               <Button variant="link" href="/names/invite">
-                להזמין מישהו לבחור ביחד
+                הזמנה לבחירה משותפת
               </Button>
             )}
             <NestCard placement="deck_end" />
