@@ -124,7 +124,8 @@ function flyingCopy(node: HTMLElement): HTMLElement {
  * flies off (so the next card is live at once), or snaps back. The keep side is read from the action buttons when the drag starts (PRD
  * 3.2.12). A card whose content fits keeps every touch gesture (touch-action: none) so a swipe
  * up can love it; a card that scrolls leaves vertical touch to scrolling (pan-y), and the
- * "אהבתי מאוד" button stays the way to love it by touch.
+ * "אהבתי מאוד" button stays the way to love it by touch. Content-sized decks cap the card at
+ * the viewport (SwipeScreen) so a long card there scrolls too (NP-087).
  *
  * Spread `card` on the current card; it's keyed by name, so each card gets a fresh element.
  * `fly(kind)` sends the card off the same way for the buttons and the keys (FR-W11); with

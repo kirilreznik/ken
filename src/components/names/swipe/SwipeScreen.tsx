@@ -282,7 +282,9 @@ export default function SwipeScreen() {
                 position={progress.position}
                 total={progress.total}
                 surname={surname}
-                className={`min-h-0 ${dragClass}`}
+                // Content-sized decks (zoom, short screens) cap the card under the viewport so it
+                // scrolls itself (pan-y, useSwipeDrag) and the page can still reach the bar (NP-087).
+                className={`min-h-0 max-[20rem]:max-h-[80dvh] [@media(max-height:30rem)]:max-h-[80dvh] ${dragClass}`}
                 aria-describedby={SWIPE_KEYS_ID}
                 corner={<AboutLink />}
                 onDetails={openDetails("button")}
