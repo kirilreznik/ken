@@ -63,7 +63,7 @@ export default function BabyNamesHub() {
           <NamePills pages={top} />
         </section>
 
-        <SwiperCta />
+        <SwiperCta source="seo_hub" />
 
         <section className="flex flex-col gap-4">
           <h2 className="m-0 text-title text-ink">כל השמות לפי אות</h2>

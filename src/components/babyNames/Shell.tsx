@@ -20,7 +20,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             <Link href={BASE_PATH} className={navLink}>
               כל השמות
             </Link>
-            <Link href="/names" className="inline-flex min-h-11 items-center rounded-pill bg-ink px-4 text-person font-bold text-surface">
+            <Link href="/names?source=seo_header" className="inline-flex min-h-11 items-center rounded-pill bg-ink px-4 text-person font-bold text-surface">
               לבחירת שם
             </Link>
           </nav>

@@ -181,6 +181,21 @@ describe("createVoteStore", () => {
     expect(calls.map((c) => c.row?.updated_at)).toEqual(["1970-01-01T00:00:01.000Z", "1970-01-01T00:00:01.001Z"]);
   });
 
+  it("keeps an earlier time for a moved guest vote and sends it as created_at too", async () => {
+    const { client, calls } = fakeClient();
+    const store = createVoteStore({ spaceId: "s", userId: "u", client, now: () => 5_000_000, report: vi.fn() });
+    store.setVote("זיו", "keep", false, "1970-01-01T00:00:02.000Z");
+    store.setVote("יעל", "keep", false, "not a date");
+    store.setVote("נועה", "keep", false, "2999-01-01T00:00:00.000Z"); // a future time is not kept
+    await store.flush();
+    expect(calls.map((c) => [c.row?.updated_at, c.row?.created_at])).toEqual([
+      ["1970-01-01T00:00:02.000Z", "1970-01-01T00:00:02.000Z"],
+      ["1970-01-01T01:23:20.001Z", undefined],
+      ["1970-01-01T01:23:20.002Z", undefined],
+    ]);
+    expect(store.getState().votes.get("זיו")?.updatedAt).toBe("1970-01-01T00:00:02.000Z");
+  });
+
   it("updates local state at once and notifies subscribers", async () => {
     const { client } = fakeClient();
     const { store } = makeStore(client);

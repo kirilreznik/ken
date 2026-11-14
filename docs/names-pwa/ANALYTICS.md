@@ -24,7 +24,20 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
 - **Vercel Analytics** keeps getting page URLs only; `?source=` and `?tab=` now survive the
   scrubber (`src/lib/names/analytics.ts`), every other parameter is still dropped.
 - Set `NEXT_PUBLIC_NAMES_ANALYTICS=off` to stop sending events (e.g. a local test run). Local
-  `npm run dev` builds send `app_version = dev`, which the views leave out.
+  `npm run dev` builds send `app_version = dev` and Vercel preview builds `pre-<sha>`; the views
+  leave both out.
+- **Crawlers and automated browsers send nothing** (`isBot` in `track.ts`: `navigator.webdriver`
+  or a crawler user agent). Search engines run the page and follow the `/baby-names` buttons
+  into `/names`, so without this they would count as devices.
+- **Own testing:** open `/names?internal=1` once on a browser to mark it as yours: its events
+  carry `internal: true` and the views leave the whole device out, signed in or not.
+  `/names?internal=0` turns it off.
+- **Where people come from:** every link into the swiper carries `?source=` (`landing`,
+  `landing_demo`, `seo_name`, `seo_list`, `seo_hub`, `seo_header`; the installed app sends
+  `pwa`). `app_open` adds `ref`, the referrer as a type only (`google`, `search`, `whatsapp`,
+  `facebook`, `instagram`, `tiktok`, `x`, `telegram`, `ai`, `self`, `other`, `none`), and
+  `utm_source` / `utm_medium` / `utm_campaign` when the link has them. Tag links you post, e.g.
+  `https://nestjourney.app/names?utm_source=whatsapp&utm_campaign=beta1`.
 
 ## Adding a metric
 
@@ -36,9 +49,9 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
 
 | Event | When | Props |
 | --- | --- | --- |
-| `app_open` | full page load of /names | `source` (pwa, direct…), `display` (standalone/browser), `signed_in` |
+| `app_open` | full page load of /names | `source` (pwa, landing, seo_name, direct…), `ref`, `utm_source`, `utm_medium`, `utm_campaign`, `display` (standalone/browser), `signed_in` |
 | `page_view` | each screen shown | `screen` |
-| `signin_started` / `signin_code_sent` / `signin_failed` / `signin_completed` | sign-in steps | `method`, `step`, `resend`, `new_user` |
+| `signin_started` / `signin_code_sent` / `signin_failed` / `signin_completed` | sign-in steps | `method`, `step`, `resend`, `new_user`; failed: `kind` (closed, wrong_code, rate_limit, offline, other); completed: `after` (nudge, wall, ai, invite, welcome) |
 | `onboarding_completed` | onboarding saved | `opt_in`, `joining` |
 | `first_vote` | first decision in a space | |
 | `vote` | every decision | `vote`, `method` (swipe/button/key/detail), `shared`, `position` |
@@ -74,7 +87,7 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
 | `ai_step` | the חיפוש לפי תיאור step of the filters sheet was opened | `source` (row, refine), `active` |
 | `survey_prompt` / `survey_submitted` | the beta survey | `action` / closed answers as tokens (`disappointed`, `stage`, `nest_app`), `audience`/`useful` as answered-or-not, `votes`, `sessions` |
 
-AI deck: `vote` carries `deck` (all, ai), so save rate in picked decks can be compared with the regular deck.
+AI deck: `vote` carries `deck` (all, ai, lists), so save rate in picked decks can be compared with the regular deck.
 
 Guests: events without a user key are signed-out visitors (one `device_id` per browser). Guest → account
 conversion = devices with `guest_prompt` that later have `guest_votes_imported`.
@@ -97,6 +110,10 @@ still arrive in `survey_submitted` events; the open answers are lost.
 Supabase → SQL editor (runs as `postgres`), for example `select * from analytics.names_nsm_weekly;`.
 Every view covers names spaces only and leaves out `analytics.internal_users`.
 
+Views from migration `0015_names_analytics_v2.sql` (analytics review 2026-11-14) count guests from
+their `vote` events, since a guest's votes stay on the device until sign-in. Guest votes moved into
+an account keep the time they were made, so activation and the North Star aren't inflated at sign-in.
+
 | View | Metric |
 | --- | --- |
 | `names_nsm_weekly` | **North Star**: weekly progressing spaces (a new match in a shared space, a new save in a solo one) |
@@ -109,10 +126,35 @@ Every view covers names spaces only and leaves out `analytics.internal_users`.
 | `names_funnel_weekly` | devices: opened → sign-in → onboarding → first vote → 20 votes → invite → join |
 | `names_sessions_daily` | sessions, votes and length per session |
 | `names_events_daily` | every event per day: count, users, devices, sessions |
+| `names_nsm_weekly_v2` | the North Star (accounts' spaces) with **guests beside it**: guest devices with a new save that week (never added into the North Star) |
+| `names_acquisition_weekly` | new devices by `source` and `ref`, and how many of each voted, made 20+ decisions, signed in, invited |
+| `names_campaigns` | devices by `utm_source` / `utm_campaign` |
+| `names_guest_funnel_weekly` | guests: first vote → 20 → sign-in card → wall → sign-in started → refused (closed sign-ups) → signed in → votes moved |
+| `names_signin_weekly` | sign-ins by method and what led to them; failures by reason |
+| `names_retention_cohorts` | D1, days 1–7 and days 8–30 return by first-vote week, guests and accounts apart (empty until the cohort is old enough) |
+| `names_active_weekly`, `names_active_monthly` | active swipers (made a decision): accounts, guests, devices |
+| `names_health_daily` | all rows per day, including dev, preview and internal ones, with sign-in, AI and join error counts |
+| `names_devices` | per device: first arrival, votes as a guest and in total, signed in or not |
 | `names_user_stats`, `names_votes`, `names_members`, `names_match_times`, `names_events_clean` | building blocks for your own queries |
+
+### Weekly launch check (paste in the SQL editor, one at a time)
+
+```sql
+select * from analytics.names_nsm_weekly_v2 limit 8;
+select * from analytics.names_active_weekly limit 8;
+select * from analytics.names_acquisition_weekly where week >= current_date - 28;
+select * from analytics.names_guest_funnel_weekly limit 8;
+select * from analytics.names_signin_weekly where week >= current_date - 14;
+select * from analytics.names_retention_cohorts limit 16;
+select * from analytics.names_invites_weekly limit 8;
+select * from analytics.names_survey_pmf;
+select * from analytics.names_health_daily limit 7;
+```
 
 ## Owner setup
 
+0. **Apply migration 0015** (views only) by pasting `0015_paste_in_sql_editor.sql` into the SQL
+   editor. Until then the new views don't exist; the app works the same either way.
 1. **Apply migration 0010** to `hkoumskvmkqqnwhnizbq` (after review). Until then the RPC answers
    404 and the swiper drops events quietly, so merging the ken PR first is safe.
 2. **Leave yourself out of the numbers** (the QA users are already in):

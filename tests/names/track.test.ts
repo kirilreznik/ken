@@ -3,13 +3,17 @@ import {
   NAMES_EVENTS,
   cleanProps,
   flush,
+  isBot,
   queuedForTests,
+  refOf,
+  setInternalDevice,
   resetTrackForTests,
   screenOf,
   setTrackToken,
   sourceOf,
   track,
   trackPath,
+  utmOf,
 } from "@/lib/names/track";
 
 describe("cleanProps", () => {
@@ -66,6 +70,43 @@ describe("sourceOf", () => {
     expect(sourceOf("?source=pwa")).toBe("pwa");
     expect(sourceOf("?join=ABC")).toBe("direct");
     expect(sourceOf(`?source=${encodeURIComponent("זיו")}`)).toBe("direct");
+  });
+});
+
+describe("refOf", () => {
+  it("names the referrer by type and never keeps its URL", () => {
+    expect(refOf("", "nestjourney.app")).toBe("none");
+    expect(refOf("https://nestjourney.app/baby-names/x", "nestjourney.app")).toBe("self");
+    expect(refOf("https://www.google.co.il/", "nestjourney.app")).toBe("google");
+    expect(refOf("https://gemini.google.com/app", "nestjourney.app")).toBe("ai");
+    expect(refOf("https://l.facebook.com/l.php?u=x", "nestjourney.app")).toBe("facebook");
+    expect(refOf("https://l.instagram.com/", "nestjourney.app")).toBe("instagram");
+    expect(refOf("https://web.whatsapp.com/", "nestjourney.app")).toBe("whatsapp");
+    expect(refOf("https://chatgpt.com/", "nestjourney.app")).toBe("ai");
+    expect(refOf("https://someblog.co.il/post", "nestjourney.app")).toBe("other");
+    expect(refOf("not a url", "nestjourney.app")).toBe("other");
+  });
+});
+
+describe("utmOf", () => {
+  it("keeps short utm tokens, lowercased, and drops the rest", () => {
+    expect(utmOf("?utm_source=WhatsApp&utm_medium=group&utm_campaign=beta_1&utm_term=x")).toEqual({
+      utm_source: "whatsapp",
+      utm_medium: "group",
+      utm_campaign: "beta_1",
+    });
+    expect(utmOf(`?utm_source=${encodeURIComponent("קבוצה")}&utm_campaign=${"a".repeat(41)}`)).toEqual({});
+  });
+});
+
+describe("isBot", () => {
+  it("spots crawlers and automated browsers, not phones", () => {
+    expect(isBot({ userAgent: "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" })).toBe(true);
+    expect(isBot({ userAgent: "Mozilla/5.0 (X11; Linux x86_64) HeadlessChrome/120.0 Safari/537.36" })).toBe(true);
+    expect(isBot({ userAgent: "Mozilla/5.0 (iPhone)", webdriver: true })).toBe(true);
+    expect(isBot({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148" })).toBe(false);
+    expect(isBot({ userAgent: "Mozilla/5.0 (Linux; Android 13; CUBOT X30) Chrome/120.0 Mobile Safari/537.36" })).toBe(false);
+    expect(isBot(undefined)).toBe(false);
   });
 });
 
@@ -183,6 +224,21 @@ describe("track", () => {
       ["detail_surname_add", {}],
       ["vote", { vote: "love", method: "detail" }],
     ]);
+  });
+
+  it("marks every event from an internal device, until switched off", () => {
+    setInternalDevice(true);
+    track("vote", { vote: "keep" });
+    expect(queuedForTests()[0].props).toEqual({ vote: "keep", internal: true });
+    setInternalDevice(false);
+    track("vote", { vote: "skip" });
+    expect(queuedForTests()[1].props).toEqual({ vote: "skip" });
+  });
+
+  it("sends nothing from a crawler", () => {
+    vi.stubGlobal("navigator", { userAgent: "Mozilla/5.0 (compatible; bingbot/2.0)" });
+    track("app_open", { source: "seo_name" });
+    expect(queuedForTests()).toHaveLength(0);
   });
 
   it("does nothing when switched off", () => {

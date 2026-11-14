@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import WelcomeActions from "@/components/names/WelcomeActions";
 import { Button, Glass, emptyTitleClass } from "@/components/names/ui";
 import { GUEST_LIMIT, guestLeftLine, type GuestPrompt } from "@/lib/names/guest";
+import { markSigninFrom } from "@/lib/names/signinFrom";
 import { track } from "@/lib/names/track";
 import { deckPanel, deckPanelWrap } from "./EmptyDeck";
 
@@ -49,7 +50,10 @@ export default function GuestPanel({ kind, count, onLater }: GuestPanelProps) {
             : "עם חשבון, השמות שבחרת נשמרים בכל מכשיר, ואפשר להזמין מישהו לבחור יחד."}
         </p>
         {kind === "nudge" ? <p className="m-0 text-person text-ink-soft">{guestLeftLine(count)}</p> : null}
-        <div className="flex w-full flex-col gap-3" onClickCapture={() => track("guest_prompt", { kind, action: "signin", votes: count })}>
+        <div className="flex w-full flex-col gap-3" onClickCapture={() => {
+            markSigninFrom(kind);
+            track("guest_prompt", { kind, action: "signin", votes: count });
+          }}>
           <WelcomeActions />
         </div>
         {kind === "nudge" ? (

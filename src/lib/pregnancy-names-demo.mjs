@@ -165,7 +165,7 @@ export const namesSection = (brand) => `<section class="section" id="names" aria
 <li><span class="ico ink">${svg(ICON.people)}</span><span><b>בוחרים לבד או ביחד.</b> הבחירה נעשית בנפרד, ושם ששניכם שמרתם מופיע בהתאמות.</span></li>
 </ul>
 <div class="nd-list" id="nd-list"><h3>השמות ששמרת</h3><p data-list-empty>עוד לא נשמרו שמות. מה שיישמר יופיע כאן.</p><ol data-list hidden></ol></div>
-<p class="nd-note">10 שמות לדוגמה. באפליקציה יהיו כמעט 20,000 שמות. מספרי הלידות לקוחים מ<a href="${CBS_URL}" target="_blank" rel="noopener">נתוני הלשכה המרכזית לסטטיסטיקה</a> על שמות שניתנו ליילודים בשנים 1949–2024 (הודעה לתקשורת 391/2025), לפי <a href="${CBS_LICENSE_URL}" target="_blank" rel="noopener">תנאי השימוש</a> שלה. ההסברים נכתבו בעזרת בינה מלאכותית ועשויים להכיל טעויות. מה שבוחרים כאן לא נשמר ולא נשלח לשום מקום.<a class="nd-link nd-app" href="/names">לבחירת שם עם שמירה והתאמות</a></p>
+<p class="nd-note">10 שמות לדוגמה. באפליקציה יהיו כמעט 20,000 שמות. מספרי הלידות לקוחים מ<a href="${CBS_URL}" target="_blank" rel="noopener">נתוני הלשכה המרכזית לסטטיסטיקה</a> על שמות שניתנו ליילודים בשנים 1949–2024 (הודעה לתקשורת 391/2025), לפי <a href="${CBS_LICENSE_URL}" target="_blank" rel="noopener">תנאי השימוש</a> שלה. ההסברים נכתבו בעזרת בינה מלאכותית ועשויים להכיל טעויות. מה שבוחרים כאן לא נשמר ולא נשלח לשום מקום.<a class="nd-link nd-app" href="/names?source=landing">לבחירת שם עם שמירה והתאמות</a></p>
 </div>
 </div></section>`;
 
@@ -232,7 +232,7 @@ ${c.people.length ? `<div class="nd-people"><span class="nd-label">אנשים י
     if (!d.length) {
       const all = decided.size === NAMES.length;
       stage.innerHTML = all
-        ? `<div class="nd-empty nd-glass"><b>עברת על כל השמות.<br>בקרוב יתווספו עוד.</b>${saved.length ? `<p>השמות ששמרת:</p><ol>${saved.map(i => `<li>${esc(NAMES[i].n)}</li>`).join('')}</ol>` : '<p>לא נשמרו שמות הפעם.</p>'}<button type="button" class="nd-cta" data-restart>להתחיל מחדש</button><a class="nd-link" href="/names">לבחירת שם עם שמירה והתאמות</a><a class="nd-link" href="#waitlist">לקבל עדכון כשהאפליקציה יוצאת</a></div>`
+        ? `<div class="nd-empty nd-glass"><b>עברת על כל השמות.<br>בקרוב יתווספו עוד.</b>${saved.length ? `<p>השמות ששמרת:</p><ol>${saved.map(i => `<li>${esc(NAMES[i].n)}</li>`).join('')}</ol>` : '<p>לא נשמרו שמות הפעם.</p>'}<button type="button" class="nd-cta" data-restart>להתחיל מחדש</button><a class="nd-link" href="/names?source=landing_demo">לבחירת שם עם שמירה והתאמות</a><a class="nd-link" href="#waitlist">לקבל עדכון כשהאפליקציה יוצאת</a></div>`
         : `<div class="nd-empty nd-glass"><b>אין שמות שמתאימים לסינון הזה</b><button type="button" class="nd-cta" data-reset>איפוס סינון</button></div>`;
       return;
     }

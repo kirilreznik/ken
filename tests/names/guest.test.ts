@@ -101,10 +101,14 @@ describe("importing guest votes", () => {
     g.setVote("איתי", "hidden");
     await g.dispose();
 
-    const written: [string, string][] = [];
-    const n = await importGuestVotes({ setVote: (name, v) => void written.push([name, v]) }, new Map([["איתי", {}]]));
+    const written: [string, string, string | undefined][] = [];
+    const n = await importGuestVotes(
+      { setVote: (name, v, _custom, at) => void written.push([name, v, at]) },
+      new Map([["איתי", {}]]),
+    );
     expect(n).toBe(1);
-    expect(written).toEqual([["נועה", "keep"]]);
+    // The guest's own time goes with the vote, so analytics sees when it was made.
+    expect(written).toEqual([["נועה", "keep", expect.stringMatching(/^\d{4}-\d\d-\d\dT/)]]);
     expect(await readGuestVotes()).toEqual([]);
     // The count stays: signing out doesn't give a fresh 100.
     const after = createGuestVoteStore();

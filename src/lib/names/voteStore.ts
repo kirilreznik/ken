@@ -38,6 +38,8 @@ export interface OutboxItem {
   vote?: Vote;
   custom?: boolean;
   updatedAt: string;
+  /** Set when the vote was made earlier (a guest's vote moved into the account): its first time. */
+  createdAt?: string;
   attempts: number;
   /** Epoch ms before which the item isn't retried (unless forced). */
   retryAt: number;
@@ -61,7 +63,8 @@ export interface VoteStore {
   subscribe(listener: () => void): () => void;
   /** Reads the cache, then the server; resolves once both were tried. */
   load(): Promise<void>;
-  setVote(name: string, vote: Vote, custom?: boolean): void;
+  /** `at` keeps an earlier time (a guest's vote moved into the account); otherwise now. */
+  setVote(name: string, vote: Vote, custom?: boolean, at?: string): void;
   removeVote(name: string): void;
   /** Sends queued changes in order; `force` ignores the backoff (on `online`). */
   flush(opts?: { force?: boolean }): Promise<void>;
@@ -273,6 +276,7 @@ export function createVoteStore({
                 vote: item.vote,
                 custom: item.custom ?? false,
                 updated_at: item.updatedAt,
+                ...(item.createdAt ? { created_at: item.createdAt } : {}),
               },
               { onConflict: "space_id,user_id,name" },
             )
@@ -539,9 +543,20 @@ export function createVoteStore({
       return () => listeners.delete(listener);
     },
     load,
-    setVote(name, vote, custom = false) {
+    setVote(name, vote, custom = false, at) {
       const t = tick();
-      change({ id: newId(t), op: "upsert", name, vote, custom, updatedAt: new Date(t).toISOString(), attempts: 0, retryAt: 0 });
+      const earlier = at && !Number.isNaN(Date.parse(at)) && Date.parse(at) < t ? new Date(Date.parse(at)).toISOString() : null;
+      change({
+        id: newId(t),
+        op: "upsert",
+        name,
+        vote,
+        custom,
+        updatedAt: earlier ?? new Date(t).toISOString(),
+        ...(earlier ? { createdAt: earlier } : {}),
+        attempts: 0,
+        retryAt: 0,
+      });
     },
     removeVote(name) {
       const t = tick();

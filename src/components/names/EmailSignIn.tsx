@@ -34,6 +34,7 @@ import { useAuth } from "./AuthProvider";
 import ConnectionNote from "./ConnectionNote";
 import { useOnline } from "./useMatches";
 import { track } from "@/lib/names/track";
+import { failureKind, takeSigninFrom } from "@/lib/names/signinFrom";
 import { signupData } from "@/lib/names/signupPass";
 
 const wordmark = <Wordmark />;
@@ -84,8 +85,8 @@ export default function EmailSignIn() {
   }, []);
 
   function fail(area: string, err: unknown): AuthErrorKind {
-    track("signin_failed", { method: "email", step: area.endsWith("verify") ? "verify" : "send" });
     const { kind, message } = handleAuthError(area, err);
+    track("signin_failed", { method: "email", step: area.endsWith("verify") ? "verify" : "send", kind: failureKind(kind) });
     if (message === null) {
       router.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));
       return kind;
@@ -166,7 +167,7 @@ export default function EmailSignIn() {
       const { data, error: err } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: "email" });
       // On success the auth listener sets the user and the effect above routes on.
       if (err) failVerify(err);
-      else track("signin_completed", { method: "email", new_user: !hasAcceptedTerms(data.user) });
+      else track("signin_completed", { method: "email", new_user: !hasAcceptedTerms(data.user), after: takeSigninFrom(!!join) });
     } catch (err) {
       failVerify(err);
     } finally {

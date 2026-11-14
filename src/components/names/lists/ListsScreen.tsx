@@ -143,7 +143,7 @@ export default function ListsScreen() {
     if (!store) return;
     const previous = state?.votes.get(name);
     if (previous?.vote === kind) return;
-    track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null });
+    track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null, deck: "lists" });
     store.setVote(name, kind, previous?.custom ?? false);
     const message = sheetVoteText(kind, name);
     const wasSaved = previous && (previous.vote === "keep" || previous.vote === "love");
