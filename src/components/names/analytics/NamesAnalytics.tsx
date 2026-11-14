@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/components/names/AuthProvider";
-import { refOf, screenOf, setInternalDevice, sourceOf, track, utmOf } from "@/lib/names/track";
+import { arrivalUtm, refOf, screenOf, setInternalDevice, sourceOf, track } from "@/lib/names/track";
 import Clarity from "./Clarity";
 
 function displayMode(): "standalone" | "browser" {
@@ -17,7 +17,7 @@ function arrival() {
   const { search, hostname } = window.location;
   const internal = new URLSearchParams(search).get("internal");
   if (internal === "1" || internal === "0") setInternalDevice(internal === "1");
-  return { source: sourceOf(search), ref: refOf(document.referrer, hostname), ...utmOf(search) };
+  return { source: sourceOf(search), ref: refOf(document.referrer, hostname), ...arrivalUtm(search) };
 }
 
 /**

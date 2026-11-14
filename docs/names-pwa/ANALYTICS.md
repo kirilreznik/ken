@@ -36,8 +36,27 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
   `landing_demo`, `seo_name`, `seo_list`, `seo_hub`, `seo_header`; the installed app sends
   `pwa`). `app_open` adds `ref`, the referrer as a type only (`google`, `search`, `whatsapp`,
   `facebook`, `instagram`, `tiktok`, `x`, `telegram`, `ai`, `self`, `other`, `none`), and
-  `utm_source` / `utm_medium` / `utm_campaign` when the link has them. Tag links you post, e.g.
-  `https://nestjourney.app/names?utm_source=whatsapp&utm_campaign=beta1`.
+  `utm_source` / `utm_medium` / `utm_campaign` when the link has them.
+- **Campaign links (utm):** WhatsApp and Instagram's in-app browsers send no referrer, so an
+  untagged link counts as `direct`/`none`. Tag every link you post (table below). The tags
+  survive the way in: the landing page (`/`) and the name pages (`/baby-names/…`) add them to
+  their links into `/names`, and the swiper keeps them on the device for 30 days, so the Google
+  sign-in round trip, a reload or a later visit still carry them (`app_open`, and
+  `signin_completed`). A device counts for the campaign of its first `app_open`
+  (`analytics.names_campaigns`, `analytics.names_devices`).
+
+  | Where | Link |
+  | --- | --- |
+  | WhatsApp groups and status | `https://nestjourney.app/names?utm_source=whatsapp&utm_medium=social&utm_campaign=launch_groups` |
+  | WhatsApp, one person at a time | `https://nestjourney.app/names?utm_source=whatsapp&utm_medium=personal&utm_campaign=launch_personal` |
+  | Instagram bio | `https://nestjourney.app/names?utm_source=instagram&utm_medium=social&utm_campaign=launch_bio` |
+  | Instagram story link | `https://nestjourney.app/names?utm_source=instagram&utm_medium=social&utm_campaign=launch_story` |
+  | Facebook groups | `https://nestjourney.app/names?utm_source=facebook&utm_medium=social&utm_campaign=launch_groups` |
+  | Facebook own post | `https://nestjourney.app/names?utm_source=facebook&utm_medium=social&utm_campaign=launch_post` |
+  | Email to friends and family | `https://nestjourney.app/names?utm_source=email&utm_medium=personal&utm_campaign=launch_personal` |
+  | Landing page instead of the swiper | `https://nestjourney.app/?utm_source=<as above>&utm_campaign=<as above>` |
+
+  Keep values lowercase letters, digits, `_`, `-` or `.` (up to 40); anything else is dropped.
 
 ## Adding a metric
 
@@ -59,7 +78,7 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
 | `deck_exhausted` | no names left | `votes` |
 | `filter_empty` | filters left nothing | `sex` and which sheet filters are on |
 | `filter_sex` / `filters_reset` | quick chips, reset | `sex` |
-| `session_end` | page hidden (running totals per session; 30 min away starts a new session) | `votes`, `saves`, `duration_s` |
+| `session_end` | once per session, the first time the page is hidden (30 min away starts a new session); the views count a session's votes from its `vote` events (0017) | `votes`, `saves`, `duration_s` (totals so far) |
 | `invite_shared` | share sheet or copy | `method` |
 | `join_completed` / `join_failed` | invite link | `votes_moved` / `reason` |
 | `match_shown` / `match_cta` | match sheet | `kept_by`, `loved_by` / `action` (list, continue, close) |
