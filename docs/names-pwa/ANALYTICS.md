@@ -67,7 +67,13 @@ Microsoft Clarity recordings during the beta. BigQuery comes later, as a schedul
 | `space_left` / `space_leave_failed` | leaving a shared space in settings | `members` / `reason` |
 | `guest_prompt` | a guest's sign-in card (every 20 decisions) or the wall at 100 | `kind` (nudge, wall), `action` (shown, signin, later), `votes` |
 | `guest_votes_imported` | a guest signed in; their device votes moved into the account | `votes` |
+| `ai_submit` | a description was sent to חיפוש לפי תיאור (never its text) | `length` (short, medium, long), `example`, `filters`, `refine` |
+| `ai_result` / `ai_error` | the server's answer / a failed request | `status` (ok, off_topic, unsafe, none), `picks`, `reasons`, `ms` / `code`, `ms` |
+| `ai_deck_shown` / `ai_deck_end` / `ai_deck_cleared` | a picked deck replaced the deck / every picked name was decided / back to every name | `picks`, `refine` / `total` / `where` (banner, end) |
+| `ai_open` | a guest used the sign-in buttons inside the box | `source` |
 | `survey_prompt` / `survey_submitted` | the beta survey | `action` / closed answers as tokens (`disappointed`, `stage`, `nest_app`), `audience`/`useful` as answered-or-not, `votes`, `sessions` |
+
+AI deck: `vote` carries `deck` (all, ai), so save rate in picked decks can be compared with the regular deck.
 
 Guests: events without a user key are signed-out visitors (one `device_id` per browser). Guest → account
 conversion = devices with `guest_prompt` that later have `guest_votes_imported`.

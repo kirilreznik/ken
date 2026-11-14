@@ -1,3 +1,4 @@
+import { readSavedAiDeck, type SavedAiDeck } from "./aiDeck";
 import { readDuelSaves, type DuelSaves } from "./duel";
 import { clampRange, defaultFilters, readSex, type Filters, type NameLength } from "./filters";
 import { readRelative } from "./relative";
@@ -35,6 +36,8 @@ export interface Prefs {
   chosen: { spaceId: string; name: string } | null;
   /** "מצפים לתאומים" in settings: pair suggestions in the name sheet and a "זוגות" tab (twins.ts). */
   twins: boolean;
+  /** The deck picked by "חיפוש לפי תיאור" (aiDeck.ts); null shows every name. */
+  aiDeck: SavedAiDeck | null;
 }
 
 export type PrefKey = keyof Prefs;
@@ -120,6 +123,7 @@ const readers: { [K in PrefKey]: (raw: unknown) => Prefs[K] } = {
       : null;
   },
   twins: bool,
+  aiDeck: readSavedAiDeck,
 };
 
 export function defaultPref<K extends PrefKey>(key: K): Prefs[K] {

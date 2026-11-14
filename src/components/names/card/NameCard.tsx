@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef, ReactNode, Ref } from "react";
+import { AI_GENERATED, AI_REASON_LABEL } from "@/lib/names/aiDeck";
 import { cardLabel } from "@/lib/names/a11y";
 import { cardHints } from "@/lib/names/cardHints";
 import type { Card } from "@/lib/names/types";
@@ -17,6 +18,8 @@ type NameCardProps = Omit<ComponentPropsWithRef<"article">, "children"> & {
   surname?: string | null;
   /** At the end of the top row, e.g. the swipe screen's "על הנתונים" button. */
   corner?: ReactNode;
+  /** "חיפוש לפי תיאור": Claude's short reason this name fits (aiDeck.ts), labeled as suggested. */
+  note?: string | null;
   /** Shows "לכל הפרטים" at the end of the card (board 12); it opens the name sheet. */
   onDetails?: () => void;
   /** On the "לכל הפרטים" button, e.g. the deck's sticky-toast lift (NP-BUG-011). */
@@ -35,7 +38,7 @@ const stamp =
  * The swipe stamps (שמירה, דילוג, אהבתי מאוד) are opaque and hidden; the drag sets each one's
  * opacity (0..1) directly, found by its data-stamp (NP-093).
  */
-export default function NameCard({ card, position, total, surname, corner, onDetails, detailsRef, className = "", ...rest }: NameCardProps) {
+export default function NameCard({ card, position, total, surname, corner, note = null, onDetails, detailsRef, className = "", ...rest }: NameCardProps) {
   const { stats, content, derived } = card;
   const hints = cardHints(content);
   return (
@@ -55,6 +58,14 @@ export default function NameCard({ card, position, total, surname, corner, onDet
         corner={corner}
       >
         {content.intro.trim() && <p className="line-clamp-2 text-intro text-center break-words text-ink">{content.intro}</p>}
+        {note ? (
+          <p className="m-0 text-center text-caption text-ink-soft">
+            <span className="sr-only">{AI_REASON_LABEL}, {AI_GENERATED}: </span>
+            <span aria-hidden="true">✨ </span>
+            {note}
+            <span aria-hidden="true" className="text-stone"> · {AI_GENERATED}</span>
+          </p>
+        ) : null}
         {hints.length > 0 && (
           <ul className="flex flex-wrap justify-center gap-2">
             {hints.map((hint) => (

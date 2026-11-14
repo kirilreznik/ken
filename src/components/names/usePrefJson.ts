@@ -9,7 +9,7 @@ import { getPref, subscribePrefs } from "@/lib/names/prefs";
  */
 export function usePrefJson(
   userId: string | null,
-  key: "filters" | "surname" | "sessions" | "survey" | "invitePromptShown" | "recapSession" | "twins",
+  key: "filters" | "surname" | "sessions" | "survey" | "invitePromptShown" | "recapSession" | "twins" | "aiDeck",
 ): string | null {
   return useSyncExternalStore(
     subscribePrefs,
