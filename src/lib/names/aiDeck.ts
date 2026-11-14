@@ -9,6 +9,10 @@ import { matches, type FilterableCard, type Filters } from "./filters";
 import type { Vote } from "./types";
 
 export const AI_DECK_PATH = "/api/names/ai-deck";
+/** A guest's random device id rides in this header (the server keeps only a hash of it). */
+export const DEVICE_HEADER = "X-Names-Device";
+/** What a well-formed device id looks like (a UUID from crypto.randomUUID). */
+export const DEVICE_ID_RE = /^[A-Za-z0-9-]{16,64}$/;
 
 /** Longest description, in characters (after clean-up). */
 export const PROMPT_MAX = 300;
@@ -22,6 +26,9 @@ export const PICKS_WANTED = 50;
 export const REASON_MAX = 90;
 /** Most names `allow` or `exclude` may carry. */
 export const LIST_MAX = 2500;
+/** Searches a month for a signed-in person, and a guest's one try (the server's defaults). */
+export const AI_USER_MONTH = 5;
+export const AI_GUEST_MONTH = 1;
 /** The client gives up after this. */
 export const AI_TIMEOUT_MS = 45_000;
 
@@ -73,9 +80,18 @@ export interface AiDeckRequest {
  */
 export type AiStatus = "ok" | "off_topic" | "unsafe" | "none";
 
+/** This month's searches: `remaining` of `limit`, and whether it is a guest's one try. */
+export interface AiQuota {
+  remaining: number;
+  limit: number;
+  guest: boolean;
+}
+
 export interface AiDeckResponse {
   status: AiStatus;
   picks: AiPick[];
+  /** Searches left after this one (missing from an older server). */
+  quota?: AiQuota;
 }
 
 export type AiError =
@@ -84,24 +100,33 @@ export type AiError =
   | "too_long"
   | "no_names"
   | "limit_day"
-  | "limit_week"
+  | "limit_month"
+  | "guest_used"
+  | "guest_busy"
   | "busy"
   | "budget"
   | "off"
   | "error";
 
-export type AiResult = { ok: true; data: AiDeckResponse } | { ok: false; error: AiError };
+export type AiResult = { ok: true; data: AiDeckResponse } | { ok: false; error: AiError; quota?: AiQuota };
 
-/** POST /api/names/ai-deck with the access token. Network failures and the deadline read as "error". */
+/** Who is asking: a signed-in person's access token, or a guest's device id. */
+export type AiCaller = { token: string } | { device: string };
+
+function callerHeaders(caller: AiCaller): Record<string, string> {
+  return "token" in caller ? { Authorization: `Bearer ${caller.token}` } : { [DEVICE_HEADER]: caller.device };
+}
+
+/** POST /api/names/ai-deck. Network failures and the deadline read as "error". */
 export async function requestAiDeck(
-  accessToken: string,
+  caller: AiCaller,
   body: AiDeckRequest,
   fetchImpl: typeof fetch = fetch,
 ): Promise<AiResult> {
   try {
     const res = await fetchImpl(AI_DECK_PATH, {
       method: "POST",
-      headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+      headers: { ...callerHeaders(caller), "Content-Type": "application/json" },
       body: JSON.stringify(body),
       cache: "no-store",
       signal: AbortSignal.timeout(AI_TIMEOUT_MS),
@@ -111,15 +136,35 @@ export async function requestAiDeck(
       return data ? { ok: true, data } : { ok: false, error: "error" };
     }
     if (res.status === 401) return { ok: false, error: "signin" };
-    const json = (await res.json().catch(() => null)) as { error?: unknown } | null;
+    const json = (await res.json().catch(() => null)) as { error?: unknown; quota?: unknown } | null;
     const error = json && typeof json.error === "string" && isAiError(json.error) ? json.error : "error";
-    return { ok: false, error };
+    const quota = readQuota(json?.quota);
+    return quota ? { ok: false, error, quota } : { ok: false, error };
   } catch {
     return { ok: false, error: "error" };
   }
 }
 
-const AI_ERRORS: readonly AiError[] = ["signin", "too_short", "too_long", "no_names", "limit_day", "limit_week", "busy", "budget", "off", "error"];
+/** GET /api/names/ai-deck: this month's searches, without using one. Null when it can't tell. */
+export async function fetchAiQuota(caller: AiCaller, fetchImpl: typeof fetch = fetch): Promise<AiQuota | null> {
+  try {
+    const res = await fetchImpl(AI_DECK_PATH, { headers: callerHeaders(caller), cache: "no-store", signal: AbortSignal.timeout(10_000) });
+    if (!res.ok) return null;
+    return readQuota(((await res.json()) as { quota?: unknown })?.quota);
+  } catch {
+    return null;
+  }
+}
+
+export function readQuota(raw: unknown): AiQuota | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const q = raw as Record<string, unknown>;
+  const whole = (v: unknown) => typeof v === "number" && Number.isInteger(v) && v >= 0 && v <= 1000;
+  if (!whole(q.remaining) || !whole(q.limit) || typeof q.guest !== "boolean") return null;
+  return { remaining: Math.min(q.remaining as number, q.limit as number), limit: q.limit as number, guest: q.guest };
+}
+
+const AI_ERRORS: readonly AiError[] = ["signin", "too_short", "too_long", "no_names", "limit_day", "limit_month", "guest_used", "guest_busy", "busy", "budget", "off", "error"];
 function isAiError(v: string): v is AiError {
   return (AI_ERRORS as readonly string[]).includes(v);
 }
@@ -132,7 +177,8 @@ export function readResponse(raw: unknown): AiDeckResponse | null {
   const r = raw as Record<string, unknown>;
   if (!STATUSES.includes(r.status as AiStatus) || !Array.isArray(r.picks)) return null;
   const picks = readPicks(r.picks);
-  return { status: r.status as AiStatus, picks };
+  const quota = readQuota(r.quota);
+  return quota ? { status: r.status as AiStatus, picks, quota } : { status: r.status as AiStatus, picks };
 }
 
 function readPicks(raw: unknown[]): AiPick[] {
@@ -221,7 +267,10 @@ export const AI_SUBMIT_REFINE = "בחירה מחדש";
 export const AI_LOADING = "בוחרים שמות לפי התיאור…";
 export const AI_PRIVACY = "התיאור נשלח לעיבוד אצל Anthropic ולא נשמר אצלנו. עדיף לא לכתוב בו פרטים מזהים.";
 export const AI_SIGNIN = "התחברות לחיפוש לפי תיאור";
-export const AI_SIGNIN_LEAD = "החיפוש לפי תיאור פתוח למי שמחובר. התיאור שכתבת יחכה כאן.";
+export const AI_SIGNIN_LEAD = "התיאור שכתבת יחכה כאן.";
+/** A guest's one search, before and after it is used. */
+export const AI_GUEST_TRY = `חיפוש אחד לניסיון, בלי חשבון. עם חשבון יש ${AI_USER_MONTH} חיפושים בחודש.`;
+export const AI_GUEST_USED = `ניצלת את החיפוש לניסיון. אחרי התחברות יש ${AI_USER_MONTH} חיפושים לפי תיאור בחודש.`;
 export const AI_REASON_LABEL = "למה השם הזה";
 export const AI_GENERATED = "הוצע אוטומטית";
 export const AI_BACK = "חזרה לכל השמות";
@@ -245,6 +294,23 @@ export const AI_EXAMPLES: readonly string[] = [
   "שם לבן עם משמעות של אור או שמחה",
 ];
 
+/** "דצמבר": the month the monthly searches start over, Israel time. */
+export function nextMonthName(now: Date = new Date()): string {
+  const [y, m] = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jerusalem", year: "numeric", month: "numeric" })
+    .format(now)
+    .split("-")
+    .map(Number);
+  const next = new Date(Date.UTC(m === 12 ? y + 1 : y, m === 12 ? 0 : m, 15));
+  return new Intl.DateTimeFormat("he-IL", { timeZone: "Asia/Jerusalem", month: "long" }).format(next);
+}
+
+/** "נותרו 3 מתוך 5 חיפושים החודש" under the button for a signed-in person. */
+export function quotaText(q: AiQuota): string {
+  if (q.remaining === 0) return `ניצלת את ${q.limit} החיפושים של החודש. הם יתחדשו ב־1 ב${nextMonthName()}.`;
+  if (q.remaining === 1) return `נותר חיפוש אחד מתוך ${q.limit} החודש`;
+  return `נותרו ${q.remaining} מתוך ${q.limit} חיפושים החודש`;
+}
+
 /** The message for a failed or empty request. */
 export function aiErrorText(error: AiError | AiStatus): string {
   switch (error) {
@@ -259,8 +325,12 @@ export function aiErrorText(error: AiError | AiStatus): string {
       return "לא מצאנו שמות שמתאימים לתיאור ולסינון. אפשר לשנות את התיאור או את הסינון.";
     case "limit_day":
       return "הגעת למספר החיפושים לפי תיאור להיום. אפשר לנסות שוב מחר.";
-    case "limit_week":
-      return "הגעת למספר החיפושים לפי תיאור לשבוע הזה. אפשר לנסות שוב בעוד כמה ימים.";
+    case "limit_month":
+      return `ניצלת את החיפושים לפי תיאור של החודש. הם יתחדשו ב־1 ב${nextMonthName()}.`;
+    case "guest_used":
+      return AI_GUEST_USED;
+    case "guest_busy":
+      return "החיפוש בלי חשבון עמוס כרגע. אפשר להתחבר ולחפש עם החשבון.";
     case "busy":
       return "היו הרבה חיפושים ברצף. אפשר לנסות שוב בעוד דקה.";
     case "budget":

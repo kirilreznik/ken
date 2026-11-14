@@ -5,6 +5,9 @@ import {
   PROMPT_MAX,
   buildAiDeck,
   cleanPrompt,
+  fetchAiQuota,
+  nextMonthName,
+  quotaText,
   readResponse,
   readSavedAiDeck,
   reasonFor,
@@ -13,7 +16,7 @@ import {
 } from "@/lib/names/aiDeck";
 import { defaultFilters } from "@/lib/names/filters";
 import { buildCatalog, getCatalog } from "@/lib/names/server/aiCatalog";
-import { BURST_MS, createAiDeck, readLimits, type CallModel, type ModelReply } from "@/lib/names/server/aiDeck";
+import { BURST_MS, createAiDeck, createAiQuota, readLimits, type AiLimits, type CallModel, type ModelReply } from "@/lib/names/server/aiDeck";
 import { AI_INSTRUCTIONS, OUTPUT_SCHEMA, cleanReason, readModelOutput, systemText, userText } from "@/lib/names/server/aiPrompt";
 import { costUsd } from "@/lib/names/server/aiModel";
 import type { Vote } from "@/lib/names/types";
@@ -51,10 +54,13 @@ function fakeAdmin({
   user = { id: "00000000-0000-0000-0000-0000000000a1" } as { id: string } | null,
   take = "ok" as string,
   takeError = null as unknown,
+  used = 1,
 } = {}) {
   const getUser = vi.fn(async () => ({ data: { user }, error: user ? null : { status: 401 } }));
-  const rpc = vi.fn(async (fn: string) => {
-    if (fn === "names_ai_take") return { data: take, error: takeError };
+  const rpc = vi.fn(async (fn: string, _args?: Record<string, unknown>) => {
+    void _args;
+    if (fn === "names_ai_take_month") return { data: take, error: takeError };
+    if (fn === "names_ai_used") return { data: used, error: null };
     return { data: null, error: null };
   });
   const client = { auth: { getUser }, rpc } as unknown as SupabaseClient;
@@ -71,6 +77,12 @@ function modelReturning(output: unknown, extra: Partial<ModelReply> = {}) {
   }));
 }
 
+const LIMITS: AiLimits = { userMonth: 5, guestMonth: 1, ipDay: 20, guestIpDay: 3, guestDay: 200, budgetUsd: 20 };
+const DEVICE = "6f1c2a9e-3b7d-4e1a-9c55-0d8e2f4b7a10";
+const USER = "00000000-0000-0000-0000-0000000000a1";
+const rpcArgs = (rpc: ReturnType<typeof fakeAdmin>["rpc"], fn: string) =>
+  (rpc.mock.calls.find((c) => c[0] === fn) as unknown as [string, Record<string, unknown>] | undefined)?.[1];
+
 function handler(opts: { admin?: ReturnType<typeof fakeAdmin>; model?: CallModel | null; enabled?: boolean; now?: () => number } = {}) {
   const admin = opts.admin ?? fakeAdmin();
   const model = opts.model === undefined ? modelReturning({ status: "ok", picks: [{ id: idOf("נועה"), reason: "שם קצר ונפוץ" }] }) : opts.model;
@@ -79,7 +91,7 @@ function handler(opts: { admin?: ReturnType<typeof fakeAdmin>; model?: CallModel
     getCatalog: () => catalog,
     callModel: model,
     enabled: () => opts.enabled ?? true,
-    limits: () => ({ userDay: 5, userWeek: 20, ipDay: 20, budgetUsd: 20 }),
+    limits: () => LIMITS,
     ipSalt: () => "salt",
     now: opts.now,
   });
@@ -229,11 +241,37 @@ describe("POST /api/names/ai-deck", () => {
     expect(await res.json()).toEqual({ error: "off" });
   });
 
-  it("needs a valid session", async () => {
+  it("needs a valid session or a guest's device id", async () => {
     expect((await handler().h(post({ prompt: "שם קצר" }, null))).status).toBe(401);
+    expect((await handler().h(post({ prompt: "שם קצר" }, null, { "X-Names-Device": "short" }))).status).toBe(401);
     const res = await handler({ admin: fakeAdmin({ user: null }) }).h(post({ prompt: "שם קצר" }));
     expect(res.status).toBe(401);
     expect(await res.json()).toEqual({ error: "signin" });
+  });
+
+  it("never treats a bad session as a guest", async () => {
+    const { h } = handler({ admin: fakeAdmin({ user: null }) });
+    const res = await h(post({ prompt: "שם קצר" }, "Bearer expired", { "X-Names-Device": DEVICE }));
+    expect(res.status).toBe(401);
+  });
+
+  it("counts a guest by a hash of the device id, never the id", async () => {
+    const { h, admin } = handler({ admin: fakeAdmin({ used: 1 }) });
+    const res = await h(post({ prompt: "שם קצר" }, null, { "X-Names-Device": DEVICE }));
+    expect(res.status).toBe(200);
+    expect((await res.json()).quota).toEqual({ remaining: 0, limit: 1, guest: true });
+    const args = rpcArgs(admin.rpc, "names_ai_take_month")!;
+    expect(args.p_user).toBeNull();
+    expect(args.p_device).toMatch(/^[0-9a-f]{32}$/);
+    expect(JSON.stringify(admin.rpc.mock.calls)).not.toContain(DEVICE);
+    expect(admin.getUser).not.toHaveBeenCalled();
+  });
+
+  it("counts a signed-in person by month and returns what is left", async () => {
+    const { h, admin } = handler({ admin: fakeAdmin({ used: 2 }) });
+    const res = await h(post({ prompt: "שם קצר" }));
+    expect((await res.json()).quota).toEqual({ remaining: 3, limit: 5, guest: false });
+    expect(rpcArgs(admin.rpc, "names_ai_take_month")).toMatchObject({ p_user: USER, p_device: null, p_user_month: 5, p_guest_month: 1 });
   });
 
   it("checks the body before counting anything", async () => {
@@ -257,16 +295,18 @@ describe("POST /api/names/ai-deck", () => {
   });
 
   it("maps the limit verdicts", async () => {
-    for (const [take, error, status] of [
-      ["user_day", "limit_day", 429],
-      ["ip_day", "limit_day", 429],
-      ["user_week", "limit_week", 429],
-      ["budget", "budget", 503],
+    for (const [take, body, status] of [
+      ["user_month", { error: "limit_month", quota: { remaining: 0, limit: 5, guest: false } }, 429],
+      ["guest_month", { error: "guest_used", quota: { remaining: 0, limit: 1, guest: true } }, 429],
+      ["guest_day", { error: "guest_busy" }, 429],
+      ["ip_day", { error: "limit_day" }, 429],
+      ["budget", { error: "budget" }, 503],
     ] as const) {
       const { h, model } = handler({ admin: fakeAdmin({ take }) });
-      const res = await h(post({ prompt: "שם קצר" }));
+      const guest = take.startsWith("guest");
+      const res = await h(post({ prompt: "שם קצר" }, guest ? null : "Bearer tok", guest ? { "X-Names-Device": DEVICE } : {}));
       expect(res.status).toBe(status);
-      expect(await res.json()).toEqual({ error });
+      expect(await res.json()).toEqual(body);
       expect(model).not.toHaveBeenCalled();
     }
   });
@@ -280,9 +320,8 @@ describe("POST /api/names/ai-deck", () => {
   it("sends a hashed IP, never the address", async () => {
     const { h, admin } = handler();
     await h(post({ prompt: "שם קצר" }));
-    const call = admin.rpc.mock.calls.find((c) => c[0] === "names_ai_take") as unknown as [string, Record<string, unknown>];
-    expect(call[1].p_ip).toMatch(/^[0-9a-f]{32}$/);
-    expect(JSON.stringify(call)).not.toContain("203.0.113.9");
+    expect(rpcArgs(admin.rpc, "names_ai_take_month")!.p_ip).toMatch(/^[0-9a-f]{32}$/);
+    expect(JSON.stringify(admin.rpc.mock.calls)).not.toContain("203.0.113.9");
   });
 
   it("returns the checked picks and records the spend", async () => {
@@ -298,8 +337,13 @@ describe("POST /api/names/ai-deck", () => {
     const res = await h(post({ prompt: "שם קצר" }));
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("no-store");
-    expect(await res.json()).toEqual({ status: "ok", picks: [{ name: "נועה", reason: "שם קצר ונפוץ" }, { name: "דוד", reason: null }] });
+    expect(await res.json()).toEqual({
+      status: "ok",
+      picks: [{ name: "נועה", reason: "שם קצר ונפוץ" }, { name: "דוד", reason: null }],
+      quota: { remaining: 4, limit: 5, guest: false },
+    });
     expect(admin.rpc).toHaveBeenCalledWith("names_ai_spend", { p_usd: 0.03 });
+    expect(rpcArgs(admin.rpc, "names_ai_give_back")).toBeUndefined();
   });
 
   it("asks only for allowed, undecided names", async () => {
@@ -321,7 +365,7 @@ describe("POST /api/names/ai-deck", () => {
         expect(await res.json()).toEqual({ error: "too_long" });
         continue;
       }
-      expect(await res.json()).toEqual({ status: "off_topic", picks: [] });
+      expect(await res.json()).toMatchObject({ status: "off_topic", picks: [] });
       const [system, user] = model.mock.calls[0];
       expect(system).toBe(systemText(catalog));
       expect(user.match(/<[^>]*>/g)?.filter((t) => t.includes("allowed") || t.includes("request")).length).toBe(4);
@@ -340,7 +384,14 @@ describe("POST /api/names/ai-deck", () => {
   it("reads a refusal as unsafe", async () => {
     const model = vi.fn<CallModel>(async () => ({ json: null, refused: true, usd: 0.01, model: "claude-opus-5-5" }));
     const res = await handler({ model }).h(post({ prompt: "שם קצר" }));
-    expect(await res.json()).toEqual({ status: "unsafe", picks: [] });
+    expect(await res.json()).toMatchObject({ status: "unsafe", picks: [] });
+  });
+
+  it("gives the month's search back when no names were picked, but keeps the daily IP count", async () => {
+    const model = modelReturning({ status: "none", picks: [] });
+    const { h, admin } = handler({ model });
+    await h(post({ prompt: "שם קצר" }));
+    expect(rpcArgs(admin.rpc, "names_ai_give_back")).toEqual({ p_user: USER, p_device: null, p_ip: "" });
   });
 
   it("gives the request back when the model call fails", async () => {
@@ -350,7 +401,9 @@ describe("POST /api/names/ai-deck", () => {
     const { h, admin } = handler({ model });
     const res = await h(post({ prompt: "שם קצר" }));
     expect(res.status).toBe(502);
-    expect(admin.rpc).toHaveBeenCalledWith("names_ai_refund", expect.objectContaining({ p_user: "00000000-0000-0000-0000-0000000000a1" }));
+    const back = rpcArgs(admin.rpc, "names_ai_give_back")!;
+    expect(back).toMatchObject({ p_user: USER, p_device: null });
+    expect(back.p_ip).toMatch(/^[0-9a-f]{32}$/);
   });
 
   it("allows one request at a time per person", async () => {
@@ -363,10 +416,35 @@ describe("POST /api/names/ai-deck", () => {
   });
 });
 
+describe("GET /api/names/ai-deck", () => {
+  const get = (headers: Record<string, string>) => new Request("https://example.test/api/names/ai-deck", { headers });
+  const quota = (admin = fakeAdmin({ used: 3 }), enabled = true) =>
+    createAiQuota({ getAdmin: () => admin.client, enabled: () => enabled, limits: () => LIMITS, ipSalt: () => "salt" });
+
+  it("tells what is left without counting", async () => {
+    const admin = fakeAdmin({ used: 3 });
+    const res = await quota(admin)(get({ Authorization: "Bearer tok" }));
+    expect(await res.json()).toEqual({ quota: { remaining: 2, limit: 5, guest: false } });
+    expect(rpcArgs(admin.rpc, "names_ai_take_month")).toBeUndefined();
+    const guest = await quota(fakeAdmin({ used: 0 }))(get({ "X-Names-Device": DEVICE }));
+    expect(await guest.json()).toEqual({ quota: { remaining: 1, limit: 1, guest: true } });
+  });
+
+  it("is off with the switch off, and needs a caller", async () => {
+    expect((await quota(undefined, false)(get({ Authorization: "Bearer tok" }))).status).toBe(503);
+    expect((await quota()(get({}))).status).toBe(401);
+  });
+});
+
 describe("readLimits", () => {
   it("reads env numbers with defaults", () => {
-    expect(readLimits({})).toEqual({ userDay: 5, userWeek: 20, ipDay: 20, budgetUsd: 20 });
-    expect(readLimits({ NAMES_AI_USER_DAY: "2", NAMES_AI_DAILY_USD: "x" })).toMatchObject({ userDay: 2, budgetUsd: 20 });
+    expect(readLimits({})).toEqual(LIMITS);
+    expect(readLimits({ NAMES_AI_USER_MONTH: "8", NAMES_AI_GUEST_MONTH: "0", NAMES_AI_DAILY_USD: "x", NAMES_AI_IP_DAY: "" })).toMatchObject({
+      userMonth: 8,
+      guestMonth: 0,
+      budgetUsd: 20,
+      ipDay: 20,
+    });
   });
 });
 
@@ -426,17 +504,44 @@ describe("client side", () => {
 
   it("maps the server's statuses to results", async () => {
     const fetchOk = vi.fn(async () => new Response(JSON.stringify({ status: "ok", picks: [{ name: "נועה", reason: "א" }] })));
-    expect(await requestAiDeck("t", { prompt: "שם" }, fetchOk as unknown as typeof fetch)).toEqual({
+    expect(await requestAiDeck({ token: "t" }, { prompt: "שם" }, fetchOk as unknown as typeof fetch)).toEqual({
       ok: true,
       data: { status: "ok", picks: [{ name: "נועה", reason: "א" }] },
     });
     const limit = vi.fn(async () => new Response(JSON.stringify({ error: "limit_day" }), { status: 429 }));
-    expect(await requestAiDeck("t", { prompt: "שם" }, limit as unknown as typeof fetch)).toEqual({ ok: false, error: "limit_day" });
+    expect(await requestAiDeck({ token: "t" }, { prompt: "שם" }, limit as unknown as typeof fetch)).toEqual({ ok: false, error: "limit_day" });
     const weird = vi.fn(async () => new Response(JSON.stringify({ error: "<b>" }), { status: 500 }));
-    expect(await requestAiDeck("t", { prompt: "שם" }, weird as unknown as typeof fetch)).toEqual({ ok: false, error: "error" });
+    expect(await requestAiDeck({ token: "t" }, { prompt: "שם" }, weird as unknown as typeof fetch)).toEqual({ ok: false, error: "error" });
     const down = vi.fn(async () => {
       throw new Error("offline");
     });
-    expect(await requestAiDeck("t", { prompt: "שם" }, down as unknown as typeof fetch)).toEqual({ ok: false, error: "error" });
+    expect(await requestAiDeck({ token: "t" }, { prompt: "שם" }, down as unknown as typeof fetch)).toEqual({ ok: false, error: "error" });
+  });
+
+  it("sends a guest's device id instead of a token, and reads the quota", async () => {
+    const used = vi.fn(async (_url: string, init: RequestInit) => {
+      void _url;
+      expect(new Headers(init.headers).get("X-Names-Device")).toBe(DEVICE);
+      expect(new Headers(init.headers).get("Authorization")).toBeNull();
+      return new Response(JSON.stringify({ error: "guest_used", quota: { remaining: 0, limit: 1, guest: true } }), { status: 429 });
+    });
+    expect(await requestAiDeck({ device: DEVICE }, { prompt: "שם" }, used as unknown as typeof fetch)).toEqual({
+      ok: false,
+      error: "guest_used",
+      quota: { remaining: 0, limit: 1, guest: true },
+    });
+    const q = vi.fn(async () => new Response(JSON.stringify({ quota: { remaining: 9, limit: 5, guest: false } })));
+    expect(await fetchAiQuota({ token: "t" }, q as unknown as typeof fetch)).toEqual({ remaining: 5, limit: 5, guest: false });
+    const bad = vi.fn(async () => new Response(JSON.stringify({ quota: { remaining: -1, limit: 5, guest: false } })));
+    expect(await fetchAiQuota({ token: "t" }, bad as unknown as typeof fetch)).toBeNull();
+  });
+
+  it("words the monthly line", () => {
+    expect(quotaText({ remaining: 3, limit: 5, guest: false })).toBe("נותרו 3 מתוך 5 חיפושים החודש");
+    expect(quotaText({ remaining: 1, limit: 5, guest: false })).toBe("נותר חיפוש אחד מתוך 5 החודש");
+    expect(quotaText({ remaining: 0, limit: 5, guest: false })).toContain("יתחדשו ב־1 ב");
+    expect(nextMonthName(new Date("2026-11-14T12:00:00Z"))).toBe("דצמבר");
+    // 31 Dec 23:30 UTC is already 1 January in Israel.
+    expect(nextMonthName(new Date("2026-12-31T23:30:00Z"))).toBe("פברואר");
   });
 });

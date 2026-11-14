@@ -246,14 +246,22 @@ create the Clarity project and set `NEXT_PUBLIC_CLARITY_PROJECT_ID` in Vercel (P
 
 ## 15. חיפוש לפי תיאור (the AI deck, 2026-11-14)
 
-A box at the top of the filters sheet: a signed-in person describes the name they want, and
+A row at the top of the filters sheet opens it as its own step: a person describes the name they want, and
 `POST /api/names/ai-deck` asks Claude (Anthropic API) to pick up to 50 names from our cards only.
 Code: `src/lib/names/aiDeck.ts` (shared), `src/lib/names/server/ai*.ts` (prompt, catalog, model,
 handler). It stays hidden and the route answers `off` until every step below is done.
 
-1. **Migration 0013** (pregnancy-manager `supabase/migrations/0013_names_ai_deck.sql`): apply it
-   to the EU project in the SQL editor. It adds per-user, per-IP and daily-spend counters that only
-   the service role can touch. Without it the route fails closed (`off`).
+Who can search (2026-11-14): a signed-in person 5 times a calendar month (Israel time, starts
+over on the 1st); a guest once a month per device, then the step shows the sign-in buttons. A
+guest is counted by a random id the browser keeps (`X-Names-Device`); the server stores only an
+HMAC of it. A search that picks no names, or fails on our side, is given back. Hidden abuse
+guards: guest requests per IP per day, all guest requests per day, everyone per IP per day, and
+the daily spend cap. `GET /api/names/ai-deck` returns what is left without using a search.
+
+1. **Migrations 0013 and 0014** (pregnancy-manager `supabase/migrations/0013_names_ai_deck.sql`,
+   `0014_names_ai_monthly.sql`): apply them to the EU project in the SQL editor, 0014 **before**
+   deploying the code that uses it. They add monthly, guest, per-IP and daily-spend counters that
+   only the service role can touch. Without them the route fails closed (`off`).
 2. **Anthropic API key**: create a key at console.anthropic.com (a workspace just for Nest is best,
    with a monthly spend limit, e.g. $50) and add it in Vercel as `ANTHROPIC_API_KEY`
    (Production + Preview, **not** `NEXT_PUBLIC_`).
@@ -263,9 +271,10 @@ handler). It stays hidden and the route answers `off` until every step below is 
    |---|---|---|
    | `NAMES_AI_ENABLED` | `true` | server switch; anything else turns the route off at once |
    | `NEXT_PUBLIC_NAMES_AI` | `on` | shows the box (build-time: redeploy after changing) |
-   | `NAMES_AI_IP_SALT` | a long random string | secret for hashing IPs (falls back to the service key) |
+   | `NAMES_AI_IP_SALT` | a long random string | secret for hashing IPs and guest device ids (falls back to the service key) |
    | `NAMES_AI_MODEL` | optional, default `claude-opus-5-5` | the model |
-   | `NAMES_AI_USER_DAY` / `NAMES_AI_USER_WEEK` / `NAMES_AI_IP_DAY` | optional, default 5 / 20 / 20 | request limits |
+   | `NAMES_AI_USER_MONTH` / `NAMES_AI_GUEST_MONTH` | optional, default 5 / 1 | searches a month, signed in / per guest device |
+   | `NAMES_AI_IP_DAY` / `NAMES_AI_GUEST_IP_DAY` / `NAMES_AI_GUEST_DAY` | optional, default 20 / 3 / 200 | abuse guards: per IP per day, guests per IP per day, all guests per day |
    | `NAMES_AI_DAILY_USD` | optional, default 20 | daily spend cap for everyone; the box answers "not available" after it |
 
 4. **Live check** (a few cents): `ANTHROPIC_API_KEY=... npx vitest run tests/names/aiDeck.live.test.ts`.
