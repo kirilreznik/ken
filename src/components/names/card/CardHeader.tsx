@@ -42,8 +42,7 @@ export default function CardHeader({ name, niqqud, sexTag, position, total, surn
         <div className="flex flex-col items-center gap-0.5 text-center">
           <h2 className="text-name break-words text-ink">{niqqud}</h2>
           {full && (
-            // The full name is the fun part: a size up from the card's soft lines, in ink.
-            <p className="text-title break-words text-ink">
+            <p className="text-card-title font-medium break-words text-ink-soft in-data-[names-bg=none]:text-stone">
               {full}
             </p>
           )}

@@ -52,7 +52,7 @@ export default function SurnamePanel({ preview, name, guest, onDone }: SurnamePa
         {/* The preview: the first card's name, with the surname as it is typed. */}
         <div aria-hidden="true" className="flex w-full flex-col items-center gap-0.5 rounded-md bg-peach-pale px-4 py-3 text-center">
           <span className="text-name break-words text-ink">{preview}</span>
-          <span className={`text-title break-words ${full ? "text-ink" : "text-ink-soft"}`}>
+          <span className="text-card-title font-medium break-words text-ink-soft">
             {full ?? `${name} ...`}
           </span>
         </div>
