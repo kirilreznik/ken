@@ -46,6 +46,9 @@ export function positionText(n: number, total: number): string {
   return `שם ${formatCount(n)} מתוך ${formatCount(total)}`;
 }
 
+/** The surname field's limit (intro, the surname card, settings). */
+export const SURNAME_MAX = 30;
+
 /** The name with the user's surname, or null when no surname is set (E16 FR-5). */
 export function fullName(name: string, surname: string | null | undefined): string | null {
   const last = surname?.trim().replace(/\s+/gu, " ") ?? "";

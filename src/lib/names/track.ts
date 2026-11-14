@@ -55,6 +55,8 @@ export const NAMES_EVENTS = {
   detail_section_seen: "A section of the name sheet scrolled into view, once per open. {section: 'numbers' | 'similar' | 'story'}",
   detail_similar_tap: "A similar name was opened from the name sheet.",
   detail_surname_add: "The name sheet's 'add a surname' link was used.",
+  surname_prompt: "The surname card before the first name (once per device, guests too). {action: 'shown' | 'saved' | 'skipped'}",
+  surname_changed: "The surname was saved or cleared in settings. {set: true when one is saved}",
   search_open: "The search sheet opened.",
   search_result_open: "A search result was opened. {rank, length: characters typed}",
   search_no_result: "A search found nothing (after a pause in typing). {length, latin}",

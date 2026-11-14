@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { RequireAuth } from "@/components/names/AuthGuard";
+import { AllowGuest } from "@/components/names/AuthGuard";
 import Intro from "@/components/names/Intro";
 import ScreenBackground from "@/components/names/ScreenBackground";
 
@@ -8,13 +8,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/** FR-W9: the one-time intro (board 1), on the user's background. */
+/** FR-W9: the one-time intro (board 1), on the user's background. Guests reach it from the name sheet's surname link. */
 export default function IntroPage() {
   return (
-    <RequireAuth>
+    <AllowGuest>
       <ScreenBackground blobs="intro">
         <Intro />
       </ScreenBackground>
-    </RequireAuth>
+    </AllowGuest>
   );
 }
