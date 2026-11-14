@@ -23,12 +23,12 @@ export const TRACK_VERSION =
 
 /** Every event the swiper sends, with what it means. Keep it sorted by flow. */
 export const NAMES_EVENTS = {
-  app_open: "A full page load of /names. {source: 'pwa' | 'direct' | 'landing' | 'seo_name' | …, ref: the referrer's type (google, whatsapp, self, other, none…), utm_source, utm_medium, utm_campaign, display: 'standalone' | 'browser', signed_in}",
+  app_open: "A full page load of /names. {source: 'pwa' | 'direct' | 'landing' | 'seo_name' | …, ref: the referrer's type (google, whatsapp, self, other, none…), utm_source, utm_medium, utm_campaign (from the address, or the device's campaign link of the last 30 days; the landing page and the name pages pass them on to /names), display: 'standalone' | 'browser', signed_in}",
   page_view: "A screen was shown (also on in-app navigation). {screen}",
   signin_started: "A sign-in button was used. {method: 'google' | 'email'}",
   signin_code_sent: "The email code was sent. {resend}",
   signin_failed: "Sign-in failed. {method, step: 'send' | 'verify' | 'oauth' | 'callback' | 'closed', kind: 'closed' | 'wrong_code' | 'rate_limit' | 'offline' | 'other'}",
-  signin_completed: "Signed in. {method, new_user, after: what led to it: 'nudge' | 'wall' (a guest's sign-in card) | 'ai' | 'invite' | 'welcome'}",
+  signin_completed: "Signed in. {method, new_user, after: what led to it: 'nudge' | 'wall' (a guest's sign-in card) | 'ai' | 'invite' | 'welcome', utm_source, utm_medium, utm_campaign: the campaign link the device came with (30 days)}",
   onboarding_completed: "Onboarding was saved. {opt_in, joining}",
   first_vote: "The first decision in a space.",
   vote: "A decision on a card. {vote: 'keep' | 'love' | 'skip' | 'hidden', method: 'swipe' | 'button' | 'key' | 'detail', shared, position, deck: 'all' | 'ai' (a deck picked by חיפוש לפי תיאור) | 'lists' (decided in השמות שלי)}",
@@ -37,7 +37,7 @@ export const NAMES_EVENTS = {
   filter_empty: "The filters left no names. {sex, sheet_filters}",
   filter_sex: "The filter menu was applied with a different sex filter. {sex: 'all' or the chosen tags joined by '+' in boy, girl, unisex order, e.g. 'girl+unisex'}",
   filters_reset: "The filters were reset from the empty deck.",
-  session_end: "The page was hidden; running totals for the session. {votes, saves, duration_s}",
+  session_end: "Once per session, the first time the page was hidden; the session's totals so far. {votes, saves, duration_s}",
   invite_shared: "The invite link was shared or copied. {method: 'share' | 'copy'}",
   join_completed: "Joined a shared space from an invite link.",
   join_failed: "An invite link didn't work. {reason}",
@@ -202,6 +202,50 @@ export function utmOf(search: string): Record<string, string> {
   return out;
 }
 
+const UTM_KEY = "nest-names-utm";
+/** How long a campaign link's utm_* stays with the device (a sign-in round trip, a return visit). */
+export const UTM_KEEP_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * The utm_* of this visit: from the address when it has them (remembered on the device for 30
+ * days), else the remembered ones. So a Google sign-in round trip, a reload or a return visit
+ * from the home screen keeps the campaign the person first came with.
+ */
+export function arrivalUtm(search: string, now = Date.now()): Record<string, string> {
+  const fresh = utmOf(search);
+  const store = storage("local");
+  try {
+    if (Object.keys(fresh).length) {
+      store?.setItem(UTM_KEY, JSON.stringify({ ...fresh, at: now }));
+      return fresh;
+    }
+    return storedUtm(now);
+  } catch {
+    return fresh;
+  }
+}
+
+/** The remembered utm_* (empty when none, or older than 30 days). */
+export function storedUtm(now = Date.now()): Record<string, string> {
+  try {
+    const raw = storage("local")?.getItem(UTM_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    if (typeof parsed.at !== "number" || now - parsed.at > UTM_KEEP_MS) {
+      storage("local")?.removeItem(UTM_KEY);
+      return {};
+    }
+    const out: Record<string, string> = {};
+    for (const key of ["utm_source", "utm_medium", "utm_campaign"]) {
+      const value = parsed[key];
+      if (typeof value === "string" && /^[a-z0-9_.-]{1,40}$/.test(value)) out[key] = value;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 /**
  * A browser that is a crawler or an automated test. Search engines run the page's JavaScript
  * and follow links into /names, so their visits would count as devices.
@@ -255,6 +299,8 @@ interface SessionState {
   lastAt: number;
   votes: number;
   saves: number;
+  /** session_end was already sent for this session (it is sent once, the first time the page hides). */
+  ended?: boolean;
 }
 
 let session: SessionState | null = null;
@@ -467,9 +513,15 @@ function listen() {
   window.addEventListener("online", () => void flush());
 }
 
-/** Queues session_end with the session's running totals. */
+/**
+ * Queues session_end, once per session: the first time the page is hidden. Phones hide the page
+ * on every app switch, lock and tab change, and a session continues if the person is back within
+ * 30 minutes, so later hides send nothing. The totals are the session's up to that point; the
+ * views count a session's votes from its vote events, so votes made after it still count.
+ */
 function endSession() {
-  if (!session) return;
+  if (!session || session.ended) return;
+  session.ended = true;
   const now = Date.now();
   queue.push({
     event: "session_end",
@@ -497,6 +549,7 @@ export function resetTrackForTests(): void {
   if (timer) clearTimeout(timer);
   timer = null;
   sending = false;
+  listening = false;
   session = null;
   deviceId = null;
   internal = null;

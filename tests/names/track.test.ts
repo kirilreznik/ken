@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   NAMES_EVENTS,
+  SESSION_IDLE_MS,
+  UTM_KEEP_MS,
+  arrivalUtm,
+  storedUtm,
   cleanProps,
   flush,
   isBot,
@@ -245,5 +249,69 @@ describe("track", () => {
     vi.stubEnv("NEXT_PUBLIC_NAMES_ANALYTICS", "off");
     track("vote", { vote: "keep" });
     expect(queuedForTests()).toHaveLength(0);
+  });
+
+  it("sends session_end once per session, however often the page hides", () => {
+    const listeners: Record<string, (() => void)[]> = {};
+    const doc = {
+      visibilityState: "visible",
+      addEventListener: (type: string, fn: () => void) => void (listeners[type] ??= []).push(fn),
+    };
+    vi.stubGlobal("document", doc);
+    const hide = () => {
+      doc.visibilityState = "hidden";
+      listeners.visibilitychange?.forEach((fn) => fn());
+      doc.visibilityState = "visible";
+    };
+    track("vote", { vote: "keep" });
+    hide();
+    track("vote", { vote: "skip" });
+    hide();
+    hide();
+    // Hiding sends the queue at once (keepalive), so read what went out.
+    const ends = () =>
+      fetchMock.mock.calls
+        .flatMap(([, init]) => (JSON.parse((init as RequestInit).body as string) as { p_events: { event: string; props: object; session_id: string }[] }).p_events)
+        .filter((e) => e.event === "session_end");
+    expect(ends()).toHaveLength(1);
+    expect(ends()[0].props).toMatchObject({ votes: 1, saves: 1 });
+
+    // Back after more than 30 minutes: a new session, which gets its own session_end.
+    vi.setSystemTime(Date.now() + SESSION_IDLE_MS + 1000);
+    track("vote", { vote: "love" });
+    hide();
+    hide();
+    expect(ends()).toHaveLength(2);
+    expect(ends()[1].session_id).not.toBe(ends()[0].session_id);
+  });
+});
+
+describe("arrivalUtm", () => {
+  beforeEach(() => {
+    const data = new Map<string, string>();
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem: (k: string) => data.get(k) ?? null,
+        setItem: (k: string, v: string) => void data.set(k, v),
+        removeItem: (k: string) => void data.delete(k),
+      },
+    });
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("keeps a campaign link's tags for later loads (a sign-in round trip) for 30 days", () => {
+    const t = 1_000_000;
+    expect(arrivalUtm("?utm_source=WhatsApp&utm_campaign=launch", t)).toEqual({ utm_source: "whatsapp", utm_campaign: "launch" });
+    expect(arrivalUtm("", t + 1000)).toEqual({ utm_source: "whatsapp", utm_campaign: "launch" });
+    expect(storedUtm(t + 2000)).toEqual({ utm_source: "whatsapp", utm_campaign: "launch" });
+    expect(arrivalUtm("?utm_source=instagram", t + 3000)).toEqual({ utm_source: "instagram" });
+    expect(storedUtm(t + 3000 + UTM_KEEP_MS + 1)).toEqual({});
+    expect(arrivalUtm("", t + 3000 + UTM_KEEP_MS + 2)).toEqual({});
+  });
+
+  it("works without storage", () => {
+    vi.stubGlobal("window", {});
+    expect(arrivalUtm("?utm_source=facebook")).toEqual({ utm_source: "facebook" });
+    expect(storedUtm()).toEqual({});
   });
 });

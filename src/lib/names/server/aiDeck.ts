@@ -10,6 +10,7 @@ import {
   PROMPT_MIN,
   REFINE_MAX,
   cleanPrompt,
+  isDeckNameShaped,
   type AiDeckResponse,
   type AiError,
   type AiQuota,
@@ -28,6 +29,18 @@ export interface ModelReply {
 }
 
 export type CallModel = (system: string, user: string) => Promise<ModelReply>;
+
+/**
+ * The last gate before a deck goes out: every pick must be a card in the catalog, by its exact
+ * name, and shaped like a name. readModelOutput already maps the model's ids to catalog cards;
+ * this holds even if that ever changes. A deck left empty becomes "none".
+ */
+export function onlyDeckNames(verdict: AiDeckResponse, catalog: Catalog): AiDeckResponse {
+  if (verdict.status !== "ok") return verdict;
+  const picks = verdict.picks.filter((p) => catalog.ids.has(p.name) && isDeckNameShaped(p.name));
+  if (picks.length < verdict.picks.length) console.error("names ai deck: dropped picks outside the deck", verdict.picks.length - picks.length);
+  return picks.length ? { ...verdict, picks } : { status: "none", picks: [] };
+}
 
 /** Limits, from env with these defaults (AI_DECK in docs/names-pwa/SETUP.md). */
 export interface AiLimits {
@@ -250,13 +263,14 @@ export function createAiDeck({
       () => undefined,
     );
 
-    const verdict: AiDeckResponse | null =
+    const read: AiDeckResponse | null =
       reply.refused || reply.json === null ? { status: "unsafe", picks: [] } : readModelOutput(reply.json, catalog, allowed ? new Set(allowed) : null);
-    if (!verdict) {
+    if (!read) {
       console.error("names ai deck: output did not match the schema");
       await giveBack(true);
       return fail(502, "error");
     }
+    const verdict = onlyDeckNames(read, catalog);
     // No deck, no search used.
     if (verdict.status !== "ok" || verdict.picks.length === 0) await giveBack(false);
     const quota = await readQuota(admin, who, l);

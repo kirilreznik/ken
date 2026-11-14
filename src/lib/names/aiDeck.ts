@@ -181,13 +181,24 @@ export function readResponse(raw: unknown): AiDeckResponse | null {
   return quota ? { status: r.status as AiStatus, picks, quota } : { status: r.status as AiStatus, picks };
 }
 
+/**
+ * The shape of every name in the deck: Hebrew letters, with spaces, hyphens and geresh/gershayim
+ * (ג'ורג', בת-אל). A last check on picks, after the catalog check: a word that isn't shaped
+ * like a deck name (a Latin word, a phrase, part of the instructions) never reaches the deck.
+ */
+export const DECK_NAME_SHAPE = /^[א-ת][א-ת׳״'"\- ]{0,29}$/;
+
+export function isDeckNameShaped(name: string): boolean {
+  return DECK_NAME_SHAPE.test(name) && !/\s{2}|[\s-]$/.test(name);
+}
+
 function readPicks(raw: unknown[]): AiPick[] {
   const seen = new Set<string>();
   const out: AiPick[] = [];
   for (const p of raw) {
     if (typeof p !== "object" || p === null) continue;
     const { name, reason } = p as Record<string, unknown>;
-    if (typeof name !== "string" || !name || name.length > 40 || seen.has(name)) continue;
+    if (typeof name !== "string" || !isDeckNameShaped(name) || seen.has(name)) continue;
     seen.add(name);
     out.push({ name, reason: typeof reason === "string" && reason.length <= REASON_MAX ? reason : null });
     if (out.length >= 100) break;

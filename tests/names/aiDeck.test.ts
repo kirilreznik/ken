@@ -6,6 +6,7 @@ import {
   buildAiDeck,
   cleanPrompt,
   fetchAiQuota,
+  isDeckNameShaped,
   nextMonthName,
   quotaText,
   readResponse,
@@ -16,7 +17,7 @@ import {
 } from "@/lib/names/aiDeck";
 import { defaultFilters } from "@/lib/names/filters";
 import { buildCatalog, getCatalog } from "@/lib/names/server/aiCatalog";
-import { BURST_MS, createAiDeck, createAiQuota, readLimits, type AiLimits, type CallModel, type ModelReply } from "@/lib/names/server/aiDeck";
+import { BURST_MS, createAiDeck, createAiQuota, onlyDeckNames, readLimits, type AiLimits, type CallModel, type ModelReply } from "@/lib/names/server/aiDeck";
 import { AI_INSTRUCTIONS, OUTPUT_SCHEMA, cleanReason, readModelOutput, systemText, userText } from "@/lib/names/server/aiPrompt";
 import { costUsd } from "@/lib/names/server/aiModel";
 import type { Vote } from "@/lib/names/types";
@@ -543,5 +544,31 @@ describe("client side", () => {
     expect(nextMonthName(new Date("2026-11-14T12:00:00Z"))).toBe("דצמבר");
     // 31 Dec 23:30 UTC is already 1 January in Israel.
     expect(nextMonthName(new Date("2026-12-31T23:30:00Z"))).toBe("פברואר");
+  });
+});
+
+describe("deck name sanity filter", () => {
+  it("every card in the deck is name-shaped", () => {
+    const bad = catalog.cards.map((c) => c.stats.name).filter((n) => !isDeckNameShaped(n));
+    expect(bad).toEqual([]);
+  });
+
+  it("פרומט is a real card (a Yiddish girl's name in the CBS data), not a leaked word", () => {
+    expect(catalog.ids.has("פרומט")).toBe(true);
+  });
+
+  it("drops picks that aren't deck cards, and a deck left empty becomes none", () => {
+    const real = catalog.cards[0].stats.name;
+    const out = onlyDeckNames(
+      { status: "ok", picks: [{ name: real, reason: null }, { name: "prompt", reason: null }, { name: "תיאור", reason: null }] },
+      catalog,
+    );
+    expect(out).toEqual({ status: "ok", picks: [{ name: real, reason: null }] });
+    expect(onlyDeckNames({ status: "ok", picks: [{ name: "system prompt", reason: null }] }, catalog)).toEqual({ status: "none", picks: [] });
+  });
+
+  it("the device drops picks that aren't shaped like a name", () => {
+    const r = readResponse({ status: "ok", picks: [{ name: "נועה" }, { name: "prompt" }, { name: "נועה, יעל ועוד" }, { name: "<b>" }] });
+    expect(r?.picks.map((p) => p.name)).toEqual(["נועה"]);
   });
 });

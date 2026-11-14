@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import CarryUtm from "@/components/babyNames/CarryUtm";
 import Shell from "@/components/babyNames/Shell";
 import { canvasColor } from "@/lib/names/brand";
 import { SITE_URL } from "@/lib/babyNames/slug";
@@ -18,5 +19,10 @@ export const viewport: Viewport = {
 
 /** Public, statically generated name pages: open to search engines, no sign-in, no app providers. */
 export default function BabyNamesLayout({ children }: { children: React.ReactNode }) {
-  return <Shell>{children}</Shell>;
+  return (
+    <Shell>
+      <CarryUtm />
+      {children}
+    </Shell>
+  );
 }

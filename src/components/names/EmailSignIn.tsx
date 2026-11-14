@@ -33,7 +33,7 @@ import { getSupabase } from "@/lib/names/supabase";
 import { useAuth } from "./AuthProvider";
 import ConnectionNote from "./ConnectionNote";
 import { useOnline } from "./useMatches";
-import { track } from "@/lib/names/track";
+import { storedUtm, track } from "@/lib/names/track";
 import { failureKind, takeSigninFrom } from "@/lib/names/signinFrom";
 import { signupData } from "@/lib/names/signupPass";
 
@@ -167,7 +167,7 @@ export default function EmailSignIn() {
       const { data, error: err } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: "email" });
       // On success the auth listener sets the user and the effect above routes on.
       if (err) failVerify(err);
-      else track("signin_completed", { method: "email", new_user: !hasAcceptedTerms(data.user), after: takeSigninFrom(!!join) });
+      else track("signin_completed", { method: "email", new_user: !hasAcceptedTerms(data.user), after: takeSigninFrom(!!join), ...storedUtm() });
     } catch (err) {
       failVerify(err);
     } finally {

@@ -13,7 +13,7 @@ import { withJoin } from "@/lib/names/join";
 import { getPref } from "@/lib/names/prefs";
 import { GOOGLE_FAILED_MESSAGE, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { useAuth } from "./AuthProvider";
-import { track } from "@/lib/names/track";
+import { storedUtm, track } from "@/lib/names/track";
 import { failureKind, takeSigninFrom } from "@/lib/names/signinFrom";
 
 const noSubscribe = () => () => {};
@@ -74,7 +74,7 @@ export default function AuthCallback() {
     if (urlError || loading || !user) return;
     if (!tracked.current) {
       tracked.current = true;
-      track("signin_completed", { method: "google", new_user: !hasAcceptedTerms(user), after: takeSigninFrom(!!join) });
+      track("signin_completed", { method: "google", new_user: !hasAcceptedTerms(user), after: takeSigninFrom(!!join), ...storedUtm() });
     }
     router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
   }, [urlError, loading, user, join, router]);
