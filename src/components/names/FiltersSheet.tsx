@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
+import { Suspense, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import AiEntryRow from "@/components/names/AiEntryRow";
 import AiSection from "@/components/names/AiSection";
+import { peekAiStep, takeAiStep } from "@/components/names/aiStep";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import RelativeSection from "@/components/names/RelativeSection";
 import ThemeIcon from "@/components/names/ThemeIcon";
 import { BottomSheet, Button, ChevronIcon, FADE_PRESS, ROW_PRESS, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
-import { aiDeckEnabled, type SavedAiDeck } from "@/lib/names/aiDeck";
+import { AI_BACK_TO_FILTERS, AI_TITLE, aiDeckEnabled, type SavedAiDeck } from "@/lib/names/aiDeck";
 import { formatCount } from "@/lib/names/card";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
@@ -172,9 +174,11 @@ function ThemeGroup({ value, onChange }: { value: ThemeId[] | null; onChange: (v
 }
 
 type Picker = "letter" | "length" | null;
+type Step = "filters" | "ai";
 
 /**
- * "סינון" (board 3, FR-W16): "על שם קרוב משפחה" (RelativeSection), sex chips, theme chips (several at once), popularity and trend
+ * "סינון" (board 3, FR-W16): the "חיפוש לפי תיאור" row (AiEntryRow, opens the AI step in this
+ * sheet), "על שם קרוב משפחה" (RelativeSection), sex chips, theme chips (several at once), popularity and trend
  * chips, first letter and length (or a custom letter range)
  * pickers, "שמות שהסתרתי ({n})" and the apply button with the live count. Changes are a draft
  * until "הצגת {n} שמות" saves them to the device pref; closing the sheet another way drops them.
@@ -196,6 +200,13 @@ function FiltersGate(props: FiltersSheetProps) {
 function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   const [draft, setDraft] = useState<Filters>(() => (userId ? getPref(userId, "filters") : defaultFilters()));
   const [picker, setPicker] = useState<Picker>(null);
+  const ai = aiDeckEnabled();
+  const saved = userId ? getPref(userId, "aiDeck") : null;
+  // "לדייק" opens the sheet on the AI step; every other way in starts on the filters.
+  const [step, setStep] = useState<Step>(() => (ai && peekAiStep() ? "ai" : "filters"));
+  const aiRow = useRef<HTMLButtonElement>(null);
+  const backLink = useRef<HTMLButtonElement>(null);
+  const moved = useRef(false);
   // "איפוס" starts the relative's field over too.
   const [resets, setResets] = useState(0);
   const pickerId = useId();
@@ -240,6 +251,25 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
     setResets((n) => n + 1);
   }
 
+  useEffect(() => {
+    if (step === "ai" && peekAiStep()) track("ai_step", { source: "refine", active: !!saved });
+    takeAiStep();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, for the way the sheet opened
+  }, []);
+
+  // Moving between the steps puts focus where the reader came from or is going.
+  useEffect(() => {
+    if (!moved.current) return;
+    (step === "ai" ? backLink : aiRow).current?.focus({ preventScroll: true });
+  }, [step]);
+
+  function goTo(next: Step) {
+    moved.current = true;
+    setPicker(null);
+    setStep(next);
+    if (next === "ai") track("ai_step", { source: "row", active: !!saved });
+  }
+
   const customLength = draft.letterRange !== null;
   function setCustomLength(on: boolean) {
     setDraft((d) => ({ ...d, length: null, letterRange: on ? { min: RANGE_MIN, max: RANGE_MAX } : null }));
@@ -263,91 +293,112 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
   return (
     <BottomSheet
       name="filters"
-      title="סינון"
+      title={step === "ai" ? AI_TITLE : "סינון"}
       closeButton
+      contentKey={step}
       headerEnd={
-        <button type="button" onClick={reset} className={linkClass("quiet")}>
-          איפוס
-        </button>
+        step === "ai" ? undefined : (
+          <button type="button" onClick={reset} className={linkClass("quiet")}>
+            איפוס
+          </button>
+        )
       }
+      /* The AI step has its own button; "הצגת {n} שמות" belongs to the filters. */
       footer={
-        <>
-          <Button className="w-full tabular-nums" onClick={apply} disabled={n === null} aria-disabled={n === 0 || undefined}>
-            {n === null ? "הצגת שמות" : n === 0 ? "אין שמות שמתאימים" : applyLabel(n)}
-          </Button>
-          <p role="status" className="sr-only">
-            {n === null ? "" : n === 1 ? "שם אחד מתאים" : `${formatCount(n)} שמות מתאימים`}
-          </p>
-        </>
+        step === "ai" ? undefined : (
+          <>
+            <Button className="w-full tabular-nums" onClick={apply} disabled={n === null} aria-disabled={n === 0 || undefined}>
+              {n === null ? "הצגת שמות" : n === 0 ? "אין שמות שמתאימים" : applyLabel(n)}
+            </Button>
+            <p role="status" className="sr-only">
+              {n === null ? "" : n === 1 ? "שם אחד מתאים" : `${formatCount(n)} שמות מתאימים`}
+            </p>
+          </>
+        )
       }
     >
-      {aiDeckEnabled() ? (
-        <AiSection
-          saved={userId ? getPref(userId, "aiDeck") : null}
-          allow={() => (isDefault(draft) ? null : (cards ?? []).filter((c) => matches(c, draft)).map((c) => c.stats.name))}
-          exclude={() => [...votes.keys()]}
-          activeFilters={Object.values(draft).filter((v) => v !== null).length}
-          onDeck={applyAiDeck}
-        />
-      ) : null}
-      <RelativeSection key={resets} cards={cards} value={draft.relative} onChange={set("relative")} />
-      <SexGroup value={draft.sex} onChange={set("sex")} />
-      <ThemeGroup value={draft.themes} onChange={set("themes")} />
-      <ChipGroup legend="כמה נפוץ" options={BANDS} value={draft.popularity} onChange={set("popularity")} />
-      <ChipGroup legend="מגמה" options={TRENDS} value={draft.trend} onChange={set("trend")} />
+      {step === "ai" ? (
+        <>
+          <button
+            ref={backLink}
+            type="button"
+            onClick={() => goTo("filters")}
+            className={`-my-2 flex min-h-11 items-center gap-1.5 self-start text-person font-bold text-ink-soft ${FADE_PRESS}`}
+          >
+            <ChevronIcon dir="back" size={18} />
+            {AI_BACK_TO_FILTERS}
+          </button>
+          <AiSection
+            saved={saved}
+            allow={() => (isDefault(draft) ? null : (cards ?? []).filter((c) => matches(c, draft)).map((c) => c.stats.name))}
+            exclude={() => [...votes.keys()]}
+            activeFilters={Object.values(draft).filter((v) => v !== null).length}
+            onDeck={applyAiDeck}
+          />
+        </>
+      ) : (
+        <>
+          {ai ? <AiEntryRow ref={aiRow} active={saved ? (saved.refine ? `${saved.prompt} · ${saved.refine}` : saved.prompt) : null} onOpen={() => goTo("ai")} /> : null}
+          <RelativeSection key={resets} cards={cards} value={draft.relative} onChange={set("relative")} />
+          <SexGroup value={draft.sex} onChange={set("sex")} />
+          <ThemeGroup value={draft.themes} onChange={set("themes")} />
+          <ChipGroup legend="כמה נפוץ" options={BANDS} value={draft.popularity} onChange={set("popularity")} />
+          <ChipGroup legend="מגמה" options={TRENDS} value={draft.trend} onChange={set("trend")} />
 
-      <div className="flex flex-col gap-3">
-        <div className="grid grid-cols-2 gap-3">
-          {tile("letter", "אות ראשונה", letterValue(draft.letter))}
-          {tile("length", "אורך", lengthValue(draft.length, draft.letterRange))}
-        </div>
-        <div id={pickerId} hidden={!picker}>
-          {picker === "letter" ? (
-            <ChipGroup
-              legend="אות ראשונה"
-              options={[{ value: null, label: letterValue(null) }, ...letters.map((l) => ({ value: l, label: l }))]}
-              value={draft.letter}
-              onChange={set("letter")}
-            />
-          ) : picker === "length" ? (
-            <div className="flex flex-col gap-3">
-              {customLength ? null : (
-                <ChipGroup legend="אורך" options={LENGTHS} value={draft.length} onChange={set("length")} />
-              )}
-              <label className="flex min-h-11 cursor-pointer items-center gap-2.5 self-start text-person font-bold text-ink">
-                <input
-                  type="checkbox"
-                  checked={customLength}
-                  onChange={(e) => setCustomLength(e.target.checked)}
-                  className={checkboxClass()}
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-2 gap-3">
+              {tile("letter", "אות ראשונה", letterValue(draft.letter))}
+              {tile("length", "אורך", lengthValue(draft.length, draft.letterRange))}
+            </div>
+            <div id={pickerId} hidden={!picker}>
+              {picker === "letter" ? (
+                <ChipGroup
+                  legend="אות ראשונה"
+                  options={[{ value: null, label: letterValue(null) }, ...letters.map((l) => ({ value: l, label: l }))]}
+                  value={draft.letter}
+                  onChange={set("letter")}
                 />
-                מספר אותיות מותאם אישית
-              </label>
-              {draft.letterRange ? (
-                <LetterRangeSlider value={draft.letterRange} onChange={set("letterRange")} />
+              ) : picker === "length" ? (
+                <div className="flex flex-col gap-3">
+                  {customLength ? null : (
+                    <ChipGroup legend="אורך" options={LENGTHS} value={draft.length} onChange={set("length")} />
+                  )}
+                  <label className="flex min-h-11 cursor-pointer items-center gap-2.5 self-start text-person font-bold text-ink">
+                    <input
+                      type="checkbox"
+                      checked={customLength}
+                      onChange={(e) => setCustomLength(e.target.checked)}
+                      className={checkboxClass()}
+                    />
+                    מספר אותיות מותאם אישית
+                  </label>
+                  {draft.letterRange ? (
+                    <LetterRangeSlider value={draft.letterRange} onChange={set("letterRange")} />
+                  ) : null}
+                </div>
               ) : null}
             </div>
-          ) : null}
-        </div>
-      </div>
+          </div>
 
-      <div className="flex flex-col gap-1.5">
-        <Link
-          href="/names/hidden"
-          data-control
-          aria-describedby={hiddenHintId}
-          className={`flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink ${FADE_PRESS}`}
-        >
-          <span>שמות שהסתרתי</span>
-          <span className="flex items-center gap-1.5 font-medium text-ink-soft">
-            <bdi>{hidden}</bdi>
-            <ChevronIcon dir="forward" size={18} />
-          </span>
-        </Link>
-        <p id={hiddenHintId} className="m-0 px-3.5 text-caption text-stone">
-          {HIDE_HINT}
-        </p>
-      </div>
+          <div className="flex flex-col gap-1.5">
+            <Link
+              href="/names/hidden"
+              data-control
+              aria-describedby={hiddenHintId}
+              className={`flex min-h-12 items-center justify-between rounded-md bg-canvas px-3.5 text-peek font-bold text-ink ${FADE_PRESS}`}
+            >
+              <span>שמות שהסתרתי</span>
+              <span className="flex items-center gap-1.5 font-medium text-ink-soft">
+                <bdi>{hidden}</bdi>
+                <ChevronIcon dir="forward" size={18} />
+              </span>
+            </Link>
+            <p id={hiddenHintId} className="m-0 px-3.5 text-caption text-stone">
+              {HIDE_HINT}
+            </p>
+          </div>
+        </>
+      )}
     </BottomSheet>
   );
 }

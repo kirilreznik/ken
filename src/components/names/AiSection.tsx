@@ -6,6 +6,8 @@ import WelcomeActions from "@/components/names/WelcomeActions";
 import { Button, chipClass, inputClass } from "@/components/names/ui";
 import {
   AI_EXAMPLES,
+  AI_GUEST_TRY,
+  AI_GUEST_USED,
   AI_LEAD,
   AI_LOADING,
   AI_PLACEHOLDER,
@@ -15,16 +17,21 @@ import {
   AI_SIGNIN_LEAD,
   AI_SUBMIT,
   AI_SUBMIT_REFINE,
-  AI_TITLE,
+  AI_WITHIN_FILTERS,
   PROMPT_MAX,
   PROMPT_MIN,
   REFINE_MAX,
   aiErrorText,
   cleanPrompt,
+  fetchAiQuota,
   lengthBucket,
+  quotaText,
   requestAiDeck,
+  type AiCaller,
+  type AiQuota,
   type SavedAiDeck,
 } from "@/lib/names/aiDeck";
+import { deviceId } from "@/lib/names/device";
 import { isOffline, OFFLINE_MESSAGE } from "@/lib/names/authErrors";
 import { getSupabase } from "@/lib/names/supabase";
 import { track } from "@/lib/names/track";
@@ -62,9 +69,10 @@ type AiSectionProps = {
 };
 
 /**
- * "חיפוש לפי תיאור" at the top of the filters sheet (aiDeck.ts): a box for the description,
- * tappable examples, and the button. Guests see the box and the sign-in buttons; what they
- * typed waits in this tab. The description goes to our server, which asks Claude to pick from
+ * "חיפוש לפי תיאור", the step the filters sheet opens from its top row (aiDeck.ts; the sheet's
+ * title names it): a box for the description, tappable examples, the button, and how many
+ * searches are left this month. A guest gets one try (counted by a random device id); after
+ * it, the sign-in buttons take the button's place and what they typed waits in this tab. The description goes to our server, which asks Claude to pick from
  * our cards; nothing typed here is stored by us or sent with analytics.
  */
 export default function AiSection({ saved, allow, exclude, activeFilters, onDeck }: AiSectionProps) {
@@ -74,11 +82,13 @@ export default function AiSection({ saved, allow, exclude, activeFilters, onDeck
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [usedExample, setUsedExample] = useState(false);
+  const [quota, setQuota] = useState<AiQuota | null>(null);
   const fieldId = useId();
   const refineId = useId();
   const leadId = useId();
   const privacyId = useId();
   const errorId = useId();
+  const quotaId = useId();
 
   // A description typed before signing in comes back.
   useEffect(() => {
@@ -88,11 +98,36 @@ export default function AiSection({ saved, allow, exclude, activeFilters, onDeck
     if (draft) setPrompt(draft);
   }, [saved]);
 
+  // Who asks: the session's token, or this device for a guest. Null: signed out, not a guest.
+  async function caller(): Promise<AiCaller | null> {
+    if (guest) return { device: deviceId() };
+    const supabase = getSupabase();
+    const { data } = supabase ? await supabase.auth.getSession() : { data: { session: null } };
+    const token = data.session?.access_token;
+    return token ? { token } : null;
+  }
+
+  // How many searches are left, read when the step opens (it doesn't use one).
+  useEffect(() => {
+    let live = true;
+    void (async () => {
+      const who = await caller();
+      const q = who && !isOffline() ? await fetchAiQuota(who) : null;
+      if (live && q) setQuota(q);
+    })();
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per guest or account
+  }, [guest]);
+
+  const guestUsed = guest && quota?.remaining === 0;
+  const allUsed = !guest && quota?.remaining === 0;
   const refining = !!saved && cleanPrompt(prompt) === saved.prompt;
   const length = [...prompt].length;
 
   async function submit() {
-    if (busy) return;
+    if (busy || allUsed || guestUsed) return;
     const text = cleanPrompt(prompt);
     if ([...text].length < PROMPT_MIN) {
       setError(aiErrorText("too_short"));
@@ -105,19 +140,17 @@ export default function AiSection({ saved, allow, exclude, activeFilters, onDeck
     const refineText = refining ? cleanPrompt(refine, REFINE_MAX) : "";
     setBusy(true);
     setError(null);
-    track("ai_submit", { length: lengthBucket(text), example: usedExample, filters: activeFilters, refine: !!refineText });
+    track("ai_submit", { length: lengthBucket(text), example: usedExample, filters: activeFilters, refine: !!refineText, guest });
     const started = performance.now();
     try {
-      const supabase = getSupabase();
-      const { data } = supabase ? await supabase.auth.getSession() : { data: { session: null } };
-      const token = data.session?.access_token;
-      if (!token) {
+      const who = await caller();
+      if (!who) {
         setError(aiErrorText("signin"));
         track("ai_error", { code: "signin" });
         return;
       }
       const allowed = allow();
-      const result = await requestAiDeck(token, {
+      const result = await requestAiDeck(who, {
         prompt: text,
         ...(refineText ? { refine: refineText } : {}),
         ...(allowed ? { allow: allowed } : {}),
@@ -125,11 +158,15 @@ export default function AiSection({ saved, allow, exclude, activeFilters, onDeck
       });
       const ms = Math.round(performance.now() - started);
       if (!result.ok) {
-        setError(aiErrorText(result.error));
+        if (result.quota) setQuota(result.quota);
+        // A used-up month shows in the line under the button; a used-up try, as the sign-in block.
+        const shown = result.error === "guest_used" || (result.error === "limit_month" && result.quota);
+        setError(shown ? null : aiErrorText(result.error));
         track("ai_error", { code: result.error, ms });
         return;
       }
       const { status, picks } = result.data;
+      if (result.data.quota) setQuota(result.data.quota);
       track("ai_result", { status, picks: picks.length, reasons: picks.filter((p) => p.reason).length, ms });
       if (status !== "ok" || picks.length === 0) {
         setError(aiErrorText(status === "ok" ? "none" : status));
@@ -143,13 +180,10 @@ export default function AiSection({ saved, allow, exclude, activeFilters, onDeck
   }
 
   return (
-    <section aria-labelledby={`${fieldId}-title`} className="flex flex-col gap-2.5 rounded-lg bg-canvas p-3.5">
-      <h3 id={`${fieldId}-title`} className="m-0 text-card-title text-ink">
-        <span aria-hidden="true">✨ </span>
-        {AI_TITLE}
-      </h3>
-      <p id={leadId} className="m-0 text-caption text-ink-soft">
+    <div className="flex flex-col gap-2.5">
+      <p id={leadId} className="m-0 text-person text-ink-soft">
         {AI_LEAD}
+        {activeFilters > 0 ? ` ${AI_WITHIN_FILTERS}` : ""}
       </p>
       <label htmlFor={fieldId} className="sr-only">
         תיאור השם שמחפשים
@@ -216,21 +250,34 @@ export default function AiSection({ saved, allow, exclude, activeFilters, onDeck
           {error}
         </p>
       ) : null}
-      {guest ? (
+      {guestUsed ? (
         <div className="flex flex-col gap-2.5">
+          <p className="m-0 text-person font-bold text-ink">{AI_GUEST_USED}</p>
           <p className="m-0 text-person text-ink-soft">{AI_SIGNIN_LEAD}</p>
           <div onClickCapture={() => track("ai_open", { source: "guest_signin" })} className="flex flex-col gap-3">
             <WelcomeActions />
           </div>
         </div>
       ) : (
-        <Button variant="secondary" size="md" onClick={() => void submit()} aria-busy={busy || undefined} aria-disabled={busy || undefined}>
-          {busy ? AI_LOADING : refining ? AI_SUBMIT_REFINE : AI_SUBMIT}
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => void submit()}
+            aria-busy={busy || undefined}
+            aria-disabled={busy || allUsed || undefined}
+            aria-describedby={quotaId}
+          >
+            {busy ? AI_LOADING : refining ? AI_SUBMIT_REFINE : AI_SUBMIT}
+          </Button>
+          <p id={quotaId} className="m-0 text-center text-caption text-ink-soft tabular-nums">
+            {guest ? AI_GUEST_TRY : quota ? quotaText(quota) : ""}
+          </p>
+        </div>
       )}
       <p role="status" className="sr-only">
         {busy ? AI_LOADING : ""}
       </p>
-    </section>
+    </div>
   );
 }

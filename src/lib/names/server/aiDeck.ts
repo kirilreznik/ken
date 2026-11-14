@@ -1,6 +1,10 @@
 import { createHmac } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
+  AI_GUEST_MONTH,
+  AI_USER_MONTH,
+  DEVICE_HEADER,
+  DEVICE_ID_RE,
   LIST_MAX,
   PROMPT_MAX,
   PROMPT_MIN,
@@ -8,6 +12,7 @@ import {
   cleanPrompt,
   type AiDeckResponse,
   type AiError,
+  type AiQuota,
 } from "@/lib/names/aiDeck";
 import type { Catalog } from "./aiCatalog";
 import { readModelOutput, systemText, userText } from "./aiPrompt";
@@ -26,9 +31,16 @@ export type CallModel = (system: string, user: string) => Promise<ModelReply>;
 
 /** Limits, from env with these defaults (AI_DECK in docs/names-pwa/SETUP.md). */
 export interface AiLimits {
-  userDay: number;
-  userWeek: number;
+  /** Searches per calendar month (Israel time) for a signed-in person. */
+  userMonth: number;
+  /** Searches per month for a guest device before sign-in is asked for. */
+  guestMonth: number;
+  /** Requests per hashed IP per day, everyone together. */
   ipDay: number;
+  /** Guest requests per hashed IP per day (a guest can clear the device id). */
+  guestIpDay: number;
+  /** Guest requests per day across all guests. */
+  guestDay: number;
   /** Total spend per day across everyone, in US dollars. */
   budgetUsd: number;
 }
@@ -36,12 +48,14 @@ export interface AiLimits {
 export function readLimits(env: Record<string, string | undefined> = process.env): AiLimits {
   const n = (key: string, fallback: number) => {
     const v = Number(env[key]);
-    return Number.isFinite(v) && v >= 0 ? v : fallback;
+    return env[key] !== undefined && env[key] !== "" && Number.isFinite(v) && v >= 0 ? v : fallback;
   };
   return {
-    userDay: n("NAMES_AI_USER_DAY", 5),
-    userWeek: n("NAMES_AI_USER_WEEK", 20),
+    userMonth: n("NAMES_AI_USER_MONTH", AI_USER_MONTH),
+    guestMonth: n("NAMES_AI_GUEST_MONTH", AI_GUEST_MONTH),
     ipDay: n("NAMES_AI_IP_DAY", 20),
+    guestIpDay: n("NAMES_AI_GUEST_IP_DAY", 3),
+    guestDay: n("NAMES_AI_GUEST_DAY", 200),
     budgetUsd: n("NAMES_AI_DAILY_USD", 20),
   };
 }
@@ -76,6 +90,44 @@ export function clientIp(request: Request): string {
   return forwarded || request.headers.get("x-real-ip")?.trim() || "";
 }
 
+/** A signed-in person (their user id) or a guest (an HMAC of their device id, 32 hex). */
+type Who = { user: string; device: null } | { user: null; device: string };
+
+const hash = (salt: string, text: string) => createHmac("sha256", salt).update(text).digest("hex").slice(0, 32);
+
+/**
+ * Who is asking. A bearer token must be a valid session (no falling back to guest); without one,
+ * a well-formed device id makes a guest. Neither: sign in.
+ */
+async function identify(request: Request, admin: SupabaseClient, salt: string): Promise<Who | Response> {
+  const token = bearerToken(request.headers.get("authorization"));
+  if (token) {
+    try {
+      const { data, error } = await admin.auth.getUser(token);
+      if (error || !data.user) return fail(401, "signin");
+      return { user: data.user.id, device: null };
+    } catch {
+      console.error("names ai deck: token check failed");
+      return fail(500, "error");
+    }
+  }
+  const device = request.headers.get(DEVICE_HEADER)?.trim() ?? "";
+  if (!DEVICE_ID_RE.test(device)) return fail(401, "signin");
+  return { user: null, device: hash(salt, `device:${device}`) };
+}
+
+/** This month's searches left for `who`, or null when the count can't be read. */
+async function readQuota(admin: SupabaseClient, who: Who, l: AiLimits): Promise<AiQuota | null> {
+  try {
+    const { data, error } = await admin.rpc("names_ai_used", { p_user: who.user, p_device: who.device });
+    if (error || typeof data !== "number") return null;
+    const limit = who.user ? l.userMonth : l.guestMonth;
+    return { remaining: Math.max(limit - data, 0), limit, guest: !who.user };
+  } catch {
+    return null;
+  }
+}
+
 function nameList(raw: unknown): string[] | null {
   if (raw === undefined || raw === null) return [];
   if (!Array.isArray(raw) || raw.length > LIST_MAX) return null;
@@ -83,9 +135,11 @@ function nameList(raw: unknown): string[] | null {
 }
 
 /**
- * POST /api/names/ai-deck. Order of checks: switch, token, body, burst, daily limits and
- * budget (one RPC, which also counts the request), then the model, then the output check.
- * Nothing the person wrote is logged or stored; errors log a code only.
+ * POST /api/names/ai-deck. Order of checks: switch, who (a session, or a guest's device id),
+ * body, burst, monthly and daily limits and budget (one RPC, which also counts the request),
+ * then the model, then the output check. A search that picks no names (or fails on our side)
+ * is given back, so the monthly count only holds searches that made a deck; the daily abuse
+ * counters keep every call. Nothing the person wrote is logged or stored; errors log a code only.
  */
 export function createAiDeck({
   getAdmin,
@@ -101,23 +155,14 @@ export function createAiDeck({
   return async function aiDeck(request: Request): Promise<Response> {
     if (!enabled() || !callModel) return fail(503, "off");
 
-    const token = bearerToken(request.headers.get("authorization"));
-    if (!token) return fail(401, "signin");
     const admin = getAdmin();
     if (!admin) {
       console.error("names ai deck: service client not configured");
       return fail(503, "off");
     }
-
-    let userId: string;
-    try {
-      const { data, error } = await admin.auth.getUser(token);
-      if (error || !data.user) return fail(401, "signin");
-      userId = data.user.id;
-    } catch {
-      console.error("names ai deck: token check failed");
-      return fail(500, "error");
-    }
+    const who = await identify(request, admin, ipSalt());
+    if (who instanceof Response) return who;
+    const subject = who.user ?? `g:${who.device}`;
 
     // The body: size first, then shape.
     let body: Record<string, unknown>;
@@ -151,19 +196,23 @@ export function createAiDeck({
     // One request at a time per person per instance.
     const t = now();
     for (const [id, at] of lastCall) if (t - at >= BURST_MS) lastCall.delete(id);
-    if (lastCall.has(userId)) return fail(429, "busy");
-    lastCall.set(userId, t);
+    if (lastCall.has(subject)) return fail(429, "busy");
+    lastCall.set(subject, t);
 
     const ip = clientIp(request);
-    const ipKey = ip ? createHmac("sha256", ipSalt()).update(ip).digest("hex").slice(0, 32) : "";
+    const ipKey = ip ? hash(ipSalt(), ip) : "";
     const l = limits();
+    const used = (limit: number) => ({ remaining: 0, limit, guest: !who.user });
     try {
-      const taken = await admin.rpc("names_ai_take", {
-        p_user: userId,
+      const taken = await admin.rpc("names_ai_take_month", {
+        p_user: who.user,
+        p_device: who.device,
         p_ip: ipKey,
-        p_user_day: l.userDay,
-        p_user_week: l.userWeek,
+        p_user_month: l.userMonth,
+        p_guest_month: l.guestMonth,
         p_ip_day: l.ipDay,
+        p_guest_ip_day: l.guestIpDay,
+        p_guest_day: l.guestDay,
         p_budget: l.budgetUsd,
       });
       if (taken.error) {
@@ -171,25 +220,29 @@ export function createAiDeck({
         return fail(503, "off");
       }
       const verdict = taken.data as string;
-      if (verdict === "user_day" || verdict === "ip_day") return fail(429, "limit_day");
-      if (verdict === "user_week") return fail(429, "limit_week");
+      if (verdict === "user_month") return json(429, { error: "limit_month", quota: used(l.userMonth) });
+      if (verdict === "guest_month") return json(429, { error: "guest_used", quota: used(l.guestMonth) });
+      if (verdict === "guest_day") return fail(429, "guest_busy");
+      if (verdict === "ip_day") return fail(429, "limit_day");
       if (verdict === "budget") return fail(503, "budget");
       if (verdict !== "ok") return fail(503, "off");
     } catch {
       console.error("names ai deck: limit check failed");
       return fail(503, "off");
     }
+    // Give the search back: `withIp` when it failed on our side (then it never happened).
+    const giveBack = (withIp: boolean) =>
+      admin.rpc("names_ai_give_back", { p_user: who.user, p_device: who.device, p_ip: withIp ? ipKey : "" }).then(
+        () => undefined,
+        () => undefined,
+      );
 
     let reply: ModelReply;
     try {
       reply = await callModel(systemText(catalog), userText(prompt, refine, allowed));
     } catch (e) {
       console.error("names ai deck: model call failed", (e as { status?: number })?.status ?? "");
-      // Our failure: give the request back.
-      await admin.rpc("names_ai_refund", { p_user: userId, p_ip: ipKey }).then(
-        () => undefined,
-        () => undefined,
-      );
+      await giveBack(true);
       return fail(502, "error");
     }
     await admin.rpc("names_ai_spend", { p_usd: reply.usd }).then(
@@ -197,12 +250,34 @@ export function createAiDeck({
       () => undefined,
     );
 
-    if (reply.refused || reply.json === null) return json(200, { status: "unsafe", picks: [] } satisfies AiDeckResponse);
-    const verdict = readModelOutput(reply.json, catalog, allowed ? new Set(allowed) : null);
+    const verdict: AiDeckResponse | null =
+      reply.refused || reply.json === null ? { status: "unsafe", picks: [] } : readModelOutput(reply.json, catalog, allowed ? new Set(allowed) : null);
     if (!verdict) {
       console.error("names ai deck: output did not match the schema");
+      await giveBack(true);
       return fail(502, "error");
     }
-    return json(200, verdict satisfies AiDeckResponse);
+    // No deck, no search used.
+    if (verdict.status !== "ok" || verdict.picks.length === 0) await giveBack(false);
+    const quota = await readQuota(admin, who, l);
+    return json(200, (quota ? { ...verdict, quota } : verdict) satisfies AiDeckResponse);
+  };
+}
+
+/** GET /api/names/ai-deck: this month's searches left, without using one. */
+export function createAiQuota({
+  getAdmin,
+  enabled,
+  limits = readLimits,
+  ipSalt = () => process.env.NAMES_AI_IP_SALT ?? process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+}: Pick<Deps, "getAdmin" | "enabled" | "limits" | "ipSalt">) {
+  return async function aiQuota(request: Request): Promise<Response> {
+    if (!enabled()) return fail(503, "off");
+    const admin = getAdmin();
+    if (!admin) return fail(503, "off");
+    const who = await identify(request, admin, ipSalt());
+    if (who instanceof Response) return who;
+    const quota = await readQuota(admin, who, limits());
+    return quota ? json(200, { quota }) : fail(503, "off");
   };
 }
