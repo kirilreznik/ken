@@ -213,7 +213,7 @@ export async function resetGuestForTests(): Promise<void> {
 }
 
 /** Device prefs a guest set that carry over into the account when it has none of its own. */
-const CARRIED_PREFS = ["filters", "surname", "background", "twins", "seenMatches"] as const satisfies readonly PrefKey[];
+const CARRIED_PREFS = ["filters", "surname", "surnameAsked", "background", "twins", "seenMatches"] as const satisfies readonly PrefKey[];
 
 function hasOwnPref(userId: string, key: PrefKey): boolean {
   try {

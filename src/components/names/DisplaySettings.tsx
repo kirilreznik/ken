@@ -1,8 +1,10 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState } from "react";
 import BackgroundSheet from "@/components/names/BackgroundSheet";
-import { openSheet } from "@/components/names/ui";
+import { Button, inputClass, openSheet } from "@/components/names/ui";
+import { SURNAME_MAX } from "@/lib/names/card";
+import { showToast } from "@/lib/names/toast";
 import { usePrefJson } from "@/components/names/usePrefJson";
 import { setPref } from "@/lib/names/prefs";
 import { track } from "@/lib/names/track";
@@ -10,8 +12,60 @@ import { track } from "@/lib/names/track";
 const card = "m-0 list-none rounded-lg bg-surface p-0 shadow-card";
 const row = "border-b border-line first:rounded-t-lg last:rounded-b-lg last:border-b-0";
 
+/** "שם משפחה": the surname shown with every name on the cards. Device only, like the intro's field. */
+function SurnameRow({ userId }: { userId: string | null }) {
+  const savedJson = usePrefJson(userId, "surname");
+  const saved = savedJson ? (JSON.parse(savedJson) as string) : "";
+  const [draft, setDraft] = useState<string | null>(null);
+  const value = draft ?? saved;
+  const changed = value.trim() !== saved.trim();
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userId || !changed) return;
+    const next = value.trim();
+    setPref(userId, "surname", next);
+    setPref(userId, "surnameAsked", true);
+    setDraft(null);
+    track("surname_changed", { set: next !== "" });
+    showToast(next ? "שם המשפחה נשמר" : "שם המשפחה הוסר");
+  };
+
+  return (
+    <li className={`${row} px-4 py-3.5`}>
+      <form onSubmit={submit} noValidate className="flex flex-col gap-2">
+        <label htmlFor="settings-surname" className="text-caption font-bold text-ink-soft">
+          שם משפחה
+        </label>
+        <div className="flex items-center gap-2">
+          <input
+            id="settings-surname"
+            type="text"
+            dir="rtl"
+            autoComplete="family-name"
+            autoCorrect="off"
+            spellCheck={false}
+            enterKeyHint="done"
+            maxLength={SURNAME_MAX}
+            value={value}
+            onChange={(e) => setDraft(e.target.value)}
+            aria-describedby="settings-surname-hint"
+            className={`${inputClass()} min-w-0 flex-1`}
+          />
+          <Button type="submit" variant="secondary" size="md" aria-disabled={!changed}>
+            שמירה
+          </Button>
+        </div>
+        <p id="settings-surname-hint" className="m-0 text-caption text-stone">
+          מופיע על הכרטיסים לצד כל שם. נשמר רק במכשיר הזה.
+        </p>
+      </form>
+    </li>
+  );
+}
+
 /**
- * Settings "תצוגה": the background picker (moved here from the swipe header, where "חיפוש שם"
+ * Settings "תצוגה": the surname on the cards, the background picker (moved here from the swipe header, where "חיפוש שם"
  * took its place) and "מצפים לתאומים", which adds pair suggestions to the name sheet and a
  * "זוגות" tab to the lists. Both are device-only prefs.
  */
@@ -32,6 +86,7 @@ export default function DisplaySettings({ userId }: { userId: string | null }) {
         תצוגה
       </h2>
       <ul className={card}>
+        <SurnameRow userId={userId} />
         <li className={row}>
           <button type="button" onClick={() => openSheet("background")} aria-haspopup="dialog" className="flex min-h-14 w-full items-center gap-3 rounded-[inherit] px-4 py-3 text-start text-body font-bold text-ink">
             רקע למסך הבחירה

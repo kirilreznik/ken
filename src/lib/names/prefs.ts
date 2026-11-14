@@ -14,6 +14,8 @@ export const BACKGROUNDS: readonly Background[] = ["none", "fabric", "notebook",
 /** Device-only preferences (PRD 3.2.8). Each lives in localStorage as JSON. */
 export interface Prefs {
   surname: string;
+  /** The surname card at the start of the deck was answered (saved or skipped); it shows once. */
+  surnameAsked: boolean;
   filters: Filters;
   background: Background;
   introSeen: boolean;
@@ -101,6 +103,7 @@ function readLastSpace(raw: unknown): Prefs["lastSpace"] {
 /** Turns a parsed value into a valid pref, falling back to the default. */
 const readers: { [K in PrefKey]: (raw: unknown) => Prefs[K] } = {
   surname: (v) => (typeof v === "string" ? v : ""),
+  surnameAsked: bool,
   filters: readFilters,
   background: (v) => oneOf(BACKGROUNDS)(v) ?? "fabric",
   introSeen: bool,

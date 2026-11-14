@@ -39,6 +39,7 @@ import EmptyDeck from "./EmptyDeck";
 import GuestPanel from "./GuestPanel";
 import PausePanel from "./PausePanel";
 import RelativeChip from "./RelativeChip";
+import SurnamePanel from "./SurnamePanel";
 import SurveyPrompt from "./SurveyPrompt";
 import SwipeFooter from "./SwipeFooter";
 import SwipeHeader from "./SwipeHeader";
@@ -80,6 +81,7 @@ export default function SwipeScreen() {
   const surnameJson = usePrefJson(userId, "surname");
   const filters = useMemo(() => (userId && filtersJson ? getPref(userId, "filters") : null), [userId, filtersJson]);
   const surname = surnameJson ? (JSON.parse(surnameJson) as string) : "";
+  const surnameAsked = usePrefJson(userId, "surnameAsked") === "true";
   // "חיפוש לפי תיאור": while a picked deck is saved, it replaces the shuffled deck.
   const aiJson = usePrefJson(userId, "aiDeck");
   const aiDeck = useMemo(() => (userId && aiJson ? getPref(userId, "aiDeck") : null), [userId, aiJson]);
@@ -143,7 +145,14 @@ export default function SwipeScreen() {
   };
   const guestOpensCard = (nextCount: number) => guest && guestPrompt(nextCount, lastNudge) !== null;
   const launchPause: Pause | null = userId && entered ? pauseToShow(pauseInput) : null;
-  const pause: Pause | "guest" | null = guestCard ? "guest" : launchPause;
+  // The surname card: once per device (guests too), before the next name, while none is saved.
+  const askSurname = !!userId && !!state?.ready && !surnameAsked && surname.trim() === "";
+  const pause: Pause | "guest" | "surname" | null = guestCard ? "guest" : askSurname ? "surname" : launchPause;
+  const answerSurname = (value: string) => {
+    if (!userId) return;
+    if (value) setPref(userId, "surname", value);
+    setPref(userId, "surnameAsked", true);
+  };
   const endPause = () => {
     if (!userId) return;
     if (pause === "invite") setPref(userId, "invitePromptShown", true);
@@ -326,6 +335,8 @@ export default function SwipeScreen() {
           <div className="flex min-h-0 flex-1 flex-col px-5 pt-1 max-[20rem]:min-h-100 max-[20rem]:px-3 [@media(max-height:30rem)]:min-h-100">
             {slot === "pause" && guestCard ? (
               <GuestPanel key={`${guestCard}:${guestCount}`} kind={guestCard} count={guestCount} onLater={putNudgeAside} />
+            ) : slot === "pause" && pause === "surname" ? (
+              <SurnamePanel preview={deck?.cards[0]?.content.niqqud || "נֹעַם"} name={deck?.cards[0]?.stats.name ?? "נועם"} guest={guest} onDone={answerSurname} />
             ) : slot === "pause" && launchPause ? (
               <PausePanel key={launchPause} pause={launchPause} totals={totals} onContinue={endPause} />
             ) : slot === "card" && deck && progress ? (

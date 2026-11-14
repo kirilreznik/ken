@@ -4,12 +4,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BookmarkIcon, Button, CloseIcon, Icon, IconButton, dotClass, inputClass } from "@/components/names/ui";
 import { APP_PATH } from "@/lib/names/auth";
+import { SURNAME_MAX } from "@/lib/names/card";
 import { getPref, setPref } from "@/lib/names/prefs";
 import { introFromSheet } from "@/lib/names/routing";
-import { useAuth } from "./AuthProvider";
+import { useUserId } from "./AuthProvider";
 import { useSpace } from "./useSpace";
 
-const SURNAME_MAX = 30;
 
 
 function Point({ icon, children }: { icon: ReactNode; children: ReactNode }) {
@@ -31,10 +31,10 @@ const strong = "font-bold text-ink";
  * optional surname kept on this device only. "התחלת בחירה" marks the intro as seen.
  */
 export default function Intro() {
-  const { user } = useAuth();
   const router = useRouter();
   const { isShared } = useSpace();
-  const userId = user?.id ?? null;
+  // A guest too: the name sheet's "הוספת שם משפחה" opens this page for them as well.
+  const userId = useUserId();
   const [surname, setSurname] = useState(() => (userId ? getPref(userId, "surname") : ""));
   const surnameRef = useRef<HTMLInputElement>(null);
 
@@ -47,6 +47,8 @@ export default function Intro() {
     if (userId) {
       if (saveSurname) setPref(userId, "surname", surname.trim());
       setPref(userId, "introSeen", true);
+      // The surname was offered here, so the deck doesn't ask again with its surname card.
+      setPref(userId, "surnameAsked", true);
     }
     // From the name sheet, Back returns to it, where the surname line now shows.
     if (introFromSheet(window.location.search) && window.history.length > 1) router.back();

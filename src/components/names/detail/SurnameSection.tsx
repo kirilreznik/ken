@@ -7,7 +7,7 @@ import Section from "./Section";
 
 /**
  * FR-D8 (board 15): "{name} {surname}" in large type on a peach-pale well, or a link to the
- * intro's surname field when none is saved. The surname is read from the device prefs and is
+ * intro's surname field when none is saved (and "שינוי" to change a saved one; guests too). The surname is read from the device prefs and is
  * never sent anywhere (the event has no props).
  */
 export default function SurnameSection({ name, surname }: { name: string; surname: string | null }) {
@@ -27,7 +27,17 @@ export default function SurnameSection({ name, surname }: { name: string; surnam
   return (
     <Section label="עם שם המשפחה">
       <p className="rounded-md bg-peach-pale px-4 py-2.5 text-center text-title break-words text-ink">{full}</p>
-      <p className="text-caption text-ink-soft">שם המשפחה נשמר רק במכשיר הזה.</p>
+      <p className="flex flex-wrap items-center gap-x-2 text-caption text-ink-soft">
+        שם המשפחה נשמר רק במכשיר הזה.
+        <Link
+          href={SURNAME_PATH}
+          onClick={() => track("detail_surname_add")}
+          aria-label="שינוי שם המשפחה"
+          className={`-mx-2 inline-flex min-h-11 min-w-11 items-center rounded-pill px-2 font-medium underline underline-offset-4 ${FADE_PRESS}`}
+        >
+          שינוי
+        </Link>
+      </p>
     </Section>
   );
 }
