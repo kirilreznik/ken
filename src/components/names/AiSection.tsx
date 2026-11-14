@@ -34,6 +34,7 @@ import {
 import { deviceId } from "@/lib/names/device";
 import { isOffline, OFFLINE_MESSAGE } from "@/lib/names/authErrors";
 import { getSupabase } from "@/lib/names/supabase";
+import { markSigninFrom } from "@/lib/names/signinFrom";
 import { track } from "@/lib/names/track";
 
 /** A guest's description waits here (this tab only) while they sign in. */
@@ -254,7 +255,10 @@ export default function AiSection({ saved, allow, exclude, activeFilters, onDeck
         <div className="flex flex-col gap-2.5">
           <p className="m-0 text-person font-bold text-ink">{AI_GUEST_USED}</p>
           <p className="m-0 text-person text-ink-soft">{AI_SIGNIN_LEAD}</p>
-          <div onClickCapture={() => track("ai_open", { source: "guest_signin" })} className="flex flex-col gap-3">
+          <div onClickCapture={() => {
+            markSigninFrom("ai");
+            track("ai_open", { source: "guest_signin" });
+          }} className="flex flex-col gap-3">
             <WelcomeActions />
           </div>
         </div>

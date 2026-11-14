@@ -58,7 +58,7 @@ export default function ListPage({ id }: { id: ListId }) {
           <h1 className="m-0 text-display-xl text-ink">{list.title}</h1>
           <p className="m-0 text-intro text-ink">{list.lead}</p>
         </header>
-        <SwiperCta compact />
+        <SwiperCta compact source="seo_list" />
         <NameRows pages={pages} stat={list.stat} />
         <p className="m-0 text-caption text-stone">איך הרשימה נבנתה: {list.method}</p>
         <nav aria-label="רשימות נוספות" className="flex flex-col gap-2">
@@ -73,7 +73,7 @@ export default function ListPage({ id }: { id: ListId }) {
             ))}
           </ul>
         </nav>
-        <SwiperCta />
+        <SwiperCta source="seo_list" />
       </div>
     </>
   );

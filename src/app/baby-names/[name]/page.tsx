@@ -131,7 +131,7 @@ export default async function NamePageView({ params }: Params) {
           </Section>
         ) : null}
 
-        <SwiperCta name={p.name} />
+        <SwiperCta name={p.name} source="seo_name" />
 
         <Section title={`כמה תינוקות קיבלו את השם ${p.name}`}>
           <p className="m-0 text-intro text-ink">
@@ -253,7 +253,7 @@ export default async function NamePageView({ params }: Params) {
           </Section>
         ) : null}
 
-        <SwiperCta name={p.name} compact />
+        <SwiperCta name={p.name} compact source="seo_name" />
       </article>
     </>
   );

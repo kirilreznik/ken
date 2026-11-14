@@ -14,6 +14,7 @@ import { GOOGLE_FAILED_MESSAGE, oauthRedirectTo } from "@/lib/names/routing";
 import { requestSignupPass } from "@/lib/names/signupPass";
 import { getSupabase } from "@/lib/names/supabase";
 import { track } from "@/lib/names/track";
+import { failureKind } from "@/lib/names/signinFrom";
 
 export const EMAIL_SIGN_IN_PATH = "/names/sign-in/email";
 
@@ -31,8 +32,8 @@ export default function WelcomeActions({ joinCode, guestLink = false }: { joinCo
 
   function fail(err: unknown) {
     setBusy(false);
-    track("signin_failed", { method: "google", step: "oauth" });
     const { kind, message } = handleAuthError("sign-in-google", err);
+    track("signin_failed", { method: "google", step: "oauth", kind: failureKind(kind) });
     if (message === null) {
       // A full load: ClosedNotice reads ?closed=1 once, on mount.
       window.location.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));

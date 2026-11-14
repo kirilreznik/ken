@@ -235,7 +235,7 @@ export function carryGuestPrefs(userId: string): void {
 
 /** Where importGuestVotes writes: the signed-in user's vote store. */
 export interface ImportTarget {
-  setVote(name: string, vote: Vote, custom?: boolean): void;
+  setVote(name: string, vote: Vote, custom?: boolean, at?: string): void;
 }
 
 /**
@@ -262,7 +262,8 @@ export function importGuestVotes(target: ImportTarget, account: ReadonlyMap<stri
       const guest = await readGuestVotes();
       if (guest.length === 0) return 0;
       const toWrite = votesToImport(guest, account);
-      for (const v of toWrite) target.setVote(v.name, v.vote, v.custom);
+      // The guest's own time, so analytics sees when each decision was made, not the sign-in.
+      for (const v of toWrite) target.setVote(v.name, v.vote, v.custom, v.updatedAt);
       await clearGuestVotes();
       return toWrite.length;
     } finally {

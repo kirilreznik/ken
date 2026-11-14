@@ -14,17 +14,24 @@
 
 import { APP_VERSION } from "./clientLog";
 
+/**
+ * The version sent with events. Vercel preview builds get a `pre-` prefix so the views can leave
+ * them out (as they do local `dev` builds).
+ */
+export const TRACK_VERSION =
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ? `pre-${APP_VERSION}`.slice(0, 40) : APP_VERSION;
+
 /** Every event the swiper sends, with what it means. Keep it sorted by flow. */
 export const NAMES_EVENTS = {
-  app_open: "A full page load of /names. {source: 'pwa' | 'direct' | …, display: 'standalone' | 'browser', signed_in}",
+  app_open: "A full page load of /names. {source: 'pwa' | 'direct' | 'landing' | 'seo_name' | …, ref: the referrer's type (google, whatsapp, self, other, none…), utm_source, utm_medium, utm_campaign, display: 'standalone' | 'browser', signed_in}",
   page_view: "A screen was shown (also on in-app navigation). {screen}",
   signin_started: "A sign-in button was used. {method: 'google' | 'email'}",
   signin_code_sent: "The email code was sent. {resend}",
-  signin_failed: "Sign-in failed. {method, step: 'send' | 'verify' | 'oauth' | 'callback'}",
-  signin_completed: "Signed in. {method, new_user}",
+  signin_failed: "Sign-in failed. {method, step: 'send' | 'verify' | 'oauth' | 'callback' | 'closed', kind: 'closed' | 'wrong_code' | 'rate_limit' | 'offline' | 'other'}",
+  signin_completed: "Signed in. {method, new_user, after: what led to it: 'nudge' | 'wall' (a guest's sign-in card) | 'ai' | 'invite' | 'welcome'}",
   onboarding_completed: "Onboarding was saved. {opt_in, joining}",
   first_vote: "The first decision in a space.",
-  vote: "A decision on a card. {vote: 'keep' | 'love' | 'skip' | 'hidden', method: 'swipe' | 'button' | 'key' | 'detail', shared, position, deck: 'all' | 'ai' (a deck picked by חיפוש לפי תיאור)}",
+  vote: "A decision on a card. {vote: 'keep' | 'love' | 'skip' | 'hidden', method: 'swipe' | 'button' | 'key' | 'detail', shared, position, deck: 'all' | 'ai' (a deck picked by חיפוש לפי תיאור) | 'lists' (decided in השמות שלי)}",
   vote_undone: "ביטול took back a decision.",
   deck_exhausted: "The deck ran out of names. {votes}",
   filter_empty: "The filters left no names. {sex, sheet_filters}",
@@ -103,6 +110,7 @@ const KEY = /^[a-z][a-z0-9_]{0,31}$/;
 const TOKEN_VALUE = /^[A-Za-z0-9_.:/-]{0,64}$/;
 const PATH_SEGMENT = /^[A-Za-z0-9_-]+$/;
 const DEVICE_KEY = "nest-names-device";
+const INTERNAL_KEY = "nest-names-internal";
 const SESSION_KEY = "nest-names-session";
 /** A session ends after 30 minutes away. */
 export const SESSION_IDLE_MS = 30 * 60 * 1000;
@@ -147,6 +155,58 @@ export function screenOf(pathname: string): string {
 export function sourceOf(search: string): string {
   const source = new URLSearchParams(search).get("source");
   return source && /^[a-z0-9_-]{1,32}$/.test(source) ? source : "direct";
+}
+
+/** Referrer hosts we name by type. Only the type is sent, never the referrer's URL. */
+const REFERRERS: [RegExp, string][] = [
+  [/(^|\.)google\./, "google"],
+  [/(^|\.)(bing\.com|duckduckgo\.com|yahoo\.com|yandex\.)/, "search"],
+  [/(^|\.)(whatsapp\.com|wa\.me)$/, "whatsapp"],
+  [/(^|\.)(facebook\.com|fb\.com|fb\.me|messenger\.com)$/, "facebook"],
+  [/(^|\.)instagram\.com$/, "instagram"],
+  [/(^|\.)tiktok\.com$/, "tiktok"],
+  [/(^|\.)(t\.co|x\.com|twitter\.com)$/, "x"],
+  [/(^|\.)(t\.me|telegram\.org)$/, "telegram"],
+  [/(^|\.)(chatgpt\.com|openai\.com|claude\.ai|perplexity\.ai|gemini\.google\.com)$/, "ai"],
+];
+
+/**
+ * The referrer as a type: "none" (typed, bookmark, app), "self" (this site), a known channel
+ * ("google", "whatsapp", …) or "other". The URL itself is never kept.
+ */
+export function refOf(referrer: string, host: string): string {
+  if (!referrer) return "none";
+  let ref: string;
+  try {
+    ref = new URL(referrer).hostname.toLowerCase();
+  } catch {
+    return "other";
+  }
+  if (ref === host.toLowerCase()) return "self";
+  if (/(^|\.)gemini\.google\.com$/.test(ref)) return "ai";
+  for (const [pattern, kind] of REFERRERS) if (pattern.test(ref)) return kind;
+  return "other";
+}
+
+/** utm_source, utm_medium and utm_campaign when they are short tokens (lowercased). */
+export function utmOf(search: string): Record<string, string> {
+  const params = new URLSearchParams(search);
+  const out: Record<string, string> = {};
+  for (const key of ["utm_source", "utm_medium", "utm_campaign"]) {
+    const value = params.get(key)?.trim().toLowerCase();
+    if (value && /^[a-z0-9_.-]{1,40}$/.test(value)) out[key] = value;
+  }
+  return out;
+}
+
+/**
+ * A browser that is a crawler or an automated test. Search engines run the page's JavaScript
+ * and follow links into /names, so their visits would count as devices.
+ */
+export function isBot(nav: { userAgent?: string; webdriver?: boolean } | undefined): boolean {
+  if (!nav) return false;
+  if (nav.webdriver === true) return true;
+  return /bot\/|googlebot|bingbot|applebot|yandexbot|baiduspider|duckduckbot|petalbot|gptbot|claudebot|bytespider|crawl|spider|slurp|headless|lighthouse|facebookexternalhit|bingpreview|google-inspectiontool/i.test(nav.userAgent ?? "");
 }
 
 function uuid(): string {
@@ -237,6 +297,32 @@ export function currentSessionInfo(): { id: string; startedAt: number } | null {
   }
 }
 
+/**
+ * Marks this browser as Kiril's own (or a tester's): its events carry `internal: true` and the
+ * views leave the device out. Turned on with /names?internal=1 and off with ?internal=0.
+ */
+export function setInternalDevice(on: boolean): void {
+  try {
+    if (on) storage("local")?.setItem(INTERNAL_KEY, "1");
+    else storage("local")?.removeItem(INTERNAL_KEY);
+  } catch {
+    // Storage blocked: nothing to remember.
+  }
+  internal = on;
+}
+
+let internal: boolean | null = null;
+function isInternal(): boolean {
+  if (internal === null) {
+    try {
+      internal = storage("local")?.getItem(INTERNAL_KEY) === "1";
+    } catch {
+      internal = false;
+    }
+  }
+  return internal;
+}
+
 let token: string | null = null;
 let queue: Pending[] = [];
 let timer: ReturnType<typeof setTimeout> | null = null;
@@ -251,6 +337,7 @@ export function setTrackToken(next: string | null): void {
 function enabled(): boolean {
   if (typeof window === "undefined") return false;
   if (process.env.NEXT_PUBLIC_NAMES_ANALYTICS === "off") return false;
+  if (isBot(typeof navigator === "undefined" ? undefined : navigator)) return false;
   return !!process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 }
 
@@ -266,6 +353,7 @@ export function track(event: NamesEvent, props?: TrackProps): void {
     const now = Date.now();
     const s = currentSession(now);
     const clean = cleanProps(props);
+    if (isInternal()) clean.internal = true;
     if (event === "vote") {
       s.votes += 1;
       if (clean.vote === "keep" || clean.vote === "love") s.saves += 1;
@@ -277,7 +365,7 @@ export function track(event: NamesEvent, props?: TrackProps): void {
       device_id: device(),
       session_id: s.id,
       path: trackPath(window.location.pathname),
-      app_version: APP_VERSION,
+      app_version: TRACK_VERSION,
       client_at: new Date(now).toISOString(),
       token,
     });
@@ -382,11 +470,16 @@ function endSession() {
   const now = Date.now();
   queue.push({
     event: "session_end",
-    props: { votes: session.votes, saves: session.saves, duration_s: Math.round((now - session.startedAt) / 1000) },
+    props: {
+      votes: session.votes,
+      saves: session.saves,
+      duration_s: Math.round((now - session.startedAt) / 1000),
+      ...(isInternal() ? { internal: true } : {}),
+    },
     device_id: device(),
     session_id: session.id,
     path: trackPath(window.location.pathname),
-    app_version: APP_VERSION,
+    app_version: TRACK_VERSION,
     client_at: new Date(now).toISOString(),
     token,
   });
@@ -403,6 +496,7 @@ export function resetTrackForTests(): void {
   sending = false;
   session = null;
   deviceId = null;
+  internal = null;
 }
 
 /** For tests: what is waiting to be sent. */

@@ -14,6 +14,7 @@ import { getPref } from "@/lib/names/prefs";
 import { GOOGLE_FAILED_MESSAGE, hasAcceptedTerms, nextRoute } from "@/lib/names/routing";
 import { useAuth } from "./AuthProvider";
 import { track } from "@/lib/names/track";
+import { failureKind, takeSigninFrom } from "@/lib/names/signinFrom";
 
 const noSubscribe = () => () => {};
 const readUrlError = () => urlAuthError(window.location.search, window.location.hash);
@@ -60,14 +61,20 @@ export default function AuthCallback() {
   useEffect(() => {
     if (urlError === "signups-closed") router.replace(withJoin(`${WELCOME_PATH}?${CLOSED_PARAM}=1`, join));
     else if (urlError === "other") reportAuthError("sign-in-google-callback", readUrlError());
-    if (urlError) track("signin_failed", { method: "google", step: urlError === "signups-closed" ? "closed" : "callback" });
+    if (urlError) {
+      track("signin_failed", {
+        method: "google",
+        step: urlError === "signups-closed" ? "closed" : "callback",
+        kind: urlError === "signups-closed" ? "closed" : "other",
+      });
+    }
   }, [urlError, join, router]);
 
   useEffect(() => {
     if (urlError || loading || !user) return;
     if (!tracked.current) {
       tracked.current = true;
-      track("signin_completed", { method: "google", new_user: !hasAcceptedTerms(user) });
+      track("signin_completed", { method: "google", new_user: !hasAcceptedTerms(user), after: takeSigninFrom(!!join) });
     }
     router.replace(nextRoute(user, { introSeen: getPref(user.id, "introSeen") }, join));
   }, [urlError, loading, user, join, router]);

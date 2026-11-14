@@ -29,6 +29,9 @@ Next.js 16 · React 19 · Tailwind 4. Deploys to Vercel from `main`.
   from our cards only. It's a row at the top of סינון that opens its own step. Signed in: 5 searches a calendar month
   (Israel time). Guests: 1 try per device per month, then the sign-in buttons. Only searches that return names count.
   Migrations 0013 and 0014 are applied to the EU project. Setup, limits and env vars: `docs/names-pwa/SETUP.md` §15.
+- **Analytics (review 2026-11-14):** every link into the swiper carries `?source=`, `app_open` keeps the referrer type and
+  `utm_*`, crawlers and preview builds are left out, guest votes keep their time when moved into an account, and migration
+  0015 adds views that count guests beside the North Star. How to read it: `docs/names-pwa/ANALYTICS.md`.
 - **Polish runs:** the first (#18) is verified. The second (#29, 116 items) was code-only and not verified on a device; its
   follow-ups are in `scripts/ralph/qa/name-polish-2/SUMMARY.md`.
 - **Waiting on the owner:**
@@ -37,7 +40,8 @@ Next.js 16 · React 19 · Tailwind 4. Deploys to Vercel from `main`.
      live AI test (`tests/names/aiDeck.live.test.ts`, needs `ANTHROPIC_API_KEY`).
   3. A real-phone check (`docs/names-pwa/SETUP.md` §13), including the AI search as a guest and signed in.
   4. The 26 decisions from the first polish run, if still open (`scripts/ralph/qa/name-polish/owner-decisions.md`).
-  5. Lawyer review of the legal drafts (`src/content/names-legal/`, still `LEGAL_DRAFT`).
+  5. Apply migration 0015 (analytics views; paste file in the SQL editor) and open `/names?internal=1` on your own browsers.
+  6. Lawyer review of the legal drafts (`src/content/names-legal/`, still `LEGAL_DRAFT`).
 - **Next:** open sign-ups to a small beta and watch the survey and analytics. After that, work returns to the Nest app
   (paused since 2026-11-04); its status is in pregnancy-manager `docs/prd/migration/HANDOFF.md` §0.
 
