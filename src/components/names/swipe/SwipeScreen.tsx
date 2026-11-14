@@ -336,7 +336,7 @@ export default function SwipeScreen() {
             {slot === "pause" && guestCard ? (
               <GuestPanel key={`${guestCard}:${guestCount}`} kind={guestCard} count={guestCount} onLater={putNudgeAside} />
             ) : slot === "pause" && pause === "surname" ? (
-              <SurnamePanel preview={deck?.cards[0]?.content.niqqud || "נֹעַם"} name={deck?.cards[0]?.stats.name ?? "נועם"} guest={guest} onDone={answerSurname} />
+              <SurnamePanel preview={deck?.cards[0]?.content.niqqud || "נֹעַם"} name={deck?.cards[0]?.stats.name ?? "נועם"} guest={guest} total={cards?.length} onDone={answerSurname} />
             ) : slot === "pause" && launchPause ? (
               <PausePanel key={launchPause} pause={launchPause} totals={totals} onContinue={endPause} />
             ) : slot === "card" && deck && progress ? (
