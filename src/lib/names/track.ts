@@ -48,6 +48,7 @@ export const NAMES_EVENTS = {
   duel_completed: "A duel reached its winner. {from, size}",
   custom_name_added: "A name was added by hand.",
   report_sent: "A mistake in a name was reported.",
+  feedback_sent: "Feedback was sent from /names/feedback. {kind: 'idea' | 'problem' | 'praise' | 'other' | 'none', contact: a reply address was left, signed_in}",
   about_opened: "The about sheet of a name opened.",
   detail_opened: "The name sheet opened. {source: 'tap' | 'button' | 'key' | 'list' | 'similar' | 'link' | 'search' | 'twins'}",
   detail_closed: "The name sheet closed. {seconds, full: whether it was dragged to full height}",

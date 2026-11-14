@@ -18,6 +18,7 @@ import {
   requestAccountDeletion,
 } from "@/lib/names/accountDeletion";
 import { hasAppEntry } from "@/lib/names/appHistory";
+import { FEEDBACK_TEXT } from "@/lib/names/feedback";
 import { APP_PATH, WELCOME_PATH } from "@/lib/names/auth";
 import { isOffline } from "@/lib/names/authErrors";
 import { INSTALL_TITLE } from "@/lib/names/install";
@@ -383,6 +384,7 @@ export default function SettingsScreen() {
 
         <Section title="מידע">
           <ul className={card}>
+            <LinkRow href="/names/feedback?from=/names/settings">{FEEDBACK_TEXT.settingsRow}</LinkRow>
             <LinkRow href="/names/about">על הנתונים</LinkRow>
             {install.mode ? (
               <li className={row}>

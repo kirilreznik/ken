@@ -1,5 +1,7 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Button, linkClass } from "@/components/names/ui";
+import { FEEDBACK_TEXT } from "@/lib/names/feedback";
 import { CBS_ACCESSED, CBS_FILE, CBS_FILE_URL, CBS_LICENCE_URL, reportButtonLabel } from "@/lib/names/report";
 
 // 32 px tall on the board; -my-1.5 keeps that spacing while the hit area is 44 px.
@@ -74,6 +76,9 @@ export default function AboutContent({ hasName, onReport, level = 3 }: { hasName
         </svg>
         {reportButtonLabel(hasName)}
       </Button>
+      <Link href="/names/feedback?from=/names/about" className={`${linkClass("inline", "row")} self-center text-person`}>
+        {FEEDBACK_TEXT.aboutLink}
+      </Link>
     </div>
   );
 }
