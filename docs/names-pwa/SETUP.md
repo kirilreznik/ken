@@ -244,6 +244,42 @@ On a real iPhone (Safari) and a real Android phone (Chrome), at `https://nestjou
 See [ANALYTICS.md](ANALYTICS.md): apply migration 0010, add yourself to `analytics.internal_users`,
 create the Clarity project and set `NEXT_PUBLIC_CLARITY_PROJECT_ID` in Vercel (Production).
 
+## 15. חיפוש לפי תיאור (the AI deck, 2026-11-14)
+
+A box at the top of the filters sheet: a signed-in person describes the name they want, and
+`POST /api/names/ai-deck` asks Claude (Anthropic API) to pick up to 50 names from our cards only.
+Code: `src/lib/names/aiDeck.ts` (shared), `src/lib/names/server/ai*.ts` (prompt, catalog, model,
+handler). It stays hidden and the route answers `off` until every step below is done.
+
+1. **Migration 0013** (pregnancy-manager `supabase/migrations/0013_names_ai_deck.sql`): apply it
+   to the EU project in the SQL editor. It adds per-user, per-IP and daily-spend counters that only
+   the service role can touch. Without it the route fails closed (`off`).
+2. **Anthropic API key**: create a key at console.anthropic.com (a workspace just for Nest is best,
+   with a monthly spend limit, e.g. $50) and add it in Vercel as `ANTHROPIC_API_KEY`
+   (Production + Preview, **not** `NEXT_PUBLIC_`).
+3. **Vercel variables**:
+
+   | Variable | Value | What it does |
+   |---|---|---|
+   | `NAMES_AI_ENABLED` | `true` | server switch; anything else turns the route off at once |
+   | `NEXT_PUBLIC_NAMES_AI` | `on` | shows the box (build-time: redeploy after changing) |
+   | `NAMES_AI_IP_SALT` | a long random string | secret for hashing IPs (falls back to the service key) |
+   | `NAMES_AI_MODEL` | optional, default `claude-opus-5-5` | the model |
+   | `NAMES_AI_USER_DAY` / `NAMES_AI_USER_WEEK` / `NAMES_AI_IP_DAY` | optional, default 5 / 20 / 20 | request limits |
+   | `NAMES_AI_DAILY_USD` | optional, default 20 | daily spend cap for everyone; the box answers "not available" after it |
+
+4. **Live check** (a few cents): `ANTHROPIC_API_KEY=... npx vitest run tests/names/aiDeck.live.test.ts`.
+   Normal Hebrew descriptions must pass and every injection attempt must be refused.
+5. **Kill switch**: set `NAMES_AI_ENABLED` to `false` and redeploy, or revoke the key in the
+   Anthropic console.
+
+Safety, in short: the person's words go only in the user turn, cleaned of tag and bidi
+characters and wrapped in `<description>`, and the cached system prompt tells the model that text
+is data, never instructions. The model can answer only through a JSON schema of catalog ids;
+the server drops every id that isn't an allowed deck name and every reason with links, markup or
+non-Hebrew text. Off-topic and abusive requests come back as `off_topic` / `unsafe` with no names.
+Nothing typed is stored or logged by us; analytics carry only a length bucket.
+
 ## Accounts summary
 
 | Service | Account owner | What it's for | Cost |

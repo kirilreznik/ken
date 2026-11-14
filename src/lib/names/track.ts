@@ -24,7 +24,7 @@ export const NAMES_EVENTS = {
   signin_completed: "Signed in. {method, new_user}",
   onboarding_completed: "Onboarding was saved. {opt_in, joining}",
   first_vote: "The first decision in a space.",
-  vote: "A decision on a card. {vote: 'keep' | 'love' | 'skip' | 'hidden', method: 'swipe' | 'button' | 'key' | 'detail', shared, position}",
+  vote: "A decision on a card. {vote: 'keep' | 'love' | 'skip' | 'hidden', method: 'swipe' | 'button' | 'key' | 'detail', shared, position, deck: 'all' | 'ai' (a deck picked by חיפוש לפי תיאור)}",
   vote_undone: "ביטול took back a decision.",
   deck_exhausted: "The deck ran out of names. {votes}",
   filter_empty: "The filters left no names. {sex, sheet_filters}",
@@ -71,6 +71,13 @@ export const NAMES_EVENTS = {
   survey_prompt: "The beta survey prompt on the swipe screen. {action: 'shown' | 'open' | 'dismiss'}",
   survey_submitted: "The beta survey was sent; the closed answers ride along. {disappointed, stage, nest_app, audience, useful, sessions, votes}",
   guest_prompt: "A sign-in card in a guest's deck (every 20 decisions) or the wall at 100. {kind: 'nudge' | 'wall', action: 'shown' | 'signin' | 'later', votes}",
+  ai_open: "A guest used the sign-in buttons inside חיפוש לפי תיאור. {source: 'guest_signin'}",
+  ai_submit: "A description was sent (never its text). {length: 'short' | 'medium' | 'long', example: an example chip was used, filters: active filter count, refine}",
+  ai_result: "The server answered. {status: 'ok' | 'off_topic' | 'unsafe' | 'none', picks, reasons: picks with a reason line, ms}",
+  ai_error: "A request failed. {code: 'signin' | 'too_short' | 'too_long' | 'no_names' | 'limit_day' | 'limit_week' | 'busy' | 'budget' | 'off' | 'error', ms}",
+  ai_deck_shown: "A picked deck replaced the deck. {picks, refine}",
+  ai_deck_end: "Every name in the picked deck was decided. {total}",
+  ai_deck_cleared: "חזרה לכל השמות left the picked deck. {where: 'banner' | 'end'}",
   guest_votes_imported: "A guest signed in and their device votes moved into the account. {votes}",
   // account_deleted is written by the database when an account goes (its own events go with it).
 } as const;

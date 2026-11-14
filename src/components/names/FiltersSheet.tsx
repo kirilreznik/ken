@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { Suspense, useId, useMemo, useState, type ReactNode } from "react";
+import AiSection from "@/components/names/AiSection";
 import LetterRangeSlider from "@/components/names/LetterRangeSlider";
 import RelativeSection from "@/components/names/RelativeSection";
 import ThemeIcon from "@/components/names/ThemeIcon";
 import { BottomSheet, Button, ChevronIcon, FADE_PRESS, ROW_PRESS, checkboxClass, chipClass, closeSheet, linkClass } from "@/components/names/ui";
 import { useLayerOpen } from "@/components/names/ui/layers";
+import { aiDeckEnabled, type SavedAiDeck } from "@/lib/names/aiDeck";
 import { formatCount } from "@/lib/names/card";
 import { deckCount, hiddenCount } from "@/lib/names/deck";
 import {
@@ -15,9 +17,11 @@ import {
   SEX_TAGS,
   applyLabel,
   defaultFilters,
+  isDefault,
   lengthValue,
   letterOptions,
   letterValue,
+  matches,
   readSex,
   sexToken,
   type Filters,
@@ -221,6 +225,15 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
     closeSheet("filters");
   }
 
+  // "חיפוש לפי תיאור": the new deck saves the sheet's filters with it, since it was picked within them.
+  function applyAiDeck(deck: SavedAiDeck) {
+    if (!userId) return;
+    setPref(userId, "filters", draft);
+    setPref(userId, "aiDeck", deck);
+    track("ai_deck_shown", { picks: deck.picks.length, refine: deck.refine !== null });
+    closeSheet("filters");
+  }
+
   function reset() {
     setDraft(defaultFilters());
     setPicker(null);
@@ -268,6 +281,15 @@ function FiltersPanel({ userId, cards, votes }: FiltersSheetProps) {
         </>
       }
     >
+      {aiDeckEnabled() ? (
+        <AiSection
+          saved={userId ? getPref(userId, "aiDeck") : null}
+          allow={() => (isDefault(draft) ? null : (cards ?? []).filter((c) => matches(c, draft)).map((c) => c.stats.name))}
+          exclude={() => [...votes.keys()]}
+          activeFilters={Object.values(draft).filter((v) => v !== null).length}
+          onDeck={applyAiDeck}
+        />
+      ) : null}
       <RelativeSection key={resets} cards={cards} value={draft.relative} onChange={set("relative")} />
       <SexGroup value={draft.sex} onChange={set("sex")} />
       <ThemeGroup value={draft.themes} onChange={set("themes")} />

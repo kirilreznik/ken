@@ -17,7 +17,8 @@ import { useSyncStatus } from "@/components/names/useSyncStatus";
 import { useVotes } from "@/components/names/useVotes";
 import { sheetVoteText, statusText } from "@/lib/names/a11y";
 import { markAppEntry } from "@/lib/names/appHistory";
-import { buildDeck, deckProgress, deckSlot, hashSeed } from "@/lib/names/deck";
+import { buildAiDeck, reasonFor } from "@/lib/names/aiDeck";
+import { buildDeck, deckProgress, deckSlot, hashSeed, type Deck } from "@/lib/names/deck";
 import { defaultFilters, hasFilters, sexToken } from "@/lib/names/filters";
 import type { Decision, DragKind } from "@/lib/names/gesture";
 import { matchToShow, withSeen, type Match } from "@/lib/names/matches";
@@ -26,11 +27,12 @@ import { getPref, setPref } from "@/lib/names/prefs";
 import { showToast } from "@/lib/names/toast";
 import { currentSessionInfo, track } from "@/lib/names/track";
 import { guestPrompt, readGuestNudge, writeGuestNudge, type GuestVoteStore } from "@/lib/names/guest";
-import type { Vote } from "@/lib/names/types";
+import type { Card, Vote } from "@/lib/names/types";
 import { isOpenKey } from "@/lib/names/keys";
 import { NAME_SHEET, readName } from "@/lib/names/urlLayer";
 import { applyVote, isSaved, savedInOrder, undo as undoVote, type UndoEntry } from "@/lib/names/votes";
 import ActionBar from "./ActionBar";
+import AiBanner, { AiDeckEnd } from "./AiBanner";
 import AboutLink from "./AboutLink";
 import { DeckLoadError, DeckSkeleton } from "./DeckLoad";
 import EmptyDeck from "./EmptyDeck";
@@ -78,6 +80,9 @@ export default function SwipeScreen() {
   const surnameJson = usePrefJson(userId, "surname");
   const filters = useMemo(() => (userId && filtersJson ? getPref(userId, "filters") : null), [userId, filtersJson]);
   const surname = surnameJson ? (JSON.parse(surnameJson) as string) : "";
+  // "חיפוש לפי תיאור": while a picked deck is saved, it replaces the shuffled deck.
+  const aiJson = usePrefJson(userId, "aiDeck");
+  const aiDeck = useMemo(() => (userId && aiJson ? getPref(userId, "aiDeck") : null), [userId, aiJson]);
   const sessionsJson = usePrefJson(userId, "sessions");
   const surveyJson = usePrefJson(userId, "survey");
   const sessionCount = sessionsJson ? (JSON.parse(sessionsJson) as { count: number }).count : 0;
@@ -149,11 +154,19 @@ export default function SwipeScreen() {
   const showSurvey = !!userId && !guest && !pause && surveyDue(sessionCount, votes.size, surveyState);
 
   const ready = !!(cards && filters && userId && store && state?.ready);
-  const deck = useMemo(
-    () => (ready ? buildDeck(cards, votes, filters, hashSeed(userId), { top }) : null),
-    [ready, cards, votes, filters, userId, top],
+  const aiView = useMemo(
+    () => (ready && aiDeck ? buildAiDeck(cards, aiDeck, votes, filters, top) : null),
+    [ready, aiDeck, cards, votes, filters, top],
   );
-  const progress = deck && cards && filters ? deckProgress(cards, votes, filters, deck.cards.length) : null;
+  const deck: Deck<Card> | null = useMemo(() => {
+    if (aiView) return { state: aiView.cards.length ? "ok" : "all-decided", cards: aiView.cards };
+    return ready ? buildDeck(cards, votes, filters, hashSeed(userId), { top }) : null;
+  }, [aiView, ready, cards, votes, filters, userId, top]);
+  const progress = aiView
+    ? { position: aiView.position, total: aiView.total }
+    : deck && cards && filters
+      ? deckProgress(cards, votes, filters, deck.cards.length)
+      : null;
   // While paused nothing can be decided: the panel stands where the card was.
   const current = pause ? null : (deck?.cards[0] ?? null);
   const slot = deckSlot({ paused: !!pause, hasCard: !!(deck && current && progress), deckState: deck?.state ?? null, loadError: cardsError });
@@ -169,7 +182,12 @@ export default function SwipeScreen() {
   // The deck ran out (all decided) or the filters left nothing (none match, or all of those
   // are decided: both are the filter_empty event): once each time it happens.
   const deckState = deck?.state ?? null;
+  const aiOn = aiView !== null;
   useEffect(() => {
+    if (aiOn) {
+      if (deckState === "all-decided") track("ai_deck_end", { total: aiView?.total ?? 0 });
+      return;
+    }
     if (deckState === "all-decided") track("deck_exhausted", { votes: votes.size });
     else if ((deckState === "empty-filter" || deckState === "filter-done") && filters) {
       track("filter_empty", {
@@ -189,7 +207,7 @@ export default function SwipeScreen() {
     if (!store || !current) return;
     const name = current.stats.name;
     if (votes.size === 0) track("first_vote");
-    track("vote", { vote: kind, method: method.current, shared: space.isShared, position: progress?.position ?? null });
+    track("vote", { vote: kind, method: method.current, shared: space.isShared, position: progress?.position ?? null, deck: aiOn ? "ai" : "all" });
     method.current = "swipe";
     const next = applyVote({ votes, undo: undoStack }, name, kind);
     setUndoStack(next.state.undo);
@@ -244,6 +262,13 @@ export default function SwipeScreen() {
     if (userId && filters) setPref(userId, "filters", { ...filters, relative: null });
   };
 
+  const clearAiDeck = (where: "banner" | "end") => {
+    if (!userId) return;
+    setPref(userId, "aiDeck", null);
+    setTop(null);
+    track("ai_deck_cleared", { where });
+  };
+
   const resetFilters = () => {
     if (userId) setPref(userId, "filters", defaultFilters());
     track("filters_reset");
@@ -273,7 +298,7 @@ export default function SwipeScreen() {
   const decideOther = (name: string, kind: Decision) => {
     if (!store || !deckNames.has(name) || guestCard === "wall") return;
     if (votes.size === 0) track("first_vote");
-    track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null });
+    track("vote", { vote: kind, method: "detail", shared: space.isShared, position: null, deck: aiOn ? "ai" : "all" });
     const next = applyVote({ votes, undo: undoStack }, name, kind);
     setUndoStack(next.state.undo);
     store.setVote(name, kind);
@@ -285,6 +310,9 @@ export default function SwipeScreen() {
   return (
     <div className="flex h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] flex-col max-[20rem]:h-auto [@media(max-height:30rem)]:h-auto">
       <SwipeHeader saved={state?.loadFailed ? null : savedCount} filtered={hasFilters(filters)} />
+      {aiDeck && aiView ? (
+        <AiBanner saved={aiDeck} total={aiView.total} filtered={hasFilters(filters)} onClear={() => clearAiDeck("banner")} />
+      ) : null}
       {filters?.relative ? <RelativeChip filter={filters.relative} onClear={clearRelative} /> : null}
       <main className="flex min-h-0 flex-1 flex-col">
         {showSurvey ? <SurveyPrompt onDismiss={() => userId && setPref(userId, "survey", "dismissed")} /> : null}
@@ -308,6 +336,7 @@ export default function SwipeScreen() {
                 position={progress.position}
                 total={progress.total}
                 surname={surname}
+                note={aiOn ? reasonFor(aiDeck, deck.cards[0]?.stats.name) : null}
                 // Content-sized decks (zoom, short screens) cap the card under the viewport so it
                 // scrolls itself (pan-y, useSwipeDrag) and the page can still reach the bar (NP-087).
                 className={`min-h-0 max-[20rem]:max-h-[80dvh] [@media(max-height:30rem)]:max-h-[80dvh] ${dragClass}`}
@@ -321,6 +350,8 @@ export default function SwipeScreen() {
                 onFocus={preloadNameDetail}
                 {...drag.card}
               />
+            ) : slot === "empty" && aiOn ? (
+              <AiDeckEnd takeFocus={entered} onClear={() => clearAiDeck("end")} />
             ) : slot === "empty" && deck && deck.state !== "ok" ? (
               <EmptyDeck
                 state={deck.state}
