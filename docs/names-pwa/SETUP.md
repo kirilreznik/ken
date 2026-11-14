@@ -289,6 +289,15 @@ the server drops every id that isn't an allowed deck name and every reason with 
 non-Hebrew text. Off-topic and abusive requests come back as `off_topic` / `unsafe` with no names.
 Nothing typed is stored or logged by us; analytics carry only a length bucket.
 
+## 16. Feedback (/names/feedback, 2026-11-14)
+
+1. Paste `0016_paste_in_sql_editor.sql` (pregnancy-manager migration 0016) into the Supabase SQL editor of the EU project **before** this deploys. Without it the form answers "המשוב לא נשלח".
+2. Optional email for each message: in Resend create an API key with Sending access (domain `nestjourney.app`), then in Vercel project `ken` → Settings → Environment Variables (Production) add `RESEND_API_KEY` = that key and `NAMES_FEEDBACK_NOTIFY_TO` = the address that should get it. Redeploy. The email comes from `no-reply@nestjourney.app`; Reply goes to the sender when they left an address.
+3. Read feedback: `select * from analytics.names_feedback_inbox;` in the SQL editor. Mark one done: `update analytics.names_feedback set handled = true where id = …;`.
+4. Entry points: settings ("שליחת משוב"), "על הנתונים" (sheet and page, so guests reach it too) and the landing footer.
+
+**Email addresses (checked 2026-11-14):** the root domain's mail is Google Workspace (MX `smtp.google.com`, SPF, Google DKIM, DMARC `p=quarantine`); Resend's DKIM and `send`/`rsend` records resolve; sign-in codes arrive in the inbox. `privacy@nestjourney.app` bounced ("address not found"): it must be an alias or group in Google Workspace. `no-reply@nestjourney.app` also bounces, which is expected for a send-only address.
+
 ## Accounts summary
 
 | Service | Account owner | What it's for | Cost |
