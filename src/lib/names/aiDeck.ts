@@ -226,6 +226,11 @@ export const AI_REASON_LABEL = "למה השם הזה";
 export const AI_GENERATED = "הוצע אוטומטית";
 export const AI_BACK = "חזרה לכל השמות";
 export const AI_REFINE = "לדייק";
+/** The row at the top of "סינון" that opens the search as its own step. */
+export const AI_ROW_LEAD = "לתאר במילים שלך איזה שם מחפשים";
+export const AI_ROW_ACTIVE = "פעיל:";
+export const AI_BACK_TO_FILTERS = "חזרה לסינון";
+export const AI_WITHIN_FILTERS = "השמות ייבחרו רק מתוך הסינון שבחרת.";
 export const AI_REFINE_PLACEHOLDER = "למשל: פחות תנ״כיים";
 export const AI_END_TITLE = "עברת על כל השמות שנבחרו לפי התיאור.";
 export const AI_WITH_FILTERS = "עם הסינון שבחרת";

@@ -15,7 +15,7 @@ import {
   AI_SIGNIN_LEAD,
   AI_SUBMIT,
   AI_SUBMIT_REFINE,
-  AI_TITLE,
+  AI_WITHIN_FILTERS,
   PROMPT_MAX,
   PROMPT_MIN,
   REFINE_MAX,
@@ -62,7 +62,8 @@ type AiSectionProps = {
 };
 
 /**
- * "חיפוש לפי תיאור" at the top of the filters sheet (aiDeck.ts): a box for the description,
+ * "חיפוש לפי תיאור", the step the filters sheet opens from its top row (aiDeck.ts; the sheet's
+ * title names it): a box for the description,
  * tappable examples, and the button. Guests see the box and the sign-in buttons; what they
  * typed waits in this tab. The description goes to our server, which asks Claude to pick from
  * our cards; nothing typed here is stored by us or sent with analytics.
@@ -143,13 +144,10 @@ export default function AiSection({ saved, allow, exclude, activeFilters, onDeck
   }
 
   return (
-    <section aria-labelledby={`${fieldId}-title`} className="flex flex-col gap-2.5 rounded-lg bg-canvas p-3.5">
-      <h3 id={`${fieldId}-title`} className="m-0 text-card-title text-ink">
-        <span aria-hidden="true">✨ </span>
-        {AI_TITLE}
-      </h3>
-      <p id={leadId} className="m-0 text-caption text-ink-soft">
+    <div className="flex flex-col gap-2.5">
+      <p id={leadId} className="m-0 text-person text-ink-soft">
         {AI_LEAD}
+        {activeFilters > 0 ? ` ${AI_WITHIN_FILTERS}` : ""}
       </p>
       <label htmlFor={fieldId} className="sr-only">
         תיאור השם שמחפשים
@@ -231,6 +229,6 @@ export default function AiSection({ saved, allow, exclude, activeFilters, onDeck
       <p role="status" className="sr-only">
         {busy ? AI_LOADING : ""}
       </p>
-    </section>
+    </div>
   );
 }

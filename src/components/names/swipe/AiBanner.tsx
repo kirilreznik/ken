@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Button, Glass, openSheet } from "@/components/names/ui";
+import { Button, Glass } from "@/components/names/ui";
+import { openAiSearch } from "@/components/names/aiStep";
 import { AI_BACK, AI_END_TITLE, AI_REFINE, AI_TITLE, AI_WITH_FILTERS, picksCountText, type SavedAiDeck } from "@/lib/names/aiDeck";
 import { deckPanel, deckPanelWrap } from "./EmptyDeck";
 import { emptyTitleClass } from "@/components/names/ui";
 
 /**
  * Under the header while the deck is one picked by "חיפוש לפי תיאור": the words it was picked
- * for, how many names it holds, "לדייק" (the filters sheet, where the box is) and the way back
+ * for, how many names it holds, "לדייק" (the filters sheet, opened on its חיפוש לפי תיאור step) and the way back
  * to every name.
  */
 export default function AiBanner({
@@ -37,7 +38,7 @@ export default function AiBanner({
             {filtered ? ` · ${AI_WITH_FILTERS}` : ""}
           </p>
           <div className="flex gap-1">
-            <Button variant="link" size="md" onClick={() => openSheet("filters")}>
+            <Button variant="link" size="md" onClick={openAiSearch}>
               {AI_REFINE}
             </Button>
             <Button variant="link" size="md" onClick={onClear}>
@@ -66,7 +67,7 @@ export function AiDeckEnd({ takeFocus, onClear }: { takeFocus: boolean; onClear:
           <Button size="md" onClick={onClear}>
             {AI_BACK}
           </Button>
-          <Button variant="secondary" size="md" onClick={() => openSheet("filters")}>
+          <Button variant="secondary" size="md" onClick={openAiSearch}>
             {AI_REFINE}
           </Button>
         </div>
